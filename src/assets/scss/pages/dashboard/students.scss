@@ -1,0 +1,26 @@
+.students-home {
+  .students-cards-wrapper {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    margin: 50px 0;
+    justify-content: center;
+    gap: 15px;
+
+    @media only screen and (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      justify-content: start;
+    }
+    @media only screen and (min-width: 774px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      justify-content: start;
+    }
+    @media only screen and (min-width: 1358px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      justify-content: start;
+    }
+    @media only screen and (min-width: 1750px) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      justify-content: start;
+    }
+  }
+}

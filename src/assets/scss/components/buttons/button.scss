@@ -1,0 +1,85 @@
+.custom-button {
+  background: rgb(1,21,59);
+  border-radius: 0.3rem;
+  width: fit-content;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.9rem;
+  letter-spacing: 0.0625em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem 1.75rem;
+  height: 4rem;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.is-block {
+    display: block;
+    width: 100%;
+    padding: 0;
+    height: 4.8rem;
+    border-radius: 0.8rem;
+  }
+
+  &.outline {
+    border: 0.2rem solid rgb(1,21,59);
+    background: transparent;
+    color: rgb(1,21,59);
+
+    &:hover {
+      background: rgb(1,21,59);
+      color: #ffffff;
+    }
+  }
+
+  &.danger {
+    background: #dc3545;
+  }
+
+  &.dark {
+    background: #000000;
+  }
+
+  &.warning {
+    background-color: #ffc107;
+  }
+
+  &.outline-danger {
+    border: 0.2rem solid #dc3545;
+    background: transparent;
+    color: #dc3545;
+
+    &:hover {
+      background: #dc3545;
+      color: #ffffff;
+    }
+  }
+
+  &.outline-warning {
+    border: 0.2rem solid #ffc107;
+    background: transparent;
+    color: #ffc107;
+
+    &:hover {
+      background: #ffc107;
+      color: #ffffff;
+    }
+  }
+
+  &.outline-dark {
+    border: 0.2rem solid #000000;
+    background: transparent;
+    color: #000000;
+
+    &:hover {
+      background: #000000;
+      color: #ffffff;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.hamburger-button {
+  width: 4.5rem;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  @media only screen and (min-width: 900px) {
+    width: 3.5rem;
+  }
+
+  > div {
+    height: 0.3rem;
+    background-color: #000000;
+    width: 100%;
+  }
+}

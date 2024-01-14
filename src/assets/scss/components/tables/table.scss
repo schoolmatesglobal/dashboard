@@ -1,0 +1,58 @@
+.custom-table-wrapper {
+  // overflow: hidden;
+  overflow-x: auto;
+  margin: 1.5rem 0 0 0;
+  padding-bottom: 2em;
+
+  > div {
+    width: fit-content;
+    min-width: 100%;
+
+    .custom-table {
+      min-width: 100%;
+
+      &,
+      & th,
+      & td {
+        border: 0.01rem solid #cccccc;
+      }
+
+      & th,
+      & td {
+        padding: 1.5rem 1rem;
+        min-width: 13rem;
+        width: fit-content;
+      }
+
+      th {
+        font-weight: 700;
+        text-transform: uppercase;
+        background-color: rgb(1, 21, 59);
+        color: #ffffff;
+        text-align: center;
+      }
+
+      tr {
+        &:nth-of-type(even) {
+          background-color: rgba(rgb(1, 21, 59), 0.2);
+        }
+      }
+
+      &.centered {
+        td {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+.pagination {
+  justify-content: flex-end;
+
+  .page-link {
+    @media only screen and (min-width: 900px) {
+      padding: 1rem !important;
+    }
+  }
+}

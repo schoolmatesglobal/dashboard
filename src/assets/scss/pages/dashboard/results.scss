@@ -1,0 +1,2117 @@
+$primary-color: green;
+$text-color: midnightblue;
+
+.first-level-results-sheet {
+  border: 0.4rem solid $primary-color;
+  border-radius: 0.3rem;
+  padding: 1em;
+  max-width: 1350px;
+  // min-width: 700px;
+  overflow: auto;
+  // overflow-x: scroll;
+
+  // @media only screen and (min-width: 428px) {
+  //   padding: 3em;
+  // }
+
+  .school-details {
+    text-align: center;
+    // width: 1350px;
+
+    // @media only screen and (min-width: 1300px) {
+    //   width: 100%;
+    // }
+
+    .image {
+      width: 10rem;
+      height: 10rem;
+      overflow: hidden;
+      margin: 1em auto;
+
+      @media only screen and (min-width: 428px) {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .name {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      line-height: 1em;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.8rem;
+        line-height: 1.5em;
+      }
+    }
+
+    .address,
+    .tel {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: red;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email,
+    .web {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email {
+      margin-top: 1em;
+    }
+
+    .web {
+      font-weight: 400;
+    }
+
+    .title {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      text-decoration: underline;
+      margin: 1em 0 2rem 0;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .school-details2 {
+    text-align: center;
+    width: 1350px;
+
+    @media only screen and (min-width: 1350px) {
+      width: 100%;
+    }
+
+    .image {
+      width: 10rem;
+      height: 10rem;
+      overflow: hidden;
+      margin: 1em auto;
+
+      @media only screen and (min-width: 428px) {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .name {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      line-height: 1em;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.8rem;
+        line-height: 1.5em;
+      }
+    }
+
+    .address,
+    .tel {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: red;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email,
+    .web {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email {
+      margin-top: 1em;
+    }
+
+    .web {
+      font-weight: 400;
+    }
+
+    .title {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      text-decoration: underline;
+      margin: 1em 0 2rem 0;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .student-details {
+    .row {
+      margin-bottom: 1.5rem;
+      .col {
+        .detail {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+
+          @media only screen and (min-width: 428px) {
+            gap: 0;
+          }
+
+          h5 {
+            width: fit-content;
+            color: $text-color;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+
+            @media only screen and (min-width: 428px) {
+              width: 8rem;
+            }
+          }
+
+          input {
+            width: 100%;
+            border: 0.1rem;
+            border-style: solid;
+            border-color: $primary-color;
+            padding: 0.8rem;
+            color: $text-color;
+            text-transform: uppercase;
+
+            @media only screen and (min-width: 428px) {
+              width: calc(100% - 8rem);
+            }
+
+            &:disabled {
+              outline: none;
+              background-color: #eee;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .results-table-wrapper {
+    margin: 5rem 0;
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      height: 100%;
+
+      td,
+      th {
+        border: 0.15rem solid $primary-color;
+        padding: 1.5rem;
+        color: $text-color;
+        text-transform: uppercase;
+      }
+
+      th:not(:nth-of-type(1)),
+      td:not(:nth-of-type(1)) {
+        text-align: center;
+      }
+
+      thead {
+        tr:first-child {
+          th {
+            &,
+            > div {
+              font-size: 2rem;
+              text-transform: uppercase;
+              font-weight: bold;
+            }
+          }
+        }
+
+        tr:nth-of-type(2) {
+          th {
+            font-weight: 600;
+          }
+        }
+      }
+
+      tfoot {
+        th {
+          font-weight: 600;
+        }
+      }
+
+      td {
+        input {
+          &:disabled,
+          &.form-control:disabled {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            text-align: center;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .results-remark {
+    table {
+      width: 100%;
+      height: 100%;
+
+      &,
+      td {
+        border: 0.1rem solid $primary-color;
+        padding: 1.5rem;
+        color: $text-color;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      tr:nth-of-type(2) {
+        td {
+          border: none;
+        }
+      }
+    }
+  }
+
+  &.end-term {
+    .school-details {
+      > div {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 2rem;
+
+        @media only screen and (min-width: 428px) {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+
+        .motto {
+          color: green;
+          font-size: 1.4rem;
+          margin: 1rem 0;
+        }
+
+        > div {
+          &:nth-of-type(2) {
+            @media only screen and (min-width: 428px) {
+              width: calc(100% - 30rem);
+            }
+          }
+        }
+      }
+    }
+
+    .student-details {
+      .row {
+        .col {
+          .detail {
+            padding: 1.5rem;
+            border: 0.1rem solid rgb(207, 207, 207);
+
+            h5 {
+              color: #000000;
+
+              &:first-child {
+                text-transform: capitalize;
+                width: 15rem;
+              }
+
+              &:nth-of-type(2) {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .attendance-wrapper {
+      margin: 3rem 0;
+
+      .title {
+        color: red;
+        font-weight: bold;
+        line-height: 2.8rem;
+        text-transform: uppercase;
+      }
+
+      .table-wrapper {
+        table {
+          td {
+            border: 0.1rem solid #000000;
+
+            input {
+              &:disabled,
+              &.form-control:disabled {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                text-align: center;
+                margin: 0;
+              }
+            }
+          }
+
+          tr {
+            th:not(:nth-of-type(1)),
+            td:not(:nth-of-type(1)) {
+              width: 15%;
+            }
+
+            th:nth-of-type(1),
+            td:nth-of-type(1) {
+              width: 40%;
+            }
+          }
+        }
+      }
+    }
+
+    .results-table-wrapper {
+      .title {
+        color: royalblue;
+        font-weight: bold;
+        line-height: 2.8rem;
+        text-transform: uppercase;
+      }
+
+      .table {
+        tfoot {
+          tr {
+            th:nth-of-type(odd) {
+              text-align: right;
+            }
+
+            &:first-child {
+              th:nth-of-type(3) {
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .socials-wrapper {
+      .row {
+        .col {
+          .title {
+            font-weight: bold;
+            line-height: 2.8rem;
+            text-transform: uppercase;
+          }
+
+          .table {
+            td,
+            th {
+              border: 0.15rem solid $primary-color;
+              padding: 1.5rem;
+              color: $text-color;
+              text-transform: uppercase;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.preschool {
+    padding-left: 0;
+    padding-right: 0;
+
+    h4 {
+      font-size: 1rem;
+
+      @media only screen and (min-width: 429px) {
+        font-size: 1.3rem;
+      }
+
+      @media only screen and (min-width: 768px) {
+        font-size: 1.6rem;
+      }
+    }
+
+    .preschool-result-table {
+      margin-top: 3rem;
+      font-weight: 600;
+      // max-width: 1200px;
+      // width: 1350px;
+
+      // @media only screen and (min-width: 1300px) {
+      //   width: 100%;
+      // }
+
+      .table-head {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+
+        @media only screen and (min-width: 768px) {
+          padding: 1.5rem;
+        }
+
+        > h3 {
+          text-align: center;
+          font-size: 1.3rem;
+          text-transform: uppercase;
+          color: $primary-color;
+
+          @media only screen and (min-width: 768px) {
+            font-size: 1.6rem;
+          }
+        }
+      }
+
+      .table-subhead {
+        border: 0.1rem solid $primary-color;
+        background-color: rgba(yellow, 0.4);
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+
+        > h4 {
+          text-align: center;
+          text-transform: uppercase;
+          color: $primary-color;
+        }
+      }
+
+      .table-data {
+        padding: 1rem;
+        border: 0.1rem solid $primary-color;
+        width: 100%;
+
+        > h4 {
+          text-transform: uppercase;
+        }
+
+        > p {
+          font-weight: 400;
+        }
+      }
+
+      .student-creds {
+        > div {
+          display: flex;
+        }
+      }
+
+      .attendance {
+        display: flex;
+        flex-wrap: wrap;
+
+        @media only screen and (min-width: 768px) {
+          flex-wrap: nowrap;
+        }
+
+        > div {
+          width: 33%;
+
+          @media only screen and (min-width: 768px) {
+            width: 20%;
+          }
+
+          .table-data {
+            text-align: center;
+          }
+        }
+      }
+
+      .subject-table {
+        > .subject-main-table {
+          h4 {
+            font-size: 1rem;
+            line-height: 1.4rem;
+          }
+
+          > div {
+            display: flex;
+
+            &:first-child {
+              > .table-data {
+                color: red;
+              }
+            }
+
+            > div {
+              width: 40%;
+
+              &.score-part {
+                display: flex;
+                width: 60%;
+
+                > div {
+                  text-align: center;
+                  word-break: break-all;
+
+                  &:first-child {
+                    color: orange;
+                  }
+
+                  &.table-data {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .reports {
+        display: flex;
+        flex-direction: column;
+
+        // @media only screen and (min-width: 768px) {
+        //   flex-direction: row;
+        // }
+
+        // > div {
+        //   @media only screen and (min-width: 768px) {
+        //     width: 50%;
+        //   }
+        // }
+      }
+
+      .reports2 {
+        display: flex;
+        flex-direction: column;
+
+        @media only screen and (min-width: 768px) {
+          flex-direction: row;
+        }
+
+        > div {
+          @media only screen and (min-width: 768px) {
+            width: 50%;
+          }
+        }
+      }
+
+      .comment {
+        padding: 2rem 1rem;
+
+        > h4 {
+          line-height: 2rem;
+        }
+
+        > .signature {
+          margin: auto;
+          margin-top: 10rem;
+          display: flex;
+          gap: 2rem;
+
+          @media only screen and (min-width: 429px) {
+            max-width: 80%;
+            align-items: flex-end;
+            justify-content: space-between;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+
+            > .line {
+              height: 0.2rem;
+              background-color: #000000;
+            }
+          }
+        }
+      }
+    }
+    .preschool-result-table2 {
+      margin-top: 3rem;
+      font-weight: 600;
+      // max-width: 1200px;
+      width: 1350px;
+
+      @media only screen and (min-width: 1350px) {
+        width: 100%;
+      }
+
+      .table-head {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+
+        @media only screen and (min-width: 768px) {
+          padding: 1.5rem;
+        }
+
+        > h3 {
+          text-align: center;
+          font-size: 1.3rem;
+          text-transform: uppercase;
+          color: $primary-color;
+
+          @media only screen and (min-width: 768px) {
+            font-size: 1.6rem;
+          }
+        }
+      }
+
+      .table-subhead {
+        border: 0.1rem solid $primary-color;
+        background-color: rgba(yellow, 0.4);
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+
+        > h4 {
+          text-align: center;
+          text-transform: uppercase;
+          color: $primary-color;
+        }
+      }
+
+      .table-data {
+        padding: 1rem;
+        border: 0.1rem solid $primary-color;
+        width: 100%;
+
+        > h4 {
+          text-transform: uppercase;
+        }
+
+        > p {
+          font-weight: 400;
+        }
+      }
+
+      .student-creds {
+        > div {
+          display: flex;
+        }
+      }
+
+      .attendance {
+        display: flex;
+        flex-wrap: wrap;
+
+        @media only screen and (min-width: 768px) {
+          flex-wrap: nowrap;
+        }
+
+        > div {
+          width: 33%;
+
+          @media only screen and (min-width: 768px) {
+            width: 20%;
+          }
+
+          .table-data {
+            text-align: center;
+          }
+        }
+      }
+
+      .subject-table {
+        > .subject-main-table {
+          h4 {
+            font-size: 1rem;
+            line-height: 1.4rem;
+          }
+
+          > div {
+            display: flex;
+
+            &:first-child {
+              > .table-data {
+                color: red;
+              }
+            }
+
+            > div {
+              width: 40%;
+
+              &.score-part {
+                display: flex;
+                width: 60%;
+
+                > div {
+                  text-align: center;
+                  word-break: break-all;
+
+                  &:first-child {
+                    color: orange;
+                  }
+
+                  &.table-data {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .reports {
+        display: flex;
+        flex-direction: column;
+
+        // @media only screen and (min-width: 768px) {
+        //   flex-direction: row;
+        // }
+
+        // > div {
+        //   @media only screen and (min-width: 768px) {
+        //     width: 50%;
+        //   }
+        // }
+      }
+
+      .reports2 {
+        display: flex;
+        flex-direction: column;
+
+        @media only screen and (min-width: 768px) {
+          flex-direction: row;
+        }
+
+        > div {
+          @media only screen and (min-width: 768px) {
+            width: 50%;
+          }
+        }
+      }
+
+      .comment {
+        padding: 2rem 1rem;
+
+        > h4 {
+          line-height: 2rem;
+        }
+
+        > .signature {
+          margin: auto;
+          margin-top: 10rem;
+          display: flex;
+          gap: 2rem;
+
+          @media only screen and (min-width: 429px) {
+            max-width: 80%;
+            align-items: flex-end;
+            justify-content: space-between;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+
+            > .line {
+              height: 0.2rem;
+              background-color: #000000;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.first-half {
+    .first-half-result-table {
+      .table-row {
+        display: flex;
+      }
+    }
+  }
+
+  .second-half-result-table {
+    .table-row {
+      > .table-data {
+        width: 14%;
+        text-align: center;
+
+        &:first-child {
+          width: 42%;
+          text-align: left;
+        }
+
+        &:nth-child(5) {
+          width: 10%;
+        }
+      }
+    }
+  }
+
+  .second-half-academic-rating {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    > div {
+      height: 5rem;
+    }
+  }
+
+  .second-half-cummulative-scores-table {
+    .table-row {
+      &:first-child {
+        .table-data {
+          height: 15rem;
+          position: relative;
+
+          > h4 {
+            transform: translate(-50%, -50%) rotate(-90deg);
+            transform-origin: center;
+            white-space: nowrap;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+          }
+        }
+      }
+
+      > .right-data {
+        width: 77%;
+        display: flex;
+
+        > .table-data {
+          flex-grow: 1;
+          flex-basis: 0;
+          text-align: center;
+        }
+      }
+
+      > .table-data {
+        width: 23%;
+        text-align: left;
+      }
+
+      &.year-total-score {
+        .table-data {
+          &:not(:nth-child(5)) {
+            border-right: none;
+            border-left: none;
+          }
+        }
+      }
+    }
+  }
+
+  .performance-remark {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    > h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      &:first-child {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+        color: $primary-color;
+      }
+    }
+  }
+
+  .skills-table {
+    text-transform: uppercase;
+
+    > .table-row {
+      > .table-data {
+        width: 14%;
+        text-align: center;
+
+        &:last-child {
+          width: 20%;
+        }
+
+        &:first-child {
+          width: 38%;
+          text-align: left;
+        }
+      }
+    }
+  }
+
+  .table-chart-wrapper {
+    padding: 2rem;
+
+    > h4 {
+      line-height: 200%;
+    }
+
+    > p {
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.broad-sheet {
+  border: 0.3rem solid $primary-color;
+  border-radius: 0.3rem;
+  padding: 20px 0px 0px 0px;
+  max-width: 1350px;
+  min-height: 80vh;
+  // min-width: 700px;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  .school-details {
+    text-align: center;
+
+    .image {
+      width: 10rem;
+      height: 10rem;
+      overflow: hidden;
+      margin: 1em auto;
+
+      @media only screen and (min-width: 428px) {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .name {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      line-height: 1em;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.8rem;
+        line-height: 1.5em;
+      }
+    }
+
+    .address,
+    .tel {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: red;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email,
+    .web {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email {
+      margin-top: 1em;
+    }
+
+    .web {
+      font-weight: 400;
+    }
+
+    .title {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      text-decoration: underline;
+      margin: 1em 0 2rem 0;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .school-details2 {
+    text-align: center;
+    width: 1350px;
+
+    @media only screen and (min-width: 1350px) {
+      width: 100%;
+    }
+
+    .image {
+      width: 10rem;
+      height: 10rem;
+      overflow: hidden;
+      margin: 1em auto;
+
+      @media only screen and (min-width: 428px) {
+        width: 15rem;
+        height: 15rem;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .name {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      line-height: 1em;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.8rem;
+        line-height: 1.5em;
+      }
+    }
+
+    .address,
+    .tel {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: red;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email,
+    .web {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 1.8rem;
+        line-height: 2.4rem;
+      }
+    }
+
+    .email {
+      margin-top: 1em;
+    }
+
+    .web {
+      font-weight: 400;
+    }
+
+    .title {
+      font-weight: bold;
+      color: $text-color;
+      font-size: 2rem;
+      text-decoration: underline;
+      margin: 1em 0 2rem 0;
+      text-transform: uppercase;
+
+      @media only screen and (min-width: 428px) {
+        font-size: 2.5rem;
+      }
+    }
+  }
+
+  .student-details {
+    .row {
+      margin-bottom: 1.5rem;
+      .col {
+        .detail {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+
+          @media only screen and (min-width: 428px) {
+            gap: 0;
+          }
+
+          h5 {
+            width: fit-content;
+            color: $text-color;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+
+            @media only screen and (min-width: 428px) {
+              width: 8rem;
+            }
+          }
+
+          input {
+            width: 100%;
+            border: 0.1rem;
+            border-style: solid;
+            border-color: $primary-color;
+            padding: 0.8rem;
+            color: $text-color;
+            text-transform: uppercase;
+
+            @media only screen and (min-width: 428px) {
+              width: calc(100% - 8rem);
+            }
+
+            &:disabled {
+              outline: none;
+              background-color: #eee;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .results-table-wrapper {
+    margin: 5rem 0;
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      height: 100%;
+
+      td,
+      th {
+        border: 0.15rem solid $primary-color;
+        padding: 1.5rem;
+        color: $text-color;
+        text-transform: uppercase;
+      }
+
+      th:not(:nth-of-type(1)),
+      td:not(:nth-of-type(1)) {
+        text-align: center;
+      }
+
+      thead {
+        tr:first-child {
+          th {
+            &,
+            > div {
+              font-size: 2rem;
+              text-transform: uppercase;
+              font-weight: bold;
+            }
+          }
+        }
+
+        tr:nth-of-type(2) {
+          th {
+            font-weight: 600;
+          }
+        }
+      }
+
+      tfoot {
+        th {
+          font-weight: 600;
+        }
+      }
+
+      td {
+        input {
+          &:disabled,
+          &.form-control:disabled {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            text-align: center;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .results-remark {
+    table {
+      width: 100%;
+      height: 100%;
+
+      &,
+      td {
+        border: 0.1rem solid $primary-color;
+        padding: 1.5rem;
+        color: $text-color;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      tr:nth-of-type(2) {
+        td {
+          border: none;
+        }
+      }
+    }
+  }
+
+  &.end-term {
+    .school-details {
+      > div {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 2rem;
+
+        @media only screen and (min-width: 428px) {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+
+        .motto {
+          color: green;
+          font-size: 1.4rem;
+          margin: 1rem 0;
+        }
+
+        > div {
+          &:nth-of-type(2) {
+            @media only screen and (min-width: 428px) {
+              width: calc(100% - 30rem);
+            }
+          }
+        }
+      }
+    }
+
+    .student-details {
+      .row {
+        .col {
+          .detail {
+            padding: 1.5rem;
+            border: 0.1rem solid rgb(207, 207, 207);
+
+            h5 {
+              color: #000000;
+
+              &:first-child {
+                text-transform: capitalize;
+                width: 15rem;
+              }
+
+              &:nth-of-type(2) {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .attendance-wrapper {
+      margin: 3rem 0;
+
+      .title {
+        color: red;
+        font-weight: bold;
+        line-height: 2.8rem;
+        text-transform: uppercase;
+      }
+
+      .table-wrapper {
+        table {
+          td {
+            border: 0.1rem solid #000000;
+
+            input {
+              &:disabled,
+              &.form-control:disabled {
+                background-color: transparent;
+                border: none;
+                outline: none;
+                text-align: center;
+                margin: 0;
+              }
+            }
+          }
+
+          tr {
+            th:not(:nth-of-type(1)),
+            td:not(:nth-of-type(1)) {
+              width: 15%;
+            }
+
+            th:nth-of-type(1),
+            td:nth-of-type(1) {
+              width: 40%;
+            }
+          }
+        }
+      }
+    }
+
+    .results-table-wrapper {
+      .title {
+        color: royalblue;
+        font-weight: bold;
+        line-height: 2.8rem;
+        text-transform: uppercase;
+      }
+
+      .table {
+        tfoot {
+          tr {
+            th:nth-of-type(odd) {
+              text-align: right;
+            }
+
+            &:first-child {
+              th:nth-of-type(3) {
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .socials-wrapper {
+      .row {
+        .col {
+          .title {
+            font-weight: bold;
+            line-height: 2.8rem;
+            text-transform: uppercase;
+          }
+
+          .table {
+            td,
+            th {
+              border: 0.15rem solid $primary-color;
+              padding: 1.5rem;
+              color: $text-color;
+              text-transform: uppercase;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.preschool {
+    padding-left: 0;
+    padding-right: 0;
+
+    h4 {
+      font-size: 1rem;
+
+      @media only screen and (min-width: 429px) {
+        font-size: 1.3rem;
+      }
+
+      @media only screen and (min-width: 768px) {
+        font-size: 1.6rem;
+      }
+    }
+
+    .preschool-result-table {
+      margin-top: 3rem;
+      font-weight: 600;
+
+      .table-head {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+
+        @media only screen and (min-width: 768px) {
+          padding: 1.5rem;
+        }
+
+        > h3 {
+          text-align: center;
+          font-size: 1.3rem;
+          text-transform: uppercase;
+          color: $primary-color;
+
+          @media only screen and (min-width: 768px) {
+            font-size: 1.6rem;
+          }
+        }
+      }
+
+      .table-subhead {
+        border: 0.1rem solid $primary-color;
+        background-color: rgba(yellow, 0.4);
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+
+        > h4 {
+          text-align: center;
+          text-transform: uppercase;
+          color: $primary-color;
+        }
+      }
+
+      .table-data {
+        padding: 2px;
+        border: 0.1rem solid $primary-color;
+        width: 100%;
+
+        > h4 {
+          text-transform: uppercase;
+        }
+
+        > p {
+          font-weight: 400;
+        }
+      }
+
+      .student-creds {
+        > div {
+          display: flex;
+        }
+      }
+
+      .attendance {
+        display: flex;
+        flex-wrap: wrap;
+
+        @media only screen and (min-width: 768px) {
+          flex-wrap: nowrap;
+        }
+
+        > div {
+          width: 33%;
+
+          @media only screen and (min-width: 768px) {
+            width: 20%;
+          }
+
+          .table-data {
+            text-align: center;
+          }
+        }
+      }
+
+      .subject-table {
+        > .subject-main-table {
+          h4 {
+            font-size: 1rem;
+            line-height: 1.4rem;
+          }
+
+          > div {
+            display: flex;
+
+            &:first-child {
+              > .table-data {
+                color: red;
+              }
+            }
+
+            > div {
+              width: 40%;
+
+              &.score-part {
+                display: flex;
+                width: 60%;
+
+                > div {
+                  text-align: center;
+                  word-break: break-all;
+
+                  &:first-child {
+                    color: orange;
+                  }
+
+                  &.table-data {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .reports {
+        display: flex;
+        flex-direction: column;
+
+        // @media only screen and (min-width: 768px) {
+        //   flex-direction: row;
+        // }
+
+        // > div {
+        //   @media only screen and (min-width: 768px) {
+        //     width: 50%;
+        //   }
+        // }
+      }
+
+      .reports2 {
+        display: flex;
+        flex-direction: column;
+
+        @media only screen and (min-width: 768px) {
+          flex-direction: row;
+        }
+
+        > div {
+          @media only screen and (min-width: 768px) {
+            width: 50%;
+          }
+        }
+      }
+
+      .comment {
+        padding: 2rem 1rem;
+
+        > h4 {
+          line-height: 2rem;
+        }
+
+        > .signature {
+          margin: auto;
+          margin-top: 10rem;
+          display: flex;
+          gap: 2rem;
+
+          @media only screen and (min-width: 429px) {
+            max-width: 80%;
+            align-items: flex-end;
+            justify-content: space-between;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+
+            > .line {
+              height: 0.2rem;
+              background-color: #000000;
+            }
+          }
+        }
+      }
+    }
+
+    .preschool-result-table2 {
+      margin-top: 3rem;
+      font-weight: 600;
+      // max-width: 1200px;
+      width: 1350px;
+
+      @media only screen and (min-width: 1350px) {
+        width: 100%;
+      }
+
+      .table-head {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+
+        @media only screen and (min-width: 768px) {
+          padding: 1.5rem;
+        }
+
+        > h3 {
+          text-align: center;
+          font-size: 1.3rem;
+          text-transform: uppercase;
+          color: $primary-color;
+
+          @media only screen and (min-width: 768px) {
+            font-size: 1.6rem;
+          }
+        }
+      }
+
+      .table-subhead {
+        border: 0.1rem solid $primary-color;
+        background-color: rgba(yellow, 0.4);
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+
+        > h4 {
+          text-align: center;
+          text-transform: uppercase;
+          color: $primary-color;
+        }
+      }
+
+      .table-data {
+        padding: 5px;
+        border: 0.1rem solid $primary-color;
+        width: 100%;
+
+        > h4 {
+          text-transform: uppercase;
+        }
+
+        > p {
+          font-weight: 400;
+        }
+      }
+
+      .student-creds {
+        > div {
+          display: flex;
+        }
+      }
+
+      .attendance {
+        display: flex;
+        flex-wrap: wrap;
+
+        @media only screen and (min-width: 768px) {
+          flex-wrap: nowrap;
+        }
+
+        > div {
+          width: 33%;
+
+          @media only screen and (min-width: 768px) {
+            width: 20%;
+          }
+
+          .table-data {
+            text-align: center;
+          }
+        }
+      }
+
+      .subject-table {
+        > .subject-main-table {
+          h4 {
+            font-size: 1rem;
+            line-height: 1.4rem;
+          }
+
+          > div {
+            display: flex;
+
+            &:first-child {
+              > .table-data {
+                color: red;
+              }
+            }
+
+            > div {
+              width: 40%;
+
+              &.score-part {
+                display: flex;
+                width: 60%;
+
+                > div {
+                  text-align: center;
+                  word-break: break-all;
+
+                  &:first-child {
+                    color: orange;
+                  }
+
+                  &.table-data {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .reports {
+        display: flex;
+        flex-direction: column;
+
+        // @media only screen and (min-width: 768px) {
+        //   flex-direction: row;
+        // }
+
+        // > div {
+        //   @media only screen and (min-width: 768px) {
+        //     width: 50%;
+        //   }
+        // }
+      }
+
+      .reports2 {
+        display: flex;
+        flex-direction: column;
+
+        @media only screen and (min-width: 768px) {
+          flex-direction: row;
+        }
+
+        > div {
+          @media only screen and (min-width: 768px) {
+            width: 50%;
+          }
+        }
+      }
+
+      .comment {
+        padding: 2rem 1rem;
+
+        > h4 {
+          line-height: 2rem;
+        }
+
+        > .signature {
+          margin: auto;
+          margin-top: 10rem;
+          display: flex;
+          gap: 2rem;
+
+          @media only screen and (min-width: 429px) {
+            max-width: 80%;
+            align-items: flex-end;
+            justify-content: space-between;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+
+            > .line {
+              height: 0.2rem;
+              background-color: #000000;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.first-half {
+    .first-half-result-table {
+      .table-row {
+        display: flex;
+      }
+    }
+  }
+
+  .second-half-result-table {
+    .table-row {
+      > .table-data {
+        width: 14%;
+        text-align: center;
+
+        &:first-child {
+          width: 42%;
+          text-align: left;
+        }
+
+        &:nth-child(5) {
+          width: 10%;
+        }
+      }
+    }
+  }
+
+  .second-half-academic-rating {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    > div {
+      height: 5rem;
+    }
+  }
+
+  .second-half-cummulative-scores-table {
+    .table-row {
+      &:first-child {
+        .table-data {
+          height: 15rem;
+          position: relative;
+
+          > h4 {
+            transform: translate(-50%, -50%) rotate(-90deg);
+            transform-origin: center;
+            white-space: nowrap;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+          }
+        }
+      }
+
+      > .right-data {
+        width: 77%;
+        display: flex;
+
+        > .table-data {
+          flex-grow: 1;
+          flex-basis: 0;
+          text-align: center;
+        }
+      }
+
+      > .table-data {
+        width: 23%;
+        text-align: left;
+      }
+
+      &.year-total-score {
+        .table-data {
+          &:not(:nth-child(5)) {
+            border-right: none;
+            border-left: none;
+          }
+        }
+      }
+    }
+  }
+
+  .performance-remark {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    > h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      &:first-child {
+        border: 0.2rem solid $primary-color;
+        padding: 1rem;
+        background-color: rgba($primary-color, 0.4);
+        color: $primary-color;
+      }
+    }
+  }
+
+  .skills-table {
+    text-transform: uppercase;
+
+    > .table-row {
+      > .table-data {
+        width: 14%;
+        text-align: center;
+
+        &:last-child {
+          width: 20%;
+        }
+
+        &:first-child {
+          width: 38%;
+          text-align: left;
+        }
+      }
+    }
+  }
+
+  .table-chart-wrapper {
+    padding: 2rem;
+
+    > h4 {
+      line-height: 200%;
+    }
+
+    > p {
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.modal-result-comment-select-options {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+
+  p {
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+  }
+}
+
+.results-sheet {
+  .students-wrapper {
+    display: flex;
+    gap: 3rem;
+    padding: 1rem 4rem;
+    max-width: 135rem;
+    margin: auto;
+    margin-bottom: 2rem;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 0 2rem rgb(0 0 0 / 4%);
+    overflow: auto;
+
+    .student {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+
+      > div {
+        > p {
+          font-size: 1.2rem;
+          text-align: center;
+        }
+
+        &.loader {
+          width: fit-content;
+          height: fit-content;
+          border-radius: 50%;
+          padding: 0.2em;
+          // outline: 5px solid red;
+          outline: 3px solid rgba(1, 21, 59, 0);
+
+          position: relative;
+
+          > .computed {
+            width: 1rem;
+            height: 1rem;
+            background-color: green;
+            border-radius: 50%;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+          }
+
+          &.is-loading,
+          &.active,
+          &:hover {
+            background: conic-gradient(
+              transparent 0,
+              rgb(1, 21, 59),
+              transparent
+            );
+            outline: 5px solid rgb(1, 21, 59);
+          }
+
+          &.is-loading {
+            animation: spinner 0.5s linear infinite;
+
+            @keyframes spinner {
+              0% {
+                background: conic-gradient(
+                  transparent 90%,
+                  rgb(1, 21, 59),
+                  transparent
+                );
+              }
+              25% {
+                background: conic-gradient(
+                  transparent 70%,
+                  rgb(1, 21, 59),
+                  transparent
+                );
+              }
+              50% {
+                background: conic-gradient(
+                  transparent 50%,
+                  rgb(1, 21, 59),
+                  transparent
+                );
+              }
+              75% {
+                background: conic-gradient(
+                  transparent 30%,
+                  rgb(1, 21, 59),
+                  transparent
+                );
+              }
+              100% {
+                background: conic-gradient(
+                  transparent 0,
+                  rgb(1, 21, 59),
+                  transparent
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media print {
+  html,
+  body {
+    margin: 1rem !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+}

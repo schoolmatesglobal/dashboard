@@ -1,0 +1,29 @@
+.page-sheet {
+  padding: 1.5em 1em;
+  max-width: 135rem;
+  margin: auto;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.04);
+
+  @media only screen and (min-width: 900px) {
+    padding: 3em;
+  }
+}
+
+.page-sheet2 {
+  padding: 10px 10px;
+  // max-width: 135rem;
+  max-width: 1350px;
+  // min-width: 700px;
+  // overflow: auto;
+  margin: auto;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 0 2rem rgba(0, 0, 0, 0.04);
+  min-height: 80vh;
+
+  @media only screen and (min-width: 900px) {
+    padding: 20px;
+  }
+}
