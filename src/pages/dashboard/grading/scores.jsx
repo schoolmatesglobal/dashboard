@@ -16,7 +16,7 @@ const ScoresDetail = () => {
       midterm: "0",
       first_assessment: "0",
       second_assessment: "0",
-      exam: "0",
+      exam: "60",
       total: "0",
     },
     validation: {

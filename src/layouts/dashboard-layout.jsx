@@ -43,23 +43,51 @@ const DashboardLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const filterSideBarOnPlan = () => {
+    switch (user?.plan) {
+      case "STARTER PLAN":
+        return dashboardSideBarLinks[user?.designation_name].filter(
+          (ps) =>
+            ps.title !== "Report" &&
+            ps.title !== "Vehicle Logs" &&
+            ps.title !== "Vehicles"
+        );
+        break;
+
+      case "STANDARD PLAN":
+        return dashboardSideBarLinks[user?.designation_name];
+        break;
+
+      case "PREMIUM PLAN":
+        return dashboardSideBarLinks[user?.designation_name];
+        break;
+        
+      case "ENTERPRISE PLAN":
+        return dashboardSideBarLinks[user?.designation_name];
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const filterOutPreschoolMenu = () => {
     if (user?.is_preschool === "true") {
       // return dashboardSideBarLinks[user?.designation_name];
-      return dashboardSideBarLinks[user?.designation_name].filter(
+      return filterSideBarOnPlan()?.filter(
         (ps) =>
           ps.title !== "Classes" &&
           ps.title !== "Extra Curricular" &&
           ps.title !== "Broad Sheet"
       );
     } else if (user?.is_preschool === "false") {
-      return dashboardSideBarLinks[user?.designation_name].filter(
+      return filterSideBarOnPlan().filter(
         (ps) => ps.title !== "Pre School" && ps.title !== "Extra_Curricular"
       );
     }
   };
 
-  // console.log({ user, fp: filterOutPreschoolMenu() });
+  console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
   return (
     <div className='dashboard-layout-wrapper'>

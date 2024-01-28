@@ -35,6 +35,7 @@ const Admin = () => {
       formatData,
       getAcademicCalender,
       handleSessionChange,
+      handleSessionChange2,
       getAcademicPeriod,
     },
   } = useAppContext();
@@ -149,56 +150,56 @@ const Admin = () => {
     academicPeriodLoading;
 
   return (
-    <div className="teachers">
+    <div className='teachers'>
       <PageTitle>Admin {loading && <Spinner />}</PageTitle>
-      <ProfileCard type="admin" />
-      <Row className="my-5">
-        <Col sm="6" className="col-12">
+      <ProfileCard type='admin' />
+      <Row className='my-5'>
+        <Col sm='6' className='col-12'>
           <Row>
-            <Col className="col-6 mb-5">
+            <Col className='col-6 mb-5'>
               <HomeCard
                 isBadge
-                variant="orange"
-                title="Import Students"
+                variant='orange'
+                title='Import Students'
                 icon={faPeopleLine}
                 onClick={() => setImportStudentPrompt(!importStudentPrompt)}
               />
             </Col>
-            <Col className="col-6 mb-5">
+            <Col className='col-6 mb-5'>
               <HomeCard
-                variant="purple"
+                variant='purple'
                 isBadge
-                title="Calender"
+                title='Calender'
                 icon={faCalendar}
                 isLink
                 download
                 to={calendarData?.file || "/"}
-                target="_blank"
+                target='_blank'
               />
             </Col>
-            <Col className="col-6 mb-5">
+            <Col className='col-6 mb-5'>
               <HomeCard
                 isBadge
-                title="Timetable"
+                title='Timetable'
                 icon={faTimeline}
                 to={timetableData?.file || "/"}
                 download
-                target="_blank"
+                target='_blank'
                 isLink
               />
             </Col>
-            <Col className="col-6 mb-5">
+            <Col className='col-6 mb-5'>
               <HomeCard
                 isBadge
-                variant="green"
-                title="Academic Period"
+                variant='green'
+                title='Academic Period'
                 icon={faBusinessTime}
                 onClick={() => setAcademicPeriodPrompt(true)}
               />
             </Col>
           </Row>
         </Col>
-        <Col sm="6" className="col-12">
+        <Col sm='6' className='col-12'>
           <AuditCard />
         </Col>
       </Row>
@@ -211,20 +212,20 @@ const Admin = () => {
           disabled: isLoading || uploadLoading || !base64String,
           onClick: () => uploadFile({ files: base64String }),
         }}
-        singleButtonText="Continue"
-        promptHeader="Import Student"
+        singleButtonText='Continue'
+        promptHeader='Import Student'
       >
         <AuthInput
-          type="file"
-          className="px-0"
-          wrapperClassName="border-0"
+          type='file'
+          className='px-0'
+          wrapperClassName='border-0'
           onChange={handleImageChange}
           ref={fileRef}
-          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+          accept='.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
         />
         <Link
-          to="/app/students/imported"
-          className="text-success text-decoration-none"
+          to='/app/students/imported'
+          className='text-success text-decoration-none'
           style={{ fontSize: "1.2rem" }}
         >
           View file format
@@ -239,14 +240,14 @@ const Admin = () => {
           disabled: isLoading || !inputs.session,
           onClick: () => postAcademicPeriod(inputs),
         }}
-        singleButtonText="Continue"
-        promptHeader="Post Academic Period"
+        singleButtonText='Continue'
+        promptHeader='Post Academic Period'
       >
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Period"
+            label='Period'
             value={inputs.period}
-            name="period"
+            name='period'
             hasError={!!errors.period}
             onChange={handleChange}
             options={[
@@ -254,13 +255,13 @@ const Admin = () => {
               { value: "Second Half", title: "Second Half/End of Term" },
             ]}
           />
-          {!!errors.period && <p className="error-message">{errors.period}</p>}
+          {!!errors.period && <p className='error-message'>{errors.period}</p>}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Term"
+            label='Term'
             value={inputs.term}
-            name="term"
+            name='term'
             hasError={!!errors.term}
             onChange={handleChange}
             options={[
@@ -269,20 +270,20 @@ const Admin = () => {
               { value: "Third Term", title: "Third Term" },
             ]}
           />
-          {!!errors.term && <p className="error-message">{errors.term}</p>}
+          {!!errors.term && <p className='error-message'>{errors.term}</p>}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthInput
-            label="Session"
-            placeholder="2021/2022"
+            label='Session'
+            placeholder='2021/2022'
             hasError={!!errors.session}
             value={inputs.session}
             onChange={({ target: { value } }) =>
-              handleSessionChange(value, "session", setFieldValue)
+              handleSessionChange2(value, "session", setFieldValue)
             }
           />
           {!!errors.session && (
-            <p className="error-message">{errors.session}</p>
+            <p className='error-message'>{errors.session}</p>
           )}
         </div>
       </Prompt>

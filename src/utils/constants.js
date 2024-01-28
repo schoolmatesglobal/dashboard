@@ -41,8 +41,10 @@ import {
 
 // lkllk
 
-export const backendAPI =
-  "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+export const backendAPI = "https://dashboard.sapsms.com/api";
+
+// export const backendAPI =
+//   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
 
 export const homeUrl = {
   Superadmin: "/app/super-admin",
@@ -168,7 +170,7 @@ export const dashboardSideBarLinks = {
 
     {
       to: "/app/reports",
-      title: "Reports",
+      title: "Report",
       icon: faFileInvoice,
     },
     {

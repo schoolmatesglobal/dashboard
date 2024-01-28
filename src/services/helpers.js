@@ -58,7 +58,7 @@ class Helpers {
         res = error.response.data.message;
       }
     } else {
-      res = error.message
+      res = error.message;
     }
 
     return toast.error(res);
@@ -78,24 +78,33 @@ class Helpers {
     }
   };
 
+  handleSessionChange2 = (val, name, setFieldValue) => {
+    const formattedValue = val.replace(/[^0-9/]/g, "");
+
+    if (!formattedValue) {
+      setFieldValue(name, formattedValue);
+      return;
+    }
+
+    if (formattedValue.length > 9) return;
+
+    setFieldValue(name, formattedValue);
+
+  };
+
   commaSeperatedNumber = (val) => {
     return (+val).toLocaleString(undefined, {
       maximumFractionDigits: 2,
     });
   };
 
-  onAmountChange = (
-    e,
-    handleChange,
-    setFieldValue,
-    field
-  ) => {
+  onAmountChange = (e, handleChange, setFieldValue, field) => {
     const inputValue = e.target.value;
     if (!inputValue) {
       handleChange(e);
       return;
     }
-    const removeComma = +inputValue.replace(/,/g, '');
+    const removeComma = +inputValue.replace(/,/g, "");
     if (Number.isNaN(removeComma)) return;
     handleChange(e);
     const commaSeperatedValue = this.commaSeperatedNumber(removeComma);

@@ -76,7 +76,7 @@ const ComputeElementaryFirstHalfResult = () => {
   //   // studentByClass2,
   // });
 
-  // console.log({ subjects });
+  console.log({ subjects });
 
   return (
     <div className='results-sheet'>

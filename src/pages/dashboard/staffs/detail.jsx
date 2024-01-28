@@ -90,15 +90,29 @@ const StaffDetail = () => {
     // }
 
     if (
-      !inputs.firstname ||
-      !inputs.surname ||
-      !inputs.middlename ||
-      !inputs.username ||
-      !inputs.department ||
-      !inputs.campus ||
-      !inputs.email ||
-      !inputs.designation_id ||
-      !inputs.class_assigned
+      (!inputs.firstname ||
+        !inputs.surname ||
+        !inputs.middlename ||
+        !inputs.username ||
+        !inputs.department ||
+        !inputs.campus ||
+        !inputs.email ||
+        !inputs.designation_id) &&
+      user?.designation_name === "Superadmin"
+    ) {
+      return toast.error("Please fill all required fields");
+    }
+    if (
+      (!inputs.firstname ||
+        !inputs.surname ||
+        !inputs.middlename ||
+        !inputs.username ||
+        !inputs.department ||
+        !inputs.campus ||
+        !inputs.email ||
+        !inputs.designation_id ||
+        !inputs.class_assigned) &&
+      user?.designation_name !== "Superadmin"
     ) {
       return toast.error("Please fill all required fields");
     }
@@ -124,7 +138,7 @@ const StaffDetail = () => {
   }, [staffData]);
 
   // console.log({ di: inputs?.designation_id });
-  // console.log({ designationRole });
+  console.log({ user });
 
   return (
     <DetailView
@@ -330,7 +344,7 @@ const StaffDetail = () => {
           </Col>
         )}
         {/* assign preschool class */}
-        {
+        {user?.designation_name !== "Superadmin" &&
           <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthSelect
               label='Assign Class'
