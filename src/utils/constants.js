@@ -31,7 +31,7 @@ import {
   faSquarePollVertical,
 } from "@fortawesome/free-solid-svg-icons";
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 // export const backendAPI = "https://schoolmate.powershellerp.com/api";
 
 // export const backendAPI =
@@ -45,10 +45,9 @@ import {
 export const backendAPI = "https://dashboard.sapsms.com/api";
 
 // export const backendAPI =
-//   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
-=======
-export const backendAPI = "https://dashboard.sapsms.com/api";
->>>>>>> 609ce3605b351cd6acd115bb6a4b910ee925c285
+//   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api"
+// export const backendAPI = "https://dashboard.sapsms.com/api";
+
 
 export const homeUrl = {
   Superadmin: "/app/super-admin",
