@@ -104,6 +104,7 @@ import ExtraCurricularDetail2 from "../pages/dashboard/activities2/detail";
 import BroadSheet from "../pages/dashboard/broad-sheet";
 import ElementaryInitialBroadSheet from "../pages/dashboard/broad-sheet/sheets/elementary/initial";
 import ElementaryFinalBroadSheet from "../pages/dashboard/broad-sheet/sheets/elementary/final";
+import InvoiceFees from "../pages/dashboard/invoices/fees";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -652,6 +653,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='invoice'>
               <InvoiceDetail />
+            </Guard>
+          }
+        />
+        <Route
+          path='invoices/fees/:id'
+          element={
+            <Guard routeName='invoices'>
+              <InvoiceFees />
             </Guard>
           }
         />

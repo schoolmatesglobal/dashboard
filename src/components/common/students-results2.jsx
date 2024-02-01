@@ -1,35 +1,33 @@
 import React from "react";
 import ProfileImage from "./profile-image";
 
-const StudentsResults = ({
+const StudentsResults2 = ({
   studentByClassAndSession,
   isLoading,
   studentData,
   onProfileSelect,
-  idWithComputedResult
+  onProfileSelect2,
+  idWithComputedResult,
 }) => {
-
-
-
-  
   return (
-    <div className="students-wrapper">
+    <div className='students-wrapper'>
       {studentByClassAndSession?.map((x) => (
         <div
           key={x?.id}
           onClick={() => {
-            onProfileSelect(x);
+            onProfileSelect(x?.id);
+            onProfileSelect2()
           }}
-          className="student"
+          className='student'
         >
           <div
             className={`loader ${isLoading ? "is-loading" : ""} ${
-              studentData?.id === x?.id ? "active" : ""
+              Number(studentData?.id) === Number(x?.id) ? "active" : ""
             }`}
           >
             <ProfileImage src={x?.image} alt={x.firstname} />
             {idWithComputedResult?.includes(x?.id) && (
-              <div className="computed" />
+              <div className='computed' />
             )}
           </div>
           <div>
@@ -42,4 +40,4 @@ const StudentsResults = ({
   );
 };
 
-export default StudentsResults;
+export default StudentsResults2;

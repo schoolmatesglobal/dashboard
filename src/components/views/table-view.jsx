@@ -12,6 +12,8 @@ import PaginationComponent from "../tables/pagination";
 import Button from "../buttons/button";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GoBack from "../common/go-back";
+import { Spinner } from "reactstrap";
 
 const PageView = ({
   onStatusToggle,
@@ -23,6 +25,7 @@ const PageView = ({
   pagination,
   searchPlaceholder,
   isLoading,
+  allLoading,
   onSearchClear,
   canCreate = true,
   extraButton,
@@ -42,90 +45,119 @@ const PageView = ({
   illustrationBanner,
   searchIsSelect = false,
   svgIllustrationBanner: SvgIllustrationBanner,
+  hasGoBack = false,
   ...rest
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <PageSheet>
-      {canCreate && (
-        <div className="d-flex gap-3 justify-content-end">
-          <CreateWrapper link={createLink || `${location.pathname}/new`} />
-          {extraButton && (
-            <div className="mb-5 d-flex justify-content-end">
-              <Button type="button" onClick={() => navigate(extraLink)}>
-                {extraButtonTitle}
-              </Button>
-            </div>
-            // <CreateWrapper link={createLink || `app/classes`} />
-          )}
-        </div>
-      )}
-      {hasSortOptions && (
-        <div className="mb-5 d-md-flex">
-          {groupedButtonOptions.length ? (
-            <div className={`me-3`}>
-              <ButtonGroup className="mb-3" options={groupedButtonOptions} />
-            </div>
-          ) : null}
-
-          {hasSelect && (
-            <div className="me-2 d-flex align-items-center mb-3 mb-sm-0">
-              <AuthSelect
-                sort
-                options={selectOptions}
-                value={selectValue}
-                onChange={onSelectChange}
-              />
-            </div>
-          )}
-
-          {hasSearch && (
-            <Search
-              searchIsSelect={searchIsSelect}
-              isLoading={isLoading}
-              placeholder={searchPlaceholder}
-              onSearch={onSearch}
-              isSessionSearch={isSessionSearch}
-              onClear={onSearchClear}
-              searchSelectOptions={searchSelectOptions}
-            />
-          )}
-        </div>
-      )}
-      {showIllustration ? (
-        SvgIllustrationBanner ? (
-          <div className="svg-banner w-25 mx-auto my-5">
-            <SvgIllustrationBanner className="w-100 h-100" />
+    <div className=''>
+      {hasGoBack && <GoBack />}
+      <PageSheet>
+        {!allLoading && (
+          <>
+            {canCreate && (
+              <div className='d-flex gap-3 justify-content-end'>
+                <CreateWrapper
+                  link={createLink || `${location.pathname}/new`}
+                />
+                {extraButton && (
+                  <div className='mb-5 d-flex justify-content-end'>
+                    <Button type='button' onClick={() => navigate(extraLink)}>
+                      {extraButtonTitle}
+                    </Button>
+                  </div>
+                  // <CreateWrapper link={createLink || `app/classes`} />
+                )}
+              </div>
+            )}
+            {hasSortOptions && (
+              <div className='mb-5 d-md-flex'>
+                {groupedButtonOptions.length ? (
+                  <div className={`me-3`}>
+                    <ButtonGroup
+                      className='mb-3'
+                      options={groupedButtonOptions}
+                    />
+                  </div>
+                ) : null}
+                {hasSelect && (
+                  <div className='me-2 d-flex align-items-center mb-3 mb-sm-0'>
+                    <AuthSelect
+                      sort
+                      options={selectOptions}
+                      value={selectValue}
+                      onChange={onSelectChange}
+                    />
+                  </div>
+                )}
+                {hasSearch && (
+                  <Search
+                    searchIsSelect={searchIsSelect}
+                    isLoading={isLoading}
+                    placeholder={searchPlaceholder}
+                    onSearch={onSearch}
+                    isSessionSearch={isSessionSearch}
+                    onClear={onSearchClear}
+                    searchSelectOptions={searchSelectOptions}
+                  />
+                )}
+              </div>
+            )}
+            {showIllustration ? (
+              SvgIllustrationBanner ? (
+                <div className='svg-banner w-25 mx-auto my-5'>
+                  <SvgIllustrationBanner className='w-100 h-100' />
+                </div>
+              ) : (
+                <div className='w-50 mx-auto'>
+                  <img
+                    src={illustrationBanner || illustrationImage}
+                    alt=''
+                    className='w-100 h-100'
+                  />
+                </div>
+              )
+            ) : null}
+            {!hideTable && (
+              <div>
+                {showTableTitle && <PageTitle>{pageTitle}</PageTitle>}
+                <CustomTable
+                  centered
+                  isLoading={isLoading}
+                  onRowStatusToggle={async (data) => await onStatusToggle(data)}
+                  onRowUpdate={(id) =>
+                    navigate(`${location.pathname}/edit/${id}`)
+                  }
+                  onRowDelete={async (data) => await onDelete(data)}
+                  {...rest}
+                />
+                {pagination && rest?.data?.length ? (
+                  <PaginationComponent pagination={pagination} />
+                ) : null}
+              </div>
+            )}
+          </>
+        )}
+        {allLoading && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              padding: "50px 0px",
+            }}
+          >
+            {/* <p className='' style={{ fontSize: "16px" }}>
+                No records
+              </p> */}
+            <Spinner />
           </div>
-        ) : (
-          <div className="w-50 mx-auto">
-            <img
-              src={illustrationBanner || illustrationImage}
-              alt=""
-              className="w-100 h-100"
-            />
-          </div>
-        )
-      ) : null}
-      {!hideTable && (
-        <div>
-          {showTableTitle && <PageTitle>{pageTitle}</PageTitle>}
-          <CustomTable
-            centered
-            isLoading={isLoading}
-            onRowStatusToggle={async (data) => await onStatusToggle(data)}
-            onRowUpdate={(id) => navigate(`${location.pathname}/edit/${id}`)}
-            onRowDelete={async (data) => await onDelete(data)}
-            {...rest}
-          />
-          {pagination && rest?.data?.length ? (
-            <PaginationComponent pagination={pagination} />
-          ) : null}
-        </div>
-      )}
-    </PageSheet>
+        )}
+      </PageSheet>
+    </div>
   );
 };
 

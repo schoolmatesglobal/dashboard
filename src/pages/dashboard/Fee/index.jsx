@@ -14,9 +14,22 @@ const FeeList = () => {
       onError(err) {
         apiServices.errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
+      select: (data) => {
+        const format = apiServices.formatData(data)?.map((student, i) => {
+          return {
+            ...student,
+            sn: i + 1,
+            amount: `₦${apiServices.formatNumberWithCommas(student?.amount)}`
+          };
+        });
+
+        return format;
+      },
     }
   );
+
+  console.log({ Fee });
 
   return (
     <PageView
@@ -24,8 +37,8 @@ const FeeList = () => {
       isLoading={feeLoading}
       columns={[
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "sn",
         },
         {
           Header: "Campus",
@@ -36,17 +49,25 @@ const FeeList = () => {
           accessor: "feetype",
         },
         {
-            Header: "Term",
-            accessor: "term",
-          },
-          {
-            Header: "Fee Status",
-            accessor: "fee_status",
-          },
-          {
-            Header: "Category",
-            accessor: "category",
-          },
+          Header: "Term",
+          accessor: "term",
+        },
+        {
+          Header: "Fee Amount",
+          accessor: "amount",
+        },
+        // {
+        //   Header: "Category",
+        //   accessor: "category",
+        // },
+        // {
+        //   Header: "Fee Status",
+        //   accessor: "fee_status",
+        // },
+        // {
+        //   Header: "Category",
+        //   accessor: "category",
+        // },
       ]}
       data={Fee}
     />

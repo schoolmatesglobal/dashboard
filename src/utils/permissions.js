@@ -479,6 +479,14 @@ export const permissions = {
       statusToggle: false,
       sort: false,
     },
+    invoices: {
+      create: true,
+      read: true,
+      update: false,
+      delete: false,
+      statusToggle: false,
+      sort: false,
+    },
     bank: {
       create: true,
       read: true,
