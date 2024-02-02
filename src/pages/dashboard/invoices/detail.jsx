@@ -274,16 +274,18 @@ const InvoiceDetail = () => {
         ...data,
         fee: [...fees],
       });
+      getInvoiceRefetch();
+    }else{
+      createInvoicePost({
+        body: {
+          ...data,
+          fee: [...fees],
+        },
+      });
+
     }
 
-    createInvoicePost({
-      body: {
-        ...data,
-        fee: [...fees],
-      },
-    });
 
-    getInvoiceRefetch();
     // console.log({
     //   ...data,
     //   fee: [...fees],
@@ -361,7 +363,7 @@ const InvoiceDetail = () => {
       )}
       <DetailView
         hasGoBack={false}
-        isLoading={postInvoiceLoading}
+        isLoading={postInvoiceLoading || updateInvoiceLoading}
         pageTitle='Create Invoice'
         onFormSubmit={handleSubmit(onSubmit)}
       >
