@@ -31,7 +31,9 @@ const Accounts = () => {
   }
   function fi2() {
     const ffs = invoicesList?.filter(
-      (inv) => inv?.admission_number === user?.admission_number
+      (inv) =>
+        inv?.admission_number === user?.admission_number &&
+        inv?.term !== user?.term
     );
     return ffs;
   }
@@ -244,7 +246,6 @@ const Accounts = () => {
       data={dataMapper[indexStatus].data}
       rowHasAction={dataMapper[indexStatus].rowHasAction}
       action={dataMapper[indexStatus].action}
-
     />
   );
 };
