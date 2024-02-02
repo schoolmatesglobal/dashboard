@@ -271,20 +271,23 @@ const InvoiceDetail = () => {
     if (filteredInvoice?.length > 0) {
       handleUpdateInvoice({
         id: invoiceId,
-        ...data,
+        // ...data,
         fee: [...fees],
       });
       getInvoiceRefetch();
-    }else{
+      console.log({
+        id: invoiceId,
+        // ...data,
+        fee: [...fees],
+      });
+    } else {
       createInvoicePost({
         body: {
           ...data,
           fee: [...fees],
         },
       });
-
     }
-
 
     // console.log({
     //   ...data,
