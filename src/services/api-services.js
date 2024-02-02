@@ -1231,6 +1231,7 @@ class APIServies extends Helpers {
 
     return data;
   }
+
   async getBankList() {
     const { data } = await axios.get(`${backendAPI}/bank`, {
       headers: {
@@ -1284,6 +1285,17 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async deleteFee(id) {
+    const { data } = await axios.delete(`${backendAPI}/fee/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async postVendor({ body }) {
     const { data } = await axios.post(`${backendAPI}/vendor`, body, {
       headers: {
@@ -1323,6 +1335,17 @@ class APIServies extends Helpers {
 
   async postInvoice({ body }) {
     const { data } = await axios.post(`${backendAPI}/invoice`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async updateInvoice({ id, ...body }) {
+    const { data } = await axios.patch(`${backendAPI}/invoice/${id}`, body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${super.getToken()}`,
@@ -2364,8 +2387,6 @@ class APIServies extends Helpers {
     return data;
   }
 
- 
-
   async getActivities() {
     const { data } = await axios.get(`${backendAPI}/extra-curricular`, {
       headers: {
@@ -2376,8 +2397,6 @@ class APIServies extends Helpers {
 
     return data;
   }
-
-
 
   async deleteActivities(id) {
     const { data } = await axios.delete(
@@ -2394,12 +2413,16 @@ class APIServies extends Helpers {
   }
 
   async addPreActivities(body) {
-    const { data } = await axios.post(`${backendAPI}/preschoolcurricular`, body, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${super.getToken()}`,
-      },
-    });
+    const { data } = await axios.post(
+      `${backendAPI}/preschoolcurricular`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }
@@ -2428,7 +2451,6 @@ class APIServies extends Helpers {
 
     return data;
   }
-
 
   async getBroadSheetResults(class_name, term, session) {
     const { data } = await axios.get(

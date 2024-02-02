@@ -224,6 +224,18 @@ const InvoiceDetail = () => {
       },
     });
 
+  const { mutateAsync: updateInvoice, isLoading: updateInvoiceLoading } =
+    useMutation(apiServices.updateInvoice, {
+      onSuccess() {
+        toast.success("Invoice has been updated successfully");
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+    });
+
+  const handleUpdateInvoice = async (data) => await updateInvoice(data);
+
   function fi() {
     const ffs = invoicesList?.find(
       (inv) => inv?.admission_number === singleStudent?.admission_number
@@ -232,8 +244,9 @@ const InvoiceDetail = () => {
   }
 
   const filteredInvoice = fi()?.fee ?? [];
+  const invoiceId = fi()?.id;
 
-  console.log({ Fee, filteredInvoice });
+  // console.log({ Fee, filteredInvoice });
 
   const allLoading = studentByClass2Loading || getStudentLoading;
 
@@ -254,6 +267,15 @@ const InvoiceDetail = () => {
     // const amount = data.amount.replace(/,/g, "");
     // const discount_amount =
     //   Number(amount) - (Number(amount) * Number(discount)) / 100;
+
+    if (filteredInvoice?.length > 0) {
+      handleUpdateInvoice({
+        id: invoiceId,
+        ...data,
+        fee: [...fees],
+      });
+    }
+
     createInvoicePost({
       body: {
         ...data,
@@ -292,6 +314,7 @@ const InvoiceDetail = () => {
 
   console.log({
     // studentData,
+    filteredInvoice,
     invoicesList,
     defaultAmount: defaultAmount(),
     feeError,
@@ -305,6 +328,7 @@ const InvoiceDetail = () => {
     studentByClass2,
     newId,
     singleStudent,
+    invoiceId,
   });
 
   return (
