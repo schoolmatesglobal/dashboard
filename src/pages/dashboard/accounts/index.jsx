@@ -1,17 +1,54 @@
 import React from "react";
 import PageView from "../../../components/views/table-view";
 import { useAccounts } from "../../../hooks/useAccounts";
+import { useInvoices } from "../../../hooks/useInvoice";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Accounts = () => {
   const {
     permission,
+    apiServices,
     isLoading,
     indexStatus,
     setIndexStatus,
     feeHistory,
     previousInvoice,
     invoice,
+    user,
   } = useAccounts();
+
+  const navigate = useNavigate();
+
+  const { invoicesLoading, invoicesList } = useInvoices();
+
+  function fi() {
+    const ffs = invoicesList?.find(
+      (inv) =>
+        inv?.admission_number === user?.admission_number &&
+        inv?.term === user?.term
+    );
+    return ffs;
+  }
+  function fi2() {
+    const ffs = invoicesList?.filter(
+      (inv) => inv?.admission_number === user?.admission_number
+    );
+    return ffs;
+  }
+
+  const filteredInvoice = fi();
+  const filteredAllInvoice = fi2() ?? [];
+  const filteredFee = fi()?.fee?.map((fi, i) => {
+    return {
+      sn: i + 1,
+      ...fi,
+      discount: `${fi?.discount}%`,
+      amount: `₦${apiServices.formatNumberWithCommas(fi?.amount)}`,
+      discount_amount: `₦${apiServices.formatNumberWithCommas(
+        fi?.discount_amount
+      )}`,
+    };
+  });
 
   const getSortButtonOptions = () => {
     const arr = [];
@@ -52,6 +89,20 @@ const Accounts = () => {
     }
 
     return arr;
+  };
+
+  const getActionOptions = ({ navigate }) => {
+    const arr = [];
+
+    return [
+      {
+        title: "View All Fees",
+        onClick: (id) => {
+          console.log({ id });
+          navigate(`/app/invoices/fees/${id}`);
+        },
+      },
+    ];
   };
 
   const dataMapper = {
@@ -103,77 +154,20 @@ const Accounts = () => {
         },
       ],
       data: feeHistory,
-    },
-    "previous-invoice": {
-      columns: [
-        {
-          Header: "Invoice",
-          accessor: "invoice_no",
-        },
-        {
-          Header: "Full Name",
-          accessor: "fullname",
-        },
-        {
-          Header: "Admission Number",
-          accessor: "admission_number",
-        },
-        {
-          Header: "Class",
-          accessor: "class",
-        },
-        {
-          Header: "Fee Type",
-          accessor: "feetype",
-        },
-        {
-          Header: "Amount",
-          accessor: "amount",
-        },
-        {
-          Header: "Notation",
-          accessor: "notation",
-        },
-        {
-          Header: "Discount",
-          accessor: "discount",
-        },
-        {
-          Header: "Discount Amount",
-          accessor: "discount_amount",
-        },
-        {
-          Header: "Term",
-          accessor: "term",
-        },
-        {
-          Header: "Session",
-          accessor: "session",
-        },
-      ],
-      data: previousInvoice,
+      rowHasAction: false,
+      action: {},
     },
     "payment-reciept": {
       columns: [],
       data: [],
+      rowHasAction: false,
+      action: {},
     },
     "my-invoice": {
       columns: [
         {
-          Header: "Invoice",
-          accessor: "invoice_no",
-        },
-        {
-          Header: "Full Name",
-          accessor: "fullname",
-        },
-        {
-          Header: "Admission Number",
-          accessor: "admission_number",
-        },
-        {
-          Header: "Class",
-          accessor: "class",
+          Header: "S/N",
+          accessor: "sn",
         },
         {
           Header: "Fee Type",
@@ -184,16 +178,35 @@ const Accounts = () => {
           accessor: "amount",
         },
         {
-          Header: "Notation",
-          accessor: "notation",
-        },
-        {
           Header: "Discount",
           accessor: "discount",
         },
         {
-          Header: "Discount Amount",
+          Header: "Discounted Amount",
           accessor: "discount_amount",
+        },
+      ],
+      data: filteredFee,
+      rowHasAction: false,
+      action: {},
+    },
+    "previous-invoice": {
+      columns: [
+        {
+          Header: "Invoice Number",
+          accessor: "invoice_no",
+        },
+        {
+          Header: " Name",
+          accessor: "fullname",
+        },
+        {
+          Header: "Class",
+          accessor: "class",
+        },
+        {
+          Header: "Admission Number",
+          accessor: "admission_number",
         },
         {
           Header: "Term",
@@ -204,9 +217,22 @@ const Accounts = () => {
           accessor: "session",
         },
       ],
-      data: invoice,
+      data: filteredAllInvoice,
+      rowHasAction: true,
+      action: getActionOptions({ navigate }),
     },
   };
+
+  console.log({
+    feeHistory,
+    invoice,
+    previousInvoice,
+    invoicesList,
+    user,
+    filteredInvoice,
+    filteredFee,
+    filteredAllInvoice,
+  });
 
   return (
     <PageView
@@ -216,6 +242,9 @@ const Accounts = () => {
       groupedButtonOptions={getSortButtonOptions()}
       columns={dataMapper[indexStatus].columns}
       data={dataMapper[indexStatus].data}
+      rowHasAction={dataMapper[indexStatus].rowHasAction}
+      action={dataMapper[indexStatus].action}
+
     />
   );
 };

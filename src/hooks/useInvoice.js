@@ -14,6 +14,7 @@ const { permission, apiServices, user } = useAppContext("accounts");
   );
     
     const isLoading = invoicesLoading
+    
   return {
     isLoading,
     invoicesList,

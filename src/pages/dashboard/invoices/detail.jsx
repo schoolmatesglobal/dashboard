@@ -33,7 +33,14 @@ const InvoiceDetail = () => {
 
   // const { studentByClass2 } = useStudent();
 
-  const { apiServices, errorHandler, permission, user, invoicesList, getInvoiceRefetch } = useInvoices();
+  const {
+    apiServices,
+    errorHandler,
+    permission,
+    user,
+    invoicesList,
+    getInvoiceRefetch,
+  } = useInvoices();
 
   const { data: sessions } = useAcademicSession();
   const { isLoading: loadStudent, studentData, isEdit } = useStudent();
@@ -127,8 +134,8 @@ const InvoiceDetail = () => {
     setFieldValue,
   } = useForm({
     defaultValues: {
-      session: "",
-      term: "",
+      // session: "",
+      // term: "",
       admission_number: "",
       fullname: "",
       student_id: "",
@@ -159,8 +166,6 @@ const InvoiceDetail = () => {
   // const { apiServices, permission } = useAppContext();
 
   // const studentId = id
-
-
 
   const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS2, studentData?.present_class],
@@ -228,7 +233,7 @@ const InvoiceDetail = () => {
 
   const filteredInvoice = fi()?.fee ?? [];
 
-  console.log({ Fee,  filteredInvoice });
+  console.log({ Fee, filteredInvoice });
 
   const allLoading = studentByClass2Loading || getStudentLoading;
 
@@ -237,13 +242,14 @@ const InvoiceDetail = () => {
       // setFeeError("feetype");
       toast.error(`Please add atleast one Fee type`);
       return;
-    } else if (!inputs?.term) {
-      toast.error(`Term field is required`);
-      return;
-    } else if (!inputs?.session) {
-      toast.error(`Session field is required`);
-      return;
     }
+    //  else if (!inputs?.term) {
+    //   toast.error(`Term field is required`);
+    //   return;
+    // } else if (!inputs?.session) {
+    //   toast.error(`Session field is required`);
+    //   return;
+    // }
 
     // const amount = data.amount.replace(/,/g, "");
     // const discount_amount =
@@ -554,9 +560,9 @@ const InvoiceDetail = () => {
                 )}
               </Col>
             </Row>
-            <hr className='my-5' />
+            {/* <hr className='my-5' /> */}
 
-            <Row className='mb-0 mb-sm-4'>
+            {/* <Row className='mb-0 mb-sm-4'>
               <Col sm='6' className='mb-4 mb-sm-0'>
                 <AuthSelect
                   label='Term'
@@ -592,7 +598,7 @@ const InvoiceDetail = () => {
                   <p className='error-message'>{errors.session}</p>
                 )}
               </Col>
-            </Row>
+            </Row> */}
           </>
         )}
         {allLoading && (
@@ -605,9 +611,6 @@ const InvoiceDetail = () => {
               padding: "50px 0px",
             }}
           >
-            {/* <p className='' style={{ fontSize: "16px" }}>
-                No records
-              </p> */}
             <Spinner />
           </div>
         )}

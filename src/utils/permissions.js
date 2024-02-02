@@ -283,6 +283,14 @@ export const permissions = {
       myInvoice: true,
       previousInvoice: true,
     },
+    invoices: {
+      create: true,
+      read: true,
+      update: false,
+      delete: false,
+      statusToggle: false,
+      sort: false,
+    },
   },
 
   Admin: {

@@ -5,7 +5,7 @@ import { useAppContext } from "./useAppContext";
 
 export const useAccounts = () => {
   const [indexStatus, setIndexStatus] = useState("fee-history");
-  const { permission, apiServices } = useAppContext("accounts");
+  const { permission, apiServices, user } = useAppContext("accounts");
 
   const { isLoading: feeHistoryLoading, data: feeHistory } = useQuery(
     [queryKeys.GET_FEE_HISTORY],
@@ -34,6 +34,15 @@ export const useAccounts = () => {
     }
   );
 
+  const { isLoading: invoicesLoading, data: invoicesList, refetch: getInvoiceRefetch, } = useQuery(
+    [queryKeys.GET_ALL_INVOICES],
+    apiServices.getInvoices,
+    {
+      enabled: permission?.myPayment,
+      select: apiServices.formatData,
+    }
+  );
+
   const { isLoading: chartaccountLoading, data: chartaccountList } = useQuery(
     [queryKeys.GET_CHART_ACCOUNTS],
     apiServices.getChartAccount,
@@ -57,7 +66,7 @@ export const useAccounts = () => {
     previousInvoiceLoading ||
     invoiceLoading ||
     chartaccountLoading ||
-    paymentLoading;
+    paymentLoading || invoicesLoading;
 
   return {
     indexStatus,
@@ -69,5 +78,9 @@ export const useAccounts = () => {
     invoice,
     chartaccountList,
     payment,
+    invoicesList,
+    getInvoiceRefetch,
+    user,
+    apiServices,
   };
 };
