@@ -10,7 +10,7 @@ import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useStudent } from "../../../hooks/useStudent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBucket, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faBucket, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import StudentsResults from "../../../components/common/students-results";
 import { useInvoices } from "../../../hooks/useInvoice";
 import { useMutation, useQuery } from "react-query";
@@ -581,7 +581,7 @@ const InvoiceDetail = () => {
                         setAmount("");
                       }}
                     >
-                      <FontAwesomeIcon icon={faPen} />
+                      <FontAwesomeIcon icon={faPlus} />
                     </Btn>
                   </div>
                 </div>
