@@ -228,6 +228,7 @@ const InvoiceDetail = () => {
     useMutation(apiServices.updateInvoice, {
       onSuccess() {
         toast.success("Invoice has been updated successfully");
+        getInvoiceRefetch();
       },
       onError(err) {
         errorHandler(err);
@@ -274,7 +275,7 @@ const InvoiceDetail = () => {
         // ...data,
         fee: [...fees],
       });
-      getInvoiceRefetch();
+
       console.log({
         id: invoiceId,
         // ...data,
@@ -321,17 +322,17 @@ const InvoiceDetail = () => {
     // studentData,
     filteredInvoice,
     invoicesList,
-    defaultAmount: defaultAmount(),
-    feeError,
-    feetype,
-    discount,
-    amount,
+    // defaultAmount: defaultAmount(),
+    // feeError,
+    // feetype,
+    // discount,
+    // amount,
     fees,
     fees2,
-    feesDemo,
+    // feesDemo,
     user,
-    studentByClass2,
-    newId,
+    // studentByClass2,
+    // newId,
     singleStudent,
     invoiceId,
   });
