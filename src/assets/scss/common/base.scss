@@ -157,3 +157,13 @@ label {
   font-weight: 600;
   font-size: 1.6rem !important;
 }
+
+.noSpinButtons {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.noSpinButtons::-webkit-inner-spin-button,
+.noSpinButtons::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Webkit browsers like Chrome and Safari */
+  margin: 0; /* Removes the inner and outer spin button */
+}

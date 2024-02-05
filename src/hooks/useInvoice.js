@@ -1,9 +1,18 @@
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 
 export const useInvoices = () => {
 const { permission, apiServices, user } = useAppContext("accounts");
+
+const pdfExportComponent = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => pdfExportComponent.current,
+  });
+
+
   const { isLoading: invoicesLoading, data: invoicesList, refetch: getInvoiceRefetch, } = useQuery(
     [queryKeys.GET_ALL_INVOICES],
     apiServices.getInvoices,
@@ -22,5 +31,7 @@ const { permission, apiServices, user } = useAppContext("accounts");
     permission,
     user,
     apiServices,
+    handlePrint,
+    pdfExportComponent,
   };
 };
