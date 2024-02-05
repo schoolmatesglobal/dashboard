@@ -3,6 +3,7 @@ import PageView from "../../../components/views/table-view";
 import { useAccounts } from "../../../hooks/useAccounts";
 import { useInvoices } from "../../../hooks/useInvoice";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useBank } from "../../../hooks/useBank";
 
 const Accounts = () => {
   const {
@@ -19,7 +20,15 @@ const Accounts = () => {
 
   const navigate = useNavigate();
 
-  const { invoicesLoading, invoicesList } = useInvoices();
+  const {
+    isLoading: invoicesLoading,
+    invoicesList,
+    // apiServices,
+    handlePrint,
+    pdfExportComponent,
+    // user,
+  } = useInvoices();
+  const { bank, isLoading: bankLoading } = useBank();
 
   function fi() {
     const ffs = invoicesList?.find(
@@ -37,8 +46,16 @@ const Accounts = () => {
     );
     return ffs;
   }
+  function fi3() {
+    const ffs = invoicesList?.filter(
+      (inv) =>
+        inv?.admission_number === user?.admission_number &&
+        inv?.term === user?.term
+    );
+    return ffs;
+  }
 
-  const filteredInvoice = fi();
+  const filteredInvoice = fi3();
   const filteredAllInvoice = fi2() ?? [];
   const filteredFee = fi()?.fee?.map((fi, i) => {
     return {
@@ -98,7 +115,7 @@ const Accounts = () => {
 
     return [
       {
-        title: "View All Fees",
+        title: "View / Print Invoice",
         onClick: (id) => {
           console.log({ id });
           navigate(`/app/invoices/fees/${id}`);
@@ -168,29 +185,33 @@ const Accounts = () => {
     "my-invoice": {
       columns: [
         {
-          Header: "S/N",
-          accessor: "sn",
+          Header: "Invoice Number",
+          accessor: "invoice_no",
         },
         {
-          Header: "Fee Type",
-          accessor: "feetype",
+          Header: " Name",
+          accessor: "fullname",
         },
         {
-          Header: "Amount",
-          accessor: "amount",
+          Header: "Class",
+          accessor: "class",
         },
         {
-          Header: "Discount",
-          accessor: "discount",
+          Header: "Admission Number",
+          accessor: "admission_number",
         },
         {
-          Header: "Discounted Amount",
-          accessor: "discount_amount",
+          Header: "Term",
+          accessor: "term",
+        },
+        {
+          Header: "Session",
+          accessor: "session",
         },
       ],
-      data: filteredFee,
-      rowHasAction: false,
-      action: {},
+      data: filteredInvoice,
+      rowHasAction: true,
+      action: getActionOptions({ navigate }),
     },
     "previous-invoice": {
       columns: [
@@ -237,16 +258,18 @@ const Accounts = () => {
   });
 
   return (
-    <PageView
-      canCreate={permission?.canCreate}
-      hasSortOptions={permission?.sort}
-      isLoading={isLoading}
-      groupedButtonOptions={getSortButtonOptions()}
-      columns={dataMapper[indexStatus].columns}
-      data={dataMapper[indexStatus].data}
-      rowHasAction={dataMapper[indexStatus].rowHasAction}
-      action={dataMapper[indexStatus].action}
-    />
+    <div className="">
+      <PageView
+        canCreate={permission?.canCreate}
+        hasSortOptions={permission?.sort}
+        isLoading={isLoading}
+        groupedButtonOptions={getSortButtonOptions()}
+        columns={dataMapper[indexStatus].columns}
+        data={dataMapper[indexStatus].data}
+        rowHasAction={dataMapper[indexStatus].rowHasAction}
+        action={dataMapper[indexStatus].action}
+      />
+    </div>
   );
 };
 
