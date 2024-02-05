@@ -223,10 +223,10 @@ const InvoiceFees = () => {
                   centered
                   data={filteredFee}
                   columns={[
-                    {
-                      Header: "S/N",
-                      accessor: "sn",
-                    },
+                    // {
+                    //   Header: "S/N",
+                    //   accessor: "sn",
+                    // },
                     {
                       Header: "Fee Type",
                       accessor: "feetype",

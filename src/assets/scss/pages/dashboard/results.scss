@@ -4,17 +4,21 @@ $text-color: midnightblue;
 .invoice {
   max-width: 1200px;
   // min-width: 700px;
-  overflow: hidden;
+  overflow: auto;
+  // overflow-x: scroll;
 
   .bankview {
-    border: 1px solid rgb(177, 177, 177);
+    // border-top: 1px solid rgb(177, 177, 177);
     margin-bottom: 20px;
-    width: 100vw;
+    // width: 100vw;
     // margin: 0px 20px;
 
-    @media only screen and (min-width: 1200px) {
-      width: 50vw;
-    }
+    // @media only screen and (max-width: 1200px) {
+    //   width: fit;
+    // }
+    // @media only screen and (min-width: 1200px) {
+    //   width: fit;
+    // }
   }
 
   .view1 {

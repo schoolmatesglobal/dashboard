@@ -4,7 +4,8 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 
 export const useAccounts = () => {
-  const [indexStatus, setIndexStatus] = useState("fee-history");
+  const [indexStatus, setIndexStatus] = useState("my-invoice");
+  // const [indexStatus, setIndexStatus] = useState("fee-history");
   const { permission, apiServices, user } = useAppContext("accounts");
 
   const { isLoading: feeHistoryLoading, data: feeHistory } = useQuery(
