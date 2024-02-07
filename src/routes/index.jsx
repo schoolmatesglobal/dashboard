@@ -681,6 +681,14 @@ const CustomRoutes = () => {
           }
         />
         <Route
+          path='bank/edit/:id'
+          element={
+            <Guard routeName='bank' action={["update"]}>
+              <BankDetail />
+            </Guard>
+          }
+        />
+        <Route
           path='discount'
           element={
             <Guard routeName='discount'>

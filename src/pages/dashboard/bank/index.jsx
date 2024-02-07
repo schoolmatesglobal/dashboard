@@ -8,7 +8,7 @@ import { useBank } from "../../../hooks/useBank";
 const BankList = () => {
   const { apiServices, permission } = useAppContext();
 
-  const { bank, isLoading } = useBank();
+  const { bank, deleteBank, handleUpdateBank, isLoading } = useBank();
 
   console.log({ bank });
 
@@ -16,6 +16,9 @@ const BankList = () => {
     <PageView
       canCreate={permission?.create}
       isLoading={isLoading}
+      onDelete={deleteBank}
+      rowHasUpdate={true}
+      rowHasDelete={true}
       columns={[
         {
           Header: "S/N",

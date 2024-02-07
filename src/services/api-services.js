@@ -1264,6 +1264,28 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async deleteBank(id) {
+    const { data } = await axios.delete(`${backendAPI}/bank/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async updateBank({ id, ...body }) {
+    const { data } = await axios.patch(`${backendAPI}/bank/${id}`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async postSetupDiscount({ body }) {
     const { data } = await axios.post(`${backendAPI}/setupdiscount`, body, {
       headers: {

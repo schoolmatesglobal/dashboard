@@ -498,8 +498,8 @@ export const permissions = {
     bank: {
       create: true,
       read: true,
-      update: false,
-      delete: false,
+      update: true,
+      delete: true,
       statusToggle: false,
       sort: false,
     },

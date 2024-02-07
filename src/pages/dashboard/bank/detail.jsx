@@ -1,27 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-formid";
+
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
 import { Col, Row } from "reactstrap";
 import AuthInput from "../../../components/inputs/auth-input";
 import DetailView from "../../../components/views/detail-view";
 import { useAppContext } from "../../../hooks/useAppContext";
+import { useBank } from "../../../hooks/useBank";
 // import { toast } from "react-toastify";
 
 const BankDetail = () => {
-  const { apiServices, user } = useAppContext();
+  const { apiServices, user, permission } = useAppContext();
 
-  const { isLoading, mutate: createPost } = useMutation(apiServices.postBank, {
-    onSuccess() {
-      toast.success("Bank has been created");
-    },
+  const {
+    createBank,
+    bank,
+    deleteBank,
+    handleUpdateBank,
+    isLoading: bankLoading,
+    isEdit,
+    id,
+  } = useBank();
 
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
-
-  const { handleSubmit, errors, getFieldProps, inputs } = useForm({
+  const {
+    handleSubmit,
+    errors,
+    getFieldProps,
+    setInputs,
+    inputs,
+    handleChange,
+    setFieldValue,
+  } = useForm({
     defaultValues: {
       bank_name: "",
       account_name: "",
@@ -31,22 +41,55 @@ const BankDetail = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    if (!inputs?.bank_name || !inputs?.account_name || !inputs?.opening_balance || !inputs?.account_number) {
+  function fb() {
+    const bk = bank?.find((bnk) => bnk?.id === id);
+    return bk;
+  }
+
+  const filteredBank = fb();
+
+  const onSubmit = async (data) => {
+    if (
+      !inputs?.bank_name ||
+      !inputs?.account_name ||
+      !inputs?.opening_balance ||
+      !inputs?.account_number
+    ) {
       toast.error(`Please fill all required fields`);
       return;
     }
-    createPost({
+
+    if (isEdit) {
+      return await handleUpdateBank({ ...data, id: filteredBank.id });
+    }
+
+    createBank({
       body: {
         ...data,
-        id: user.id,
+        // id: user.id,
       },
     });
   };
+
+  useEffect(() => {
+    if (isEdit) {
+      setInputs({
+        ...inputs,
+        bank_name: filteredBank?.bank_name,
+        account_name: filteredBank?.account_name,
+        opening_balance: filteredBank?.opening_balance,
+        account_number: filteredBank?.account_number,
+        account_purpose: filteredBank?.account_purpose,
+      });
+    }
+  }, [isEdit, bank]);
+
+  console.log({ bank, filteredBank, isEdit });
+
   return (
     <DetailView
-      isLoading={isLoading}
-      pageTitle='Create Bank'
+      isLoading={bankLoading}
+      pageTitle={isEdit ? "Edit Bank" : "Create Bank"}
       onFormSubmit={handleSubmit(onSubmit)}
     >
       <Row className='mb-0 mb-sm-4'>
@@ -82,7 +125,7 @@ const BankDetail = () => {
             type='number'
             min='0'
             label='Account Number'
-            className="noSpinButtons"
+            className='noSpinButtons'
             placeholder='e.g 0011223344'
             hasError={!!errors.account_number}
             {...getFieldProps("account_number")}
@@ -98,7 +141,7 @@ const BankDetail = () => {
             min='0'
             label='Opening Balance'
             placeholder='e.g 20000'
-            className="noSpinButtons"
+            className='noSpinButtons'
             hasError={!!errors.opening_balance}
             {...getFieldProps("opening_balance")}
           />

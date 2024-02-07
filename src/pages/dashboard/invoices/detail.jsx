@@ -195,7 +195,7 @@ const InvoiceDetail = () => {
         // return { ...data, options: f };
       },
       onError(err) {
-        errorHandler(err);
+        apiServices.errorHandler(err);
       },
     }
   );
@@ -206,7 +206,7 @@ const InvoiceDetail = () => {
     {
       retry: 3,
       onError(err) {
-        errorHandler(err);
+        apiServices.errorHandler(err);
       },
       enabled: !!newId,
       select: apiServices.formatSingleData,
@@ -231,7 +231,7 @@ const InvoiceDetail = () => {
         getInvoiceRefetch();
       },
       onError(err) {
-        errorHandler(err);
+        apiServices.errorHandler(err);
       },
     });
 
