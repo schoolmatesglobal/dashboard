@@ -56,6 +56,7 @@ const InvoiceDetail = () => {
   const [newId, setNewId] = useState(id);
 
   const [feetype, setFeetype] = useState("");
+  // const [due_date, setDueDate] = useState("");
 
   const [amount, setAmount] = useState("");
   const [discount, setDiscount] = useState("0");
@@ -140,6 +141,7 @@ const InvoiceDetail = () => {
       fullname: "",
       student_id: "",
       class: "",
+      due_date: "",
       // feetype: "",
       // amount: "",
       // discount: "0",
@@ -244,6 +246,7 @@ const InvoiceDetail = () => {
     return ffs;
   }
 
+  const filteredInvoice2 = fi() ?? {};
   const filteredInvoice = fi()?.fee ?? [];
   const invoiceId = fi()?.id;
 
@@ -255,6 +258,11 @@ const InvoiceDetail = () => {
     if (fees?.length === 0) {
       // setFeeError("feetype");
       toast.error(`Please add atleast one Fee type`);
+      return;
+    }
+    if (!inputs?.due_date) {
+      // setFeeError("feetype");
+      toast.error(`Please add due date for invoice`);
       return;
     }
     //  else if (!inputs?.term) {
@@ -272,35 +280,38 @@ const InvoiceDetail = () => {
     if (filteredInvoice?.length > 0) {
       handleUpdateInvoice({
         id: invoiceId,
+        due_date: data?.due_date,
         // ...data,
         fee: [...fees],
       });
 
       console.log({
         id: invoiceId,
-        // ...data,
+        due_date: data?.due_date,
         fee: [...fees],
       });
     } else {
       createInvoicePost({
         body: {
           ...data,
+          // due_date: data?.due_date,
           fee: [...fees],
         },
       });
     }
 
-    // console.log({
-    //   ...data,
-    //   fee: [...fees],
-    //   // discount_amount,
-    // });
+    console.log({
+      ...data,
+      fee: [...fees],
+      // discount_amount,
+    });
   };
 
   useEffect(() => {
     if (isEdit) {
       setInputs({
         ...inputs,
+        due_date: filteredInvoice2?.due_date,
         admission_number: singleStudent?.admission_number,
         fullname: `${singleStudent?.firstname ?? ""} ${
           singleStudent?.surname ?? ""
@@ -320,6 +331,8 @@ const InvoiceDetail = () => {
 
   console.log({
     // studentData,
+    filteredInvoice2,
+    date: inputs?.due_date,
     filteredInvoice,
     invoicesList,
     // defaultAmount: defaultAmount(),
@@ -590,45 +603,20 @@ const InvoiceDetail = () => {
                 )}
               </Col>
             </Row>
+            <Row className='my-5'>
+              <Col sm='6' className='mb-4 mb-sm-0'>
+                <AuthInput
+                  label='Invoice Due Date'
+                  required
+                  type='date'
+                  hasError={!!errors.due_date}
+                  // value={inputs.dob}
+                  {...getFieldProps("due_date")}
+                />
+                {/* {!!errors.due_date && <p className='error-message'>{errors.due_date}</p>} */}
+              </Col>
+            </Row>
             {/* <hr className='my-5' /> */}
-
-            {/* <Row className='mb-0 mb-sm-4'>
-              <Col sm='6' className='mb-4 mb-sm-0'>
-                <AuthSelect
-                  label='Term'
-                  required
-                  value={inputs.term}
-                  name='term'
-                  hasError={!!errors.term}
-                  onChange={handleChange}
-                  options={[
-                    { value: "First Term", title: "First Term" },
-                    { value: "Second Term", title: "Second Term" },
-                    { value: "Third Term", title: "Third Term" },
-                  ]}
-                />
-                {!!errors.term && (
-                  <p className='error-message'>{errors.term}</p>
-                )}
-              </Col>
-              <Col sm='6' className='mb-4 mb-sm-0'>
-                <AuthSelect
-                  label='Session'
-                  required
-                  value={inputs.session}
-                  name='session'
-                  hasError={!!errors.session}
-                  onChange={handleChange}
-                  options={(sessions || [])?.map((session) => ({
-                    value: session?.academic_session,
-                    title: session?.academic_session,
-                  }))}
-                />
-                {!!errors.session && (
-                  <p className='error-message'>{errors.session}</p>
-                )}
-              </Col>
-            </Row> */}
           </>
         )}
         {allLoading && (

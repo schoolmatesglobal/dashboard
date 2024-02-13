@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useInvoices } from "../../../hooks/useInvoice";
 import PageView from "../../../components/views/table-view";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -12,6 +12,9 @@ import CustomTable from "../../../components/tables/table";
 import InvoiceTable from "../../../components/tables/invoiceTable";
 import { useBank } from "../../../hooks/useBank";
 import GoBack from "../../../components/common/go-back";
+import moment from "moment";
+import dayjs from "dayjs";
+import { useAccounts } from "../../../hooks/useAccounts";
 
 const InvoiceFees = () => {
   const {
@@ -23,23 +26,28 @@ const InvoiceFees = () => {
     user,
   } = useInvoices();
 
+  const { paymentLoading, payment } = useAccounts();
+
   const { bank, isLoading: bankLoading } = useBank();
 
   const { id } = useParams();
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
+  const [payedAmount, setPayedAmount] = useState("");
 
   function fi() {
     return invoicesList?.find((iv) => iv?.id === id);
   }
 
   let calcAmount = 0;
+  let calcAmount2 = 0;
 
   // let calcAmount2 = `₦${apiServices.formatNumberWithCommas(calcAmount ?? 0)}`;
 
   const filteredInvoice = fi();
   const filteredFee = fi()?.fee?.map((fi, i) => {
-    calcAmount = Number(calcAmount) + Number(fi?.discount_amount) ?? 0;
+    calcAmount =
+      (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
 
     return {
       sn: i + 1,
@@ -52,14 +60,60 @@ const InvoiceFees = () => {
     };
   });
 
+  function filterPayment() {
+    if (payment?.length > 0) {
+      const pt = payment?.filter(
+        (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
+      );
+      return pt[0]?.payment?.map((py, i) => {
+        calcAmount2 = calcAmount2 + Number(py?.amount_paid);
+        return {
+          ...py,
+          amount_paid: `₦${apiServices.formatNumberWithCommas(
+            py?.amount_paid
+          )}`,
+          total_amount: `₦${apiServices.formatNumberWithCommas(
+            py?.total_amount
+          )}`,
+          sum_amount: calcAmount2,
+          // sum_amount: `₦${apiServices.formatNumberWithCommas(calcAmount2)}`,
+        };
+      });
+    } else {
+      return [];
+    }
+  }
+
+  const fp = filterPayment() ?? [];
+
+  // let payedAmount;
+
+  // useEffect(() => {
+  //   const filteredPayments = fp();
+  //   if (filteredPayments?.length > 0) {
+  //     setPayedAmount(
+  //       filteredPayments[filteredPayments()?.length - 1]?.sum_amount
+  //     );
+  //   }
+  //   // payedAmount = filterPayment()[filterPayment()?.length - 1];
+  // }, [payment]);
+
+  // const payedAmount = filterPayment()[filterPayment?.length - 1];
+
   console.log({
     bank,
+    payedAmount,
     calcAmount,
     changeTableStyle,
     invoicesList,
     invoicesLoading,
     filteredInvoice,
     filteredFee,
+    fp,
+    fp2: fp[fp?.length - 1]?.sum_amount,
+    // filterPayment: fp(),
+    // flength: fp()?.length,
+    payment,
   });
 
   return (
@@ -166,7 +220,7 @@ const InvoiceFees = () => {
                       <p
                         style={{
                           fontWeight: "bold",
-                          fontSize: "18px",
+                          fontSize: "17px",
                           marginTop: "10px",
                           textTransform: "uppercase",
                         }}
@@ -177,7 +231,7 @@ const InvoiceFees = () => {
                         // className='motto'
                         style={{
                           fontWeight: "semi-bold",
-                          fontSize: "18px",
+                          fontSize: "17px",
                           marginTop: "10px",
                           textTransform: "uppercase",
                         }}
@@ -198,7 +252,11 @@ const InvoiceFees = () => {
                     {
                       sub: `${filteredInvoice?.admission_number}`,
                       class: `${filteredInvoice?.class}`,
-                      date: `Feb 20, 2023`,
+                      date: `${
+                        dayjs(filteredInvoice?.due_date).format(
+                          "MMM D, YYYY"
+                        ) ?? ""
+                      }`,
                     },
                   ]}
                   columns={[
@@ -223,10 +281,10 @@ const InvoiceFees = () => {
                   centered
                   data={filteredFee}
                   columns={[
-                    // {
-                    //   Header: "S/N",
-                    //   accessor: "sn",
-                    // },
+                    {
+                      Header: "S/N",
+                      accessor: "sn",
+                    },
                     {
                       Header: "Fee Type",
                       accessor: "feetype",
@@ -235,23 +293,25 @@ const InvoiceFees = () => {
                       Header: "Amount",
                       accessor: "amount",
                     },
-                    {
-                      Header: "Discount",
-                      accessor: "discount",
-                    },
-                    {
-                      Header: "Discounted Amount",
-                      accessor: "discount_amount",
-                    },
+                    // {
+                    //   Header: "Discount",
+                    //   accessor: "discount",
+                    // },
+                    // {
+                    //   Header: "Discounted Amount",
+                    //   accessor: "discount_amount",
+                    // },
                   ]}
                 />
               </div>
+
+              {/* total section */}
               <div
                 className='d-flex justify-content-end'
                 style={{
                   fontWeight: "bold",
-                  marginTop: "-20px",
-                  textTransform: "uppercase",
+                  marginTop: "-10px",
+
                   height: "45px",
                   color: "rgb(39, 39, 39)",
                 }}
@@ -261,14 +321,16 @@ const InvoiceFees = () => {
                   style={{
                     border: "1px solid rgb(177, 177, 177)",
                     padding: "20px, 30px",
-                    width: "300px",
-                    fontSize: "20px",
+                    width: "250px",
+                    fontSize: "17px",
+                    backgroundColor: "rgba(1, 21, 59, 0.15)",
                     // display: "flex"
                   }}
                 >
                   <p
                     style={{
-                      fontSize: "20px",
+                      fontSize: "17px",
+                      textTransform: "uppercase",
                     }}
                   >
                     Total Amount
@@ -279,12 +341,13 @@ const InvoiceFees = () => {
                   style={{
                     border: "1px solid rgb(177, 177, 177)",
                     padding: "20px, 30px",
-                    width: "330px",
+                    width: "300px",
                   }}
                 >
                   <p
                     style={{
-                      fontSize: "20px",
+                      fontSize: "17px",
+                      textTransform: "uppercase",
                     }}
                   >
                     {/* ₦{apiServices.formatNumberWithCommas(filteredInvoice?.amount)} */}
@@ -293,14 +356,178 @@ const InvoiceFees = () => {
                     )}`}
                   </p>
                 </div>
+                <div
+                  className='d-flex justify-content-center align-items-center'
+                  style={{
+                    border: "1px solid rgb(177, 177, 177)",
+                    padding: "20px, 30px",
+                    width: "200px",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "17px",
+                      color: "white",
+                    }}
+                  >
+                    As at 12, Feb 2024
+                  </p>
+                </div>
               </div>
+
+              {/* payment section */}
+              {filterPayment()?.map((fp, i) => {
+                return (
+                  <div
+                    key={i}
+                    className='d-flex justify-content-end'
+                    style={{
+                      fontWeight: "bold",
+                      marginTop: "0px",
+
+                      height: "45px",
+                      color: "rgb(39, 39, 39)",
+                    }}
+                  >
+                    <div
+                      className='d-flex justify-content-center align-items-center '
+                      style={{
+                        border: "1px solid rgb(177, 177, 177)",
+                        padding: "20px, 30px",
+                        width: "250px",
+                        fontSize: "17px",
+                        backgroundColor: "rgba(1, 21, 59, 0.15)",
+                        // display: "flex"
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "17px",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Payment {i + 1}
+                      </p>
+                    </div>
+                    <div
+                      className='d-flex justify-content-center align-items-center'
+                      style={{
+                        border: "1px solid rgb(177, 177, 177)",
+                        padding: "20px, 30px",
+                        width: "300px",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "17px",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {/* {`₦${apiServices?.formatNumberWithCommas(
+                          calcAmount.toString() ?? "0"
+                        )}`} */}
+                        {fp?.amount_paid}
+                      </p>
+                    </div>
+                    <div
+                      className='d-flex justify-content-center align-items-center'
+                      style={{
+                        border: "1px solid rgb(177, 177, 177)",
+                        padding: "20px, 30px",
+                        width: "200px",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "17px",
+                          // color: "white",
+                        }}
+                      >
+                        As at {fp?.paid_at}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* balance section */}
+              <div
+                className='d-flex justify-content-end'
+                style={{
+                  fontWeight: "bold",
+                  marginTop: "0px",
+
+                  height: "45px",
+                  color: "rgb(39, 39, 39)",
+                }}
+              >
+                <div
+                  className='d-flex justify-content-center align-items-center '
+                  style={{
+                    border: "2px solid rgb(0, 0, 0)",
+                    padding: "20px, 30px",
+                    width: "250px",
+                    fontSize: "17px",
+                    backgroundColor: "rgba(1, 21, 59, 0.15)",
+                    // display: "flex"
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "17px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Balance
+                  </p>
+                </div>
+                <div
+                  className='d-flex justify-content-center align-items-center'
+                  style={{
+                    border: "2px solid rgb(0, 0, 0)",
+                    padding: "20px, 30px",
+                    width: "300px",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "17px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {/* ₦{apiServices.formatNumberWithCommas(filteredInvoice?.amount)} */}
+                    {`₦${apiServices?.formatNumberWithCommas(
+                      Number(calcAmount) - fp[fp?.length - 1]?.sum_amount
+                    )}`}
+                  </p>
+                </div>
+                <div
+                  className='d-flex justify-content-center align-items-center'
+                  style={{
+                    border: "2px solid rgb(0, 0, 0)",
+                    padding: "20px, 30px",
+                    width: "200px",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "17px",
+                      color: "white",
+                    }}
+                  >
+                    As at 12, Feb 2024
+                  </p>
+                </div>
+              </div>
+
+              {/* bank details */}
               <div className=''>
                 <p
                   className=''
                   style={{
                     fontWeight: "500",
-                    fontSize: "18px",
-                    marginTop: "20px",
+                    fontSize: "17px",
+                    marginTop: "50px",
                     marginBottom: "20px",
                     // textTransform: "uppercase",
                     // height: "45px",
@@ -325,7 +552,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "midnightblue",
                               textTransform: "uppercase",
@@ -340,7 +567,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",
@@ -353,7 +580,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",
@@ -368,7 +595,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",
@@ -381,7 +608,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",
@@ -396,7 +623,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",
@@ -409,7 +636,7 @@ const InvoiceFees = () => {
                           <p
                             style={{
                               fontWeight: "bold",
-                              fontSize: "18px",
+                              fontSize: "17px",
                               marginTop: "0px",
                               color: "rgb(0, 0, 0)",
                               textTransform: "uppercase",

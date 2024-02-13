@@ -2,6 +2,7 @@ import React from "react";
 import PageView from "../../../components/views/table-view";
 import { useInvoices } from "../../../hooks/useInvoice";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { checkDueDate } from "./constant";
 
 const Invoices = () => {
   const { invoicesLoading, invoicesList } = useInvoices();
@@ -13,19 +14,29 @@ const Invoices = () => {
     return [
       {
         title: "View / Print Invoice",
-        onClick: (id, ) => {
+        onClick: (id) => {
           console.log({ id });
-          navigate(`/app/invoices/fees/${id}`)
+          navigate(`/app/invoices/fees/${id}`);
         },
+      },
+      {
+        title: "Register Payment",
+        onClick: (id) => navigate(`/app/payment/${id}`),
       },
     ];
   };
 
-  console.log({ invoicesList });
+  const newList = invoicesList?.map((iv, i) => {
+    return {
+      ...iv,
+      invoice_status: checkDueDate(iv?.due_date),
+    };
+  });
+
+  console.log({ invoicesList, newList });
 
   return (
     <PageView
-   
       action={getActionOptions({ navigate })}
       rowHasAction={true}
       canCreate={false}
@@ -47,6 +58,10 @@ const Invoices = () => {
           Header: "Admission Number",
           accessor: "admission_number",
         },
+        {
+          Header: "Invoice Status",
+          accessor: "invoice_status",
+        },
         // {
         //   Header: "Fee Type",
         //   accessor: "feetype",
@@ -67,12 +82,12 @@ const Invoices = () => {
           Header: "Term",
           accessor: "term",
         },
-        {
-          Header: "Session",
-          accessor: "session",
-        },
+        // {
+        //   Header: "Session",
+        //   accessor: "session",
+        // },
       ]}
-      data={invoicesList}
+      data={newList}
     />
   );
 };

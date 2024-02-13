@@ -26,23 +26,23 @@ export const useAccounts = () => {
     }
   );
 
-  const { isLoading: invoiceLoading, data: invoice } = useQuery(
-    [queryKeys.GET_INVOICE],
-    apiServices.getStudentInvoice,
-    {
-      enabled: permission?.myInvoice,
-      select: apiServices.formatData,
-    }
-  );
+  // const { isLoading: invoiceLoading, data: invoice } = useQuery(
+  //   [queryKeys.GET_INVOICE],
+  //   apiServices.getStudentInvoice,
+  //   {
+  //     enabled: permission?.myInvoice,
+  //     select: apiServices.formatData,
+  //   }
+  // );
 
-  const { isLoading: invoicesLoading, data: invoicesList, refetch: getInvoiceRefetch, } = useQuery(
-    [queryKeys.GET_ALL_INVOICES],
-    apiServices.getInvoices,
-    {
-      enabled: permission?.myPayment,
-      select: apiServices.formatData,
-    }
-  );
+  const {
+    isLoading: invoicesLoading,
+    data: invoicesList,
+    refetch: getInvoiceRefetch,
+  } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
+    enabled: permission?.myPayment,
+    select: apiServices.formatData,
+  });
 
   const { isLoading: chartaccountLoading, data: chartaccountList } = useQuery(
     [queryKeys.GET_CHART_ACCOUNTS],
@@ -57,17 +57,28 @@ export const useAccounts = () => {
     apiServices.getPayment,
     {
       enabled: permission?.myPayment,
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
+      select: (data) => {
+        // console.log({ data });
+        // const format = apiServices.formatData(data)?.map((bank, i) => {
+        //   return {
+        //     ...bank,
+        //     sn: i + 1,
+        //   };
+        // });
+
+        return data?.data;
+      },
     }
   );
-  
 
   const isLoading =
     feeHistoryLoading ||
     previousInvoiceLoading ||
-    invoiceLoading ||
+    // invoiceLoading ||
     chartaccountLoading ||
-    paymentLoading || invoicesLoading;
+    paymentLoading;
+  // invoicesLoading;
 
   return {
     indexStatus,
@@ -76,7 +87,7 @@ export const useAccounts = () => {
     isLoading,
     previousInvoice,
     permission,
-    invoice,
+    // invoice,
     chartaccountList,
     payment,
     invoicesList,

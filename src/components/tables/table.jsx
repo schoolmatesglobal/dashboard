@@ -67,13 +67,32 @@ const CustomTable = ({
   const displayStatus = (render) => {
     switch (render) {
       case "disabled":
-        return <p className="text-danger">Inactive</p>;
+        return <p className='text-danger'>Inactive</p>;
 
       case "withdrawn":
-        return <p className="text-danger">Withdrawn</p>;
+        return <p className='text-danger'>Withdrawn</p>;
 
       default:
-        return <p className="text-success">Active</p>;
+        return <p className='text-success'>Active</p>;
+    }
+  };
+
+  const displayStatus2 = (render) => {
+    switch (render) {
+      case "Due":
+        return (
+          <p className='text-danger' style={{ fontWeight: "bold" }}>
+            Due
+          </p>
+        );
+        break;
+
+      case "Not Due":
+        return <p className='text-success' style={{ fontWeight: "bold" }}>Not Due</p>;
+        break;
+
+      default:
+      // return <p className="text-success">Active</p>;
     }
   };
 
@@ -103,10 +122,10 @@ const CustomTable = ({
     useTable({ columns: memoisedColumns, data: memoisedData });
 
   return (
-    <div className="custom-table-wrapper">
+    <div className='custom-table-wrapper'>
       {isLoading && (
-        <div className="d-flex align-items-center justify-content-center w-full">
-          <Spinner /> <p className="ms-2">Loading...</p>
+        <div className='d-flex align-items-center justify-content-center w-full'>
+          <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
@@ -121,7 +140,7 @@ const CustomTable = ({
                   {hasCheckBox && (
                     <th>
                       <Input
-                        type="checkbox"
+                        type='checkbox'
                         checked={checkedRows.length === memoisedData.length}
                         onChange={checkAllBoxes}
                       />
@@ -147,7 +166,7 @@ const CustomTable = ({
                     {hasCheckBox && (
                       <td>
                         <Input
-                          type="checkbox"
+                          type='checkbox'
                           checked={checkedRows.includes(row.original.id)}
                           onChange={() => checkSingleRow(row.original.id)}
                         />
@@ -161,6 +180,8 @@ const CustomTable = ({
                         >
                           {cell.column.id === "status"
                             ? displayStatus(cell.value)
+                            : cell.column.id === "invoice_status"
+                            ? displayStatus2(cell.value)
                             : cell.render("Cell")}
                         </td>
                       );
@@ -168,7 +189,7 @@ const CustomTable = ({
                     {rowHasUpdate && (
                       <td>
                         <Button
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => onRowUpdate(row.original.id)}
                         >
                           Update
@@ -183,7 +204,7 @@ const CustomTable = ({
                               ? "dark"
                               : "warning"
                           }
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "disable")}
                         >
                           {row.original.status === "disabled"
@@ -195,8 +216,8 @@ const CustomTable = ({
                     {rowHasDelete && (
                       <td>
                         <Button
-                          variant="danger"
-                          className="d-block mx-auto"
+                          variant='danger'
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "delete")}
                         >
                           Delete
@@ -211,7 +232,7 @@ const CustomTable = ({
                           }
                           toggle={() => toggleAction(row.original.id)}
                         >
-                          <DropdownToggle tag="div">
+                          <DropdownToggle tag='div'>
                             <Action
                               onClick={() => toggleAction(row.original.id)}
                             />
@@ -220,7 +241,7 @@ const CustomTable = ({
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}
-                                className="px-5 py-3"
+                                className='px-5 py-3'
                                 key={key}
                               >
                                 {title}
@@ -251,7 +272,7 @@ const CustomTable = ({
         </div>
       ) : null}
       {!memoisedData.length && !isLoading ? (
-        <p className="text-center">No data to display.</p>
+        <p className='text-center'>No data to display.</p>
       ) : null}
     </div>
   );

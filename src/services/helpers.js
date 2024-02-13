@@ -2,17 +2,16 @@ import moment from "moment";
 import { toast } from "react-toastify";
 
 class Helpers {
-
   formatNumberWithCommas(number) {
     // Convert the number to a string
-    // var numberString = number.toString();
+    var numberString = number.toString();
 
     // Use regular expression to add commas
-    var formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    var formattedNumber = numberString?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return formattedNumber;
   }
-  
+
   storeToken(token) {
     const d = new Date();
     d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
@@ -100,7 +99,6 @@ class Helpers {
     if (formattedValue.length > 9) return;
 
     setFieldValue(name, formattedValue);
-
   };
 
   commaSeperatedNumber = (val) => {

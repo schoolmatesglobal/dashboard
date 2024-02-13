@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-formid";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
@@ -9,6 +9,9 @@ import DetailView from "../../../components/views/detail-view";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useStudent } from "../../../hooks/useStudent";
+import { useInvoices } from "../../../hooks/useInvoice";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useAccounts } from "../../../hooks/useAccounts";
 
 const PaymentDetail = () => {
   const { apiServices } = useAppContext();
@@ -22,31 +25,47 @@ const PaymentDetail = () => {
   } = useForm({
     defaultValues: {
       session: "",
-      term: "First Term",
+      term: "",
       bank_name: "",
       account_name: "",
-      student_id: "",
+      invoice_id: "",
       student_fullname: "",
       payment_method: "",
       amount_paid: "",
       total_amount: "",
       remark: "",
-    },
-    validation: {
-      session: { required: true },
-      bank_name: { required: true },
-      account_name: { required: true },
-      student_id: { required: true },
-      student_fullname: { required: true },
-      payment_method: { required: true },
-      amount_paid: { required: true },
-      total_amount: { required: true },
-      remark: { required: true },
+      class: "",
+      admission_number: "",
+      payment_type: "",
     },
   });
 
+  const [amount, setAmount] = useState("");
+
+  const { paymentLoading, payment } = useAccounts();
+
   const { data: sessions } = useAcademicSession();
   const { isLoading: loadStudent, studentData, isEdit } = useStudent();
+  const {
+    isLoading: invoicesLoading,
+    invoicesList,
+    // apiServices,
+    handlePrint,
+    pdfExportComponent,
+    user,
+  } = useInvoices();
+
+  const { id } = useParams();
+
+  function fi() {
+    return invoicesList?.find((iv) => iv?.id === id);
+  }
+
+  let calcAmount = 0;
+  let calcAmount2 = 0;
+
+  const filteredInvoice = fi();
+
   const { isLoading, mutate: createPost } = useMutation(
     apiServices.postPayment,
     {
@@ -61,148 +80,274 @@ const PaymentDetail = () => {
   );
 
   const onSubmit = (data) => {
-    createPost(data);
+    if (
+      !inputs?.amount_paid ||
+      !inputs?.payment_method ||
+      !inputs?.bank_name ||
+      !inputs?.account_name ||
+      !inputs?.payment_type
+    ) {
+      // setFeeError("feetype");
+      toast.error(`Please add required field`);
+      return;
+    }
+    if (
+      inputs.payment_method !== "Physical Cash" &&
+      (!inputs?.amount_paid || !inputs?.payment_method || !inputs?.payment_type)
+    ) {
+      // setFeeError("feetype");
+      toast.error(`Please add required field`);
+      return;
+    }
+    createPost({
+      student_id: filteredInvoice?.student_id,
+      invoice_id: filteredInvoice?.id,
+      bank_name: data?.bank_name,
+      account_name: data?.account_name,
+      student_fullname: filteredInvoice?.fullname,
+      payment_method: data?.payment_method,
+      amount_paid: data?.amount_paid,
+      total_amount: amount,
+      type: data?.payment_type,
+    });
+    console.log({
+      student_id: filteredInvoice?.student_id,
+      invoice_id: filteredInvoice?.id,
+      bank_name: data?.bank_name,
+      account_name: data?.account_name,
+      student_fullname: filteredInvoice?.fullname,
+      payment_method: data?.payment_method,
+      amount_paid: data?.amount_paid,
+      total_amount: amount,
+      type: data?.payment_type,
+    });
   };
+
+  function filterPayment() {
+    if (payment?.length > 0) {
+      const pt = payment?.filter(
+        (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
+      );
+      return pt[0]?.payment?.map((py, i) => {
+        calcAmount2 = calcAmount2 + Number(py?.amount_paid);
+        return {
+          ...py,
+          amount_paid: `₦${apiServices.formatNumberWithCommas(
+            py?.amount_paid
+          )}`,
+          total_amount: `₦${apiServices.formatNumberWithCommas(
+            py?.total_amount
+          )}`,
+          sum_amount: calcAmount2,
+          // sum_amount: `₦${apiServices.formatNumberWithCommas(calcAmount2)}`,
+        };
+      });
+    } else {
+      return [];
+    }
+  }
+
+  const fp = filterPayment() ?? [];
 
   useEffect(() => {
     if (isEdit) {
       setInputs({
         ...inputs,
-        student_fullname: `${studentData?.firstname} ${studentData?.surname} ${studentData?.middlename}`,
-        student_id: studentData?.id,
+        student_fullname: filteredInvoice?.fullname,
+        invoice_id: filteredInvoice?.invoice_no,
+        class: filteredInvoice?.class,
+        admission_number: filteredInvoice?.admission_number,
+        term: filteredInvoice?.term,
+        session: filteredInvoice?.session,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, studentData]);
 
+  useEffect(() => {
+    if (filteredInvoice?.fee?.length > 0) {
+      fi()?.fee?.forEach((fi, i) => {
+        calcAmount =
+          (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
+
+        let cc = (calcAmount - fp[fp?.length - 1]?.sum_amount).toString();
+
+        setAmount(cc);
+      });
+    }
+  }, [invoicesList, amount]);
+
+  console.log({ filteredInvoice, amount });
+
   return (
     <DetailView
-      isLoading={isLoading || loadStudent}
-      pageTitle="Make Payment"
+      isLoading={isLoading || invoicesLoading}
+      pageTitle='Make Payment'
       onFormSubmit={handleSubmit(onSubmit)}
     >
-      <Row className="mb-0 mb-sm-4">
-        <Col sm="6" className="mb-4 mb-sm-0">
+      <Row className='mb-0 mb-sm-4'>
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
             disabled
-            label="Student ID"
-            hasError={!!errors.student_id}
-            {...getFieldProps("student_id")}
+            // required
+            label='Invoice Number'
+            // hasError={!!errors.invoice_id}
+            {...getFieldProps("invoice_id")}
           />
-          {!!errors.student_id && (
-            <p className="error-message">{errors.student_id}</p>
-          )}
+          {/* {!!errors.invoice_id && (
+            <p className="error-message">{errors.invoice_id}</p>
+          )} */}
         </Col>
-        <Col sm="6" className="mb-4 mb-sm-0">
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
             disabled
-            label="Student Full Name"
-            hasError={!!errors.student_fullname}
+            label='Student Full Name'
+            // required
+            // hasError={!!errors.student_fullname}
             {...getFieldProps("student_fullname")}
           />
-          {!!errors.student_fullname && (
+          {/* {!!errors.student_fullname && (
             <p className="error-message">{errors.student_fullname}</p>
-          )}
+          )} */}
         </Col>
       </Row>
-      <Row className="mb-0 mb-sm-4">
-        <Col sm="6" className="mb-4 mb-sm-0">
+      <Row className='mb-0 mb-sm-4'>
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label="Account Name"
-            hasError={!!errors.account_name}
-            {...getFieldProps("account_name")}
+            disabled
+            // required
+            label='Class'
+            // hasError={!!errors.invoice_id}
+            {...getFieldProps("class")}
           />
-          {!!errors.account_name && (
-            <p className="error-message">{errors.account_name}</p>
-          )}
+          {/* {!!errors.invoice_id && (
+            <p className="error-message">{errors.invoice_id}</p>
+          )} */}
         </Col>
-        <Col sm="6" className="mb-4 mb-sm-0">
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label="Bank Name"
-            hasError={!!errors.bank_name}
-            {...getFieldProps("bank_name")}
+            disabled
+            label='Admission Number'
+            // required
+            // hasError={!!errors.student_fullname}
+            {...getFieldProps("admission_number")}
           />
-          {!!errors.bank_name && (
-            <p className="error-message">{errors.bank_name}</p>
-          )}
+          {/* {!!errors.student_fullname && (
+            <p className="error-message">{errors.student_fullname}</p>
+          )} */}
         </Col>
       </Row>
-      <Row className="mb-0 mb-sm-4">
-        <Col sm="6" className="mb-4 mb-sm-0">
+      <Row className='mb-0 mb-sm-4'>
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label="Payment Method"
-            hasError={!!errors.payment_method}
-            {...getFieldProps("payment_method")}
+            disabled
+            // required
+            label='Term'
+            // hasError={!!errors.invoice_id}
+            {...getFieldProps("term")}
           />
-          {!!errors.payment_method && (
-            <p className="error-message">{errors.payment_method}</p>
-          )}
+          {/* {!!errors.invoice_id && (
+            <p className="error-message">{errors.invoice_id}</p>
+          )} */}
         </Col>
-        <Col sm="6" className="mb-4 mb-sm-0">
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label="Amount Paid"
-            hasError={!!errors.amount_paid}
+            disabled
+            label='Session'
+            // required
+            // hasError={!!errors.student_fullname}
+            {...getFieldProps("session")}
+          />
+          {/* {!!errors.student_fullname && (
+            <p className="error-message">{errors.student_fullname}</p>
+          )} */}
+        </Col>
+      </Row>
+      <Row className='mb-0 mb-sm-4'>
+        <Col sm='6' className='mb-4 mb-sm-0'>
+          <AuthInput
+            label='Outstanding Amount'
+            // required
+            value={amount}
+            readOnly
+            // hasError={!!errors.total_amount}
+            // {...getFieldProps("total_amount")}
+          />
+          {/* {!!errors.total_amount && (
+            <p className="error-message">{errors.total_amount}</p>
+          )} */}
+        </Col>
+
+        <Col sm='6' className='mb-4 mb-sm-0'>
+          <AuthInput
+            label='Amount Paid'
+            type='number'
+            required
+            // hasError={!!errors.amount_paid}
             {...getFieldProps("amount_paid")}
           />
-          {!!errors.amount_paid && (
+          {/* {!!errors.amount_paid && (
             <p className="error-message">{errors.amount_paid}</p>
-          )}
+          )} */}
         </Col>
       </Row>
-      <Row className="mb-0 mb-sm-4">
-        <Col sm="6" className="mb-4 mb-sm-0">
-          <AuthInput
-            label="Total Amount"
-            hasError={!!errors.total_amount}
-            {...getFieldProps("total_amount")}
-          />
-          {!!errors.total_amount && (
-            <p className="error-message">{errors.total_amount}</p>
-          )}
-        </Col>
-        <Col sm="6" className="mb-4 mb-sm-0">
+      <Row className='mb-0 mb-sm-4'>
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthSelect
-            label="Term"
-            value={inputs.term}
-            name="term"
-            hasError={!!errors.term}
+            label='Payment Method'
+            required
+            value={inputs.payment_method}
+            name='payment_method'
+            // hasError={!!errors.term}
             onChange={handleChange}
             options={[
-              { value: "First Term", title: "First Term" },
-              { value: "Second Term", title: "Second Term" },
-              { value: "Third Term", title: "Third Term" },
+              { value: "Bank Deposit", title: "Bank Deposit" },
+              { value: "Bank Transfer", title: "Bank Transfer" },
+              { value: "Physical Cash", title: "Physical Cash" },
             ]}
           />
-          {!!errors.term && <p className="error-message">{errors.term}</p>}
         </Col>
-      </Row>
-      <Row className="mb-0 mb-sm-4">
-        <Col sm="6" className="mb-4 mb-sm-0">
+        <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthSelect
-            label="Session"
-            value={inputs.session}
-            name="session"
-            hasError={!!errors.session}
+            label='Payment Type'
+            required
+            value={inputs.payment_type}
+            name='payment_type'
+            // hasError={!!errors.term}
             onChange={handleChange}
-            options={(sessions || [])?.map((session) => ({
-              value: session?.academic_session,
-              title: session?.academic_session,
-            }))}
+            options={[
+              { value: "complete-payment", title: "Complete Payment" },
+              { value: "part-payment", title: "Part Payment" },
+            ]}
           />
-          {!!errors.session && (
-            <p className="error-message">{errors.session}</p>
-          )}
-        </Col>
-        <Col sm="6" className="mb-4 mb-sm-0">
-          <label className="mb-2">Remark</label>
-          <textarea
-            className="form-control"
-            rows="5"
-            {...getFieldProps("remark")}
-          />
-          {!!errors.remark && <p className="error-message">{errors.remark}</p>}
         </Col>
       </Row>
+      {inputs.payment_method !== "Physical Cash" && (
+        <Row className='mb-0 mb-sm-4'>
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Account Name'
+              required
+              // hasError={!!errors.account_name}
+              {...getFieldProps("account_name")}
+            />
+            {/* {!!errors.account_name && (
+            <p className="error-message">{errors.account_name}</p>
+          )} */}
+          </Col>
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Bank Name'
+              required
+              // hasError={!!errors.bank_name}
+              {...getFieldProps("bank_name")}
+            />
+            {/* {!!errors.bank_name && (
+            <p className="error-message">{errors.bank_name}</p>
+          )} */}
+          </Col>
+        </Row>
+      )}
     </DetailView>
   );
 };

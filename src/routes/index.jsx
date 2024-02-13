@@ -105,6 +105,7 @@ import BroadSheet from "../pages/dashboard/broad-sheet";
 import ElementaryInitialBroadSheet from "../pages/dashboard/broad-sheet/sheets/elementary/initial";
 import ElementaryFinalBroadSheet from "../pages/dashboard/broad-sheet/sheets/elementary/final";
 import InvoiceFees from "../pages/dashboard/invoices/fees";
+import PaymentDetails from "../pages/dashboard/Payment/details";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -636,6 +637,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='payment'>
               <PaymentDetail />
+            </Guard>
+          }
+        />
+        <Route
+          path='payment/details/:id'
+          element={
+            <Guard routeName='payment'>
+              <PaymentDetails />
             </Guard>
           }
         />
