@@ -289,18 +289,18 @@ const InvoiceFees = () => {
                       Header: "Fee Type",
                       accessor: "feetype",
                     },
-                    {
-                      Header: "Amount",
-                      accessor: "amount",
-                    },
+                    // {
+                    //   Header: "Amount",
+                    //   accessor: "amount",
+                    // },
                     // {
                     //   Header: "Discount",
                     //   accessor: "discount",
                     // },
-                    // {
-                    //   Header: "Discounted Amount",
-                    //   accessor: "discount_amount",
-                    // },
+                    {
+                      Header: "Amount",
+                      accessor: "discount_amount",
+                    },
                   ]}
                 />
               </div>
@@ -497,7 +497,7 @@ const InvoiceFees = () => {
                   >
                     {/* ₦{apiServices.formatNumberWithCommas(filteredInvoice?.amount)} */}
                     {`₦${apiServices?.formatNumberWithCommas(
-                      Number(calcAmount) - fp[fp?.length - 1]?.sum_amount
+                      Number(calcAmount) - (fp[fp?.length - 1]?.sum_amount ?? 0)
                     )}`}
                   </p>
                 </div>

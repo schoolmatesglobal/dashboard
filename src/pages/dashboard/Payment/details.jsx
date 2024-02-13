@@ -8,6 +8,22 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 const PaymentDetails = () => {
   const { id } = useParams();
 
+  const navigate = useNavigate();
+
+  const getActionOptions = ({ navigate }) => {
+    const arr = [];
+
+    return [
+      {
+        title: "Edit Payment",
+        onClick: () => {
+          console.log("hello");
+        },
+        // onClick: (id) => navigate(`/app/payment/${id}`),
+      },
+    ];
+  };
+
   const { paymentLoading, payment, apiServices } = useAccounts();
 
   function filterPayment() {
@@ -15,6 +31,7 @@ const PaymentDetails = () => {
     return pt[0]?.payment?.map((py, i) => {
       return {
         ...py,
+        id: "",
         amount_paid: `₦${apiServices.formatNumberWithCommas(py?.amount_paid)}`,
         total_amount: `₦${apiServices.formatNumberWithCommas(
           py?.total_amount
@@ -31,6 +48,8 @@ const PaymentDetails = () => {
       <GoBack />
       <PageView
         canCreate={false}
+        // action={getActionOptions({ navigate })}
+        // rowHasAction={true}
         // pageTitle="Man"
         showTableTitle={true}
         pageTitle={`Invoice payment for ${
@@ -59,10 +78,10 @@ const PaymentDetails = () => {
             Header: "Amount Paid",
             accessor: "amount_paid",
           },
-          {
-            Header: "Total Amount",
-            accessor: "total_amount",
-          },
+          // {
+          //   Header: "Total Amount",
+          //   accessor: "total_amount",
+          // },
           {
             Header: "Payment Method",
             accessor: "payment_method",
