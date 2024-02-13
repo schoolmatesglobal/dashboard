@@ -42,8 +42,8 @@ import {
 export const backendAPI = "https://staging.sapsms.com/api";
 // export const backendAPI = "https://dashboard.sapsms.com/api";
 
-// export const backendAPI =
-//   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api"
+// export const backendAPI = "https://dashboard.sapsms.com/api";
+
 // export const backendAPI = "https://dashboard.sapsms.com/api";
 
 export const homeUrl = {
