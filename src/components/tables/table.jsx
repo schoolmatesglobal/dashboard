@@ -79,16 +79,28 @@ const CustomTable = ({
 
   const displayStatus2 = (render) => {
     switch (render) {
-      case "Due":
+      case "Not Paid":
         return (
           <p className='text-danger' style={{ fontWeight: "bold" }}>
-            Due
+            Not Paid
           </p>
         );
         break;
 
-      case "Not Due":
-        return <p className='text-success' style={{ fontWeight: "bold" }}>Not Due</p>;
+      case "Fully Paid":
+        return (
+          <p className='text-success' style={{ fontWeight: "bold" }}>
+            Fully Paid
+          </p>
+        );
+        break;
+
+      case "Partly Paid":
+        return (
+          <p className='text-warning' style={{ fontWeight: "bold" }}>
+            Partly Paid
+          </p>
+        );
         break;
 
       default:
@@ -180,7 +192,7 @@ const CustomTable = ({
                         >
                           {cell.column.id === "status"
                             ? displayStatus(cell.value)
-                            : cell.column.id === "invoice_status"
+                            : cell.column.id === "payment_status"
                             ? displayStatus2(cell.value)
                             : cell.render("Cell")}
                         </td>

@@ -245,10 +245,10 @@ export const getColumns = ({ indexStatus }) => {
           Header: "Payment Method",
           accessor: "payment_method",
         },
-        {
-          Header: "Remark",
-          accessor: "remark",
-        },
+        // {
+        //   Header: "Remark",
+        //   accessor: "remark",
+        // },
       ];
   }
 };

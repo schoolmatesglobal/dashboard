@@ -37,7 +37,7 @@ const Payment = () => {
       };
     });
 
-    return np;
+    return np ?? [];
   }
 
   const getActionOptions = ({ navigate }) => {

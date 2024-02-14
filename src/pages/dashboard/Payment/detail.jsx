@@ -66,7 +66,7 @@ const PaymentDetail = () => {
 
   const filteredInvoice = fi();
 
-  const { isLoading, mutate: createPost } = useMutation(
+  const { isLoading, mutate: createPayment } = useMutation(
     apiServices.postPayment,
     {
       onSuccess() {
@@ -99,7 +99,12 @@ const PaymentDetail = () => {
       toast.error(`Please add required field`);
       return;
     }
-    createPost({
+    if (Number(inputs.amount_paid) > Number(amount)) {
+      // setFeeError("feetype");
+      toast.error(`Amount paid is greater than Outstanding Amount`);
+      return;
+    }
+    createPayment({
       student_id: filteredInvoice?.student_id,
       invoice_id: filteredInvoice?.id,
       bank_name: data?.bank_name,
@@ -170,14 +175,16 @@ const PaymentDetail = () => {
         calcAmount =
           (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
 
-        let cc = (calcAmount - fp[fp?.length - 1]?.sum_amount).toString();
+        let dc = fp[fp?.length - 1]?.sum_amount ?? 0;
+
+        let cc = (calcAmount - dc).toString();
 
         setAmount(cc);
       });
     }
   }, [invoicesList, amount]);
 
-  console.log({ filteredInvoice, amount });
+  console.log({ filteredInvoice, amount, fp });
 
   return (
     <DetailView

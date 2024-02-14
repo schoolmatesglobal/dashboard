@@ -28,10 +28,10 @@ const PaymentDetails = () => {
 
   function filterPayment() {
     const pt = payment?.filter((pi) => Number(pi?.student_id) === Number(id));
-    return pt[0]?.payment?.map((py, i) => {
+    const filteredMap = pt[0]?.payment?.map((py, i) => {
       return {
         ...py,
-        id: "",
+        id: py?.id,
         amount_paid: `₦${apiServices.formatNumberWithCommas(py?.amount_paid)}`,
         total_amount: `₦${apiServices.formatNumberWithCommas(
           py?.total_amount
@@ -39,6 +39,10 @@ const PaymentDetails = () => {
         // amount_paid: py?.amount_paid,
       };
     });
+    return {
+      data: pt[0],
+      payment: filteredMap,
+    };
   }
 
   console.log({ payment, filterPayment: filterPayment(), id });
@@ -48,12 +52,16 @@ const PaymentDetails = () => {
       <GoBack />
       <PageView
         canCreate={false}
-        // action={getActionOptions({ navigate })}
-        // rowHasAction={true}
+        action={getActionOptions({ navigate })}
+        rowHasAction={true}
         // pageTitle="Man"
         showTableTitle={true}
         pageTitle={`Invoice payment for ${
-          payment[0]?.student_fullname || "---"
+          filterPayment()?.data?.student_fullname || "---"
+        } - ₦${
+          apiServices.formatNumberWithCommas(
+            filterPayment()?.data?.payment[0]?.total_amount ?? "0"
+          ) || "---"
         }`}
         isLoading={paymentLoading}
         columns={[
@@ -107,7 +115,7 @@ const PaymentDetails = () => {
           //   accessor: "remark",
           // },
         ]}
-        data={filterPayment()}
+        data={filterPayment()?.payment}
       />
     </div>
   );

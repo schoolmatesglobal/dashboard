@@ -209,6 +209,7 @@ export const useStudent = () => {
           errorHandler(err);
         },
         select: (data) => {
+          // console.log({ data });
           return apiServices.formatData(data)?.map((data) => ({
             ...data,
             amount_due: (

@@ -59,7 +59,7 @@ export const useAccounts = () => {
       enabled: permission?.myPayment,
       // select: apiServices.formatData,
       select: (data) => {
-        // console.log({ data });
+        console.log({ data });
         // const format = apiServices.formatData(data)?.map((bank, i) => {
         //   return {
         //     ...bank,
