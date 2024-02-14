@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-formid";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { Col, Row } from "reactstrap";
 import AuthInput from "../../../components/inputs/auth-input";
@@ -12,9 +12,10 @@ import { useStudent } from "../../../hooks/useStudent";
 import { useInvoices } from "../../../hooks/useInvoice";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAccounts } from "../../../hooks/useAccounts";
+import queryKeys from "../../../utils/queryKeys";
 
-const PaymentDetail = () => {
-  const { apiServices } = useAppContext();
+const PaymentEdit = () => {
+  const { permission, apiServices, errorHandler } = useAppContext("accounts");
   const {
     handleSubmit,
     errors,
@@ -42,7 +43,28 @@ const PaymentDetail = () => {
 
   const [amount, setAmount] = useState("");
 
-  const { paymentLoading, payment } = useAccounts();
+  const { id } = useParams();
+
+  // const {
+  //   isLoading: paymentByIdLoading,
+  //   data: paymentById,
+  //   refetch: refetchPaymentById,
+  // } = useQuery([queryKeys.GET_PAYMENT_BY_ID], apiServices?.getPaymentById(id), {
+  //   // enabled: false,
+  //   enabled: !!id,
+  //   // select: apiServices.formatData,
+  //   select: (data) => {
+  //     console.log({ datap: data });
+
+  //     return data?.data;
+  //   },
+  // });
+
+  const {
+    isLoading: paymentLoading,
+    payment,
+    handleUpdatePayment,
+  } = useAccounts();
 
   const { data: sessions } = useAcademicSession();
   const { isLoading: loadStudent, studentData, isEdit } = useStudent();
@@ -54,8 +76,6 @@ const PaymentDetail = () => {
     pdfExportComponent,
     user,
   } = useInvoices();
-
-  const { id } = useParams();
 
   function fi() {
     return invoicesList?.find((iv) => iv?.id === id);
@@ -115,18 +135,30 @@ const PaymentDetail = () => {
       total_amount: amount,
       type: data?.payment_type,
     });
-    console.log({
-      student_id: filteredInvoice?.student_id,
-      invoice_id: filteredInvoice?.id,
-      bank_name: data?.bank_name,
-      account_name: data?.account_name,
-      student_fullname: filteredInvoice?.fullname,
-      payment_method: data?.payment_method,
-      amount_paid: data?.amount_paid,
-      total_amount: amount,
-      type: data?.payment_type,
-    });
+
+    // console.log({
+    //   student_id: filteredInvoice?.student_id,
+    //   invoice_id: filteredInvoice?.id,
+    //   bank_name: data?.bank_name,
+    //   account_name: data?.account_name,
+    //   student_fullname: filteredInvoice?.fullname,
+    //   payment_method: data?.payment_method,
+    //   amount_paid: data?.amount_paid,
+    //   total_amount: amount,
+    //   type: data?.payment_type,
+    // });
   };
+
+  function findPaymentById() {
+    if (payment?.length > 0) {
+      const pt = payment?.filter(
+        (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
+      );
+      return pt[0];
+    } else {
+      return [];
+    }
+  }
 
   function filterPayment() {
     if (payment?.length > 0) {
@@ -184,12 +216,19 @@ const PaymentDetail = () => {
     }
   }, [invoicesList, amount]);
 
-  console.log({ filteredInvoice, amount, fp, payment });
+  console.log({
+    filteredInvoice,
+    amount,
+    fp,
+    payment,
+    pm: permission?.myPayment,
+    id,
+  });
 
   return (
     <DetailView
-      isLoading={isLoading || invoicesLoading}
-      pageTitle='Make Payment'
+      isLoading={isLoading || invoicesLoading || paymentLoading}
+      pageTitle='Edit Payment'
       onFormSubmit={handleSubmit(onSubmit)}
     >
       <Row className='mb-0 mb-sm-4'>
@@ -290,6 +329,7 @@ const PaymentDetail = () => {
             label='Amount Paid'
             type='number'
             required
+            min={0}
             // hasError={!!errors.amount_paid}
             {...getFieldProps("amount_paid")}
           />
@@ -359,4 +399,4 @@ const PaymentDetail = () => {
   );
 };
 
-export default PaymentDetail;
+export default PaymentEdit;

@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { toast } from "react-toastify";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 export const useAccounts = () => {
   const [indexStatus, setIndexStatus] = useState("my-invoice");
+
+  const { id } = useParams();
+
+  const isEdit = !!id;
+
+  console.log({ isEdit });
   // const [indexStatus, setIndexStatus] = useState("fee-history");
-  const { permission, apiServices, user } = useAppContext("accounts");
+  const { permission, apiServices, errorHandler, user } =
+    useAppContext("accounts");
 
   const { isLoading: feeHistoryLoading, data: feeHistory } = useQuery(
     [queryKeys.GET_FEE_HISTORY],
@@ -52,32 +61,42 @@ export const useAccounts = () => {
       select: apiServices.formatData,
     }
   );
-  const { isLoading: paymentLoading, data: payment } = useQuery(
-    [queryKeys.GET_PAYMENT],
-    apiServices.getPayment,
-    {
-      enabled: permission?.myPayment,
-      // select: apiServices.formatData,
-      select: (data) => {
-        console.log({ data });
-        // const format = apiServices.formatData(data)?.map((bank, i) => {
-        //   return {
-        //     ...bank,
-        //     sn: i + 1,
-        //   };
-        // });
 
-        return data?.data;
+  const {
+    isLoading: paymentLoading,
+    data: payment,
+    refetch: refetchPayment,
+  } = useQuery([queryKeys.GET_PAYMENT], apiServices.getPayment, {
+    enabled: permission?.myPayment,
+    // select: apiServices.formatData,
+    select: (data) => {
+      // console.log({ data });
+
+      return data?.data;
+    },
+  });
+
+
+
+  const { mutateAsync: updatePayment, isLoading: updatePaymentLoading } =
+    useMutation(apiServices.updatePayment, {
+      onSuccess(data) {
+        toast.success("Payment has been updated successfully");
       },
-    }
-  );
+      onError(err) {
+        errorHandler(err);
+      },
+    });
+
+  const handleUpdatePayment = async (data) => await updatePayment(data);
 
   const isLoading =
     feeHistoryLoading ||
     previousInvoiceLoading ||
     // invoiceLoading ||
     chartaccountLoading ||
-    paymentLoading;
+    paymentLoading ||
+    updatePaymentLoading;
   // invoicesLoading;
 
   return {
@@ -94,5 +113,6 @@ export const useAccounts = () => {
     getInvoiceRefetch,
     user,
     apiServices,
+    handleUpdatePayment,
   };
 };

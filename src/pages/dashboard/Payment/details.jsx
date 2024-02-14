@@ -16,10 +16,10 @@ const PaymentDetails = () => {
     return [
       {
         title: "Edit Payment",
-        onClick: () => {
-          console.log("hello");
-        },
-        // onClick: (id) => navigate(`/app/payment/${id}`),
+        // onClick: () => {
+        //   console.log("hello");
+        // },
+        onClick: (id) => navigate(`/app/payment/edit/${id}`),
       },
     ];
   };

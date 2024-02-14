@@ -690,8 +690,31 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async getPaymentById(id) {
+    const { data } = await axios.get(`${backendAPI}/payment/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async postPayment(body) {
     const { data } = await axios.post(`${backendAPI}/payment`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async updatePayment({ id, ...body }) {
+    const { data } = await axios.patch(`${backendAPI}/payment/${id}`, body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${super.getToken()}`,
@@ -774,7 +797,6 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
-
     return data;
   }
 
