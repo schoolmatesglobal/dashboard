@@ -75,25 +75,25 @@ const PaymentEdit = () => {
     handleUpdatePayment,
   } = useAccounts();
 
-  const { data: sessions } = useAcademicSession();
-  const { isLoading: loadStudent, studentData } = useStudent();
-  const {
-    isLoading: invoicesLoading,
-    invoicesList,
-    // apiServices,
-    handlePrint,
-    pdfExportComponent,
-    user,
-  } = useInvoices();
+  // const { data: sessions } = useAcademicSession();
+  // const { isLoading: loadStudent, studentData } = useStudent();
+  // const {
+  //   isLoading: invoicesLoading,
+  //   invoicesList,
+  //   // apiServices,
+  //   handlePrint,
+  //   pdfExportComponent,
+  //   user,
+  // } = useInvoices();
 
-  function fi() {
-    return invoicesList?.find((iv) => iv?.id === id);
-  }
+  // function fi() {
+  //   return invoicesList?.find((iv) => iv?.id === id);
+  // }
 
-  let calcAmount = 0;
-  let calcAmount2 = 0;
+  // let calcAmount = 0;
+  // let calcAmount2 = 0;
 
-  const filteredInvoice = fi();
+  // const filteredInvoice = fi();
 
   const { isLoading, mutate: createPayment } = useMutation(
     apiServices.postPayment,
@@ -155,42 +155,42 @@ const PaymentEdit = () => {
       type: data?.payment_type,
     });
 
-    console.log({
-      id: paymentById?.id,
-      total_amount: amount,
-      bank_name: data?.bank_name,
-      account_name: data?.account_name,
-      payment_method: data?.payment_method,
-      amount_paid: data?.amount_paid,
-      type: data?.payment_type,
-    });
+    // console.log({
+    //   id: paymentById?.id,
+    //   total_amount: amount,
+    //   bank_name: data?.bank_name,
+    //   account_name: data?.account_name,
+    //   payment_method: data?.payment_method,
+    //   amount_paid: data?.amount_paid,
+    //   type: data?.payment_type,
+    // });
   };
 
-  function filterPayment() {
-    if (payment?.length > 0) {
-      const pt = payment?.filter(
-        (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
-      );
-      return pt[0]?.payment?.map((py, i) => {
-        calcAmount2 = calcAmount2 + Number(py?.amount_paid);
-        return {
-          ...py,
-          amount_paid: `₦${apiServices.formatNumberWithCommas(
-            py?.amount_paid
-          )}`,
-          total_amount: `₦${apiServices.formatNumberWithCommas(
-            py?.total_amount
-          )}`,
-          sum_amount: calcAmount2,
-          // sum_amount: `₦${apiServices.formatNumberWithCommas(calcAmount2)}`,
-        };
-      });
-    } else {
-      return [];
-    }
-  }
+  // function filterPayment() {
+  //   if (payment?.length > 0) {
+  //     const pt = payment?.filter(
+  //       (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
+  //     );
+  //     return pt[0]?.payment?.map((py, i) => {
+  //       calcAmount2 = calcAmount2 + Number(py?.amount_paid);
+  //       return {
+  //         ...py,
+  //         amount_paid: `₦${apiServices.formatNumberWithCommas(
+  //           py?.amount_paid
+  //         )}`,
+  //         total_amount: `₦${apiServices.formatNumberWithCommas(
+  //           py?.total_amount
+  //         )}`,
+  //         sum_amount: calcAmount2,
+  //         // sum_amount: `₦${apiServices.formatNumberWithCommas(calcAmount2)}`,
+  //       };
+  //     });
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
-  const fp = filterPayment() ?? [];
+  // const fp = filterPayment() ?? [];
 
   useEffect(() => {
     if (isEdit) {
@@ -244,7 +244,7 @@ const PaymentEdit = () => {
   return (
     <DetailView
       isLoading={
-        isLoading || invoicesLoading || paymentLoading || paymentByIdLoading
+        isLoading || paymentLoading || paymentByIdLoading
       }
       pageTitle='Edit Payment'
       onFormSubmit={handleSubmit(onSubmit)}
