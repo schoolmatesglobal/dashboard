@@ -154,6 +154,8 @@ const Invoices = () => {
         ? newListBySession
         : sorted === true && sortBy === "admission-number"
         ? newListByAdmissionNo
+        : sorted === false
+        ? allData
         : allData,
     creditors:
       sorted === true && sortBy === "class"
@@ -217,6 +219,11 @@ const Invoices = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.status]);
 
+  useEffect(() => {
+    setAllData(newList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoicesList]);
+
   // function checkPaymentStatus(invoiceId) {
   //   const pt = payment?.filter(
   //     (pi) => Number(pi?.invoice_id) === Number(invoiceId)
@@ -245,6 +252,7 @@ const Invoices = () => {
   };
 
   console.log({
+    allData,
     session,
     sorted,
     admissionNumber,
