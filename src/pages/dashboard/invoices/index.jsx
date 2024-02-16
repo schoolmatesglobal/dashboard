@@ -27,6 +27,8 @@ const Invoices = () => {
       return "Fully Paid";
     } else if (Number(amt) > Number(pay)) {
       return "Partly Paid";
+    } else {
+      return "Fully Paid";
     }
   }
 
@@ -127,7 +129,7 @@ const Invoices = () => {
           accessor: "payment_status",
         },
 
-             {
+        {
           Header: "Term",
           accessor: "term",
         },

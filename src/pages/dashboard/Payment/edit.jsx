@@ -15,7 +15,7 @@ import { useAccounts } from "../../../hooks/useAccounts";
 import queryKeys from "../../../utils/queryKeys";
 
 const PaymentEdit = () => {
-  const { permission, apiServices, errorHandler } = useAppContext("accounts");
+  const { permission, apiServices, errorHandler } = useAppContext();
   const {
     handleSubmit,
     errors,
@@ -29,7 +29,7 @@ const PaymentEdit = () => {
       term: "",
       bank_name: "",
       account_name: "",
-      invoice_id: "",
+      invoice_number: "",
       student_fullname: "",
       payment_method: "",
       amount_paid: "",
@@ -45,20 +45,29 @@ const PaymentEdit = () => {
 
   const { id } = useParams();
 
-  // const {
-  //   isLoading: paymentByIdLoading,
-  //   data: paymentById,
-  //   refetch: refetchPaymentById,
-  // } = useQuery([queryKeys.GET_PAYMENT_BY_ID], apiServices?.getPaymentById(id), {
-  //   // enabled: false,
-  //   enabled: !!id,
-  //   // select: apiServices.formatData,
-  //   select: (data) => {
-  //     console.log({ datap: data });
+  const isEdit = !!id;
 
-  //     return data?.data;
-  //   },
-  // });
+  const {
+    isLoading: paymentByIdLoading,
+    data: paymentById,
+    refetch: refetchPaymentById,
+  } = useQuery(
+    [queryKeys.GET_PAYMENT_BY_ID],
+    () => apiServices.getPaymentById(id),
+    {
+      enabled: !!id,
+      // select: apiServices.formatData,
+      select: (data) => {
+        // console.log({ datap: data });
+
+        // return data?.data;
+        return {
+          id: data?.data?.id,
+          ...data?.data?.attributes,
+        };
+      },
+    }
+  );
 
   const {
     isLoading: paymentLoading,
@@ -67,7 +76,7 @@ const PaymentEdit = () => {
   } = useAccounts();
 
   const { data: sessions } = useAcademicSession();
-  const { isLoading: loadStudent, studentData, isEdit } = useStudent();
+  const { isLoading: loadStudent, studentData } = useStudent();
   const {
     isLoading: invoicesLoading,
     invoicesList,
@@ -124,41 +133,38 @@ const PaymentEdit = () => {
       toast.error(`Amount paid is greater than Outstanding Amount`);
       return;
     }
-    createPayment({
-      student_id: filteredInvoice?.student_id,
-      invoice_id: filteredInvoice?.id,
+    // createPayment({
+    //   student_id: filteredInvoice?.student_id,
+    //   invoice_number: filteredInvoice?.id,
+    //   student_fullname: filteredInvoice?.fullname,
+    //   total_amount: amount,
+    //   bank_name: data?.bank_name,
+    //   account_name: data?.account_name,
+    //   payment_method: data?.payment_method,
+    //   amount_paid: data?.amount_paid,
+    //   type: data?.payment_type,
+    // });
+
+    handleUpdatePayment({
+      id: paymentById?.id,
+      total_amount: amount,
       bank_name: data?.bank_name,
       account_name: data?.account_name,
-      student_fullname: filteredInvoice?.fullname,
       payment_method: data?.payment_method,
       amount_paid: data?.amount_paid,
-      total_amount: amount,
       type: data?.payment_type,
     });
 
-    // console.log({
-    //   student_id: filteredInvoice?.student_id,
-    //   invoice_id: filteredInvoice?.id,
-    //   bank_name: data?.bank_name,
-    //   account_name: data?.account_name,
-    //   student_fullname: filteredInvoice?.fullname,
-    //   payment_method: data?.payment_method,
-    //   amount_paid: data?.amount_paid,
-    //   total_amount: amount,
-    //   type: data?.payment_type,
-    // });
+    console.log({
+      id: paymentById?.id,
+      total_amount: amount,
+      bank_name: data?.bank_name,
+      account_name: data?.account_name,
+      payment_method: data?.payment_method,
+      amount_paid: data?.amount_paid,
+      type: data?.payment_type,
+    });
   };
-
-  function findPaymentById() {
-    if (payment?.length > 0) {
-      const pt = payment?.filter(
-        (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
-      );
-      return pt[0];
-    } else {
-      return [];
-    }
-  }
 
   function filterPayment() {
     if (payment?.length > 0) {
@@ -190,44 +196,56 @@ const PaymentEdit = () => {
     if (isEdit) {
       setInputs({
         ...inputs,
-        student_fullname: filteredInvoice?.fullname,
-        invoice_id: filteredInvoice?.invoice_no,
-        class: filteredInvoice?.class,
-        admission_number: filteredInvoice?.admission_number,
-        term: filteredInvoice?.term,
-        session: filteredInvoice?.session,
+        student_fullname: paymentById?.student_fullname,
+        invoice_number: paymentById?.invoice_number,
+        class: paymentById?.class,
+        admission_number: paymentById?.admission_number,
+        term: paymentById?.term,
+        session: paymentById?.session,
+        amount_paid: paymentById?.amount_paid,
+        payment_type: paymentById?.type,
+        payment_method: paymentById?.payment_method,
+        account_name: paymentById?.account_name,
+        bank_name: paymentById?.bank_name,
+
+        // total_amount:
       });
     }
+
+    setAmount(paymentById?.total_amount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEdit, studentData]);
+  }, [paymentById]);
 
-  useEffect(() => {
-    if (filteredInvoice?.fee?.length > 0) {
-      fi()?.fee?.forEach((fi, i) => {
-        calcAmount =
-          (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
+  // useEffect(() => {
+  //   if (filteredInvoice?.fee?.length > 0) {
+  //     fi()?.fee?.forEach((fi, i) => {
+  //       calcAmount =
+  //         (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
 
-        let dc = fp[fp?.length - 1]?.sum_amount ?? 0;
+  //       let dc = fp[fp?.length - 1]?.sum_amount ?? 0;
 
-        let cc = (calcAmount - dc).toString();
+  //       let cc = (calcAmount - dc).toString();
 
-        setAmount(cc);
-      });
-    }
-  }, [invoicesList, amount]);
+  //       setAmount(cc);
+  //     });
+  //   }
+  // }, [amount]);
 
-  console.log({
-    filteredInvoice,
-    amount,
-    fp,
-    payment,
-    pm: permission?.myPayment,
-    id,
-  });
+  // console.log({
+  //   paymentById,
+  //   filteredInvoice,
+  //   amount,
+  //   fp,
+  //   payment,
+  //   pm: permission?.myPayment,
+  //   id: !!id,
+  // });
 
   return (
     <DetailView
-      isLoading={isLoading || invoicesLoading || paymentLoading}
+      isLoading={
+        isLoading || invoicesLoading || paymentLoading || paymentByIdLoading
+      }
       pageTitle='Edit Payment'
       onFormSubmit={handleSubmit(onSubmit)}
     >
@@ -237,11 +255,11 @@ const PaymentEdit = () => {
             disabled
             // required
             label='Invoice Number'
-            // hasError={!!errors.invoice_id}
-            {...getFieldProps("invoice_id")}
+            // hasError={!!errors.invoice_number}
+            {...getFieldProps("invoice_number")}
           />
-          {/* {!!errors.invoice_id && (
-            <p className="error-message">{errors.invoice_id}</p>
+          {/* {!!errors.invoice_number && (
+            <p className="error-message">{errors.invoice_number}</p>
           )} */}
         </Col>
         <Col sm='6' className='mb-4 mb-sm-0'>
@@ -263,11 +281,11 @@ const PaymentEdit = () => {
             disabled
             // required
             label='Class'
-            // hasError={!!errors.invoice_id}
+            // hasError={!!errors.invoice_number}
             {...getFieldProps("class")}
           />
-          {/* {!!errors.invoice_id && (
-            <p className="error-message">{errors.invoice_id}</p>
+          {/* {!!errors.invoice_number && (
+            <p className="error-message">{errors.invoice_number}</p>
           )} */}
         </Col>
         <Col sm='6' className='mb-4 mb-sm-0'>
@@ -289,11 +307,11 @@ const PaymentEdit = () => {
             disabled
             // required
             label='Term'
-            // hasError={!!errors.invoice_id}
+            // hasError={!!errors.invoice_number}
             {...getFieldProps("term")}
           />
-          {/* {!!errors.invoice_id && (
-            <p className="error-message">{errors.invoice_id}</p>
+          {/* {!!errors.invoice_number && (
+            <p className="error-message">{errors.invoice_number}</p>
           )} */}
         </Col>
         <Col sm='6' className='mb-4 mb-sm-0'>

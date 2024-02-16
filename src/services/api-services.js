@@ -691,8 +691,8 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getPaymentById(id) {
-    const { data } = await axios.get(`${backendAPI}/payment/${id}`, {
+  async getPaymentById(paymentId) {
+    const { data } = await axios.get(`${backendAPI}/payment/${paymentId}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${super.getToken()}`,

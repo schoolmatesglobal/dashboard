@@ -81,11 +81,8 @@ const PaymentDetail = () => {
 
   const onSubmit = (data) => {
     if (
-      !inputs?.amount_paid ||
-      !inputs?.payment_method ||
-      !inputs?.bank_name ||
-      !inputs?.account_name ||
-      !inputs?.payment_type
+      inputs.payment_method === "Physical Cash" &&
+      (!inputs?.amount_paid || !inputs?.payment_method || !inputs?.payment_type)
     ) {
       // setFeeError("feetype");
       toast.error(`Please add required field`);
@@ -93,28 +90,48 @@ const PaymentDetail = () => {
     }
     if (
       inputs.payment_method !== "Physical Cash" &&
-      (!inputs?.amount_paid || !inputs?.payment_method || !inputs?.payment_type)
+      (!inputs?.amount_paid ||
+        !inputs?.payment_method ||
+        !inputs?.bank_name ||
+        !inputs?.account_name ||
+        !inputs?.payment_type)
     ) {
       // setFeeError("feetype");
       toast.error(`Please add required field`);
       return;
     }
+
     if (Number(inputs.amount_paid) > Number(amount)) {
       // setFeeError("feetype");
       toast.error(`Amount paid is greater than Outstanding Amount`);
       return;
     }
-    createPayment({
-      student_id: filteredInvoice?.student_id,
-      invoice_id: filteredInvoice?.id,
-      bank_name: data?.bank_name,
-      account_name: data?.account_name,
-      student_fullname: filteredInvoice?.fullname,
-      payment_method: data?.payment_method,
-      amount_paid: data?.amount_paid,
-      total_amount: amount,
-      type: data?.payment_type,
-    });
+
+    if (inputs.payment_method === "Physical Cash") {
+      createPayment({
+        student_id: filteredInvoice?.student_id,
+        invoice_id: filteredInvoice?.id,
+        bank_name: "none",
+        account_name: "none",
+        student_fullname: filteredInvoice?.fullname,
+        payment_method: data?.payment_method,
+        amount_paid: data?.amount_paid,
+        total_amount: amount,
+        type: data?.payment_type,
+      });
+    } else {
+      createPayment({
+        student_id: filteredInvoice?.student_id,
+        invoice_id: filteredInvoice?.id,
+        bank_name: data?.bank_name,
+        account_name: data?.account_name,
+        student_fullname: filteredInvoice?.fullname,
+        payment_method: data?.payment_method,
+        amount_paid: data?.amount_paid,
+        total_amount: amount,
+        type: data?.payment_type,
+      });
+    }
     console.log({
       student_id: filteredInvoice?.student_id,
       invoice_id: filteredInvoice?.id,
