@@ -130,6 +130,10 @@ export const getColumns = ({ indexStatus }) => {
     case "loginDetails":
       return [
         {
+          Header: "id",
+          accessor: "id",
+        },
+        {
           Header: "First Name",
           accessor: "firstname",
         },
@@ -141,13 +145,14 @@ export const getColumns = ({ indexStatus }) => {
           Header: "Middle Name",
           accessor: "middlename",
         },
-        {
-          Header: "Admission Number",
-          accessor: "admission_number",
-        },
+
         {
           Header: "Present Class",
           accessor: "present_class",
+        },
+        {
+          Header: "User Name",
+          accessor: "admission_number",
         },
         {
           Header: "Password",

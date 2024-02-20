@@ -87,7 +87,7 @@ const DashboardLayout = () => {
     }
   };
 
-  console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
+  // console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
   return (
     <div className='dashboard-layout-wrapper'>

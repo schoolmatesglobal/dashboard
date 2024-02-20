@@ -84,7 +84,7 @@ const BankDetail = () => {
     }
   }, [isEdit, bank]);
 
-  console.log({ bank, filteredBank, isEdit });
+  // console.log({ bank, filteredBank, isEdit });
 
   return (
     <DetailView

@@ -177,7 +177,7 @@ const ComputeElementarySecondHalfResult = () => {
             </Col>
           </Row>
         )}
-        {user?.teacher_type === "class teacher" && (
+        {/* {user?.teacher_type === "class teacher" && (
           <Row className='mb-0 mb-sm-4'>
             <Col sm='6' className='mb-4 mb-sm-0'>
               <AuthInput
@@ -193,7 +193,7 @@ const ComputeElementarySecondHalfResult = () => {
               />
             </Col>
           </Row>
-        )}
+        )} */}
         <hr className='my-5' />
 
         <PageTitle>

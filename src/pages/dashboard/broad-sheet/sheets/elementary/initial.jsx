@@ -128,7 +128,7 @@ const ElementaryInitialBroadSheet = () => {
   //   updatedStudentsData,
   // });
   // console.log({ fm2, fm3, subs2: subs2(), broadSheetResults });
-  console.log({ changeTableStyle });
+  // console.log({ changeTableStyle });
 
   return (
     <div className=''>

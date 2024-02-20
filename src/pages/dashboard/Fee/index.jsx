@@ -42,7 +42,7 @@ const FeeList = () => {
   );
 
 
-  console.log({ Fee });
+  // console.log({ Fee });
 
   return (
     <PageView

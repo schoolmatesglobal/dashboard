@@ -285,11 +285,11 @@ const InvoiceDetail = () => {
         fee: [...fees],
       });
 
-      console.log({
-        id: invoiceId,
-        due_date: data?.due_date,
-        fee: [...fees],
-      });
+      // console.log({
+      //   id: invoiceId,
+      //   due_date: data?.due_date,
+      //   fee: [...fees],
+      // });
     } else {
       createInvoicePost({
         body: {

@@ -110,9 +110,15 @@ const StaffDetail = () => {
         !inputs.department ||
         !inputs.campus ||
         !inputs.email ||
-        !inputs.designation_id ||
-        !inputs.class_assigned) &&
+        !inputs.designation_id) &&
       user?.designation_name !== "Superadmin"
+    ) {
+      return toast.error("Please fill all required fields");
+    }
+    if (
+      inputs?.designation_id === "4" &&
+      user?.designation_name !== "Superadmin" &&
+      !inputs.class_assigned
     ) {
       return toast.error("Please fill all required fields");
     }
@@ -138,7 +144,7 @@ const StaffDetail = () => {
   }, [staffData]);
 
   // console.log({ di: inputs?.designation_id });
-  console.log({ user });
+  console.log({ user, inputs });
 
   return (
     <DetailView
@@ -344,11 +350,11 @@ const StaffDetail = () => {
           </Col>
         )}
         {/* assign preschool class */}
-        {user?.designation_name !== "Superadmin" &&
+        {user?.designation_name !== "Superadmin" && (
           <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthSelect
               label='Assign Class'
-              required
+              required={inputs?.designation_id === "4"}
               value={inputs.class_assigned}
               name='class_assigned'
               hasError={!!errors.class_assigned}
@@ -368,7 +374,7 @@ const StaffDetail = () => {
               <p className='error-message'>{errors.class_assigned}</p>
             )}
           </Col>
-        }
+        )}
 
         <Col
           sm='6'

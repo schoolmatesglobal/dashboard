@@ -136,7 +136,7 @@ const Accounts = () => {
       {
         title: "View / Print Invoice",
         onClick: (id) => {
-          console.log({ id });
+          // console.log({ id });
           navigate(`/app/invoices/fees/${id}`);
         },
       },
@@ -265,19 +265,19 @@ const Accounts = () => {
     },
   };
 
-  console.log({
-    lastSection,
-    currentSection,
-    // indexStatus,
-    // feeHistory,
-    // invoice,
-    // previousInvoice,
-    // invoicesList,
-    // user,
-    // filteredInvoice,
-    // filteredFee,
-    // filteredAllInvoice,
-  });
+  // console.log({
+  //   // lastSection,
+  //   // currentSection,
+  //   // indexStatus,
+  //   // feeHistory,
+  //   // invoice,
+  //   // previousInvoice,
+  //   // invoicesList,
+  //   // user,
+  //   // filteredInvoice,
+  //   // filteredFee,
+  //   // filteredAllInvoice,
+  // });
 
   return (
     <div className=''>

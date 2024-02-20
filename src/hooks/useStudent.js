@@ -77,7 +77,7 @@ export const useStudent = () => {
       admission_number: { required: true },
       // genotype: { required: true },
       // blood_group: { required: true },
-      // gender: { required: true },
+      gender: { required: true },
       dob: { required: true },
       // nationality: { required: true },
       // state: { required: true },

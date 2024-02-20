@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import StudentsResults from "../../../../../../components/common/students-results";
 import PageSheet from "../../../../../../components/common/page-sheet";
 import Button from "../../../../../../components/buttons/button";
@@ -29,6 +29,8 @@ const ElementaryFirstHalfSheet = () => {
   } = useResults();
 
   const { studentByClass2 } = useStudent();
+
+  const [changeTableStyle, setChangeTableStyle] = useState(false);
 
   const midTermMax = () => {
     let value;
@@ -117,9 +119,15 @@ const ElementaryFirstHalfSheet = () => {
         <div className='d-flex flex-column flex-md-row  justify-content-md-between mb-3'>
           <Button
             onClick={() => {
-              if (pdfExportComponent.current) {
-                handlePrint();
-              }
+              setChangeTableStyle(true);
+              setTimeout(() => {
+                if (pdfExportComponent.current) {
+                  handlePrint();
+                }
+              }, 1000);
+              setTimeout(() => {
+                setChangeTableStyle(false);
+              }, 3000);
             }}
           >
             <FontAwesomeIcon icon={faPrint} /> Print
@@ -151,8 +159,15 @@ const ElementaryFirstHalfSheet = () => {
           ref={pdfExportComponent}
           className='first-level-results-sheet preschool first-half'
         >
-          <ResultHeader user={user} />
-          <div className='preschool-result-table'>
+          <ResultHeader changeTableStyle={changeTableStyle} user={user} />
+
+          <div
+            className={`${
+              changeTableStyle
+                ? "preschool-result-table"
+                : "preschool-result-table2"
+            }`}
+          >
             <div className='table-head'>
               <h3
                 style={{
@@ -178,7 +193,15 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>Name:</span>{" "}
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Name:
+                    </span>{" "}
                     {studentData?.firstname} {studentData?.surname}{" "}
                     {studentData?.middlename}
                   </h4>
@@ -193,7 +216,15 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>Admission No.:</span>{" "}
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Admission No.:
+                    </span>{" "}
                     {studentData?.admission_number}
                   </h4>
                 </div>
@@ -207,7 +238,15 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>Term:</span>{" "}
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Term:
+                    </span>{" "}
                     {locationState?.creds?.term}
                   </h4>
                 </div>
@@ -227,8 +266,16 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>Term Half:</span> FIRST
-                    HALF
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Term Half:
+                    </span>{" "}
+                    FIRST HALF
                   </h4>
                 </div>
                 <div className='table-data'>
@@ -241,7 +288,15 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>School Section:</span>{" "}
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      School Section:
+                    </span>{" "}
                     {user?.campus}
                   </h4>
                 </div>
@@ -255,7 +310,15 @@ const ElementaryFirstHalfSheet = () => {
                       // fontStyle: "italic"
                     }}
                   >
-                    <span style={{ color: "green" }}>Class:</span>{" "}
+                    <span
+                      style={{
+                        color: "green",
+                        fontSize: "15px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Class:
+                    </span>{" "}
                     {`${studentData?.present_class} ${studentData?.sub_class}`}
                   </h4>
                 </div>

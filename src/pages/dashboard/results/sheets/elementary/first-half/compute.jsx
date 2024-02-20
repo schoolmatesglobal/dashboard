@@ -145,6 +145,7 @@ const ComputeElementaryFirstHalfResult = () => {
                 <Col sm='6' className='mb-1 mb-sm-0'>
                   <AuthInput
                     value={x.grade}
+                    // placeholder='0'
                     onChange={({ target: { value } }) => {
                       if (Number.isNaN(Number(value))) return;
 

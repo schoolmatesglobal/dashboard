@@ -45,6 +45,7 @@ const StudentDetail = () => {
     graduateStudent,
     campusList,
     permission,
+    user,
   } = useStudent();
 
   // const {
@@ -164,7 +165,21 @@ const StudentDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentData]);
 
+  function showGraduateButton() {
+    if (user?.designation_id === "4") {
+      return user?.teacher_type === "class teacher" ? true : false;
+    } else if (user?.designation_id !== "4") {
+      return true;
+    }
+  }
+
   // console.log({ db: studentData?.dob, gp: getFieldProps("dob") });
+  // console.log({
+  //   user,
+  //   showGraduateButton: showGraduateButton(),
+  //   ss: studentData?.status,
+  //   pg: permission?.graduateStudent
+  // });
 
   return (
     <DetailView
@@ -173,30 +188,34 @@ const StudentDetail = () => {
       pageTitle={isEdit ? "Edit Student" : "Add Student"}
       onFormSubmit={handleSubmit(onSubmit)}
     >
-      {isEdit && permission?.withdraw && (
+      {isEdit && (
         <div className='mb-5 d-flex justify-content-end gap-3'>
-          <Button
-            type='button'
-            disabled={isLoading}
-            isLoading={isLoading}
-            variant={studentStatus().variant}
-            onClick={toggleModal}
-          >
-            <FontAwesomeIcon icon={studentStatus().icon} className='me-2' />{" "}
-            {studentStatus().text}
-          </Button>
-          {studentData?.status !== "graduated" && (
+          {permission?.withdraw && (
             <Button
               type='button'
               disabled={isLoading}
               isLoading={isLoading}
-              variant='dark'
-              onClick={() => graduateStudent({ id: studentData.id })}
+              variant={studentStatus().variant}
+              onClick={toggleModal}
             >
-              <FontAwesomeIcon icon={faUserGraduate} className='me-2' />{" "}
-              Graduate Student
+              <FontAwesomeIcon icon={studentStatus().icon} className='me-2' />{" "}
+              {studentStatus().text}
             </Button>
           )}
+          {permission?.graduateStudent &&
+            studentData?.status !== "graduated" &&
+            showGraduateButton() && (
+              <Button
+                type='button'
+                disabled={isLoading}
+                isLoading={isLoading}
+                variant='dark'
+                onClick={() => graduateStudent({ id: studentData.id })}
+              >
+                <FontAwesomeIcon icon={faUserGraduate} className='me-2' />{" "}
+                Graduate Student
+              </Button>
+            )}
         </div>
       )}
 
@@ -355,6 +374,7 @@ const StudentDetail = () => {
             label='Gender'
             value={inputs.gender}
             name='gender'
+            required
             hasError={!!errors.gender}
             onChange={handleChange}
             options={[
