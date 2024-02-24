@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import PageView from "../../../components/views/table-view";
-import { useInvoices } from "../../../hooks/useInvoice";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import PageView from "../../../components/views/table-view";
+import { useAcademicSession } from "../../../hooks/useAcademicSession";
+import { useAccounts } from "../../../hooks/useAccounts";
+import { useClasses } from "../../../hooks/useClasses";
+import { useInvoices } from "../../../hooks/useInvoice";
+import { useStudent } from "../../../hooks/useStudent";
 import {
   checkDueDate,
   getColumns,
@@ -9,10 +13,6 @@ import {
   getStudentColumns,
   searchPlaceholder,
 } from "./constant";
-import { useAccounts } from "../../../hooks/useAccounts";
-import { useClasses } from "../../../hooks/useClasses";
-import { useStudent } from "../../../hooks/useStudent";
-import { useAcademicSession } from "../../../hooks/useAcademicSession";
 
 const Invoices = () => {
   const { invoicesLoading, invoicesList } = useInvoices();
@@ -31,6 +31,7 @@ const Invoices = () => {
     sub_class: "",
   });
   const [session, setSession] = useState("");
+  const [newList, setNewList] = useState([]);
 
   const handleSortBy = ({ target: { value } }) => {
     setSortBy(value);
@@ -90,10 +91,20 @@ const Invoices = () => {
     return payment?.map((py, i) => {
       return {
         ...py,
-        invoiceId: py?.payment[0]?.invoice_id ?? "",
-        // invoice_no: getInvoiceId(py?.payment[0]?.invoice_id ?? []),
-        total_amount: py?.payment[py?.payment?.length - 1]?.total_amount ?? "",
-        amount_due: py?.payment[py?.payment?.length - 1]?.amount_due ?? "",
+
+        total_amount2:
+          `₦${apiServices.formatNumberWithCommas(
+            py?.total_amount?.toString()
+          )}` ?? "",
+        amount_due2:
+          `₦${apiServices.formatNumberWithCommas(
+            py?.amount_due?.toString()
+          )}` ?? "",
+        amount_paid: Number(py?.total_amount) - Number(py?.amount_due),
+        amount_paid2:
+          `₦${apiServices.formatNumberWithCommas(
+            Number(py?.total_amount) - Number(py?.amount_due)?.toString()
+          )}` ?? "",
       };
     });
   }
@@ -105,25 +116,6 @@ const Invoices = () => {
       ...inv,
     };
   }
-
-  const newList = invoicesList?.map((iv, i) => {
-    return {
-      ...iv,
-      invoice_status: checkDueDate(iv?.due_date),
-      // payDetails: getPaymentDetails(iv.id),
-      amount_due: getPaymentDetails(iv.id)?.amount_due,
-      payment: getPaymentDetails(iv.id)?.payment,
-      total_amount: getPaymentDetails(iv.id)?.total_amount,
-      amount_paid:
-        Number(getPaymentDetails(iv.id)?.total_amount) -
-        Number(getPaymentDetails(iv.id)?.amount_due),
-      payment_status: checkPayStatus(
-        Number(getPaymentDetails(iv.id)?.total_amount) -
-          Number(getPaymentDetails(iv.id)?.amount_due),
-        getPaymentDetails(iv.id)?.total_amount
-      ),
-    };
-  });
 
   const [allData, setAllData] = useState(newList);
 
@@ -219,11 +211,6 @@ const Invoices = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.status]);
 
-  useEffect(() => {
-    setAllData(newList);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoicesList]);
-
   // function checkPaymentStatus(invoiceId) {
   //   const pt = payment?.filter(
   //     (pi) => Number(pi?.invoice_id) === Number(invoiceId)
@@ -251,6 +238,27 @@ const Invoices = () => {
     ];
   };
 
+  useEffect(() => {
+    const nl = invoicesList?.map((iv, i) => {
+      return {
+        ...iv,
+        invoice_status: checkDueDate(iv?.due_date),
+        // payDetails: getPaymentDetails(iv.id),
+        amount_due: getPaymentDetails(iv.id)?.amount_due2,
+        payment: getPaymentDetails(iv.id)?.payment,
+        total_amount: getPaymentDetails(iv.id)?.total_amount2,
+        amount_paid: getPaymentDetails(iv.id)?.amount_paid2,
+        payment_status: checkPayStatus(
+          Number(getPaymentDetails(iv.id)?.total_amount) -
+            Number(getPaymentDetails(iv.id)?.amount_due),
+          getPaymentDetails(iv.id)?.total_amount
+        ),
+      };
+    });
+    setNewList(nl);
+    setAllData(nl);
+  }, [invoicesList, payment]);
+
   console.log({
     allData,
     session,
@@ -263,10 +271,10 @@ const Invoices = () => {
     classes,
     indexStatus,
     data,
-    // invoicesList,
+    invoicesList,
     newList,
-    // payment,
-    // newPayment,
+    payment,
+    newPayment,
   });
 
   return (
@@ -306,38 +314,6 @@ const Invoices = () => {
           setSearchParams({});
         },
       })}
-      // columns={[
-      //   {
-      //     Header: "Invoice Number",
-      //     accessor: "invoice_no",
-      //   },
-      //   {
-      //     Header: " Name",
-      //     accessor: "fullname",
-      //   },
-      //   {
-      //     Header: "Class",
-      //     accessor: "class",
-      //   },
-      //   {
-      //     Header: "Admission Number",
-      //     accessor: "admission_number",
-      //   },
-
-      //   {
-      //     Header: "Payment Status",
-      //     accessor: "payment_status",
-      //   },
-
-      //   {
-      //     Header: "Term",
-      //     accessor: "term",
-      //   },
-      //   // {
-      //   //   Header: "Session",
-      //   //   accessor: "session",
-      //   // },
-      // ]}
       columns={
         user?.designation_name === "Student"
           ? getStudentColumns({ indexStatus })

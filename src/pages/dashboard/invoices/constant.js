@@ -38,6 +38,18 @@ export const getColumns = ({ indexStatus }) => {
           Header: "Payment Status",
           accessor: "payment_status",
         },
+        // {
+        //   Header: "Total Amount",
+        //   accessor: "total_amount",
+        // },
+        // {
+        //   Header: "Amount Paid",
+        //   accessor: "amount_paid",
+        // },
+        // {
+        //   Header: "Amount Due",
+        //   accessor: "amount_due",
+        // },
 
         {
           Header: "Term",
