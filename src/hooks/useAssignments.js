@@ -482,7 +482,7 @@ export const useAssignments = () => {
     },
   ];
 
-  //// POST MARKED THEORY ASSIGNMENT ////
+  //// POST MARKED THEORY ASSIGNMENT ///////
   const {
     mutateAsync: submitMarkedTheoryAssignment,
     isLoading: submitMarkedTheoryAssignmentLoading,
