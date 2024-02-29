@@ -12,7 +12,6 @@ import { faHandPointer } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../../components/buttons/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useCampus } from "../../../hooks/useCampus";
 import { useClasses } from "../../../hooks/useClasses";
 
 const StaffDetail = () => {
@@ -41,7 +40,7 @@ const StaffDetail = () => {
 
   const {
     classes,
-    checkedSubjects,
+    // checkedSubjects,
     setCheckedSubjects,
     isLoading: classLoading,
     // subjectData2,

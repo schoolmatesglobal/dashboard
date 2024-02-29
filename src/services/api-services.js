@@ -2132,6 +2132,17 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getSubjectByTeacher() {
+    const { data } = await axios.get(`${backendAPI}/teacher-subject`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async getAssignment(period, term, session, question_type) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";

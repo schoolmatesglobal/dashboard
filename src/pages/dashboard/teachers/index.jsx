@@ -50,14 +50,14 @@ const Teacher = () => {
           target="_blank"
           isLink
         />
-        {/* <HomeCard
+        <HomeCard
           isBadge
           variant="green"
           title="Assignment"
           icon={faBook}
           to="/app/assignments"
           isLink
-        /> */}
+        />
         <HomeCard
           isBadge
           variant="pink"
