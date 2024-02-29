@@ -211,11 +211,11 @@ export const dashboardSideBarLinks = {
       title: "Students",
       icon: faGraduationCap,
     },
-    // {
-    //   to: "/app/assignments",
-    //   title: "Assignments",
-    //   icon: faBook,
-    // },
+    {
+      to: "/app/assignments",
+      title: "Assignments",
+      icon: faBook,
+    },
   ],
   Principal: [
     {
@@ -265,11 +265,11 @@ export const dashboardSideBarLinks = {
       title: "Results",
       icon: faBuildingColumns,
     },
-    // {
-    //   to: "/app/assignments",
-    //   title: "Assignments",
-    //   icon: faBook,
-    // },
+    {
+      to: "/app/assignments",
+      title: "Assignments",
+      icon: faBook,
+    },
     {
       to: "/app/students",
       title: "Students",

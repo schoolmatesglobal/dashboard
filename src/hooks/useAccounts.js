@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
-import { toast } from "react-toastify";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 export const useAccounts = () => {
   const [indexStatus, setIndexStatus] = useState("my-invoice");
@@ -72,11 +72,27 @@ export const useAccounts = () => {
     select: (data) => {
       // console.log({ data });
 
-      return data?.data;
+      // return data?.data;
+      return data?.data?.map((py, i) => {
+        return {
+          ...py,
+          invoiceId: py?.payment[0]?.invoice_id ?? "",
+          // invoice_no: getInvoiceId(py?.payment[0]?.invoice_id ?? []),
+          total_amount:
+            py?.payment[py?.payment?.length - 1]?.total_amount ?? "",
+          // amount_paid:
+          //   Number(py?.payment[py?.payment?.length - 1]?.total_amount) -
+          //   Number(py?.payment[py?.payment?.length - 1]?.amount_due),
+
+          // amount_due:
+          //   `₦${apiServices.formatNumberWithCommas(
+          //     py?.payment[py?.payment?.length - 1]?.amount_due?.toString()
+          //   )}` ?? "",
+          amount_due: py?.payment[py?.payment?.length - 1]?.amount_due ?? "",
+        };
+      });
     },
   });
-
-
 
   const { mutateAsync: updatePayment, isLoading: updatePaymentLoading } =
     useMutation(apiServices.updatePayment, {

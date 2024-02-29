@@ -1,8 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import PageView from "../../../components/views/table-view";
 import { useAccounts } from "../../../hooks/useAccounts";
 import { sortByDateDescending } from "./constant";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Payment = () => {
   const { paymentLoading, payment, apiServices } = useAccounts();
@@ -33,7 +33,11 @@ const Payment = () => {
           pt?.payment[0]?.total_amount
         )}`,
         id: pt?.student_id,
-        // totalAmount: pt?.payment[0]?.total_amount,
+        amountDue: `₦${apiServices.formatNumberWithCommas(
+          (
+            Number(pt?.payment[0]?.total_amount) - Number(totalAmtPaid)
+          )?.toString()
+        )}`,
       };
     });
 
@@ -88,17 +92,23 @@ const Payment = () => {
         //   accessor: "payment_method",
         // },
         {
+          Header: "Invoice Amount",
+          accessor: "totalAmount",
+        },
+
+        {
           Header: "Amount Paid",
           accessor: "totalAmtPaid",
+        },
+        {
+          Header: "Amount Due",
+          accessor: "amountDue",
         },
         // {
         //   Header: "Account Name",
         //   accessor: "account_name",
         // },
-        {
-          Header: "Invoice Amount",
-          accessor: "totalAmount",
-        },
+
         // {
         //   Header: "Bank Name",
         //   accessor: "bank_name",
