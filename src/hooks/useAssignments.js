@@ -85,8 +85,68 @@ import { useStudent } from "./useStudent";
 export const useAssignments = () => {
   const dispatch = useDispatch();
 
+  const [activeTab, setActiveTab] = useState("1");
+
+  const [objectiveQ, setObjectiveQ] = useState([]);
+  const [theoryQ, setTheoryQ] = useState([]);
+
+  const [createQ, setCreateQ] = useState({
+    option1: "",
+    option2: "",
+    option3: "",
+    option4: "",
+    total_mark: 0,
+    theory_total_mark: 0,
+    total_question: 0,
+    question_mark: 0,
+    question_number: 0,
+    ans1: false,
+    ans2: false,
+    ans3: false,
+    ans4: false,
+    answer: "",
+    // theoryAns: "",
+    question_type: "",
+    question: "",
+    subject: "",
+    image: "",
+    imageName: "",
+    term: "",
+    period: "",
+    session: "",
+    subject_id: "",
+    week: "",
+  });
+
   const {
-    activeTab,
+    option1,
+    option2,
+    option3,
+    option4,
+    total_mark,
+    theory_total_mark,
+    total_question,
+    question_mark,
+    question_number,
+    ans1,
+    ans2,
+    ans3,
+    ans4,
+    answer,
+    question_type,
+    question,
+    subject,
+    image,
+    imageName,
+    term,
+    period,
+    session,
+    subject_id,
+    week,
+  } = createQ;
+
+  const {
+    // activeTab,
     classSubjects,
 
     // CREATE
@@ -436,7 +496,7 @@ export const useAssignments = () => {
       select: (data) => {
         const dt = apiServices.formatData(data);
 
-        console.log({ sd: dt, data });
+        // console.log({ sd: dt, data });
 
         return dt;
       },
@@ -543,6 +603,15 @@ export const useAssignments = () => {
   // });
 
   return {
+    activeTab,
+    setActiveTab,
+    createQ,
+    setCreateQ,
+
+    objectiveQ,
+    theoryQ,
+    setObjectiveQ,
+    setTheoryQ,
     // isLoading,
     // assignment,
     subjectsByTeacher,
@@ -563,7 +632,7 @@ export const useAssignments = () => {
     //
 
     updateActiveTabFxn,
-    activeTab,
+    // activeTab,
     createQuestionPrompt,
     setCreateQuestionPrompt,
     //
@@ -684,5 +753,30 @@ export const useAssignments = () => {
     //
     answeredTheoryResults,
     //
+
+    option1,
+    option2,
+    option3,
+    option4,
+    total_mark,
+    theory_total_mark,
+    total_question,
+    question_mark,
+    question_number,
+    ans1,
+    ans2,
+    ans3,
+    ans4,
+    answer,
+    question_type,
+    question,
+    subject,
+    image,
+    imageName,
+    term,
+    period,
+    session,
+    subject_id,
+    week,
   };
 };

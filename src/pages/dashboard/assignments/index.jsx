@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PageSheet from "../../../components/common/page-sheet";
 import Create from "./create";
 import Submission from "./submission";
@@ -11,69 +11,21 @@ import View from "./student/view";
 import { useEffect } from "react";
 import StudentResults from "./student/studentResults";
 import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
+import Prompt from "../../../components/modals/prompt";
 
 const Assignments = () => {
-  const { updateActiveTabFxn, activeTab } = useAssignments();
   const {
-    // apiServices,
+    activeTab,
+    setActiveTab,
+    createQ,
+    setCreateQ,
+    objectiveQ,
+    theoryQ,
+    setObjectiveQ,
+    setTheoryQ,
     permission,
-    // user,
-    // errorHandler,
-    // studentSubjects,
-    //
-    // assignmentTab,
-    // updateAssignmentTabFxn,
-    //
-    // answerQuestion,
-    // updateAnswerQuestionFxn,
-    // resetAnswerQuestionFxn,
-
-    // OBJECTIVE
-    //
-    // objectiveSubmitted,
-    // updateObjectiveSubmittedFxn,
-    //
-    // setObjectiveQ,
-    // updateSetObjectiveQFxn,
-    //
-    // answeredObjectiveQ,
-    // addObjectiveAnsFxn,
-    // resetAddObjectiveAnsFxn,
-    //
-    // answeredObjectiveQ2,
-    // loadObjectiveAnsFxn,
-    // resetLoadObjectiveAnsFxn,
-    //
-    // submitObjectiveAssignment,
-    // submitObjectiveAssignmentLoading,
-    //
-    // answeredObjAssignmentLoading,
-    // refetchObjAnsweredAssignment,
-    //
-
-    // THEORY
-    //
-    // theorySubmitted,
-    // updateTheorySubmittedFxn,
-    //
-    // setTheoryQ,
-    // updateSetTheoryQFxn,
-    //
-    // answeredTheoryQ,
-    // addTheoryAnsFxn,
-    // resetTheoryAnsFxn,
-    //
-    // answeredTheoryQ2,
-    // loadTheoryAnsFxn,
-    // resetLoadTheoryAnsFxn,
-    //
-    // submitTheoryAssignment,
-    // submitTheoryAssignmentLoading,
-    //
-    // answeredTheoryAssignmentLoading,
-    // refetchTheoryAnsweredAssignment,
-    //
-  } = useStudentAssignments();
+  } = useAssignments();
+  const [clearAllPrompt, setClearAllPrompt] = useState(false);
 
   // const { apiServices, errorHandler, permission, user } =
   //   useAppContext("assignments");
@@ -117,7 +69,7 @@ const Assignments = () => {
     if (permission?.view) {
       arr.push({
         title: "View",
-        onClick: () => updateActiveTabFxn("5"),
+        onClick: () => setActiveTab("5"),
         variant: `${activeTab === "5" ? "" : "outline"}`,
       });
     }
@@ -125,7 +77,7 @@ const Assignments = () => {
     if (permission?.create) {
       arr.push({
         title: "Create",
-        onClick: () => updateActiveTabFxn("1"),
+        onClick: () => setActiveTab("1"),
         variant: `${activeTab === "1" ? "" : "outline"}`,
       });
     }
@@ -133,28 +85,28 @@ const Assignments = () => {
     if (permission?.created) {
       arr.push({
         title: "Created",
-        onClick: () => updateActiveTabFxn("2"),
+        onClick: () => setActiveTab("2"),
         variant: `${activeTab === "2" ? "" : "outline"}`,
       });
     }
     if (permission?.submissions) {
       arr.push({
         title: "Submissions",
-        onClick: () => updateActiveTabFxn("3"),
+        onClick: () => setActiveTab("3"),
         variant: `${activeTab === "3" ? "" : "outline"}`,
       });
     }
     if (permission?.results) {
       arr.push({
         title: "Results",
-        onClick: () => updateActiveTabFxn("4"),
+        onClick: () => setActiveTab("4"),
         variant: `${activeTab === "4" ? "" : "outline"}`,
       });
     }
     if (permission?.student_results) {
       arr.push({
         title: "Results",
-        onClick: () => updateActiveTabFxn("6"),
+        onClick: () => setActiveTab("6"),
         variant: `${activeTab === "6" ? "" : "outline"}`,
       });
     }
@@ -177,16 +129,25 @@ const Assignments = () => {
   //     updateActiveT("1");
   //   }
   // }, [permission, updateActiveT]);
+  const clearAllButtons = [
+    {
+      title: "Ok",
+      onClick: () => {
+        setClearAllPrompt(false);
+      },
+      // variant: "outline",
+    },
+  ];
 
   useEffect(() => {
     if (permission?.view) {
-      updateActiveTabFxn("5");
+      setActiveTab("5");
       // refetchObjAnsweredAssignment();
       // refetchTheoryAnsweredAssignment();
       // resetAddObjectiveAnsFxn();
       // resetTheoryAnsFxn();
     } else if (permission?.create) {
-      updateActiveTabFxn("1");
+      setActiveTab("1");
     }
   }, []);
 
@@ -197,7 +158,7 @@ const Assignments = () => {
   //   // refetchTheoryAnsweredAssignment();
   // }, []);
 
-  // console.log({ permission });
+  // console.log({ objectiveQ, theoryQ });
 
   return (
     <PageSheet>
@@ -207,12 +168,36 @@ const Assignments = () => {
         <hr className={styles.home_divider} />
 
         {activeTab === "5" && permission?.view && <View />}
-        {activeTab === "1" && permission?.create && <Create />}
+        {activeTab === "1" && permission?.create && (
+          <Create
+            createQ={createQ}
+            setCreateQ={setCreateQ}
+            objectiveQ={objectiveQ}
+            theoryQ={theoryQ}
+            setObjectiveQ={setObjectiveQ}
+            setTheoryQ={setTheoryQ}
+          />
+        )}
         {activeTab === "2" && permission?.created && <Created />}
         {activeTab === "3" && permission?.submissions && <Submission />}
         {activeTab === "4" && permission?.results && <Results />}
         {activeTab === "6" && permission?.student_results && <StudentResults />}
       </div>
+
+      <Prompt
+        promptHeader={`COMPLETE CREATION PROCESS`}
+        toggle={() => setClearAllPrompt(!clearAllPrompt)}
+        isOpen={clearAllPrompt}
+        hasGroupedButtons={true}
+        groupedButtonProps={clearAllButtons}
+      >
+        <p
+          className={styles.create_question_question}
+          // style={{ fontSize: "15px", lineHeight: "20px" }}
+        >
+          Please complete creation process before leaving this section.
+        </p>
+      </Prompt>
     </PageSheet>
   );
 };
