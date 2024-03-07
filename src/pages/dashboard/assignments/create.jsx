@@ -13,11 +13,18 @@ import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss"
 import AuthInput from "../../../components/inputs/auth-input";
 import { addQuestionMarks, updateQuestionNumbers } from "./constant";
 import queryKeys from "../../../utils/queryKeys";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { sortQuestionsByNumber } from "./constant";
 import { Spinner } from "reactstrap";
 import { useAssignments } from "../../../hooks/useAssignments";
 import { useSubject } from "../../../hooks/useSubjects";
+import ObjectiveViewCard from "./objectiveViewCard";
+import TheoryViewCard from "./theoryViewCard";
+import MarkCard from "./markCard";
+import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
+// import ObjectiveViewCard from "./ObjectiveViewCard";
+// import ObjectiveViewCard from "./ObjectiveViewCard";
 
 const Create = ({
   createQ,
@@ -26,9 +33,20 @@ const Create = ({
   theoryQ,
   setObjectiveQ,
   setTheoryQ,
+  obj,
+  setObj,
 }) => {
   const {
     updateActiveTabFxn,
+
+    // createQ,
+    // setCreateQ,
+    // objectiveQ,
+    // theoryQ,
+    // setObjectiveQ,
+    // setTheoryQ,
+    // obj,
+    // setObj,
 
     subjectsByTeacher,
     subjectsByTeacherLoading,
@@ -46,11 +64,11 @@ const Create = ({
     //
 
     // QUERIES
-    addObjectiveAssignments,
-    addObjectAssignmentLoading,
+    // addObjectiveAssignments,
+    // addObjectAssignmentLoading,
     //
-    addTheoryAssignments,
-    addTheoryAssignmentLoading,
+    // addTheoryAssignments,
+    // addTheoryAssignmentLoading,
     //
 
     // CREATE
@@ -84,9 +102,14 @@ const Create = ({
     // CREATED
     updateCreatedQuestionFxn,
 
-    refetchAssignmentCreated,
     //
   } = useAssignments();
+
+  const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
+  const isTablet = useMediaQuery({
+    query: "(min-width: 768px, max-width: 991px)",
+  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   const {
     option1,
@@ -117,6 +140,15 @@ const Create = ({
 
   const { subjects, isLoading: subjectLoading } = useSubject();
 
+  function formatSubjects() {
+    return subjects?.map((sb) => {
+      return {
+        value: sb.id,
+        label: sb.subject,
+      };
+    });
+  }
+
   // const {
 
   //   question_type,
@@ -146,8 +178,14 @@ const Create = ({
   const [editOption4, setEditOption4] = useState("");
   const [editMark, setEditMark] = useState(0);
   const [editNumber, setEditNumber] = useState(0);
+  const [editSwitchNumber, setEditSwitchNumber] = useState(editNumber ?? 0);
+  const [editQuestionId, setEditQuestionId] = useState("");
   const [showLoading, setShowLoading] = useState(false);
   const [finalTheoryArray, setFinalTheoryArray] = useState([]);
+  const [switchArray, setSwitchArray] = useState([]);
+  const [newSubjects, setNewSubjects] = useState([]);
+  const [allowFetch, setAllowFetch] = useState(true);
+  const [loading1, setLoading1] = useState(false);
   // const navigate = useNavigate();
 
   const activateRetrieve = () => {
@@ -158,16 +196,21 @@ const Create = ({
     }
   };
 
+  const activateRetrieveCreated = () => {
+    if (subject_id !== "" && question_type !== "" && week !== "") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   //// FETCH ASSIGNMENTS CREATED /////////
-  const { isLoading: assignmentLoading, refetch: refetchAssignment } = useQuery(
-    [
-      queryKeys.GET_ASSIGNMENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      question_type,
-      "second",
-    ],
+  const {
+    isLoading: assignmentCreatedLoading,
+    data: assignmentCreated,
+    refetch: refetchAssignmentCreated,
+  } = useQuery(
+    [queryKeys.GET_CREATED_ASSIGNMENT],
     () =>
       apiServices.getAssignment(
         user?.period,
@@ -177,53 +220,215 @@ const Create = ({
       ),
     {
       retry: 3,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.created,
-      onSuccess(data) {
-        // console.log({ data });
-        const sortData = () => {
-          const sortedData = data?.filter(
-            (dt) => Number(dt?.subject_id) === subject_id
-          );
-          const sortedData2 = sortedData?.filter(
-            (dt) => Number(dt?.week) === Number(week)
-          );
-          const sortedByQN = sortQuestionsByNumber(sortedData2);
 
-          // if (data?.length > 0) {
-          //   return sortedByQN;
-          // } else if (data?.length === 0) {
-          //   return [];
-          // }
+      // enabled: false,
+      // enabled: activateRetrieveCreated() && permission?.created,
+      enabled: activateRetrieveCreated() && permission?.created && allowFetch,
 
-          return sortedByQN;
-        };
-        // const sortedData = data?.filter(
-        //   (dt) => Number(dt?.subject_id) === subject_id
-        // );
-        // const sortedData2 = sortedData?.filter(
-        //   (dt) => Number(dt?.week) === Number(week)
-        // );
-        // const sortedByQN = sortQuestionsByNumber(sortedData2);
-        // console.log({ data, subject_id });
+      select: (data) => {
+        const asg = apiServices.formatData(data);
+        console.log({ asg, data });
+        // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
-          // setShowNoMessage(false);
-          // updateObjectiveQuestionFxn(sortData());
-          updateCheckTheoryQuestionFxn([]);
-          updateCheckObjectiveQuestionFxn(sortData());
+          return asg?.map((ag, i) => {
+            return {
+              id: ag?.id,
+              term: user?.term,
+              period: user?.period,
+              session: user?.session,
+              week: ag?.week,
+              question_type: ag?.question_type,
+              question: ag?.question,
+              answer: ag?.answer,
+              subject_id: ag?.subject_id,
+              // subject: ag?.subject,
+              option1: ag?.option1,
+              option2: ag?.option2,
+              option3: ag?.option3,
+              option4: ag?.option4,
+              total_question: ag?.total_question,
+              total_mark: ag?.total_mark,
+              question_mark: ag?.question_mark,
+              question_number: i + 1,
+            };
+          });
         } else if (question_type === "theory") {
-          // setShowNoMessage(false);
-          // updateCheckObjectiveQuestionFxn(sortData());
-          updateCheckObjectiveQuestionFxn([]);
-          updateCheckTheoryQuestionFxn(sortData());
+          return asg?.map((ag, i) => {
+            return {
+              id: ag?.id,
+              term: user?.term,
+              period: user?.period,
+              session: user?.session,
+              week: ag?.week,
+              question_type: ag?.question_type,
+              question: ag?.question,
+              answer: ag?.answer,
+              subject_id: ag?.subject_id,
+              image: ag?.image,
+              total_question: ag?.total_question,
+              total_mark: ag?.total_mark,
+              question_mark: ag?.question_mark,
+              question_number: i + 1,
+            };
+          });
+          // setTheoryQ(theo);
+          // return theo;
         }
+      },
+      onSuccess(data) {
+        setAllowFetch(false);
       },
       onError(err) {
         errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
     }
   );
+
+  /////// POST OBJECTIVE ASSIGNMENT ////
+  const {
+    mutateAsync: addObjectiveAssignments,
+    isLoading: addObjectAssignmentLoading,
+  } = useMutation(
+    () =>
+      apiServices.addObjectiveAssignment([
+        // ...objectiveQ,
+        {
+          term: user?.term,
+          period: user?.period,
+          session: user?.session,
+          week,
+          question_type,
+          question,
+          answer,
+          subject_id: Number(subject_id),
+          option1,
+          option2,
+          option3,
+          option4,
+          total_question: Number(total_question),
+          total_mark: Number(total_mark),
+          question_mark: Number(question_mark),
+          question_number: Number(question_number),
+        },
+      ]),
+    // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
+    {
+      onSuccess() {
+        refetchAssignmentCreated();
+        toast.success("Objective assignment has been created successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  /////// POST THEORY ASSIGNMENT //////
+  const {
+    mutateAsync: addTheoryAssignments,
+    isLoading: addTheoryAssignmentLoading,
+  } = useMutation(
+    () =>
+      apiServices.addTheoryAssignment([
+        // ...theoryQ,
+        {
+          term: user?.term,
+          period: user?.period,
+          session: user?.session,
+          week,
+          question_type,
+          question,
+          answer,
+          subject_id: Number(subject_id),
+          image,
+          total_question: Number(total_question),
+          total_mark: Number(theory_total_mark),
+          question_mark: Number(question_mark),
+          question_number: Number(question_number),
+        },
+      ]),
+    {
+      onSuccess() {
+        refetchAssignmentCreated();
+        toast.success("Theory assignment has been created successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  //// EDIT OBJECTIVE ASSIGNMENT ////
+  const {
+    mutateAsync: editObjectiveAssignment,
+    isLoading: editObjectiveAssignmentLoading,
+  } = useMutation(
+    () =>
+      apiServices.editObjectiveAssignment({
+        id: editQuestionId,
+        body: {
+          question: editQuestion,
+          answer: editAnswer,
+          option1: editOption1,
+          option2: editOption2,
+          option3: editOption3,
+          option4: editOption4,
+        },
+      }),
+    {
+      onSuccess() {
+        setAllowFetch(true);
+        refetchAssignmentCreated();
+        // setTimeout(() => {
+        //   refetchAssignmentCreated();
+        // }, 2000);
+        toast.success("Objective question has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  //// EDIT THEORY ASSIGNMENT ////
+  const {
+    mutateAsync: editTheoryAssignment,
+    isLoading: editTheoryAssignmentLoading,
+  } = useMutation(
+    () =>
+      apiServices.editTheoryAssignment({
+        id: editQuestionId,
+        body: {
+          question: editQuestion,
+          answer: editAnswer,
+        },
+      }),
+    {
+      onSuccess() {
+        refetchAssignmentCreated();
+        toast.success("Objective question has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  //// DELETE ASSIGNMENT ////
+  const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
+    useMutation(() => apiServices.deleteAssignment(editQuestionId), {
+      onSuccess() {
+        refetchAssignmentCreated();
+        //  setTimeout(() => {
+        //    refetchAssignmentCreated();
+        //  }, 2000);
+        toast.success("Question has been deleted successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    });
 
   const completedQuestion = () => {
     if (objectiveQ?.length !== Number(total_question)) {
@@ -279,6 +484,7 @@ const Create = ({
           answer: "",
         }));
         setObjectiveQ([]);
+        setObj([]);
         setTheoryQ([]);
         // emptyObjectiveQFxn();
         // emptyTheoryQFxn();
@@ -448,66 +654,70 @@ const Create = ({
       onClick: () => {
         //
         if (question_type === "objective") {
+          deleteAssignment();
+
+          setTimeout(() => {
+            setDeletePrompt(false);
+          }, 1000);
           // deleteObjectiveQuestionFxn({
           //   number: editNumber,
           // });
-          const filter = objectiveQ
-            ?.filter((item) => item.question_number !== editNumber)
-            ?.sort((a, b) => {
-              if (a.question_number < b.question_number) {
-                return -1;
-              }
-              if (a.question_number > b.question_number) {
-                return 1;
-              }
-              return 0;
-            })
-            ?.map((ob, i) => {
-              return {
-                ...ob,
-                question_number: i + 1,
-                total_question: Number(total_question) - 1,
-                total_mark: (Number(total_question) - 1) * question_mark,
-              };
-            });
-
-          const findIndex = objectiveQ?.findIndex(
-            (item) => item.question_number === editNumber
-          );
-
-          if (findIndex !== -1) {
-            setObjectiveQ([...filter]);
-            setCreateQ((prev) => ({
-              ...prev,
-              total_question: Number(total_question) - 1,
-              total_mark: (Number(total_question) - 1) * question_mark,
-            }));
-          }
+          // const filter = objectiveQ
+          //   ?.filter((item) => item.question_number !== editNumber)
+          //   ?.sort((a, b) => {
+          //     if (a.question_number < b.question_number) {
+          //       return -1;
+          //     }
+          //     if (a.question_number > b.question_number) {
+          //       return 1;
+          //     }
+          //     return 0;
+          //   })
+          //   ?.map((ob, i) => {
+          //     return {
+          //       ...ob,
+          //       question_number: i + 1,
+          //       total_question: Number(total_question) - 1,
+          //       total_mark: (Number(total_question) - 1) * question_mark,
+          //     };
+          //   });
+          // const findIndex = objectiveQ?.findIndex(
+          //   (item) => item.question_number === editNumber
+          // );
+          // if (findIndex !== -1) {
+          //   setObjectiveQ([...filter]);
+          //   setCreateQ((prev) => ({
+          //     ...prev,
+          //     total_question: Number(total_question) - 1,
+          //     total_mark: (Number(total_question) - 1) * question_mark,
+          //   }));
+          // }
         } else if (question_type === "theory") {
+          deleteAssignment();
+
+          setTimeout(() => {
+            setDeletePrompt(false);
+          }, 1000);
           // deleteTheoryQuestionFxn({
           //   number: editNumber,
           // });
-          const filter = theoryQ?.filter(
-            (item) => item.question_number !== editNumber
-          );
-
-          const findIndex = theoryQ?.findIndex(
-            (item) => item.question_number === editNumber
-          );
-
-          setCreateQ((prev) => ({
-            ...prev,
-
-            theory_total_mark: Number(theory_total_mark) - Number(editMark),
-          }));
-
-          if (findIndex !== -1) {
-            setTheoryQ([...filter]);
-          }
+          // const filter = theoryQ?.filter(
+          //   (item) => item.question_number !== editNumber
+          // );
+          // const findIndex = theoryQ?.findIndex(
+          //   (item) => item.question_number === editNumber
+          // );
+          // setCreateQ((prev) => ({
+          //   ...prev,
+          //   theory_total_mark: Number(theory_total_mark) - Number(editMark),
+          // }));
+          // if (findIndex !== -1) {
+          //   setTheoryQ([...filter]);
+          // }
         }
-        setDeletePrompt(false);
       },
-      variant: "outline",
+      variant: "outline-danger",
+      isLoading: deleteAssignmentLoading,
     },
   ];
 
@@ -542,12 +752,12 @@ const Create = ({
   const questionType = [
     {
       value: "objective",
-      title: "objective",
+      title: "Objective",
     },
 
     {
       value: "theory",
-      title: "theory",
+      title: "Theory",
     },
   ];
 
@@ -599,9 +809,9 @@ const Create = ({
   const editButtons = [
     {
       title: "No",
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+      // isLoading: editObjectiveAssignmentLoading,
       onClick: () => {
-        console.log({ editMark });
+        // console.log({ editMark });
         setEditPrompt(false);
       },
       // variant: `${activeTab === "2" ? "" : "outline"}`,
@@ -610,89 +820,52 @@ const Create = ({
       title: "Yes",
       onClick: () => {
         if (question_type === "objective") {
-          // editObjectiveQuestionFxn({
-          //   number: editNumber,
-          //   change: {
-          //     question: editQuestion,
-          //     answer: editAnswer,
-          //     question_mark: editMark,
-          //     option1: editOption1,
-          //     option2: editOption2,
-          //     option3: editOption3,
-          //     option4: editOption4,
-          //   },
-          // });
-
-          const filter = objectiveQ?.filter(
-            (item) => item.question_number !== editNumber
-          );
-
-          const findIndex = objectiveQ?.findIndex(
-            (item) => item.question_number === editNumber
-          );
-
-          if (findIndex !== -1) {
-            const newObj = filter?.map((ob) => {
-              return {
-                ...ob,
-                question_mark,
-                total_mark,
-                total_question,
-              };
-            });
-
-            setObjectiveQ([
-              ...newObj,
-              {
-                ...objectiveQ[findIndex],
-                question: editQuestion,
-                answer: editAnswer,
-                question_mark,
-                option1: editOption1,
-                option2: editOption2,
-                option3: editOption3,
-                option4: editOption4,
-                total_question,
-                total_mark,
-              },
-            ]);
-
-            // setObjectiveQ(newObj);
-          }
+          editObjectiveAssignment();
+          setTimeout(() => {
+            setEditPrompt(false);
+          }, 1000);
         } else if (question_type === "theory") {
-          const filter = theoryQ?.filter(
-            (item) => item.question_number !== editNumber
-          );
-
-          const findIndex = theoryQ?.findIndex(
-            (item) => item.question_number === editNumber
-          );
-
-          if (findIndex !== -1) {
-            setTheoryQ([
-              ...filter,
-              {
-                ...theoryQ[findIndex],
-                question: editQuestion,
-                answer: editAnswer,
-                question_mark: editMark,
-                total_question: editTotalQuestion,
-              },
-            ]);
-          }
-
-          // editTheoryQuestionFxn({
-          //   number: editNumber,
-          //   change: {
-          //     question: editQuestion,
-          //     answer: editAnswer,
-          //     question_mark: editMark,
-          //   },
-          // });
+          editTheoryAssignment();
+          setTimeout(() => {
+            setEditPrompt(false);
+          }, 1000);
         }
-        setEditPrompt(false);
       },
       variant: "outline",
+      isLoading: editObjectiveAssignmentLoading || editTheoryAssignmentLoading,
+      disabled:
+        question_type === "objective"
+          ? !editQuestion ||
+            !editAnswer ||
+            !editOption1 ||
+            !editOption2 ||
+            !editOption3 ||
+            !editOption4 ||
+            !editMark
+          : question_type === "theory"
+          ? !editQuestion || !editAnswer || !editMark
+          : false,
+      // () => {
+      //   if (question_type === "objective") {
+      //     return (
+      //       !!editQuestion ||
+      //       !!editAnswer ||
+      //       !!editOption1 ||
+      //       !!editOption2 ||
+      //       !!editOption3 ||
+      //       !!editOption4
+      //     );
+      //   } else if (question_type === "theory") {
+      //     return (
+      //       !!editQuestion ||
+      //       !!editAnswer
+      //       // !!editOption1 ||
+      //       // !!editOption2 ||
+      //       // !!editOption3 ||
+      //       // !!editOption4
+      //     );
+      //   }
+      // }
     },
   ];
 
@@ -723,7 +896,7 @@ const Create = ({
         ? theoryQ
         : []
     );
-  }, [theoryQ]);
+  }, []);
 
   // const finalObjectiveArray = () => {
   //   if (ObjectiveQ?.length !== 1) {
@@ -733,7 +906,7 @@ const Create = ({
   //   }
   // };
 
-  const allLoading = showLoading || assignmentLoading;
+  const allLoading = showLoading || assignmentCreatedLoading || loading1;
 
   const activateAddQuestion = () => {
     if (
@@ -778,16 +951,83 @@ const Create = ({
   //   createQuestion,
   // });
   const subs = [
-    { value: "Mathematics", title: "Mathematics" },
-    { value: "English Language", title: "English Language" },
-    { value: "Science", title: "Science" },
-    { value: "Social Studies", title: "Social Studies" },
-    { value: "Art and Craft", title: "Art and Craft" },
+    { value: "Mathematics", title: "Mathematics", id: "1" },
+    { value: "English Language", title: "English Language", id: "2" },
+    { value: "Science", title: "Science", id: "3" },
+    { value: "Social Studies", title: "Social Studies", id: "4" },
+    { value: "Art and Craft", title: "Art and Craft", id: "5" },
   ];
 
+  useEffect(() => {
+    const sbb = subjects?.map((sb) => {
+      return {
+        value: sb.id,
+        title: sb.subject,
+      };
+    });
+
+    if (sbb?.length > 0) {
+      setNewSubjects(sbb);
+    } else {
+      setNewSubjects([]);
+    }
+  }, [subjects]);
+
+  useEffect(() => {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, 1000);
+
+    const filteredAssignments =
+      assignmentCreated?.filter(
+        (og) => og.subject_id === subject_id && og.week === week
+      ) ?? [];
+
+    if (question_type === "objective") {
+      setObjectiveQ(filteredAssignments);
+    } else if (question_type === "theory") {
+      setTheoryQ(filteredAssignments);
+    }
+  }, [assignmentCreated, question_type, subject_id, week]);
+
+  // useEffect(() => {
+  //   const filter = objectiveQ?.filter(
+  //     (item) =>
+  //       item.question_number !== editNumber &&
+  //       item.question_number !== editSwitchNumber
+  //   );
+
+  //   const findIndex = objectiveQ?.findIndex(
+  //     (item) => item.question_number === editNumber
+  //   );
+
+  //   const findSwitchIndex = objectiveQ?.findIndex(
+  //     (item) => item.question_number === editSwitchNumber
+  //   );
+
+  //   if (editNumber === editSwitchNumber) {
+  //     setSwitchArray(filter);
+  //   } else if (editNumber !== editSwitchNumber) {
+  //     setSwitchArray([
+  //       ...filter,
+  //       {
+  //         ...objectiveQ[findSwitchIndex],
+  //         question_mark,
+  //         total_mark,
+  //         total_question,
+  //         question_number: editNumber,
+  //       },
+  //     ]);
+  //   }
+  // }, [editNumber, editSwitchNumber]);
+
   console.log({
+    assignmentCreated,
+    obj,
+    // switchArray,
     createQ,
-    subjectsByTeacher,
+    // subjectsByTeacher,
     objectiveQ,
     theoryQ,
     question_type,
@@ -798,6 +1038,8 @@ const Create = ({
     editOption4,
     editNumber,
     editAnswer,
+    editQuestionId,
+    editMark,
     // classSubjects,
     finalTheoryArray,
     // finalObjectiveArray,
@@ -816,16 +1058,25 @@ const Create = ({
   //   theoryQ,
   // });
 
-  // console.log({
-  //   AR: activateRetrieve(),
-  //   createQuestion,
-  // });
+  console.log({
+    createQ,
+    newSubjects,
+    objectiveQ,
+    assignmentCreated,
+    allowFetch,
+    allLoading,
+    subjects,
+  });
 
   return (
     <>
       <div className={styles.create}>
-        <div className={styles.create__options}>
-          <div className={styles.auth_select_container}>
+        {/* drop downs */}
+        <div
+          className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '
+          // className={styles.create__options}
+        >
+          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
             {/* weeks */}
             <AuthSelect
               sort
@@ -846,73 +1097,52 @@ const Create = ({
               ]}
               value={week}
               onChange={({ target: { value } }) => {
+                setAllowFetch(true);
                 setCreateQ((prev) => {
                   return { ...prev, week: value };
                 });
-                // updateCreateQuestionFxn({
-                //   week: value,
-                // });
-                // setShowLoading(true);
-                // setTimeout(() => {
-                //   setShowLoading(false);
-                // }, 1500);
-                // if (subject !== "" && question_type !== "") {
-                //   refetchAssignment();
-                // }
+                // refetchAssignmentCreated();
               }}
               placeholder='Select Week'
-              disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
-              wrapperClassName={styles.auth_select}
+              // disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
+              wrapperClassName='w-100'
             />
             {/* subjects */}
             <AuthSelect
               sort
-              options={subs}
-              value={subject}
+              options={newSubjects}
+              // options={subjects}
+              value={subject_id}
               // options={classSubjects}
               // value={subject}
               onChange={({ target: { value } }) => {
-                setCreateQ((prev) => {
-                  return { ...prev, subject: value };
-                });
-                // updateCreateQuestionFxn({
-                //   subject: value,
+                setAllowFetch(true);
 
-                //   subject_id: findSubjectId(value),
-                // });
-                // setShowLoading(true);
-                // setTimeout(() => {
-                //   setShowLoading(false);
-                // }, 1500);
-                // if (week !== "" && question_type !== "") {
-                //   refetchAssignment();
-                // }
+                setCreateQ((prev) => {
+                  return { ...prev, subject_id: value };
+                });
+                // refetchAssignmentCreated();
               }}
               placeholder='Select Subject'
-              disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
-              wrapperClassName={styles.auth_select}
+              // disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
+              wrapperClassName='w-100'
             />
             {/* questionType */}
             <AuthSelect
               sort
-              options={sortQuestionType()}
-              value={defaultQuestionType()}
+              options={questionType}
+              value={question_type}
               // label="Question Type"
               onChange={({ target: { value } }) => {
-                // updateCreateQuestionFxn({ question_type: value, answer: "" });
-                // setShowLoading(true);
-                // setTimeout(() => {
-                //   setShowLoading(false);
-                // }, 1500);
-                // if (subject !== "" && week !== "") {
-                //   refetchAssignment();
-                // }
+                setAllowFetch(true);
+
                 setCreateQ((prev) => {
                   return { ...prev, question_type: value, answer: "" };
                 });
+                // refetchAssignmentCreated();
               }}
               placeholder='Select type'
-              wrapperClassName={styles.auth_select}
+              wrapperClassName='w-100'
               // defaultValue={questionType[1].value}
             />
           </div>
@@ -921,6 +1151,7 @@ const Create = ({
             variant=''
             onClick={() => {
               if (question_type === "theory") {
+                setAllowFetch(false);
                 // updateCreateQuestionFxn({
                 //   question_number: theoryQ?.length + 1,
                 // });
@@ -931,9 +1162,13 @@ const Create = ({
                   };
                 });
               } else if (question_type === "objective") {
+                setAllowFetch(false);
                 // updateCreateQuestionFxn({
                 //   question_number: ObjectiveQ?.length + 1,
                 // });
+                if (!obj) {
+                  setObj([]);
+                }
                 setCreateQ((prev) => {
                   return {
                     ...prev,
@@ -943,11 +1178,11 @@ const Create = ({
               }
               setCreateQuestionPrompt(true);
             }}
-            disabled={activateAddQuestion()}
+            // disabled={activateAddQuestion()}
           >
             {objectiveQ?.length === 0 && theoryQ?.length === 0
               ? "Add Question"
-              : "Add another Question"}
+              : "Add Question"}
           </Button>
         </div>
 
@@ -990,7 +1225,8 @@ const Create = ({
               <p className={styles.heading}>Create Assignment</p>
             </div>
           )} */}
-        {!allLoading &&
+
+        {/* {!allLoading &&
           objectiveQ?.length === 0 &&
           theoryQ?.length === 0 &&
           (checkObjectiveQ?.length > 0 || checkTheoryQ?.length > 0) && (
@@ -1026,169 +1262,64 @@ const Create = ({
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
-        <div className={styles.marks_row}>
-          {!allLoading &&
-            question_type === "objective" &&
-            objectiveQ?.length > 0 && (
-              <div className={styles.marks_container}>
-                <p className={styles.marks_title}>Total Question(s):</p>
-                <p className={styles.marks_value}>
-                  {objectiveQ?.length} /{" "}
-                  {
-                    finalObjectiveArray[finalObjectiveArray?.length - 1]
-                      ?.total_question
+        {!allLoading && (
+          <MarkCard
+            allLoading={allLoading}
+            question_type={question_type}
+            objectiveQ={objectiveQ}
+            theoryQ={theoryQ}
+            finalObjectiveArray={finalObjectiveArray}
+            finalTheoryArray={finalTheoryArray}
+            theory_total_mark={theory_total_mark}
+          />
+        )}
+
+        {!allLoading &&
+          objectiveQ?.length >= 1 &&
+          question_type === "objective" && (
+            <div className='d-flex flex-column my-5 gap-3'>
+              {objectiveQ
+                ?.sort((a, b) => {
+                  if (a.question_number < b.question_number) {
+                    return -1;
                   }
-                </p>
-              </div>
-            )}
-          {question_type === "theory" && theoryQ?.length > 0 && (
-            <div className={styles.marks_container}>
-              <p className={styles.marks_title}>Total Question(s):</p>
-              <p className={styles.marks_value}>
-                {theoryQ?.length} /{" "}
-                {finalTheoryArray[finalTheoryArray?.length - 1]?.total_question}
-              </p>
-            </div>
-          )}
-          {question_type === "objective" && objectiveQ?.length > 0 && (
-            <div className={styles.marks_container}>
-              <p className={styles.marks_title}>Each Question:</p>
-              <p className={styles.marks_value}>
-                {
-                  finalObjectiveArray[finalObjectiveArray?.length - 1]
-                    ?.question_mark
-                }{" "}
-                mk(s)
-              </p>
-            </div>
-          )}
-          {question_type === "objective" && objectiveQ?.length > 0 && (
-            <div className={styles.marks_container}>
-              <p className={styles.marks_title}>Total Marks:</p>
-              <p className={styles.marks_value}>
-                {finalObjectiveArray[finalObjectiveArray?.length - 1]
-                  ?.question_mark *
-                  finalObjectiveArray[finalObjectiveArray?.length - 1]
-                    ?.total_question}{" "}
-                mk(s)
-              </p>
-            </div>
-          )}
-          {question_type === "theory" && theoryQ?.length > 0 && (
-            <div className={styles.marks_container}>
-              <p className={styles.marks_title}>Total Mark:</p>
-              <p className={styles.marks_value}>
-                {/* {finalTheoryArray[finalTheoryArray?.length - 1]?.total_mark}{" "} */}
-                {theory_total_mark}
-                mk(s)
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className={styles.create__questions}>
-          {!allLoading &&
-            objectiveQ?.length >= 1 &&
-            objectiveQ
-              ?.sort((a, b) => {
-                if (a.question_number < b.question_number) {
-                  return -1;
-                }
-                if (a.question_number > b.question_number) {
-                  return 1;
-                }
-                return 0;
-              })
-              .map((CQ, index) => {
-                // console.log({ tk: CQ });
-                return (
-                  <div className='' key={index}>
-                    <div
-                      className={styles.create__questions_container}
-                      key={index}
-                      // style={{ width: "300px" }}
-                    >
-                      <p className='fs-3 mb-3 lh-base'>
-                        <span className='fw-bold'>Q{CQ.question_number}.</span>{" "}
-                        {CQ.question}{" "}
-                       
-                      </p> 
-                      <p className='fw-bold fs-4 mb-3 lh-base'>({CQ.question_mark} mk(s) )</p>
-                      {CQ.image && (
-                        <div className='mb-4 '>
-                          <img src={CQ.image} width={70} height={70} alt='' />
-                        </div>
-                      )}
-                      {CQ.option1 && (
-                        <div className='mb-5 '>
-                          <p className='fs-3 mb-3'>
-                            {" "}
-                            <span className='fw-bold'>A.</span> {CQ.option1}{" "}
-                            <span className='fw-bold'>
-                              {CQ.answer === CQ.option1 && " (Answer)"}
-                            </span>
-                          </p>
-                          <p className='fs-3 mb-3'>
-                            {" "}
-                            <span className='fw-bold'>B.</span> {CQ.option2}{" "}
-                            <span className='fw-bold'>
-                              {CQ.answer === CQ.option2 && " (Answer)"}
-                            </span>
-                          </p>
-                          <p className='fs-3 mb-3'>
-                            <span className='fw-bold'>C.</span> {CQ.option3}{" "}
-                            <span className='fw-bold'>
-                              {CQ.answer === CQ.option3 && " (Answer)"}
-                            </span>
-                          </p>
-                          <p className='fs-3 mb-3'>
-                            <span className='fw-bold'>D.</span> {CQ.option4}{" "}
-                            <span className='fw-bold'>
-                              {CQ.answer === CQ.option4 && " (Answer)"}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                      <ButtonGroup
-                        options={[
-                          {
-                            title: "Edit",
-                            // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-                            onClick: () => {
-                              setEditPrompt(true);
-                              setEditQuestion(CQ.question);
-                              setEditAnswer(CQ.answer);
-                              setEditTotalQuestion(CQ.total_question);
-                              setEditMark(CQ.question_mark);
-                              setEditNumber(CQ.question_number);
-                              setEditOption1(CQ.option1);
-                              setEditOption2(CQ.option2);
-                              setEditOption3(CQ.option3);
-                              setEditOption4(CQ.option4);
-                            },
-                            // variant: `${activeTab === "2" ? "" : "outline"}`,
-                          },
-                          {
-                            title: "Delete",
-                            onClick: () => {
-                              setDeletePrompt(true);
-                              setEditQuestion(CQ.question);
-                              setEditAnswer(CQ.answer);
-                              setEditMark(CQ.question_mark);
-                              setEditNumber(CQ.question_number);
-                            },
-                            variant: "outline",
-                          },
-                        ]}
+                  if (a.question_number > b.question_number) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                .map((CQ, index) => {
+                  // console.log({ tk: CQ });
+                  return (
+                    <div className='w-100' key={index}>
+                      <ObjectiveViewCard
+                        CQ={CQ}
+                        setEditPrompt={setEditPrompt}
+                        setEditTotalQuestion={setEditTotalQuestion}
+                        setEditMark={setEditMark}
+                        setEditNumber={setEditNumber}
+                        setEditOption1={setEditOption1}
+                        setEditOption2={setEditOption2}
+                        setEditOption3={setEditOption3}
+                        setEditOption4={setEditOption4}
+                        setDeletePrompt={setDeletePrompt}
+                        setEditQuestion={setEditQuestion}
+                        setEditAnswer={setEditAnswer}
+                        setEditSwitchNumber={setEditSwitchNumber}
+                        editQuestionId={editQuestionId}
+                        setEditQuestionId={setEditQuestionId}
                       />
                     </div>
-                  </div>
-                );
-              })}
-          {theoryQ?.length >= 1 &&
-            theoryQ
+                  );
+                })}
+            </div>
+          )}
+
+        {!allLoading && theoryQ?.length >= 1 && question_type === "theory" && (
+          <div className='d-flex flex-column my-5 gap-3'>
+            {theoryQ
               ?.sort((a, b) => {
                 if (a.question_number < b.question_number) {
                   return -1;
@@ -1198,82 +1329,61 @@ const Create = ({
                 }
                 return 0;
               })
-              .map((CQ, index) => {
+              ?.map((CQ, index) => {
                 // console.log({ CQ });
                 return (
-                  <div className='' key={index}>
-                    <div
-                      className={styles.create__questions_container}
-                      key={index}
-                    >
-                      <p className='fs-3 mb-3 lh-base'>
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                            // margin: "10px 0px",
-                          }}
-                        >
-                          Q{CQ.question_number}.{/* Q{index + 1}. */}
-                        </span>{" "}
-                        {CQ.question}
-                      </p>
-                      {CQ.image && (
-                        <div className='mb-4 '>
-                          <img src={CQ.image} width={70} height={70} alt='' />
-                        </div>
-                      )}
-                      {
-                        <>
-                          <p className='fs-3 mb-3 lh-base'>
-                            <span className='fw-bold'>Ans -</span> {CQ.answer}
-                          </p>
-                          <p className='fs-3 mb-4 lh-base fw-bold'>
-                            ({CQ.question_mark} mks)
-                          </p>
-                        </>
-                      }
-                      <ButtonGroup
-                        options={[
-                          {
-                            title: "Edit",
-                            // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-                            onClick: () => {
-                              setEditQuestion(CQ.question);
-                              setEditAnswer(CQ.answer);
-                              setEditTotalQuestion(CQ.total_question);
-                              setEditMark(CQ.question_mark);
-                              setEditNumber(CQ.question_number);
-                              setEditOption1(CQ.option1);
-                              setEditOption2(CQ.option2);
-                              setEditOption3(CQ.option3);
-                              setEditOption4(CQ.option4);
-                              setEditPrompt(true);
-                              // console.log({ editMark, qm: CQ.question_mark });
-                            },
-                            // variant: `${activeTab === "2" ? "" : "outline"}`,
-                          },
-                          {
-                            title: "Delete",
-                            onClick: () => {
-                              setEditQuestion(CQ.question);
-                              setEditAnswer(CQ.answer);
-                              setEditMark(CQ.question_mark);
-                              setEditNumber(CQ.question_number);
-                              setDeletePrompt(true);
-                              // console.log({ editMark, qm: CQ.question_mark });
-                            },
-                            variant: "outline",
-                          },
-                        ]}
-                      />
-                    </div>
+                  <div
+                    className='w-100'
+                    // style={{ width: "100%", }}
+                    key={index}
+                  >
+                    <TheoryViewCard
+                      CQ={CQ}
+                      setEditPrompt={setEditPrompt}
+                      setEditTotalQuestion={setEditTotalQuestion}
+                      setEditMark={setEditMark}
+                      setEditNumber={setEditNumber}
+                      setEditOption1={setEditOption1}
+                      setEditOption2={setEditOption2}
+                      setEditOption3={setEditOption3}
+                      setEditOption4={setEditOption4}
+                      setDeletePrompt={setDeletePrompt}
+                      setEditQuestion={setEditQuestion}
+                      setEditAnswer={setEditAnswer}
+                      setEditSwitchNumber={setEditSwitchNumber}
+                      editQuestionId={editQuestionId}
+                      setEditQuestionId={setEditQuestionId}
+                    />
                   </div>
                 );
               })}
-        </div>
+          </div>
+        )}
 
         {!allLoading && (objectiveQ?.length >= 1 || theoryQ?.length >= 1) && (
-          <ButtonGroup options={buttonOptions2} />
+          <div className='w-100 d-flex justify-content-end'>
+            {/* <ButtonGroup options={buttonOptions2} /> */}
+            <div className='form-check form-switch d-flex align-items-center gap-3 cursor-pointer'>
+              <input
+                type='checkbox'
+                name='radio-1'
+                className='form-check-input'
+                // checked={editOption1 === editAnswer}
+                role='switch'
+                id='flexSwitchCheckChecked'
+                checked={true}
+                style={{ width: "20px", height: "20px" }}
+                // onChange={(e) => setEditAnswer(e.target.value)}
+                value={editOption1}
+              />
+              <label
+                htmlFor='flexSwitchCheckChecked'
+                className='fs-4 form-check-label'
+              >
+                Publish Assignment
+              </label>
+            </div>
+          </div>
         )}
       </div>
       <CreateQuestion
@@ -1285,6 +1395,15 @@ const Create = ({
         setObjectiveQ={setObjectiveQ}
         theoryQ={theoryQ}
         setTheoryQ={setTheoryQ}
+        obj={obj}
+        setObj={setObj}
+        addObjectiveAssignments={addObjectiveAssignments}
+        addObjectAssignmentLoading={addObjectAssignmentLoading}
+        addTheoryAssignments={addTheoryAssignments}
+        addTheoryAssignmentLoading={addTheoryAssignmentLoading}
+        allowFetch={allowFetch}
+        setAllowFetch={setAllowFetch}
+        refetchAssignmentCreated={refetchAssignmentCreated}
       />
       {/* submit assignment prompt */}
       <Prompt
@@ -1316,6 +1435,7 @@ const Create = ({
           </p>
         )}
       </Prompt>
+
       {/* clear all prompt */}
       <Prompt
         promptHeader={`CONFIRM CLEAR-ALL ACTION`}
@@ -1331,6 +1451,7 @@ const Create = ({
           Are you sure you want to clear all questions created?
         </p>
       </Prompt>
+
       {/* Edit question prompt */}
       <Prompt
         promptHeader={`QUESTION EDIT`}
@@ -1504,12 +1625,12 @@ const Create = ({
                       //   question_mark: e.target.value,
                       //   total_mark: e.target.value * total_question,
                       // });
-                      setCreateQ((prev) => ({
-                        ...prev,
-                        question_mark: Number(e.target.value),
-                        total_mark:
-                          Number(e.target.value) * Number(total_question),
-                      }));
+                      // setCreateQ((prev) => ({
+                      //   ...prev,
+                      //   question_mark: Number(e.target.value),
+                      //   total_mark:
+                      //     Number(e.target.value) * Number(total_question),
+                      // }));
                       setEditMark(e.target.value);
                     }}
                     style={{
@@ -1522,7 +1643,7 @@ const Create = ({
                 </div>
               </div>
               {/* Total Question */}
-              <div className='d-flex align-items-center gap-3'>
+              {/* <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
                   <AuthInput
                     type='number'
@@ -1557,7 +1678,33 @@ const Create = ({
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
                   <p className='fs-4'>Total Question</p>
                 </div>
-              </div>
+              </div> */}
+              {/* Switch Question Number */}
+              {/* <div className='d-flex align-items-center gap-3'>
+                <div style={{ width: "100px" }}>
+                  <AuthInput
+                    type='number'
+                    placeholder='Switch to'
+                    // hasError={!!errors.username}
+                    // defaultValue={CQ.question_mark}
+                    min={1}
+                    max={objectiveQ?.length}
+                    value={editSwitchNumber}
+                    name='option'
+                    onChange={(e) => {
+                      const inputValue = e.target.value.replace(/[^0-9]/g, "");
+                      if (Number(inputValue) > objectiveQ?.length) return;
+                      setEditSwitchNumber(inputValue);
+                    }}
+                    style={{
+                      fontSize: "16px",
+                    }}
+                  />
+                </div>
+                <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                  <p className='fs-4'>Switch to</p>
+                </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -1634,13 +1781,13 @@ const Create = ({
                     value={editMark}
                     name='option'
                     onChange={(e) => {
-                      setCreateQ((prev) => ({
-                        ...prev,
-                        theory_total_mark:
-                          Number(theory_total_mark) -
-                          Number(editMark) +
-                          Number(e.target.value),
-                      }));
+                      // setCreateQ((prev) => ({
+                      //   ...prev,
+                      //   theory_total_mark:
+                      //     Number(theory_total_mark) -
+                      //     Number(editMark) +
+                      //     Number(e.target.value),
+                      // }));
                       setEditMark(e.target.value);
                     }}
                     wrapperClassName=''
@@ -1659,7 +1806,7 @@ const Create = ({
                 </div>
               </div>
               {/* Total Question */}
-              <div className='d-flex align-items-center gap-3'>
+              {/* <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
                   <AuthInput
                     type='number'
@@ -1697,7 +1844,7 @@ const Create = ({
                     Total Question
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}

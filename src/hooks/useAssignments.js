@@ -82,10 +82,14 @@ import {
 
 import { useStudent } from "./useStudent";
 
+import useLocalStorage from "use-local-storage";
+
 export const useAssignments = () => {
   const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState("1");
+
+  const [obj, setObj] = useLocalStorage("obj", []);
 
   const [objectiveQ, setObjectiveQ] = useState([]);
   const [theoryQ, setTheoryQ] = useState([]);
@@ -255,49 +259,6 @@ export const useAssignments = () => {
     dispatch(updateTheoryTotalQuestion(payload));
   };
   //
-  /////// POST OBJECTIVE ASSIGNMENT ////
-  const {
-    mutateAsync: addObjectiveAssignments,
-    isLoading: addObjectAssignmentLoading,
-  } = useMutation(
-    () => apiServices.addObjectiveAssignment(finalObjectiveArray),
-    {
-      onSuccess() {
-        queryClient.invalidateQueries(
-          queryKeys.GET_ASSIGNMENT,
-          user?.period,
-          user?.term,
-          user?.session,
-          createdQuestion?.question_type
-        );
-        refetchAssignmentCreated();
-        toast.success("Objective assignment has been created successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
-  /////// POST THEORY ASSIGNMENT //////
-  const {
-    mutateAsync: addTheoryAssignments,
-    isLoading: addTheoryAssignmentLoading,
-  } = useMutation(() => apiServices.addTheoryAssignment(finalTheoryArray), {
-    onSuccess() {
-      queryClient.invalidateQueries(
-        queryKeys.GET_ASSIGNMENT,
-        user?.period,
-        user?.term,
-        user?.session,
-        createdQuestion?.question_type
-      );
-      refetchAssignmentCreated();
-      toast.success("Theory assignment has been created successfully");
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
 
   // CREATED FUNCTIONS
   const updateCreatedQuestionFxn = (payload) => {
@@ -319,11 +280,7 @@ export const useAssignments = () => {
   };
   // CREATED PAGE
   const activateRetrieveCreated = () => {
-    if (
-      createdQuestion?.subject !== "" &&
-      createdQuestion?.question_type !== "" &&
-      createdQuestion?.week !== ""
-    ) {
+    if (subject !== "" && question_type !== "" && week !== "") {
       return true;
     } else {
       return false;
@@ -331,67 +288,35 @@ export const useAssignments = () => {
   };
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
-    isLoading: assignmentLoadingCreated,
+    isLoading: assignmentCreatedLoading,
+    data: assignmentCreated,
     refetch: refetchAssignmentCreated,
   } = useQuery(
-    [
-      queryKeys.GET_ASSIGNMENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      createdQuestion?.question_type,
-      "created",
-    ],
+    [queryKeys.GET_CREATED_ASSIGNMENT],
     () =>
       apiServices.getAssignment(
         user?.period,
         user?.term,
         user?.session,
-        createdQuestion?.question_type
+        question_type
       ),
     {
       retry: 3,
-      refetchOnMount: true,
-      staleTime: 0,
-      // refetchOnWindowFocus: "always",
-      // refetchInterval: 500,
-      refetchIntervalInBackground: true,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieveCreated() && permission?.created,
-      onSuccess(data) {
-        emptyObjectiveQFxn();
-        emptyTheoryQFxn();
-        const sortData = () => {
-          const sortedData = data?.filter(
-            (dt) => Number(dt?.subject_id) === createdQuestion?.subject_id
-          );
-          const sortedData2 = sortedData?.filter(
-            (dt) => Number(dt?.week) === Number(createdQuestion?.week)
-          );
-          const sortedByQN = sortQuestionsByNumber(sortedData2);
 
-          return sortedByQN;
-        };
-        // const sortedData = data?.filter(
-        //   (dt) => Number(dt?.subject_id) === subject_id
-        // );
-        // const sortedData2 = sortedData?.filter(
-        //   (dt) => Number(dt?.week) === Number(week)
-        // );
-        // const sortedByQN = sortQuestionsByNumber(sortedData2);
-        // console.log({ data, subject_id });
-        if (createdQuestion?.question_type === "objective") {
-          // setShowNoMessage(false);
-          updateObjectiveQFxn(sortData());
-        } else if (createdQuestion?.question_type === "theory") {
-          // setShowNoMessage(false);
-          updateTheoryQFxn(sortData());
-        }
-      },
+      enabled: false,
+      // enabled: activateRetrieveCreated() && permission?.created,
+      // onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
+      select: (data) => {
+        const asg = apiServices.formatData(data);
+
+        // console.log({ asg, data });
+
+        return asg;
+      },
     }
   );
 
@@ -478,27 +403,29 @@ export const useAssignments = () => {
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,
-      // onSuccess(data) {
-      //   console.log({ Tdata: data });
-      //   const sortSubjects = data.map((sub, index) => {
-      //     return {
-      //       value: sub.subject,
-      //       title: sub.subject,
-      //       id: Number(sub.id),
-      //     };
-      //   });
-      //   // dispatch(updateClassSubjects(sortSubjects));
-      // },
+      onSuccess(data) {
+        // dispatch(updateClassSubjects(sortSubjects));
+      },
       onError(err) {
         errorHandler(err);
       },
       // select: apiServices.formatData,
       select: (data) => {
-        const dt = apiServices.formatData(data);
+        const Td = apiServices.formatData(data);
+
+        // console.log({ Td, data });
+
+        const Td2 = Td?.map((sub, index) => {
+          return {
+            value: sub.subject,
+            title: sub.subject,
+            id: Number(sub.id),
+          };
+        });
 
         // console.log({ sd: dt, data });
 
-        return dt;
+        return Td2;
       },
     }
   );
@@ -598,8 +525,9 @@ export const useAssignments = () => {
   // console.log({ classSubjects });
 
   // console.log({
-  //   finalTheoryArray,
-  //   finalObjectiveArray,
+  //   createQ,
+  //   question_type,
+  //   user,
   // });
 
   return {
@@ -609,8 +537,12 @@ export const useAssignments = () => {
     setCreateQ,
 
     objectiveQ,
-    theoryQ,
     setObjectiveQ,
+
+    obj,
+    setObj,
+
+    theoryQ,
     setTheoryQ,
     // isLoading,
     // assignment,
@@ -624,11 +556,11 @@ export const useAssignments = () => {
     submitMarkedTheoryAssignment,
     submitMarkedTheoryAssignmentLoading,
     //
-    addObjectiveAssignments,
-    addObjectAssignmentLoading,
+    // addObjectiveAssignments,
+    // addObjectAssignmentLoading,
     //
-    addTheoryAssignments,
-    addTheoryAssignmentLoading,
+    // addTheoryAssignments,
+    // addTheoryAssignmentLoading,
     //
 
     updateActiveTabFxn,
@@ -684,7 +616,9 @@ export const useAssignments = () => {
     emptyTheoryQFxn,
     TheoryQ,
     //
-    assignmentLoadingCreated,
+    // assignmentLoadingCreated,
+    assignmentCreatedLoading,
+    assignmentCreated,
     refetchAssignmentCreated,
 
     // updateSubmittedQuestionFxn,

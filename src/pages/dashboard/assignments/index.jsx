@@ -23,6 +23,8 @@ const Assignments = () => {
     theoryQ,
     setObjectiveQ,
     setTheoryQ,
+    obj,
+    setObj,
     permission,
   } = useAssignments();
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
@@ -82,13 +84,13 @@ const Assignments = () => {
       });
     }
 
-    if (permission?.created) {
-      arr.push({
-        title: "Created",
-        onClick: () => setActiveTab("2"),
-        variant: `${activeTab === "2" ? "" : "outline"}`,
-      });
-    }
+    // if (permission?.created) {
+    //   arr.push({
+    //     title: "Created",
+    //     onClick: () => setActiveTab("2"),
+    //     variant: `${activeTab === "2" ? "" : "outline"}`,
+    //   });
+    // }
     if (permission?.submissions) {
       arr.push({
         title: "Submissions",
@@ -176,9 +178,11 @@ const Assignments = () => {
             theoryQ={theoryQ}
             setObjectiveQ={setObjectiveQ}
             setTheoryQ={setTheoryQ}
+            obj={obj}
+            setObj={setObj}
           />
         )}
-        {activeTab === "2" && permission?.created && <Created />}
+        {/* {activeTab === "2" && permission?.created && <Created />} */}
         {activeTab === "3" && permission?.submissions && <Submission />}
         {activeTab === "4" && permission?.results && <Results />}
         {activeTab === "6" && permission?.student_results && <StudentResults />}
