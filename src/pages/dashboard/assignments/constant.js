@@ -703,7 +703,7 @@ export function findHighestTotalMark(questions) {
 
 export function updateQuestionNumbers(arr) {
   // Use the map() function to create a new array with modified objects
-  return arr.map((obj, index) => {
+  return arr?.map((obj, index) => {
     // Create a new object with the same properties as the original object
     const newObj = { ...obj };
     // Update the question_number property to be the index + 1

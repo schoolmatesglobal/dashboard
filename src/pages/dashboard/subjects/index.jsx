@@ -16,7 +16,7 @@ const Subjects = () => {
     }
   };
 
-  // console.log({ user, cb: checkForExtraButton() });
+  console.log({ subjects });
 
   return (
     <PageView

@@ -16,74 +16,20 @@ const CreateQuestion = ({
   theoryQ,
   setObjectiveQ,
   setTheoryQ,
+  obj,
+  setObj,
+  addObjectAssignmentLoading,
+  addObjectiveAssignments,
+  addTheoryAssignments,
+  addTheoryAssignmentLoading,
+  allowFetch,
+  setAllowFetch,
+  refetchAssignmentCreated,
 }) => {
   const {
-    updateActiveTabFxn,
-
-    subjectsByTeacher,
-    subjectsByTeacherLoading,
-
-    classSubjects,
-    apiServices,
-    errorHandler,
-    permission,
     user,
-    //
 
-    // QUERIES
-    addObjectiveAssignments,
-    addObjectAssignmentLoading,
-    //
-    addTheoryAssignments,
-    addTheoryAssignmentLoading,
-    //
-
-    // CREATE
-    updateCheckObjectiveQuestionFxn,
-    checkObjectiveQ,
-    //
-    updateCheckTheoryQuestionFxn,
-    checkTheoryQ,
-    //
     updateCreateQuestionFxn,
-    // emptyCreateQuestionFxn,
-    createQuestion,
-    //
-    // updateObjectiveQuestionFxn,
-    // addObjectiveQuestionFxn,
-    editObjectiveQuestionFxn,
-    deleteObjectiveQuestionFxn,
-    emptyObjectiveQFxn,
-    updateObjectiveQMarkFxn,
-    updateObjectiveTotalQuestionFxn,
-    // objectiveQ,
-    //
-    // addTheoryQuestionFxn,
-    editTheoryQuestionFxn,
-    deleteTheoryQuestionFxn,
-    emptyTheoryQFxn,
-    updateTheoryTotalQuestionFxn,
-    // theoryQ,
-    //
-
-    // CREATED
-    updateCreatedQuestionFxn,
-    // createdQuestion,
-    //
-    // updateObjectiveQFxn,
-    // ObjectiveQ,
-    //
-    // updateTheoryQFxn,
-    // theoryQ,
-    //
-    // assignmentLoadingCreated,
-    refetchAssignmentCreated,
-    //
-
-    // createQ,
-    // setCreateQ,
-    // objectiveQ,
-    // theoryQ,
   } = useAssignments();
 
   const {
@@ -168,7 +114,7 @@ const CreateQuestion = ({
     switch (question_type) {
       case "objective":
         if (
-          !subject ||
+          !subject_id ||
           !week ||
           !question_type ||
           !question ||
@@ -176,28 +122,30 @@ const CreateQuestion = ({
           !option2 ||
           !option3 ||
           !option4 ||
-          answer === "" ||
-          total_mark === 0 ||
-          total_question === 0 ||
-          question_mark === 0 ||
-          total_mark === "" ||
-          total_question === "" ||
-          question_mark === ""
+          !answer 
+          // total_mark === 0 ||
+          // total_question === 0 ||
+          // question_mark === 0 ||
+          // total_mark === "" ||
+          // total_question === "" ||
+
+
+          // question_mark === 0
         ) {
           return true;
         }
         break;
       case "theory":
         if (
-          !subject ||
+          !subject_id ||
           !week ||
           !question_type ||
           !question ||
           !answer ||
-          total_question === 0 ||
-          question_mark === 0 ||
-          total_question === "" ||
-          question_mark === ""
+          // total_question === 0 ||
+          // question_mark === 0 ||
+          // total_question === "" ||
+          !question_mark
         ) {
           return true;
         }
@@ -254,35 +202,39 @@ const CreateQuestion = ({
     {
       title: `${activeTab === "2" ? "Add Question" : "Preview"}`,
       disabled: activatePreview(),
-      // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
+      isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
       onClick:
         activeTab === "2"
-          ? () => {
+          ? async () => {
               setImageNam("No file selected");
 
               if (createQ?.question_type === "objective") {
-                setObjectiveQ([
-                  ...objectiveQ,
-                  {
-                    term: user?.term,
-                    period: user?.period,
-                    session: user?.session,
-                    week,
-                    question_type,
-                    question,
-                    answer,
-                    subject_id,
-                    // image,
-                    option1,
-                    option2,
-                    option3,
-                    option4,
-                    total_question: Number(total_question),
-                    total_mark: Number(total_mark),
-                    question_mark: Number(question_mark),
-                    question_number: Number(question_number),
-                  },
-                ]);
+                await addObjectiveAssignments();
+                setAllowFetch(true);
+
+                refetchAssignmentCreated();
+                // setObjectiveQ([
+                //   ...objectiveQ,
+                //   {
+                //     term: user?.term,
+                //     period: user?.period,
+                //     session: user?.session,
+                //     week,
+                //     question_type,
+                //     question,
+                //     answer,
+                //     subject_id,
+                //     // image,
+                //     option1,
+                //     option2,
+                //     option3,
+                //     option4,
+                //     total_question: Number(total_question),
+                //     total_mark: Number(total_mark),
+                //     question_mark: Number(question_mark),
+                //     question_number: Number(question_number),
+                //   },
+                // ]);
 
                 setCreateQ({
                   ...createQ,
@@ -308,41 +260,32 @@ const CreateQuestion = ({
                   // session: "",
                   // subject_id: "",
                 });
-              } else if (question_type === "theory") {
-                // addTheoryQuestionFxn({
-                //   term: user?.term,
-                //   period: user?.period,
-                //   session: user?.session,
-                //   week,
-                //   question_type,
-                //   question,
-                //   answer,
-                //   subject_id,
-                //   image,
-                //   total_question: Number(total_question),
-                //   total_mark: Number(theory_total_mark),
-                //   question_mark: Number(question_mark),
-                //   question_number: Number(question_number),
-                // });
 
-                setTheoryQ([
-                  ...theoryQ,
-                  {
-                    term: user?.term,
-                    period: user?.period,
-                    session: user?.session,
-                    week,
-                    question_type,
-                    question,
-                    answer,
-                    subject_id,
-                    image,
-                    total_question: Number(total_question),
-                    total_mark: Number(theory_total_mark),
-                    question_mark: Number(question_mark),
-                    question_number: Number(question_number),
-                  },
-                ]);
+              } else if (question_type === "theory") {
+                await addTheoryAssignments();
+
+                setAllowFetch(true);
+
+                refetchAssignmentCreated();
+
+                // setTheoryQ([
+                //   ...theoryQ,
+                //   {
+                //     term: user?.term,
+                //     period: user?.period,
+                //     session: user?.session,
+                //     week,
+                //     question_type,
+                //     question,
+                //     answer,
+                //     subject_id,
+                //     image,
+                //     total_question: Number(total_question),
+                //     total_mark: Number(theory_total_mark),
+                //     question_mark: Number(question_mark),
+                //     question_number: Number(question_number),
+                //   },
+                // ]);
 
                 setCreateQ({
                   ...createQ,
@@ -369,14 +312,6 @@ const CreateQuestion = ({
                   // subject_id: "",
                 });
               }
-              // updateCreatedQ({
-              //   subject,
-              //   subject_id,
-              //   question_type,
-              //   term: user?.term,
-              //   period: user?.period,
-              //   session: user?.session,
-              // });
 
               setCreateQuestionPrompt(false);
               setActiveTab("1");
@@ -387,33 +322,21 @@ const CreateQuestion = ({
               //   imageName: imageNam,
               // });
 
-              setCreateQ((prev) => ({
-                ...prev,
-                image: previewUrl,
-                imageName: imageNam,
-              }));
+              // setCreateQ((prev) => ({
+              //   ...prev,
+              //   image: previewUrl,
+              //   imageName: imageNam,
+              // }));
 
               if (question_type === "theory") {
-                // updateCreateQuestionFxn({
-                //   theory_total_mark:
-                //     Number(theory_total_mark) + Number(total_mark),
-                //   // question_number: TheoryQ?.length + 1,
-                // });
-
+                
                 setCreateQ((prev) => ({
                   ...prev,
                   theory_total_mark:
                     Number(theory_total_mark) + Number(total_mark),
                 }));
               } else if (question_type === "objective") {
-                // updateCreateQuestionFxn({
-                //   // question_number: ObjectiveQ?.length + 1,
-                // });
-                // setCreateQ((prev) => ({
-                //   ...prev,
-                //   theory_total_mark:
-                //     Number(theory_total_mark) + Number(total_mark),
-                // }));
+                
                 setCreateQ((prev) => ({
                   ...prev,
                   question_number: objectiveQ?.length + 1,
@@ -447,7 +370,7 @@ const CreateQuestion = ({
 
   const finalObjectiveArray = updateQuestionNumbers(objectiveQ);
 
-  // console.log({ cq: createQ, objectiveQ });
+  console.log({ activatePreview: activatePreview() });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({ tl: TheoryQ?.length });
@@ -604,7 +527,7 @@ const CreateQuestion = ({
                     </div>
                   </div>
                   {/* Total Questions */}
-                  <div className='d-flex align-items-center gap-3'>
+                  {/* <div className='d-flex align-items-center gap-3'>
                     <div style={{ width: "100px" }}>
                       <AuthInput
                         type='number'
@@ -639,7 +562,7 @@ const CreateQuestion = ({
                         Total Questions
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
@@ -651,6 +574,7 @@ const CreateQuestion = ({
                     fontWeight: "bold",
                     marginBottom: "10px",
                   }}
+                  // className=''
                 >
                   Question
                 </p>
@@ -721,7 +645,7 @@ const CreateQuestion = ({
                       <input
                         type='radio'
                         name='radio-1'
-                        checked={createQ?.ans1}
+                        checked={createQ?.ans1 && !!createQ?.option1}
                         id='option-A'
                         style={{ width: "20px", height: "20px" }} // Set the width using inline styles
                         onChange={(e) => {
@@ -740,9 +664,13 @@ const CreateQuestion = ({
                       />
                       <label
                         htmlFor='option-A'
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
-                        Correct answer
+                        A. Correct answer
                       </label>
                     </div>
                   </div>
@@ -768,7 +696,7 @@ const CreateQuestion = ({
                         type='radio'
                         name='radio-1'
                         style={{ width: "20px", height: "20px" }} // Set the width using inline styles
-                        checked={createQ?.ans2}
+                        checked={createQ?.ans2 && !!createQ?.option2}
                         id='option-B'
                         onChange={(e) =>
                           // updateCreateQuestionFxn({
@@ -793,9 +721,13 @@ const CreateQuestion = ({
                       />
                       <label
                         htmlFor='option-B'
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
-                        Correct answer
+                        B. Correct answer
                       </label>
                     </div>
                   </div>
@@ -825,7 +757,7 @@ const CreateQuestion = ({
                         name='radio-1'
                         style={{ width: "20px", height: "20px" }}
                         // Set the width using inline styles
-                        checked={createQ?.ans3}
+                        checked={createQ?.ans3 && !!createQ?.option3}
                         id='option-C'
                         onChange={(e) =>
                           // updateCreateQuestionFxn({
@@ -851,9 +783,13 @@ const CreateQuestion = ({
                       />
                       <label
                         htmlFor='option-C'
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
-                        Correct answer
+                        C. Correct answer
                       </label>
                     </div>
                   </div>
@@ -884,7 +820,7 @@ const CreateQuestion = ({
                         name='radio-1'
                         id='option-D'
                         style={{ width: "20px", height: "20px" }} // Set the width using inline styles
-                        checked={createQ?.ans4}
+                        checked={createQ?.ans4 && !!createQ?.option4}
                         onChange={(e) =>
                           setCreateQ((prev) => {
                             return {
@@ -901,9 +837,13 @@ const CreateQuestion = ({
                       />
                       <label
                         htmlFor='option-D'
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
-                        Correct answer
+                        D. Correct answer
                       </label>
                     </div>
                   </div>
@@ -919,8 +859,7 @@ const CreateQuestion = ({
                   Mark Computation
                 </p>
                 <div className='d-flex flex-column gap-3'>
-                  <div className='d-flex align-items-center gap-3'>
-                    {/* Total Questions */}
+                  {/* <div className='d-flex align-items-center gap-3'>
                     <div style={{ width: "100px" }}>
                       <AuthInput
                         type='number'
@@ -955,12 +894,16 @@ const CreateQuestion = ({
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
                       <p
                         className=''
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
                         Total Questions
                       </p>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className='d-flex align-items-center gap-3'>
                     {/*Question Mark */}
@@ -968,11 +911,11 @@ const CreateQuestion = ({
                       <AuthInput
                         type='number'
                         placeholder='Question Mark'
-                        disabled={finalObjectiveArray.length >= 1}
+                        // disabled={finalObjectiveArray.length >= 1}
                         // hasError={!!errors.username}
                         value={
                           createQ.question_mark ||
-                          finalObjectiveArray[finalObjectiveArray.length - 1]
+                          finalObjectiveArray[finalObjectiveArray?.length - 1]
                             ?.question_mark
                         }
                         name='option'
@@ -1002,15 +945,18 @@ const CreateQuestion = ({
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
                       <p
                         className=''
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
                         Each Question Mark
                       </p>
                     </div>
                   </div>
 
-                  <div className='d-flex align-items-center gap-5'>
-                    {/* Total Marks */}
+                  {/* <div className='d-flex align-items-center gap-3'>
                     <div style={{ width: "100px" }}>
                       <AuthInput
                         type='number'
@@ -1038,18 +984,22 @@ const CreateQuestion = ({
                             };
                           })
                         }
-                        wrapperClassName=''
+                        wrapperClassName='fs-3'
                       />
                     </div>
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
                       <p
                         className=''
-                        style={{ lineHeight: "18px", fontSize: "13px" }}
+                        style={{
+                          lineHeight: "18px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                        }}
                       >
                         Total Marks
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </>
             )}
