@@ -5,14 +5,14 @@ import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.mo
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
 
-const Theory = ({ assignmentLoading }) => {
+const Theory = ({ assignmentLoading, theoryQ }) => {
   const {
     // apiServices,
     // permission,
     user,
     answerQuestion,
     // setObjectiveQ,
-    setTheoryQ,
+
     // answeredObjectiveQ,
     answeredTheoryQ,
     answeredTheoryQ2,
@@ -53,7 +53,7 @@ const Theory = ({ assignmentLoading }) => {
   } = answerQuestion;
 
   const showNoAssignment = () => {
-    if (setTheoryQ.length === 0) {
+    if (theoryQ.length === 0) {
       return true;
     } else {
       return false;
@@ -63,9 +63,9 @@ const Theory = ({ assignmentLoading }) => {
   // const [theoryDefaultValue, settheoryDefaultValue] = useState([]);
 
   const checkEmptyQuestions = () => {
-    if (answeredTheoryQ.length !== setTheoryQ.length) {
+    if (answeredTheoryQ.length !== theoryQ.length) {
       return false;
-    } else if (answeredTheoryQ.length === setTheoryQ.length) {
+    } else if (answeredTheoryQ.length === theoryQ.length) {
       return true;
     }
   };
@@ -120,6 +120,11 @@ const Theory = ({ assignmentLoading }) => {
     },
   ];
 
+  const totalTheoryScore = theoryQ.reduce(
+    (acc, quest) => acc + Number(quest?.question_mark),
+    0
+  );
+
   const buttonOptions2 = [
     {
       title: "Submit Theory Assignment",
@@ -129,87 +134,113 @@ const Theory = ({ assignmentLoading }) => {
   ];
 
   // console.log({ answeredTheoryQ });
-  console.log({ setTheoryQ, answeredTheoryQ, answeredTheoryQ2 });
-  // console.log({ setTheoryQ });
+  console.log({ theoryQ, answeredTheoryQ, answeredTheoryQ2 });
+  // console.log({ theoryQ });
 
   return (
-    <div className="">
+    <div className=''>
       {!assignmentLoading && showNoAssignment() && (
         <div className={styles.placeholder_container}>
           <HiOutlineDocumentPlus className={styles.icon} />
           <p className={styles.heading}>No Theory Assignment</p>
         </div>
       )}
-      {!assignmentLoading && setTheoryQ.length >= 1 && (
+      {!assignmentLoading && theoryQ.length >= 1 && (
         <div className={styles.objective}>
           {theorySubmitted && (
             <p className={styles.assignment_submitted_text}>Submitted</p>
           )}
           <div className={`${theorySubmitted && styles.assignment_submitted}`}>
-            <p className={styles.view__questions_heading}>Theory Section</p>
-            <div className={styles.view__questions}>
-              {setTheoryQ.map((CQ, index) => {
-                console.log({ CQ });
-                return (
-                  <div
-                    className={styles.view__questions_container}
-                    key={index}
-                    // style={{ width: "300px" }}
-                  >
-                    <p
-                      className={styles.view__questions_question}
-                      // style={{ fontSize: "15px", lineHeight: "20px" }}
+            <div className='d-flex flex-column gap-4 flex-md-row justify-content-between align-items-center'>
+              <p className='fs-3 fw-bold'>Theory Section</p>
+
+              <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
+                <p className='fs-3 fw-bold'>Total Score(s):</p>
+                <p className='fs-3 fw-bold'>{totalTheoryScore}</p>
+              </div>
+            </div>
+            <div className='d-flex flex-column my-5 gap-4'>
+              {theoryQ
+                ?.sort((a, b) => {
+                  if (a.question_number < b.question_number) {
+                    return -1;
+                  }
+                  if (a.question_number > b.question_number) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                ?.map((CQ, index) => {
+                  // console.log({ CQ });
+                  return (
+                    <div
+                      className={styles.view__questions_container}
+                      key={index}
+                      // style={{ width: "300px" }}
                     >
-                      {index + 1}. {CQ.question}
-                    </p>
-                    {CQ.image && (
-                      <div className="mb-4 ">
-                        <img src={CQ.image} width={70} height={70} alt="" />
-                      </div>
-                    )}
-                    {
-                      <>
-                        <div className="auth-textarea-wrapper">
-                          <textarea
-                            className="form-control"
-                            type="text"
-                            value={
-                              checkedData(CQ.question, CQ.answer) ||
-                              checkedData2(CQ.question, CQ.answer)
-                            }
-                            placeholder="Type the answer"
-                            disabled={theorySubmitted}
-                            onChange={(e) => {
-                              // checkedData(index, e.target.value);
-                              addTheoryAnsFxn({
-                                period: user?.period,
-                                term: user?.term,
-                                session: user?.session,
-                                student_id: Number(user?.id),
-                                subject_id: Number(subject_id),
-                                question: CQ.question,
-                                question_type: "theory",
-                                answer: e.target.value,
-                                correct_answer: CQ.answer,
-                                assignment_id: Number(CQ.id),
-                                // question_mark: Number(CQ.question_mark),
-                                // total_mark: Number(CQ.total_mark),
-                                // total_question: Number(CQ.total_question),
-                                submitted: "true",
-                                question_number: Number(CQ.question_number),
-                                week: CQ.week,
-                              });
-                            }}
-                          />
+                      <p className='fs-3 mb-4 lh-base'>
+                        <span className='fs-3 fw-bold'>
+                          Q{CQ.question_number}.{/* Q{index + 1}. */}
+                        </span>{" "}
+                        {CQ.question}
+                      </p>
+
+                      <p className='fw-bold fs-3 mb-4 lh-base'>
+                        ({CQ.question_mark} mk(s) )
+                      </p>
+                      {/* {CQ.image && (
+                        <div className='mb-4 '>
+                          <img src={CQ.image} width={70} height={70} alt='' />
                         </div>
-                        <p className={styles.view__questions_answer}>
-                          {/* Ans - {CQ.answer} */}
-                        </p>
-                      </>
-                    }
-                  </div>
-                );
-              })}
+                      )} */}
+                      {
+                        <>
+                          <div className='auth-textarea-wrapper'>
+                            <textarea
+                              className='form-control'
+                              style={{
+                                minHeight: "150px",
+                                fontSize: "16px",
+                                lineHeight: "22px",
+                              }}
+                              type='text'
+                              value={
+                                checkedData(CQ.question, CQ.answer) ||
+                                checkedData2(CQ.question, CQ.answer)
+                              }
+                              placeholder='Type the answer'
+                              disabled={theorySubmitted}
+                              onChange={(e) => {
+                                // checkedData(index, e.target.value);
+                                addTheoryAnsFxn({
+                                  period: user?.period,
+                                  term: user?.term,
+                                  session: user?.session,
+                                  student_id: Number(user?.id),
+                                  subject_id: Number(subject_id),
+                                  question: CQ.question,
+                                  question_type: "theory",
+                                  answer: e.target.value,
+                                  correct_answer: CQ.answer,
+                                  assignment_id: Number(CQ.id),
+                                  // question_mark: Number(CQ.question_mark),
+                                  // total_mark: Number(CQ.total_mark),
+                                  // total_question: Number(CQ.total_question),
+                                  submitted: "true",
+                                  question_number: Number(CQ.question_number),
+                                  week: CQ.week,
+                                });
+                              }}
+                            />
+                          </div>
+                          <p className={styles.view__questions_answer}>
+                            {/* Ans - {CQ.answer} */}
+                          </p>
+                        </>
+                      }
+                    </div>
+                  );
+                })}
             </div>
             <div className={styles.footer}>
               <ButtonGroup options={buttonOptions2} />

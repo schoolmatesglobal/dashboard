@@ -51,22 +51,22 @@ import {
 export const useStudentAssignments = () => {
   const dispatch = useDispatch();
   const {
-    assignmentTab,
+    // assignmentTab,
     answerQuestion,
-    studentSubjects,
+    // studentSubjects,
     // answeredObjectiveQ3,
     // answeredTheoryQ3,
     // answeredQ,
     // markedObjectiveQ,
 
     // OBJECTIVE
-    setObjectiveQ,
+    // setObjectiveQ,
     answeredObjectiveQ,
     answeredObjectiveQ2,
     objectiveSubmitted,
 
     // THEORY
-    setTheoryQ,
+    // setTheoryQ,
     answeredTheoryQ,
     answeredTheoryQ2,
     theorySubmitted,
@@ -76,6 +76,39 @@ export const useStudentAssignments = () => {
     answeredObjResults,
     answeredTheoryResults,
   } = useSelector(getAllStudentAssignment);
+
+  const [objectiveQ2, setObjectiveQ2] = useState([]);
+  const [theoryQ2, setTheoryQ2] = useState([]);
+  const [assignmentTab, setAssignmentTab] = useState('1');
+  // const [studentSubjects, setStudentSubjects] = useState([]);
+
+  const [createQ2, setCreateQ2] = useState({
+    option1: "",
+    option2: "",
+    option3: "",
+    option4: "",
+    total_mark: 0,
+    theory_total_mark: 0,
+    total_question: 0,
+    question_mark: 0,
+    question_number: 0,
+    ans1: false,
+    ans2: false,
+    ans3: false,
+    ans4: false,
+    answer: "",
+    // theoryAns: "",
+    question_type: "",
+    question: "",
+    subject: "",
+    image: "",
+    imageName: "",
+    term: "",
+    period: "",
+    session: "",
+    subject_id: "",
+    week: "",
+  });
 
   const [assignment, setAssignment] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -172,45 +205,6 @@ export const useStudentAssignments = () => {
     dispatch(resetLoadTheoryAns());
   };
 
-  // const addMarkedObjectiveQFxn = (payload) => {
-  //   dispatch(addMarkedObjectiveQ(payload));
-  // };
-  // const addObjectiveAnsFxn2 = (payload) => {
-  //   dispatch(addObjectiveAns2(payload));
-  // };
-  // const addObjectiveAnsFxn3 = (payload) => {
-  //   dispatch(addObjectiveAns3(payload));
-  // };
-
-  // const addTheoryAnsFxn2 = (payload) => {
-  //   dispatch(addTheoryAns2(payload));
-  // };
-  // const addTheoryAnsFxn3 = (payload) => {
-  //   dispatch(addTheoryAns3(payload));
-  // };
-
-  // const resetMarkedObjectiveQFxn = () => {
-  //   dispatch(resetMarkedObjectiveQ());
-  // };
-  // const resetObjectiveAnsFxn = () => {
-  //   dispatch(resetObjectiveAns());
-  // };
-
-  // const resetObjectiveAnsFxn2 = () => {
-  //   dispatch(resetObjectiveAns2());
-  // };
-
-  // const resetTheoryAnsFxn2 = () => {
-  //   dispatch(resetTheoryAns2());
-  // };
-  // const resetObjectiveAnsFxn3 = () => {
-  //   dispatch(resetObjectiveAns2());
-  // };
-
-  // const resetTheoryAnsFxn3 = () => {
-  //   dispatch(resetTheoryAns2());
-  // };
-
   // STUDENT RESULT FUNCTION
   const updateMarkedQuestionFxn = (payload) => {
     dispatch(updateMarkedQuestion(payload));
@@ -232,6 +226,7 @@ export const useStudentAssignments = () => {
   const {
     isLoading: studentSubjectsLoading,
     refetch: refetchStudentSubjectsLoading,
+    data: studentSubjects,
   } = useQuery(
     [queryKeys.GET_SUBJECTS_BY_STUDENT],
     () => apiServices.getSubjectByClass(className),
@@ -240,23 +235,34 @@ export const useStudentAssignments = () => {
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view || permission?.results,
       // enabled: true,
-      onSuccess(data) {
-        // console.log({ data, className });
-        // resetAddObjectiveAnsFxn();
-        // resetTheoryAnsFxn();
-        const sortSubjects = data.map((sub, index) => {
+      select: (data) => {
+        // const ssg = apiServices.formatData(data);
+        const ssg = data?.data[0]?.attributes?.subject;
+        
+        const sortSubjects = ssg?.map((sub, index) => {
           return {
-            value: sub.subject,
-            title: sub.subject,
-            id: Number(sub.id),
+            value: sub.name,
+            title: sub.name,
+            // id: Number(sub.id),
           };
         });
-        updateStudentSubjectsFxn(sortSubjects);
+        console.log({ ssg, data, sortSubjects });
+        return sortSubjects ?? [];
       },
+      // onSuccess(data) {
+      //   const sortSubjects = data.map((sub, index) => {
+      //     return {
+      //       value: sub.subject,
+      //       title: sub.subject,
+      //       id: Number(sub.id),
+      //     };
+      //   });
+      //   // updateStudentSubjectsFxn(sortSubjects);
+      // },
       onError(err) {
         errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
     }
   );
 
@@ -478,9 +484,9 @@ export const useStudentAssignments = () => {
     permission,
     user,
     errorHandler,
-    studentSubjects,
+    // studentSubjects,
     //
-    assignmentTab,
+   
     updateAssignmentTabFxn,
     //
     answerQuestion,
@@ -492,7 +498,7 @@ export const useStudentAssignments = () => {
     objectiveSubmitted,
     updateObjectiveSubmittedFxn,
     //
-    setObjectiveQ,
+    // setObjectiveQ,
     updateSetObjectiveQFxn,
     //
     answeredObjectiveQ,
@@ -515,7 +521,7 @@ export const useStudentAssignments = () => {
     theorySubmitted,
     updateTheorySubmittedFxn,
     //
-    setTheoryQ,
+    // setTheoryQ,
     updateSetTheoryQFxn,
     //
     answeredTheoryQ,
@@ -562,5 +568,19 @@ export const useStudentAssignments = () => {
     //
     answeredTheoryResults,
     //
+
+    objectiveQ2,
+    setObjectiveQ2,
+    theoryQ2,
+    setTheoryQ2,
+    createQ2,
+    setCreateQ2,
+
+    studentSubjectsLoading,
+    refetchStudentSubjectsLoading,
+    studentSubjects,
+
+    assignmentTab,
+    setAssignmentTab,
   };
 };

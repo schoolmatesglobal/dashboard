@@ -667,61 +667,14 @@ const Create = ({
           setTimeout(() => {
             setDeletePrompt(false);
           }, 1000);
-          // deleteObjectiveQuestionFxn({
-          //   number: editNumber,
-          // });
-          // const filter = objectiveQ
-          //   ?.filter((item) => item.question_number !== editNumber)
-          //   ?.sort((a, b) => {
-          //     if (a.question_number < b.question_number) {
-          //       return -1;
-          //     }
-          //     if (a.question_number > b.question_number) {
-          //       return 1;
-          //     }
-          //     return 0;
-          //   })
-          //   ?.map((ob, i) => {
-          //     return {
-          //       ...ob,
-          //       question_number: i + 1,
-          //       total_question: Number(total_question) - 1,
-          //       total_mark: (Number(total_question) - 1) * question_mark,
-          //     };
-          //   });
-          // const findIndex = objectiveQ?.findIndex(
-          //   (item) => item.question_number === editNumber
-          // );
-          // if (findIndex !== -1) {
-          //   setObjectiveQ([...filter]);
-          //   setCreateQ((prev) => ({
-          //     ...prev,
-          //     total_question: Number(total_question) - 1,
-          //     total_mark: (Number(total_question) - 1) * question_mark,
-          //   }));
-          // }
+       
         } else if (question_type === "theory") {
           deleteAssignment();
 
           setTimeout(() => {
             setDeletePrompt(false);
           }, 1000);
-          // deleteTheoryQuestionFxn({
-          //   number: editNumber,
-          // });
-          // const filter = theoryQ?.filter(
-          //   (item) => item.question_number !== editNumber
-          // );
-          // const findIndex = theoryQ?.findIndex(
-          //   (item) => item.question_number === editNumber
-          // );
-          // setCreateQ((prev) => ({
-          //   ...prev,
-          //   theory_total_mark: Number(theory_total_mark) - Number(editMark),
-          // }));
-          // if (findIndex !== -1) {
-          //   setTheoryQ([...filter]);
-          // }
+         
         }
       },
       variant: "outline-danger",
@@ -949,23 +902,7 @@ const Create = ({
 
   const activateAddQuestion = () => {
     if (
-      // (objectiveQ?.length === 0 &&
-      //   theoryQ?.length === 0 &&
-      //   (!subject || !week || !question_type)) ||
-      // (finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question !==
-      //   0 &&
-      //   objectiveQ?.length ===
-      //     Number(
-      //       finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question
-      //     )) ||
-      // (finalTheoryArray[finalTheoryArray?.length - 1]?.total_question !== 0 &&
-      //   theoryQ?.length ===
-      //     Number(
-      //       finalTheoryArray[finalTheoryArray?.length - 1]?.total_question
-      //     )) ||
-      // (question_type === "objective" && checkObjectiveQ?.length > 0) ||
-      // (question_type === "theory" && checkTheoryQ?.length > 0)
-      !subject_id ||
+           !subject_id ||
       !week ||
       !question_type
     ) {
@@ -979,19 +916,7 @@ const Create = ({
     }
   };
 
-  // const finalObjectiveArray = updateObjectiveTotals(questionMark);
 
-  // console.log({ ObjectiveQ });
-  // console.log({
-  //   // cq: completedQuestion() || completedQuestion2(),
-  //   // total_question,
-  //   ObjectiveQ,
-  //   theoryQ,
-  // });
-
-  // console.log({
-  //   createQuestion,
-  // });
   const subs = [
     { value: "Mathematics", title: "Mathematics", id: "1" },
     { value: "English Language", title: "English Language", id: "2" },
@@ -1033,73 +958,7 @@ const Create = ({
     }
   }, [assignmentCreated, question_type, subject_id, week]);
 
-  // useEffect(() => {
-  //   const filter = objectiveQ?.filter(
-  //     (item) =>
-  //       item.question_number !== editNumber &&
-  //       item.question_number !== editSwitchNumber
-  //   );
 
-  //   const findIndex = objectiveQ?.findIndex(
-  //     (item) => item.question_number === editNumber
-  //   );
-
-  //   const findSwitchIndex = objectiveQ?.findIndex(
-  //     (item) => item.question_number === editSwitchNumber
-  //   );
-
-  //   if (editNumber === editSwitchNumber) {
-  //     setSwitchArray(filter);
-  //   } else if (editNumber !== editSwitchNumber) {
-  //     setSwitchArray([
-  //       ...filter,
-  //       {
-  //         ...objectiveQ[findSwitchIndex],
-  //         question_mark,
-  //         total_mark,
-  //         total_question,
-  //         question_number: editNumber,
-  //       },
-  //     ]);
-  //   }
-  // }, [editNumber, editSwitchNumber]);
-
-  // console.log({
-
-  //   assignmentCreated,
-  //   obj,
-  //   // switchArray,
-  //   createQ,
-  //   // subjectsByTeacher,
-  //   objectiveQ,
-  //   theoryQ,
-  //   question_type,
-  //   editQuestion,
-  //   editOption1,
-  //   editOption2,
-  //   editOption3,
-  //   editOption4,
-  //   editNumber,
-  //   editAnswer,
-  //   editQuestionId,
-  //   editMark,
-  //   // classSubjects,
-  //   finalTheoryArray,
-  //   // finalObjectiveArray,
-  //   // ObjectiveQ,
-  //   // theoryQ,
-  //   // totalMark,
-  // });
-
-  // console.log({ totalMark, editQuestion, editAnswer, editMark, editNumber });
-  // console.log({
-  //   finalTheoryArray,
-  //   finalObjectiveArray,
-  //   checkObjectiveQ,
-  //   checkTheoryQ,
-  //   ObjectiveQ,
-  //   theoryQ,
-  // });
 
   console.log({
     editNumber,

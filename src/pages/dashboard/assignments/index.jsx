@@ -29,6 +29,23 @@ const Assignments = () => {
     objMark,
     setObjMark,
   } = useAssignments();
+
+  const {
+    objectiveQ2,
+    setObjectiveQ2,
+    theoryQ2,
+    setTheoryQ2,
+    createQ2,
+    setCreateQ2,
+
+    studentSubjectsLoading,
+    refetchStudentSubjectsLoading,
+    studentSubjects,
+
+    assignmentTab,
+    setAssignmentTab,
+  } = useStudentAssignments();
+
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
 
   // const { apiServices, errorHandler, permission, user } =
@@ -162,7 +179,7 @@ const Assignments = () => {
   //   // refetchTheoryAnsweredAssignment();
   // }, []);
 
-  // console.log({ objectiveQ, theoryQ });
+  // console.log({ studentSubjects });
 
   return (
     <PageSheet>
@@ -171,7 +188,19 @@ const Assignments = () => {
 
         <hr className={styles.home_divider} />
 
-        {activeTab === "5" && permission?.view && <View />}
+        {activeTab === "5" && permission?.view && (
+          <View
+            objectiveQ2={objectiveQ2}
+            setObjectiveQ2={setObjectiveQ2}
+            theoryQ2={theoryQ2}
+            setTheoryQ2={setTheoryQ2}
+            createQ2={createQ2}
+            setCreateQ2={setCreateQ2}
+            studentSubjects={studentSubjects}
+            assignmentTab={assignmentTab}
+            setAssignmentTab={setAssignmentTab}
+          />
+        )}
         {activeTab === "1" && permission?.create && (
           <Create
             createQ={createQ}
