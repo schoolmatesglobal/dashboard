@@ -35,6 +35,8 @@ const Create = ({
   setTheoryQ,
   obj,
   setObj,
+  objMark,
+  setObjMark,
 }) => {
   const {
     updateActiveTabFxn,
@@ -186,6 +188,7 @@ const Create = ({
   const [newSubjects, setNewSubjects] = useState([]);
   const [allowFetch, setAllowFetch] = useState(true);
   const [loading1, setLoading1] = useState(false);
+  const [published, setPublished] = useState(false);
   // const navigate = useNavigate();
 
   const activateRetrieve = () => {
@@ -249,7 +252,7 @@ const Create = ({
               total_question: ag?.total_question,
               total_mark: ag?.total_mark,
               question_mark: ag?.question_mark,
-              question_number: i + 1,
+              question_number: ag?.question_number,
             };
           });
         } else if (question_type === "theory") {
@@ -268,7 +271,7 @@ const Create = ({
               total_question: ag?.total_question,
               total_mark: ag?.total_mark,
               question_mark: ag?.question_mark,
-              question_number: i + 1,
+              question_number: ag?.question_number,
             };
           });
           // setTheoryQ(theo);
@@ -308,7 +311,7 @@ const Create = ({
           option4,
           total_question: Number(total_question),
           total_mark: Number(total_mark),
-          question_mark: Number(question_mark),
+          question_mark: Number(objMark),
           question_number: Number(question_number),
         },
       ]),
@@ -363,57 +366,51 @@ const Create = ({
   const {
     mutateAsync: editObjectiveAssignment,
     isLoading: editObjectiveAssignmentLoading,
-  } = useMutation(
-    () =>
-      apiServices.editObjectiveAssignment({
-        id: editQuestionId,
-        body: {
-          question: editQuestion,
-          answer: editAnswer,
-          option1: editOption1,
-          option2: editOption2,
-          option3: editOption3,
-          option4: editOption4,
-        },
-      }),
-    {
-      onSuccess() {
-        setAllowFetch(true);
-        refetchAssignmentCreated();
-        // setTimeout(() => {
-        //   refetchAssignmentCreated();
-        // }, 2000);
-        toast.success("Objective question has been edited successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
+  } = useMutation(apiServices.editObjectiveAssignment, {
+    onSuccess() {
+      setAllowFetch(true);
+      refetchAssignmentCreated();
+      // setTimeout(() => {
+      //   refetchAssignmentCreated();
+      // }, 2000);
+      toast.success("Objective question has been edited successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
+
+  //// PUBLISH ASSIGNMENT ////
+  const {
+    mutateAsync: publishAssignment,
+    isLoading: publishAssignmentLoading,
+  } = useMutation(apiServices.publishAssignment, {
+    onSuccess() {
+      setAllowFetch(true);
+      refetchAssignmentCreated();
+      // setTimeout(() => {
+      //   refetchAssignmentCreated();
+      // }, 2000);
+      toast.success(`Assignment has been ${published ? "unpublished" : "published"} successfully`);
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   //// EDIT THEORY ASSIGNMENT ////
   const {
     mutateAsync: editTheoryAssignment,
     isLoading: editTheoryAssignmentLoading,
-  } = useMutation(
-    () =>
-      apiServices.editTheoryAssignment({
-        id: editQuestionId,
-        body: {
-          question: editQuestion,
-          answer: editAnswer,
-        },
-      }),
-    {
-      onSuccess() {
-        refetchAssignmentCreated();
-        toast.success("Objective question has been edited successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
+  } = useMutation(apiServices.editTheoryAssignment, {
+    onSuccess() {
+      refetchAssignmentCreated();
+      toast.success("theory question has been edited successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   //// DELETE ASSIGNMENT ////
   const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
@@ -584,21 +581,32 @@ const Create = ({
 
   const buttonOptions2 = [
     {
-      title: "Clear All",
+      title: `${published ? "Unpublish" : "Publish"}`,
       onClick: () => {
-        setClearAllPrompt(true);
+        publishAssignment({
+          term: user?.term,
+          period: user?.period,
+          session: user?.session,
+          question_type,
+          week,
+          is_publish: published ? 0 : 1,
+        });
+        setAllowFetch(true);
+        refetchAssignmentCreated();
+        setPublished((prev) => !prev);
       },
-      variant: "outline",
+      isLoading: publishAssignmentLoading,
+      // variant: "",
     },
-    {
-      title: "Submit",
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-      onClick: () => {
-        // setClearAllPrompt(true);
-        setWarningPrompt(true);
-      },
-      // variant: `${activeTab === "2" ? "" : "outline"}`,
-    },
+    // {
+    //   title: "Submit",
+    //   // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+    //   onClick: () => {
+    //     // setClearAllPrompt(true);
+    //     setWarningPrompt(true);
+    //   },
+    //   // variant: `${activeTab === "2" ? "" : "outline"}`,
+    // },
   ];
 
   const buttonOptions4 = [
@@ -804,6 +812,15 @@ const Create = ({
     }
   };
 
+  const filterArray = objectiveQ?.filter((obj) => obj.id !== editQuestionId);
+
+  const newArray = filterArray?.map((obj) => {
+    return {
+      ...obj,
+      question_mark: editMark,
+    };
+  });
+
   // const quest = checkedTheory(editQuestion, editAnswer)?.question;
 
   const editButtons = [
@@ -820,12 +837,34 @@ const Create = ({
       title: "Yes",
       onClick: () => {
         if (question_type === "objective") {
-          editObjectiveAssignment();
+          editObjectiveAssignment([
+            ...newArray,
+            {
+              id: editQuestionId,
+              question: editQuestion,
+              answer: editAnswer,
+              question_number: editNumber,
+              question_mark: editMark,
+              option1: editOption1,
+              option2: editOption2,
+              option3: editOption3,
+              option4: editOption4,
+            },
+          ]);
           setTimeout(() => {
             setEditPrompt(false);
           }, 1000);
+          refetchAssignmentCreated();
         } else if (question_type === "theory") {
-          editTheoryAssignment();
+          editTheoryAssignment({
+            id: editQuestionId,
+            body: {
+              question: editQuestion,
+              answer: editAnswer,
+              question_number: editNumber,
+              question_mark: editMark,
+            },
+          });
           setTimeout(() => {
             setEditPrompt(false);
           }, 1000);
@@ -910,22 +949,25 @@ const Create = ({
 
   const activateAddQuestion = () => {
     if (
-      (objectiveQ?.length === 0 &&
-        theoryQ?.length === 0 &&
-        (!subject || !week || !question_type)) ||
-      (finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question !==
-        0 &&
-        objectiveQ?.length ===
-          Number(
-            finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question
-          )) ||
-      (finalTheoryArray[finalTheoryArray?.length - 1]?.total_question !== 0 &&
-        theoryQ?.length ===
-          Number(
-            finalTheoryArray[finalTheoryArray?.length - 1]?.total_question
-          )) ||
-      (question_type === "objective" && checkObjectiveQ?.length > 0) ||
-      (question_type === "theory" && checkTheoryQ?.length > 0)
+      // (objectiveQ?.length === 0 &&
+      //   theoryQ?.length === 0 &&
+      //   (!subject || !week || !question_type)) ||
+      // (finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question !==
+      //   0 &&
+      //   objectiveQ?.length ===
+      //     Number(
+      //       finalObjectiveArray[finalObjectiveArray?.length - 1]?.total_question
+      //     )) ||
+      // (finalTheoryArray[finalTheoryArray?.length - 1]?.total_question !== 0 &&
+      //   theoryQ?.length ===
+      //     Number(
+      //       finalTheoryArray[finalTheoryArray?.length - 1]?.total_question
+      //     )) ||
+      // (question_type === "objective" && checkObjectiveQ?.length > 0) ||
+      // (question_type === "theory" && checkTheoryQ?.length > 0)
+      !subject_id ||
+      !week ||
+      !question_type
     ) {
       return true;
       // setShowAddQuestion(true);
@@ -1022,31 +1064,32 @@ const Create = ({
   //   }
   // }, [editNumber, editSwitchNumber]);
 
-  console.log({
-    assignmentCreated,
-    obj,
-    // switchArray,
-    createQ,
-    // subjectsByTeacher,
-    objectiveQ,
-    theoryQ,
-    question_type,
-    editQuestion,
-    editOption1,
-    editOption2,
-    editOption3,
-    editOption4,
-    editNumber,
-    editAnswer,
-    editQuestionId,
-    editMark,
-    // classSubjects,
-    finalTheoryArray,
-    // finalObjectiveArray,
-    // ObjectiveQ,
-    // theoryQ,
-    // totalMark,
-  });
+  // console.log({
+
+  //   assignmentCreated,
+  //   obj,
+  //   // switchArray,
+  //   createQ,
+  //   // subjectsByTeacher,
+  //   objectiveQ,
+  //   theoryQ,
+  //   question_type,
+  //   editQuestion,
+  //   editOption1,
+  //   editOption2,
+  //   editOption3,
+  //   editOption4,
+  //   editNumber,
+  //   editAnswer,
+  //   editQuestionId,
+  //   editMark,
+  //   // classSubjects,
+  //   finalTheoryArray,
+  //   // finalObjectiveArray,
+  //   // ObjectiveQ,
+  //   // theoryQ,
+  //   // totalMark,
+  // });
 
   // console.log({ totalMark, editQuestion, editAnswer, editMark, editNumber });
   // console.log({
@@ -1059,13 +1102,22 @@ const Create = ({
   // });
 
   console.log({
+    editNumber,
+    objMark,
+    published,
     createQ,
     newSubjects,
     objectiveQ,
+    theoryQ,
     assignmentCreated,
     allowFetch,
     allLoading,
     subjects,
+    period,
+    term,
+    session,
+    question_type,
+    week,
   });
 
   return (
@@ -1178,7 +1230,7 @@ const Create = ({
               }
               setCreateQuestionPrompt(true);
             }}
-            // disabled={activateAddQuestion()}
+            disabled={activateAddQuestion()}
           >
             {objectiveQ?.length === 0 && theoryQ?.length === 0
               ? "Add Question"
@@ -1215,54 +1267,6 @@ const Create = ({
               <p className={styles.heading}>Create Assignment</p>
             </div>
           )}
-        {/* {!allLoading &&
-          objectiveQ?.length === 0 &&
-          theoryQ?.length === 0 &&
-          checkObjectiveQ?.length === 0 &&
-          checkTheoryQ?.length === 0 && (
-            <div className={styles.placeholder_container}>
-              <HiOutlineDocumentPlus className={styles.icon} />
-              <p className={styles.heading}>Create Assignment</p>
-            </div>
-          )} */}
-
-        {/* {!allLoading &&
-          objectiveQ?.length === 0 &&
-          theoryQ?.length === 0 &&
-          (checkObjectiveQ?.length > 0 || checkTheoryQ?.length > 0) && (
-            <div className={styles.placeholder_container}>
-              <PiWarningCircleBold className={styles.icon} />
-              <p className={styles.heading}>Assignment Created</p>
-              <div className='d-flex gap-5'>
-                <div className='mt-5'>
-                  <Button
-                    variant=''
-                    onClick={() => {
-                      updateCreatedQuestionFxn({
-                        subject,
-                        subject_id,
-                        question_type,
-                        week,
-                      });
-                      updateActiveTabFxn("2");
-                    }}
-                  >
-                    View Questions
-                  </Button>
-                </div>
-                <div className='mt-5'>
-                  <Button
-                    variant='outline'
-                    onClick={() => {
-                      setCreateQuestionPrompt(true);
-                    }}
-                  >
-                    Add More Question
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )} */}
 
         {!allLoading && (
           <MarkCard
@@ -1273,6 +1277,11 @@ const Create = ({
             finalObjectiveArray={finalObjectiveArray}
             finalTheoryArray={finalTheoryArray}
             theory_total_mark={theory_total_mark}
+            published={published}
+            createQ={createQ}
+            setCreateQ={setCreateQ}
+            objMark={objMark}
+            setObjMark={setObjMark}
           />
         )}
 
@@ -1310,6 +1319,7 @@ const Create = ({
                         setEditSwitchNumber={setEditSwitchNumber}
                         editQuestionId={editQuestionId}
                         setEditQuestionId={setEditQuestionId}
+                        index={index}
                       />
                     </div>
                   );
@@ -1360,31 +1370,33 @@ const Create = ({
           </div>
         )}
 
-        {!allLoading && (objectiveQ?.length >= 1 || theoryQ?.length >= 1) && (
-          <div className='w-100 d-flex justify-content-end'>
-            {/* <ButtonGroup options={buttonOptions2} /> */}
-            <div className='form-check form-switch d-flex align-items-center gap-3 cursor-pointer'>
+        {!allLoading &&
+          ((question_type === "objective" && objectiveQ?.length !== 0) ||
+            (question_type === "theory" && theoryQ?.length !== 0)) && (
+            <div className='w-100 d-flex justify-content-end'>
+              <ButtonGroup options={buttonOptions2} />
+              {/* <div className='d-flex align-items-center gap-3 cursor-pointer'>
               <input
                 type='checkbox'
                 name='radio-1'
-                className='form-check-input'
+                className=''
                 // checked={editOption1 === editAnswer}
-                role='switch'
+
                 id='flexSwitchCheckChecked'
-                checked={true}
-                style={{ width: "20px", height: "20px" }}
-                // onChange={(e) => setEditAnswer(e.target.value)}
-                value={editOption1}
+                checked={published}
+                style={{ width: "20px", height: "20px", color: "green" }}
+                onChange={(e) => setPublished((prev) => !prev)}
+                value={published}
               />
               <label
                 htmlFor='flexSwitchCheckChecked'
-                className='fs-4 form-check-label'
+                className='fs-4 form-check-label fw-bold'
               >
                 Publish Assignment
               </label>
+            </div> */}
             </div>
-          </div>
-        )}
+          )}
       </div>
       <CreateQuestion
         createQuestionPrompt={createQuestionPrompt}
@@ -1404,6 +1416,8 @@ const Create = ({
         allowFetch={allowFetch}
         setAllowFetch={setAllowFetch}
         refetchAssignmentCreated={refetchAssignmentCreated}
+        objMark={objMark}
+        setObjMark={setObjMark}
       />
       {/* submit assignment prompt */}
       <Prompt
@@ -1462,6 +1476,28 @@ const Create = ({
       >
         {question_type === "objective" && (
           <div>
+            <p className='fw-bold fs-4 mb-4'>Question Number</p>
+            <div className='d-flex flex-column gap-3 mb-5'>
+              <div className='d-flex align-items-center gap-3'>
+                <div style={{ width: "100px" }}>
+                  <AuthInput
+                    type='number'
+                    placeholder='Question Number'
+                    // hasError={!!errors.username}
+                    // defaultValue={CQ.question_mark}
+                    value={editNumber}
+                    name='option'
+                    onChange={(e) => {
+                      setEditNumber(e.target.value);
+                    }}
+                    style={{
+                      fontSize: "16px",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
             <p className='fw-bold fs-4 mb-3'>Questions</p>
             <div className='auth-textarea-wrapper'>
               <textarea
@@ -1607,7 +1643,6 @@ const Create = ({
             </div>
             <p className='fw-bold fs-4 my-4'>Mark Computation</p>
             <div className='d-flex flex-column gap-3'>
-              {/*Question Mark */}
               <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
                   <AuthInput
@@ -1618,19 +1653,6 @@ const Create = ({
                     value={editMark}
                     name='option'
                     onChange={(e) => {
-                      // updateObjectiveQMarkFxn({
-                      //   newValue: e.target.value,
-                      // });
-                      // updateCreateQuestionFxn({
-                      //   question_mark: e.target.value,
-                      //   total_mark: e.target.value * total_question,
-                      // });
-                      // setCreateQ((prev) => ({
-                      //   ...prev,
-                      //   question_mark: Number(e.target.value),
-                      //   total_mark:
-                      //     Number(e.target.value) * Number(total_question),
-                      // }));
                       setEditMark(e.target.value);
                     }}
                     style={{
@@ -1642,83 +1664,33 @@ const Create = ({
                   <p className='fs-4'>Question Mark</p>
                 </div>
               </div>
-              {/* Total Question */}
-              {/* <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Total Question'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    min={objectiveQ?.length}
-                    value={editTotalQuestion}
-                    name='option'
-                    onChange={(e) => {
-                      setEditTotalQuestion(e.target.value);
-                      updateObjectiveTotalQuestionFxn({
-                        newValue: e.target.value,
-                      });
-
-                      setCreateQ((prev) => ({
-                        ...prev,
-                        total_question: Number(e.target.value),
-                        total_mark:
-                          Number(e.target.value) * Number(question_mark),
-                      }));
-                      // updateCreateQuestionFxn({
-                      //   question_mark: e.target.value,
-                      //   total_mark: e.target.value * total_question,
-                      // });
-                    }}
-                    style={{
-                      fontSize: "16px",
-                    }}
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p className='fs-4'>Total Question</p>
-                </div>
-              </div> */}
-              {/* Switch Question Number */}
-              {/* <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Switch to'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    min={1}
-                    max={objectiveQ?.length}
-                    value={editSwitchNumber}
-                    name='option'
-                    onChange={(e) => {
-                      const inputValue = e.target.value.replace(/[^0-9]/g, "");
-                      if (Number(inputValue) > objectiveQ?.length) return;
-                      setEditSwitchNumber(inputValue);
-                    }}
-                    style={{
-                      fontSize: "16px",
-                    }}
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p className='fs-4'>Switch to</p>
-                </div>
-              </div> */}
             </div>
           </div>
         )}
         {question_type === "theory" && (
           <div>
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                marginBottom: "10px",
-              }}
-            >
-              Question
-            </p>
+            <p className='fw-bold fs-4 mb-4'>Question Number</p>
+            <div className='d-flex flex-column gap-3 mb-5'>
+              <div className='d-flex align-items-center gap-3'>
+                <div style={{ width: "100px" }}>
+                  <AuthInput
+                    type='number'
+                    placeholder='Question Number'
+                    // hasError={!!errors.username}
+                    // defaultValue={CQ.question_mark}
+                    value={editNumber}
+                    name='option'
+                    onChange={(e) => {
+                      setEditNumber(e.target.value);
+                    }}
+                    style={{
+                      fontSize: "16px",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <p className='fw-bold fs-4 mb-4'>Question</p>
             <div className='auth-textarea-wrapper'>
               <textarea
                 className='form-control'

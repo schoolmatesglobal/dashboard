@@ -26,6 +26,8 @@ const Assignments = () => {
     obj,
     setObj,
     permission,
+    objMark,
+    setObjMark,
   } = useAssignments();
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
 
@@ -180,6 +182,8 @@ const Assignments = () => {
             setTheoryQ={setTheoryQ}
             obj={obj}
             setObj={setObj}
+            objMark={objMark}
+            setObjMark={setObjMark}
           />
         )}
         {/* {activeTab === "2" && permission?.created && <Created />} */}

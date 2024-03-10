@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Prompt from "../../../components/modals/prompt";
 import AuthInput from "../../../components/inputs/auth-input";
@@ -25,6 +25,8 @@ const CreateQuestion = ({
   allowFetch,
   setAllowFetch,
   refetchAssignmentCreated,
+  objMark,
+  setObjMark,
 }) => {
   const {
     user,
@@ -122,13 +124,13 @@ const CreateQuestion = ({
           !option2 ||
           !option3 ||
           !option4 ||
-          !answer 
+          !answer ||
+          !objMark
           // total_mark === 0 ||
           // total_question === 0 ||
           // question_mark === 0 ||
           // total_mark === "" ||
           // total_question === "" ||
-
 
           // question_mark === 0
         ) {
@@ -250,6 +252,7 @@ const CreateQuestion = ({
                   theoryAns: "",
                   // question_type: "",
                   question: "",
+                  question_number: 0,
                   // question_mark: 0,
                   // total_mark: 0,
                   // subject: "",
@@ -260,7 +263,6 @@ const CreateQuestion = ({
                   // session: "",
                   // subject_id: "",
                 });
-
               } else if (question_type === "theory") {
                 await addTheoryAssignments();
 
@@ -306,6 +308,7 @@ const CreateQuestion = ({
                   // subject: "",
                   image: "",
                   imageName: "",
+                  question_number: 0,
                   // term: "",
                   // period: "",
                   // session: "",
@@ -329,14 +332,12 @@ const CreateQuestion = ({
               // }));
 
               if (question_type === "theory") {
-                
                 setCreateQ((prev) => ({
                   ...prev,
                   theory_total_mark:
                     Number(theory_total_mark) + Number(total_mark),
                 }));
               } else if (question_type === "objective") {
-                
                 setCreateQ((prev) => ({
                   ...prev,
                   question_number: objectiveQ?.length + 1,
@@ -369,6 +370,15 @@ const CreateQuestion = ({
   const finalTheoryArray = updateQuestionNumbers(totalMark);
 
   const finalObjectiveArray = updateQuestionNumbers(objectiveQ);
+
+  useEffect(() => {
+    const objScore =
+      objectiveQ?.reduce(
+        (acc, quest) => acc + Number(quest?.question_mark),
+        0
+      ) / objectiveQ?.length;
+    setObjMark(objScore);
+  }, [objectiveQ]);
 
   console.log({ activatePreview: activatePreview() });
 
@@ -568,16 +578,7 @@ const CreateQuestion = ({
             )}
             {createQ?.question_type === "objective" && (
               <>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                  // className=''
-                >
-                  Question
-                </p>
+                <p className='fs-3 fw-bold mb-3'>Question</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
                     className='form-control'
@@ -611,15 +612,7 @@ const CreateQuestion = ({
                     // data={details.personalDetails.profilePictureName}
                   />
                 </> */}
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    margin: "10px 0px",
-                  }}
-                >
-                  Options
-                </p>
+                <p className='fs-3 fw-bold my-3'>Options</p>
                 <div className='d-flex flex-column gap-3'>
                   {/* option A */}
                   <div className='d-flex align-items-center gap-3'>
@@ -662,14 +655,7 @@ const CreateQuestion = ({
                         }}
                         value={createQ?.option1}
                       />
-                      <label
-                        htmlFor='option-A'
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <label htmlFor='option-A' className='fs-4 fw-bold'>
                         A. Correct answer
                       </label>
                     </div>
@@ -699,13 +685,6 @@ const CreateQuestion = ({
                         checked={createQ?.ans2 && !!createQ?.option2}
                         id='option-B'
                         onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   ans2: e.target.checked,
-                          //   ans1: false,
-                          //   ans3: false,
-                          //   ans4: false,
-                          //   answer: e.target.value,
-                          // })
                           setCreateQ((prev) => {
                             return {
                               ...prev,
@@ -719,14 +698,7 @@ const CreateQuestion = ({
                         }
                         value={createQ?.option2}
                       />
-                      <label
-                        htmlFor='option-B'
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <label htmlFor='option-B' className='fs-4 fw-bold'>
                         B. Correct answer
                       </label>
                     </div>
@@ -760,14 +732,6 @@ const CreateQuestion = ({
                         checked={createQ?.ans3 && !!createQ?.option3}
                         id='option-C'
                         onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   ans3: e.target.checked,
-                          //   ans1: false,
-                          //   ans2: false,
-                          //   ans4: false,
-                          //   answer: e.target.value,
-                          // })
-
                           setCreateQ((prev) => {
                             return {
                               ...prev,
@@ -781,14 +745,7 @@ const CreateQuestion = ({
                         }
                         value={createQ?.option3}
                       />
-                      <label
-                        htmlFor='option-C'
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <label htmlFor='option-C' className='fs-4 fw-bold'>
                         C. Correct answer
                       </label>
                     </div>
@@ -835,109 +792,32 @@ const CreateQuestion = ({
                         }
                         value={createQ?.option4}
                       />
-                      <label
-                        htmlFor='option-D'
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <label htmlFor='option-D' className='fs-4 fw-bold'>
                         D. Correct answer
                       </label>
                     </div>
                   </div>
                 </div>
-
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    margin: "10px 0px",
-                  }}
-                >
-                  Mark Computation
-                </p>
+                {/* <p className='fs-3 fw-bold mt-5'>{objMark} - Mark(s)</p>
+                {objMark <= 0 && (
+                  <p className='fs-4 mt-5 text-danger w-100 text-center'>
+                    NB: Please assign a mark for all questions first.
+                  </p>
+                )} */}
+                <p className='fs-3 fw-bold my-3'>Mark Computation</p>
                 <div className='d-flex flex-column gap-3'>
-                  {/* <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Total Questions'
-                        // hasError={!!errors.username}
-                        value={createQ.total_question}
-                        name='option'
-                        onChange={(e) => {
-                          // updateCreateQuestionFxn({
-                          //   total_question: e.target.value,
-                          //   total_mark: e.target.value * question_mark,
-                          // });
-                          setCreateQ((prev) => {
-                            return {
-                              ...prev,
-                              total_question: e.target.value,
-                              total_mark:
-                                Number(e.target.value) *
-                                Number(createQ.question_mark),
-                            };
-                          });
-                          // if (objectiveQ.length > 1) {
-                          //   updateObjectiveTotalQuestionFxn({
-                          //     newValue: e.target.value,
-                          //   });
-                          // }
-                          // calcObjTotal();
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p
-                        className=''
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Total Questions
-                      </p>
-                    </div>
-                  </div> */}
-
+                  {/*Question Mark */}
                   <div className='d-flex align-items-center gap-3'>
-                    {/*Question Mark */}
                     <div style={{ width: "100px" }}>
                       <AuthInput
                         type='number'
                         placeholder='Question Mark'
-                        // disabled={finalObjectiveArray.length >= 1}
                         // hasError={!!errors.username}
-                        value={
-                          createQ.question_mark ||
-                          finalObjectiveArray[finalObjectiveArray?.length - 1]
-                            ?.question_mark
-                        }
+                        value={objMark}
                         name='option'
                         onChange={(e) => {
-                          // updateCreateQuestionFxn({
-                          //   question_mark: e.target.value,
-                          //   total_mark: e.target.value * total_question,
-                          // });
-                          setCreateQ((prev) => {
-                            return {
-                              ...prev,
-                              question_mark: e.target.value,
-                              total_mark:
-                                Number(e.target.value) * Number(total_question),
-                            };
-                          });
-                          // if (objectiveQ.length > 1) {
-                          //   updateObjectiveQMarkFxn({
-                          //     newValue: e.target.value,
-                          //   });
-                          // }
-                          // calcObjTotal();
+                          if (objectiveQ?.length > 0) return;
+                          setObjMark(e.target.value);
                         }}
                         wrapperClassName=''
                       />
@@ -945,61 +825,12 @@ const CreateQuestion = ({
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
                       <p
                         className=''
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
+                        style={{ lineHeight: "18px", fontSize: "14px" }}
                       >
-                        Each Question Mark
+                        Question Mark
                       </p>
                     </div>
                   </div>
-
-                  {/* <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Total Mark'
-                        // hasError={!!errors.username}
-                        // defaultValue={calcObjTotal()}
-                        disabled
-                        value={
-                          createQ.total_mark ||
-                          finalObjectiveArray[finalObjectiveArray.length - 1]
-                            ?.question_mark *
-                            finalObjectiveArray[finalObjectiveArray.length - 1]
-                              ?.total_question
-                        }
-                        name='option'
-                        onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   total_mark: e.target.value,
-                          // })
-
-                          setCreateQ((prev) => {
-                            return {
-                              ...prev,
-                              total_mark: e.target.value,
-                            };
-                          })
-                        }
-                        wrapperClassName='fs-3'
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p
-                        className=''
-                        style={{
-                          lineHeight: "18px",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Total Marks
-                      </p>
-                    </div>
-                  </div> */}
                 </div>
               </>
             )}
@@ -1055,9 +886,7 @@ const CreateQuestion = ({
                 >
                   Mark
                 </p>
-                <p className={styles.create_question_answer}>
-                  {question_mark} mk(s)
-                </p>
+                <p className={styles.create_question_answer}>{objMark} mk(s)</p>
               </>
             )}
             {createQ?.question_type === "theory" && (

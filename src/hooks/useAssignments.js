@@ -93,6 +93,7 @@ export const useAssignments = () => {
 
   const [objectiveQ, setObjectiveQ] = useState([]);
   const [theoryQ, setTheoryQ] = useState([]);
+  const [objMark, setObjMark] = useState(0);
 
   const [createQ, setCreateQ] = useState({
     option1: "",
@@ -712,5 +713,8 @@ export const useAssignments = () => {
     session,
     subject_id,
     week,
+
+    objMark,
+    setObjMark,
   };
 };
