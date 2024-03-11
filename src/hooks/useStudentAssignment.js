@@ -52,7 +52,7 @@ export const useStudentAssignments = () => {
   const dispatch = useDispatch();
   const {
     // assignmentTab,
-    answerQuestion,
+    // answerQuestion,
     // studentSubjects,
     // answeredObjectiveQ3,
     // answeredTheoryQ3,
@@ -61,15 +61,15 @@ export const useStudentAssignments = () => {
 
     // OBJECTIVE
     // setObjectiveQ,
-    answeredObjectiveQ,
-    answeredObjectiveQ2,
-    objectiveSubmitted,
+    // answeredObjectiveQ,
+    // answeredObjectiveQ2,
+    // objectiveSubmitted,
 
     // THEORY
     // setTheoryQ,
-    answeredTheoryQ,
+    // answeredTheoryQ,
     answeredTheoryQ2,
-    theorySubmitted,
+    // theorySubmitted,
 
     // STUDENT RESULT
     markedQuestion,
@@ -79,7 +79,23 @@ export const useStudentAssignments = () => {
 
   const [objectiveQ2, setObjectiveQ2] = useState([]);
   const [theoryQ2, setTheoryQ2] = useState([]);
-  const [assignmentTab, setAssignmentTab] = useState('1');
+  const [answeredObjectiveQ, setAnsweredObjectiveQ] = useState([]);
+  const [answeredObjectiveQ2, setAnsweredObjectiveQ2] = useState([]);
+  const [answeredTheoryQ, setAnsweredTheoryQ] = useState([]);
+  const [assignmentTab, setAssignmentTab] = useState("1");
+  const [objectiveSubmitted, setObjectiveSubmitted] = useState(false);
+  const [theorySubmitted, setTheorySubmitted] = useState(false);
+  const [answerQuestion, setAnswerQuestion] = useState({
+    question_type: "",
+    subject: "",
+
+    term: "",
+    period: "",
+    session: "",
+    subject_id: "",
+    week: "",
+    student_id: "",
+  });
   // const [studentSubjects, setStudentSubjects] = useState([]);
 
   const [createQ2, setCreateQ2] = useState({
@@ -116,28 +132,7 @@ export const useStudentAssignments = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("assignments");
 
-  const {
-    option1,
-    option2,
-    option3,
-    option4,
-    ans1,
-    ans2,
-    ans3,
-    ans4,
-    answer,
-    // theoryAns,
-    question_type,
-    question,
-    subject,
-    image,
-    imageName,
-    term,
-    period,
-    session,
-    subject_id,
-    week,
-  } = answerQuestion;
+  const { subject, subject_id, week } = answerQuestion;
 
   const student = `${user?.surname} ${user?.firstname}`;
 
@@ -238,15 +233,15 @@ export const useStudentAssignments = () => {
       select: (data) => {
         // const ssg = apiServices.formatData(data);
         const ssg = data?.data[0]?.attributes?.subject;
-        
+
         const sortSubjects = ssg?.map((sub, index) => {
           return {
             value: sub.name,
             title: sub.name,
-            // id: Number(sub.id),
+            id: Number(sub.id),
           };
         });
-        console.log({ ssg, data, sortSubjects });
+        // console.log({ ssg, data, sortSubjects });
         return sortSubjects ?? [];
       },
       // onSuccess(data) {
@@ -263,170 +258,6 @@ export const useStudentAssignments = () => {
         errorHandler(err);
       },
       // select: apiServices.formatData,
-    }
-  );
-
-  //// SUBMIT OBJECTIVE ASSIGNMENT ////
-  const {
-    mutateAsync: submitObjectiveAssignment,
-    isLoading: submitObjectiveAssignmentLoading,
-  } = useMutation(
-    () => apiServices.submitObjectiveAssignment(answeredObjectiveQ),
-    {
-      onSuccess() {
-        // queryClient.invalidateQueries(
-        //   queryKeys.GET_ASSIGNMENT,
-        //   user?.period,
-        //   user?.term,
-        //   user?.session,
-        //   question_type
-        // );
-        toast.success("Objective assignment has been submitted successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
-
-  //// SUBMIT THEORY ASSIGNMENT ////
-  const {
-    mutateAsync: submitTheoryAssignment,
-    isLoading: submitTheoryAssignmentLoading,
-  } = useMutation(() => apiServices.submitTheoryAssignment(answeredTheoryQ), {
-    onSuccess() {
-      // queryClient.invalidateQueries(
-      //   queryKeys.GET_ASSIGNMENT,
-      //   user?.period,
-      //   user?.term,
-      //   user?.session,
-      //   question_type
-      // );
-      toast.success("Theory assignment has been submitted successfully");
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
-
-  const activateRetrieve = () => {
-    if (subject !== "" && week !== "") {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  /////// FETCH ANSWERED OBJECTIVE ASSIGNMENTS/////
-  const {
-    isLoading: answeredObjAssignmentLoading,
-    refetch: refetchObjAnsweredAssignment,
-  } = useQuery(
-    [
-      queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      "objective",
-    ],
-    () =>
-      apiServices.getSubmittedAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        "objective"
-      ),
-    {
-      retry: 3,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: permission?.view && permission?.student_results,
-      // enabled: false,
-      onSuccess(data) {
-        // resetLoadObjectiveAnsFxn();
-        // resetAddObjectiveAnsFxn();
-        const sortedBySubject = data?.filter(
-          (dt) => Number(dt?.subject_id) === subject_id
-        );
-        const sortByStudent = sortedBySubject?.filter(
-          (st) => st?.student === student
-        );
-        const sortByStudent2 = sortByStudent?.filter((st) => st?.week === week);
-
-        // console.log({ obj: sortByStudent });
-        // console.log({ student, sortByStudent2, data });
-
-        if (sortByStudent2.length > 0) {
-          // resetLoadObjectiveAnsFxn();
-          updateObjectiveSubmittedFxn(true);
-          loadObjectiveAnsFxn(sortByStudent2);
-        } else if (sortByStudent2.length === 0) {
-          // resetLoadObjectiveAnsFxn();
-          updateObjectiveSubmittedFxn(false);
-        }
-
-        // // const sortByStudent = sortedData
-        // // console.log({ sortByStudent });
-        // if (question_type === "objective") {
-        //   updateAnsweredObjectiveQFxn(sortByStudent);
-        // } else if (question_type === "theory") {
-        //   updateAnsweredTheoryQFxn(sortByStudent);
-        // }
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-      select: apiServices.formatData,
-    }
-  );
-  /////// FETCH ANSWERED THEORY ASSIGNMENTS /////
-  const {
-    isLoading: answeredTheoryAssignmentLoading,
-    refetch: refetchTheoryAnsweredAssignment,
-  } = useQuery(
-    [
-      queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      "theory",
-    ],
-    () =>
-      apiServices.getSubmittedAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        "theory"
-      ),
-    {
-      retry: 3,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: permission?.view && permission?.student_results,
-      // enabled: false,
-      onSuccess(data) {
-        // resetLoadTheoryAnsFxn();
-        // resetTheoryAnsFxn();
-        const sortedBySubject = data?.filter(
-          (dt) => Number(dt?.subject_id) === subject_id
-        );
-        const sortByStudent = sortedBySubject?.filter(
-          (st) => st?.student === student
-        );
-        const sortByStudent2 = sortByStudent?.filter((st) => st?.week === week);
-        // console.log({ theory: sortByStudent });
-
-        if (sortByStudent2.length > 0) {
-          // resetLoadTheoryAnsFxn();
-          updateTheorySubmittedFxn(true);
-          loadTheoryAnsFxn(sortByStudent2);
-        } else if (sortByStudent.length === 0) {
-          // resetLoadTheoryAnsFxn();
-          updateTheorySubmittedFxn(false);
-        }
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-      select: apiServices.formatData,
     }
   );
 
@@ -472,7 +303,7 @@ export const useStudentAssignments = () => {
 
   // const isLoading = assignmentLoading || addObjectAssignmentLoading;
 
-  // console.log({ user });
+  // console.log({ answeredObjectiveQ });
 
   return {
     // markedObjectiveQ,
@@ -486,22 +317,22 @@ export const useStudentAssignments = () => {
     errorHandler,
     // studentSubjects,
     //
-   
+
     updateAssignmentTabFxn,
     //
-    answerQuestion,
+    // answerQuestion,
     updateAnswerQuestionFxn,
     resetAnswerQuestionFxn,
 
     // OBJECTIVE
     //
-    objectiveSubmitted,
+    // objectiveSubmitted,
     updateObjectiveSubmittedFxn,
     //
     // setObjectiveQ,
     updateSetObjectiveQFxn,
     //
-    answeredObjectiveQ,
+    // answeredObjectiveQ,
     addObjectiveAnsFxn,
     resetAddObjectiveAnsFxn,
     //
@@ -509,22 +340,22 @@ export const useStudentAssignments = () => {
     loadObjectiveAnsFxn,
     resetLoadObjectiveAnsFxn,
     //
-    submitObjectiveAssignment,
-    submitObjectiveAssignmentLoading,
+    // submitObjectiveAssignment,
+    // submitObjectiveAssignmentLoading,
     //
-    answeredObjAssignmentLoading,
-    refetchObjAnsweredAssignment,
+    // answeredObjAssignmentLoading,
+    // refetchObjAnsweredAssignment,
     //
 
     // THEORY
     //
-    theorySubmitted,
-    updateTheorySubmittedFxn,
+    // theorySubmitted,
+    // updateTheorySubmittedFxn,
     //
     // setTheoryQ,
     updateSetTheoryQFxn,
     //
-    answeredTheoryQ,
+    // answeredTheoryQ,
     addTheoryAnsFxn,
     resetTheoryAnsFxn,
     //
@@ -532,11 +363,11 @@ export const useStudentAssignments = () => {
     loadTheoryAnsFxn,
     resetLoadTheoryAnsFxn,
     //
-    submitTheoryAssignment,
-    submitTheoryAssignmentLoading,
+    // submitTheoryAssignment,
+    // submitTheoryAssignmentLoading,
     //
-    answeredTheoryAssignmentLoading,
-    refetchTheoryAnsweredAssignment,
+    // answeredTheoryAssignmentLoading,
+    // refetchTheoryAnsweredAssignment,
     //
 
     // answeredObjectiveQ3,
@@ -582,5 +413,20 @@ export const useStudentAssignments = () => {
 
     assignmentTab,
     setAssignmentTab,
+
+    answeredObjectiveQ,
+    setAnsweredObjectiveQ,
+
+    answeredTheoryQ,
+    setAnsweredTheoryQ,
+
+    objectiveSubmitted,
+    setObjectiveSubmitted,
+
+    answerQuestion,
+    setAnswerQuestion,
+
+    theorySubmitted,
+    setTheorySubmitted,
   };
 };

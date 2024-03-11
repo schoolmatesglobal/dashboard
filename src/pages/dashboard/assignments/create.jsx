@@ -391,7 +391,11 @@ const Create = ({
       // setTimeout(() => {
       //   refetchAssignmentCreated();
       // }, 2000);
-      toast.success(`Assignment has been ${published ? "unpublished" : "published"} successfully`);
+      toast.success(
+        `Assignment has been ${
+          published ? "unpublished" : "published"
+        } successfully`
+      );
     },
     onError(err) {
       apiServices.errorHandler(err);
@@ -596,7 +600,7 @@ const Create = ({
         setPublished((prev) => !prev);
       },
       isLoading: publishAssignmentLoading,
-      // variant: "",
+      variant: `${published ? "danger" : "success"}`,
     },
     // {
     //   title: "Submit",
@@ -667,14 +671,12 @@ const Create = ({
           setTimeout(() => {
             setDeletePrompt(false);
           }, 1000);
-       
         } else if (question_type === "theory") {
           deleteAssignment();
 
           setTimeout(() => {
             setDeletePrompt(false);
           }, 1000);
-         
         }
       },
       variant: "outline-danger",
@@ -901,11 +903,7 @@ const Create = ({
   const allLoading = showLoading || assignmentCreatedLoading || loading1;
 
   const activateAddQuestion = () => {
-    if (
-           !subject_id ||
-      !week ||
-      !question_type
-    ) {
+    if (!subject_id || !week || !question_type) {
       return true;
       // setShowAddQuestion(true);
       // return showAddQuestion;
@@ -915,7 +913,6 @@ const Create = ({
       // return showAddQuestion;
     }
   };
-
 
   const subs = [
     { value: "Mathematics", title: "Mathematics", id: "1" },
@@ -957,8 +954,6 @@ const Create = ({
       setTheoryQ(filteredAssignments);
     }
   }, [assignmentCreated, question_type, subject_id, week]);
-
-
 
   console.log({
     editNumber,

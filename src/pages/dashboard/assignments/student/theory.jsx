@@ -4,21 +4,35 @@ import ButtonGroup from "../../../../components/buttons/button-group";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+import queryKeys from "../../../../utils/queryKeys";
+import { useMediaQuery } from "react-responsive";
 
-const Theory = ({ assignmentLoading, theoryQ }) => {
+const Theory = ({
+  assignmentLoading,
+  theoryQ,
+  answeredTheoryQ,
+  setAnsweredTheoryQ,
+  createQ2,
+  setCreateQ2,
+  subjects,
+  theorySubmitted,
+  setTheorySubmitted,
+}) => {
   const {
-    // apiServices,
-    // permission,
+    apiServices,
+    permission,
     user,
+    errorHandler,
     answerQuestion,
     // setObjectiveQ,
 
     // answeredObjectiveQ,
-    answeredTheoryQ,
+    // answeredTheoryQ,
     answeredTheoryQ2,
     // answeredTheoryQ3,
-    // studentSubjects,
-    // errorHandler,
+    // subjects,
     addTheoryAnsFxn,
     // addTheoryAnsFxn2,
     // addTheoryAnsFxn3,
@@ -32,25 +46,95 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
     // updateObjectiveSubmittedFxn,
     updateTheorySubmittedFxn,
     // objectiveSubmitted,
-    theorySubmitted,
-    submitTheoryAssignment,
-    submitTheoryAssignmentLoading,
+    // theorySubmitted,
+    // submitTheoryAssignment,
+    // submitTheoryAssignmentLoading,
     // resetTheoryAnsFxn,
   } = useStudentAssignments();
 
+  const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
+  const isTablet = useMediaQuery({
+    query: "(min-width: 768px, max-width: 991px)",
+  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
+  const student = `${user?.surname} ${user?.firstname}`;
+
+  //// SUBMIT THEORY ASSIGNMENT ////
   const {
-    // question_type,
-    // question,
-    // subject,
-    // image,
-    // imageName,
-    // term,
-    // period,
-    // session,
-    subject_id,
-    // week,
-    // student_id,
-  } = answerQuestion;
+    mutateAsync: submitTheoryAssignment,
+    isLoading: submitTheoryAssignmentLoading,
+  } = useMutation(() => apiServices.submitTheoryAssignment(answeredTheoryQ), {
+    onSuccess() {
+      toast.success("Theory assignment has been submitted successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
+
+  /////// FETCH ANSWERED THEORY ASSIGNMENTS /////
+  const {
+    isLoading: answeredTheoryAssignmentLoading,
+    refetch: refetchTheoryAnsweredAssignment,
+    data: theoryAnsweredAssignment,
+  } = useQuery(
+    [
+      queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
+      user?.period,
+      user?.term,
+      user?.session,
+      "theory",
+    ],
+    () =>
+      apiServices.getSubmittedAssignment(
+        user?.period,
+        user?.term,
+        user?.session,
+        "theory"
+      ),
+    {
+      retry: 3,
+      // enabled: permission?.read || permission?.readClass,
+      enabled: permission?.view && permission?.student_results,
+      // enabled: false,
+      select: (data) => {
+        const ggk = apiServices.formatData(data);
+
+        const sorted = ggk?.filter(
+          (dt) =>
+            dt?.subject === createQ2?.subject &&
+            dt?.student === student &&
+            dt?.week === createQ2?.week
+        );
+
+        console.log({ ggk, sorted, data, student, createQ2 });
+
+        if (sorted?.length > 0) {
+          // resetLoadObjectiveAnsFxn();
+          setTheorySubmitted(true);
+          // loadObjectiveAnsFxn(sorted);
+        } else if (sorted?.length === 0) {
+          // resetLoadObjectiveAnsFxn();
+          // setTheorySubmitted(false);
+        }
+        return sorted;
+      },
+      onSuccess(data) {},
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  const activateRetrieve = () => {
+    if (createQ2?.subject !== "" && createQ2?.week !== "") {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const showNoAssignment = () => {
     if (theoryQ.length === 0) {
@@ -71,7 +155,7 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
   };
 
   const checkedData = (question, CQ) => {
-    const indexToCheck = answeredTheoryQ.findIndex(
+    const indexToCheck = answeredTheoryQ?.findIndex(
       (ob) => ob.question === question
     );
     if (indexToCheck !== -1) {
@@ -82,13 +166,23 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
   };
 
   const checkedData2 = (question, CQ) => {
-    const indexToCheck = answeredTheoryQ2.findIndex(
+    const theo = theoryAnsweredAssignment?.find(
       (ob) => ob.question === question
     );
-    if (indexToCheck !== -1) {
-      return answeredTheoryQ2[indexToCheck]?.answer;
+    console.log({ theo });
+    if (theo) {
+      return theo?.answer;
     } else {
       return "";
+    }
+  };
+
+  const findSubjectId = () => {
+    const findObject = subjects?.find(
+      (opt) => opt.subject === createQ2?.subject
+    );
+    if (findObject) {
+      return findObject.id;
     }
   };
 
@@ -108,7 +202,7 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
       title: "Yes Submit",
       disabled: !checkEmptyQuestions(),
       onClick: () => {
-        updateTheorySubmittedFxn(true);
+        setTheorySubmitted(true);
         submitTheoryAssignment();
         // resetTheoryAnsFxn();
         setLoginPrompt(false);
@@ -133,24 +227,98 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
     },
   ];
 
+  const handleChange = (optionValue, CQ) => {
+    const indexToUpdate = answeredTheoryQ?.findIndex(
+      (item) => item.question === CQ.question
+    );
+
+    const filteredArray = answeredTheoryQ?.filter(
+      (ans) => ans.question !== CQ.question
+    );
+
+    if (indexToUpdate !== -1) {
+      setAnsweredTheoryQ([
+        ...filteredArray,
+        {
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          student_id: Number(user?.id),
+          subject_id: Number(findSubjectId()),
+          question: CQ.question,
+          question_type: "theory",
+          answer: optionValue,
+          correct_answer: CQ.answer,
+          assignment_id: Number(CQ.id),
+          submitted: "true",
+          question_number: Number(CQ.question_number),
+          week: CQ.week,
+        },
+      ]);
+    } else {
+      setAnsweredTheoryQ([
+        ...answeredTheoryQ,
+        {
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          student_id: Number(user?.id),
+          subject_id: Number(findSubjectId()),
+          question: CQ.question,
+          question_type: "theory",
+          answer: optionValue,
+          correct_answer: CQ.answer,
+          assignment_id: Number(CQ.id),
+          submitted: "true",
+          question_number: Number(CQ.question_number),
+          week: CQ.week,
+        },
+      ]);
+    }
+  };
+
   // console.log({ answeredTheoryQ });
-  console.log({ theoryQ, answeredTheoryQ, answeredTheoryQ2 });
+  console.log({
+    theoryQ,
+    answeredTheoryQ,
+    theoryAnsweredAssignment,
+    theorySubmitted,
+    findSubjectId: findSubjectId(),
+  });
   // console.log({ theoryQ });
 
   return (
     <div className=''>
-      {!assignmentLoading && showNoAssignment() && (
+      {/* {!assignmentLoading && showNoAssignment() && (
         <div className={styles.placeholder_container}>
           <HiOutlineDocumentPlus className={styles.icon} />
           <p className={styles.heading}>No Theory Assignment</p>
         </div>
-      )}
+      )} */}
       {!assignmentLoading && theoryQ.length >= 1 && (
-        <div className={styles.objective}>
+        <div className='position-relative'>
           {theorySubmitted && (
-            <p className={styles.assignment_submitted_text}>Submitted</p>
+            <p
+              className='text-danger fw-bold position-absolute top-50 opacity-50'
+              style={{
+                rotate: "-45deg",
+                left: "40%",
+                zIndex: "5000",
+                fontSize: `${
+                  isDesktop
+                    ? "40px"
+                    : isTablet
+                    ? "35px"
+                    : isMobile
+                    ? "30px"
+                    : "30px"
+                }`,
+              }}
+            >
+              Submitted
+            </p>
           )}
-          <div className={`${theorySubmitted && styles.assignment_submitted}`}>
+          <div className={`${theorySubmitted && "opacity-50"}`}>
             <div className='d-flex flex-column gap-4 flex-md-row justify-content-between align-items-center'>
               <p className='fs-3 fw-bold'>Theory Section</p>
 
@@ -180,7 +348,7 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
                     >
                       <p className='fs-3 mb-4 lh-base'>
                         <span className='fs-3 fw-bold'>
-                          Q{CQ.question_number}.{/* Q{index + 1}. */}
+                          {CQ.question_number}.{/* Q{index + 1}. */}
                         </span>{" "}
                         {CQ.question}
                       </p>
@@ -205,31 +373,13 @@ const Theory = ({ assignmentLoading, theoryQ }) => {
                               }}
                               type='text'
                               value={
-                                checkedData(CQ.question, CQ.answer) ||
-                                checkedData2(CQ.question, CQ.answer)
+                                checkedData(CQ.question, CQ.answer) 
+                                || checkedData2(CQ.question, CQ.answer)
                               }
                               placeholder='Type the answer'
                               disabled={theorySubmitted}
                               onChange={(e) => {
-                                // checkedData(index, e.target.value);
-                                addTheoryAnsFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  student_id: Number(user?.id),
-                                  subject_id: Number(subject_id),
-                                  question: CQ.question,
-                                  question_type: "theory",
-                                  answer: e.target.value,
-                                  correct_answer: CQ.answer,
-                                  assignment_id: Number(CQ.id),
-                                  // question_mark: Number(CQ.question_mark),
-                                  // total_mark: Number(CQ.total_mark),
-                                  // total_question: Number(CQ.total_question),
-                                  submitted: "true",
-                                  question_number: Number(CQ.question_number),
-                                  week: CQ.week,
-                                });
+                                handleChange(e.target.value, CQ);
                               }}
                             />
                           </div>

@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import StudentResults from "./student/studentResults";
 import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
 import Prompt from "../../../components/modals/prompt";
+import { useSubject } from "../../../hooks/useSubjects";
 
 const Assignments = () => {
   const {
@@ -38,13 +39,27 @@ const Assignments = () => {
     createQ2,
     setCreateQ2,
 
+    answeredObjectiveQ,
+    setAnsweredObjectiveQ,
+
+    answeredTheoryQ,
+    setAnsweredTheoryQ,
+
     studentSubjectsLoading,
     refetchStudentSubjectsLoading,
     studentSubjects,
 
     assignmentTab,
     setAssignmentTab,
+
+    objectiveSubmitted,
+    setObjectiveSubmitted,
+
+    theorySubmitted,
+    setTheorySubmitted,
   } = useStudentAssignments();
+
+  const { subjects } = useSubject();
 
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
 
@@ -199,6 +214,15 @@ const Assignments = () => {
             studentSubjects={studentSubjects}
             assignmentTab={assignmentTab}
             setAssignmentTab={setAssignmentTab}
+            answeredObjectiveQ={answeredObjectiveQ}
+            setAnsweredObjectiveQ={setAnsweredObjectiveQ}
+            answeredTheoryQ={answeredTheoryQ}
+            setAnsweredTheoryQ={setAnsweredTheoryQ}
+            objectiveSubmitted={objectiveSubmitted}
+            setObjectiveSubmitted={setObjectiveSubmitted}
+            theorySubmitted={theorySubmitted}
+            setTheorySubmitted={setTheorySubmitted}
+            subjects={subjects}
           />
         )}
         {activeTab === "1" && permission?.create && (

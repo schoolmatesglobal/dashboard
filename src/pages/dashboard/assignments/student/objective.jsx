@@ -4,14 +4,29 @@ import ButtonGroup from "../../../../components/buttons/button-group";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+import { useSubject } from "../../../../hooks/useSubjects";
+import queryKeys from "../../../../utils/queryKeys";
+import { useMediaQuery } from "react-responsive";
 
-const Objective = ({ assignmentLoading, objectiveQ }) => {
+const Objective = ({
+  assignmentLoading,
+  objectiveQ,
+  answeredObjectiveQ,
+  setAnsweredObjectiveQ,
+  objectiveSubmitted,
+  setObjectiveSubmitted,
+  createQ2,
+  setCreateQ2,
+  subjects,
+}) => {
   const {
-    // apiServices,
-    // permission,
+    apiServices,
+    permission,
     user,
-    // errorHandler,
-    // studentSubjects,
+    errorHandler,
+    // subjects,
     //
 
     answerQuestion,
@@ -20,9 +35,9 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
 
     // OBJECTIVE
     // objectiveQ,
-    answeredObjectiveQ,
+    // answeredObjectiveQ,
     answeredObjectiveQ2,
-    objectiveSubmitted,
+    // objectiveSubmitted,
     //
     updateObjectiveSubmittedFxn,
     // updateSetObjectiveQFxn,
@@ -33,7 +48,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
     // loadObjectiveAnsFxn,
     // resetLoadObjectiveAnsFxn,
     //
-    submitObjectiveAssignment,
+    // submitObjectiveAssignment,
     // submitObjectiveAssignmentLoading,
     //
     // answeredObjAssignmentLoading,
@@ -41,23 +56,86 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
     //
   } = useStudentAssignments();
 
+  const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
+  const isTablet = useMediaQuery({
+    query: "(min-width: 768px, max-width: 991px)",
+  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
+ 
+
+  const student = `${user?.surname} ${user?.firstname}`;
+
+  //// SUBMIT OBJECTIVE ASSIGNMENT ////
   const {
-    // question_type,
-    // question,
-    // subject,
-    // image,
-    // imageName,
-    // ans1,
-    // ans2,
-    // ans3,
-    // ans4,
-    // term,
-    // period,
-    // session,
-    subject_id,
-    // week,
-    // student_id,
-  } = answerQuestion;
+    mutateAsync: submitObjectiveAssignment,
+    isLoading: submitObjectiveAssignmentLoading,
+  } = useMutation(
+    () => apiServices.submitObjectiveAssignment(answeredObjectiveQ),
+    {
+      onSuccess() {
+        toast.success("Objective assignment has been submitted successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  /////// FETCH ANSWERED OBJECTIVE ASSIGNMENTS/////
+  const {
+    isLoading: answeredObjAssignmentLoading,
+    refetch: refetchObjAnsweredAssignment,
+    data: objAnsweredAssignment,
+  } = useQuery(
+    [
+      queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
+      user?.period,
+      user?.term,
+      user?.session,
+      "objective",
+    ],
+    () =>
+      apiServices.getSubmittedAssignment(
+        user?.period,
+        user?.term,
+        user?.session,
+        "objective"
+      ),
+    {
+      retry: 3,
+      // enabled: permission?.read || permission?.readClass,
+      enabled: permission?.view && permission?.student_results,
+      // enabled: false,
+      select: (data) => {
+        const ssk = apiServices.formatData(data);
+
+        const sorted = ssk?.filter(
+          (dt) =>
+            dt?.subject === createQ2?.subject &&
+            dt?.student === student &&
+            dt?.week === createQ2?.week
+        );
+
+        console.log({ ssk, sorted, data, student, createQ2 });
+
+        if (sorted?.length > 0) {
+          // resetLoadObjectiveAnsFxn();
+          setObjectiveSubmitted(true);
+          // loadObjectiveAnsFxn(sorted);
+        } else if (sorted?.length === 0) {
+          // resetLoadObjectiveAnsFxn();
+          // setObjectiveSubmitted(false);
+        }
+        return sorted;
+      },
+      onSuccess(data) {},
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   const [loginPrompt, setLoginPrompt] = useState(false);
   // const [submitted, setSubmitted] = useState(false);
@@ -67,7 +145,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
   };
 
   const showNoAssignment = () => {
-    if (objectiveQ.length === 0) {
+    if (objectiveQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -75,15 +153,15 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
   };
 
   const checkEmptyQuestions = () => {
-    if (answeredObjectiveQ.length !== objectiveQ.length) {
+    if (answeredObjectiveQ?.length !== objectiveQ?.length) {
       return false;
-    } else if (answeredObjectiveQ.length === objectiveQ.length) {
+    } else if (answeredObjectiveQ?.length === objectiveQ?.length) {
       return true;
     }
   };
 
   const checkedData = (question, CQ) => {
-    const indexToCheck = answeredObjectiveQ.findIndex(
+    const indexToCheck = answeredObjectiveQ?.findIndex(
       (ob) => ob.question === question && ob.answer === CQ
     );
     // console.log({ indexToCheck });
@@ -96,7 +174,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
   };
 
   const checkedData2 = (question, CQ) => {
-    const quest = answeredObjectiveQ2.find(
+    const quest = objAnsweredAssignment?.find(
       (ob) => ob.question === question && ob.answer === CQ
     );
     // console.log({ quest });
@@ -108,24 +186,14 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
     }
   };
 
-  // const checkedData2 = (index, CQ) => {
-  //   const indexToCheck = answeredObjectiveQ.findIndex(
-  //     (ob) => ob.question_id === index
-  //   );
-  //   console.log({ indexToCheck });
-  //   if (indexToCheck !== -1) {
-  //     const check = answeredObjectiveQ[indexToCheck].answer === CQ;
-  //     return check;
-  //   } else {
-  //     return null;
-  //   }
-  // };
-
-  // const defaultCheck = (indexToCheck) => {
-  //   const check = answeredObjectiveQ[indexToCheck].answer === CQ;
-  // }
-
-  const student = `${user?.surname} ${user?.firstname}`;
+  const findSubjectId = () => {
+    const findObject = subjects?.find(
+      (opt) => opt.subject === createQ2?.subject
+    );
+    if (findObject) {
+      return findObject.id;
+    }
+  };
 
   const buttonOptions = [
     {
@@ -137,7 +205,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
       title: "Yes Submit",
       disabled: !checkEmptyQuestions(),
       onClick: () => {
-        updateObjectiveSubmittedFxn(true);
+        setObjectiveSubmitted(true);
         submitObjectiveAssignment();
         // setTimeout(() => {
         //   submitMarkedObjectiveAssignment();
@@ -145,9 +213,8 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
         // resetObjectiveAnsFxn();
         setLoginPrompt(false);
       },
-      // isLoading:
-      //   submitObjectiveAssignmentLoading ||
-      //   submitMarkedObjectiveAssignmentLoading,
+      isLoading: submitObjectiveAssignmentLoading,
+      // || submitMarkedObjectiveAssignmentLoading,
       //
       // variant: "outline",
     },
@@ -161,36 +228,113 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
     },
   ];
 
-  const lastAnsweredObj = answeredObjectiveQ2[answeredObjectiveQ2.length - 1];
+  const lastAnsweredObj = answeredObjectiveQ2[answeredObjectiveQ2?.length - 1];
 
   const objScore = objectiveQ?.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),
     0
   );
 
+  const handleChange = (optionValue, CQ) => {
+    const indexToUpdate = answeredObjectiveQ?.findIndex(
+      (item) => item.question === CQ.question
+    );
+
+    const filteredArray = answeredObjectiveQ?.filter(
+      (ans) => ans.question !== CQ.question
+    );
+
+    if (indexToUpdate !== -1) {
+      setAnsweredObjectiveQ([
+        ...filteredArray,
+        {
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          student_id: Number(user?.id),
+          subject_id: Number(findSubjectId()),
+          question: CQ.question,
+          question_type: "objective",
+          answer: optionValue,
+          correct_answer: CQ.answer,
+          assignment_id: Number(CQ.id),
+          submitted: "true",
+          question_number: Number(CQ.question_number),
+          week: CQ.week,
+        },
+      ]);
+    } else {
+      setAnsweredObjectiveQ([
+        ...answeredObjectiveQ,
+        {
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          student_id: Number(user?.id),
+          subject_id: Number(findSubjectId()),
+          question: CQ.question,
+          question_type: "objective",
+          answer: optionValue,
+          correct_answer: CQ.answer,
+          assignment_id: Number(CQ.id),
+          submitted: "true",
+          question_number: Number(CQ.question_number),
+          week: CQ.week,
+        },
+      ]);
+    }
+  };
+
   // console.log({ user });
-  // console.log({  answeredObjectiveQ, answeredObjectiveQ2 });
-  console.log({ objectiveQ });
+  // console.log({  answeredObjectiveQ, answeredObjectiveQ2 });s
+
+  console.log({
+    objectiveQ,
+    answeredObjectiveQ,
+    answerQuestion,
+    createQ2,
+    subjects,
+    findSubjectId: findSubjectId(),
+    objAnsweredAssignment,
+  });
+
   // console.log({ answeredObjectiveQ });
   // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
 
   return (
     <div>
-      {!assignmentLoading && showNoAssignment() && (
+      {/* {!assignmentLoading && showNoAssignment() && (
         <div className={styles.placeholder_container}>
           <HiOutlineDocumentPlus className={styles.icon} />
           <p className={styles.heading}>No Objective Assignment</p>
         </div>
-      )}
+      )} */}
 
-      {!assignmentLoading && objectiveQ.length >= 1 && (
-        <div className={styles.objective}>
+      {!assignmentLoading && objectiveQ?.length >= 1 && (
+        <div className='position-relative'>
           {objectiveSubmitted && (
-            <p className={styles.assignment_submitted_text}>Submitted</p>
+            <p
+              className='text-danger fw-bold position-absolute top-50 opacity-50'
+              style={{
+                rotate: "-45deg",
+                left: "40%",
+                zIndex: "5000",
+                fontSize: `${
+                  isDesktop
+                    ? "40px"
+                    : isTablet
+                    ? "35px"
+                    : isMobile
+                    ? "30px"
+                    : "30px"
+                }`,
+              }}
+            >
+              Submitted
+            </p>
+            // <p className={styles.assignment_submitted_text}>Submitted</p>
           )}
-          <div
-            className={`${objectiveSubmitted && styles.assignment_submitted}`}
-          >
+          <div className={`${objectiveSubmitted && "opacity-50"}`}>
             {/* <p className='fs-3 fw-bold'>Objective Section</p> */}
             <div className='d-flex flex-column gap-4 flex-md-row justify-content-between align-items-center'>
               <p className='fs-3 fw-bold'>Objective Section</p>
@@ -220,7 +364,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
                     >
                       <p className='fs-3 mb-3 lh-base'>
                         <span className='fw-bold fs-3'>
-                          Q{CQ.question_number}.
+                          {CQ.question_number}.
                         </span>{" "}
                         {CQ.question}{" "}
                       </p>
@@ -246,24 +390,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
                               style={{ width: "20px", height: "20px" }}
                               id={`answer-${index}-1`}
                               onChange={(e) => {
-                                addObjectiveAnsFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  student_id: Number(user?.id),
-                                  subject_id: Number(subject_id),
-                                  question: CQ.question,
-                                  question_type: "objective",
-                                  answer: e.target.value,
-                                  correct_answer: CQ.answer,
-                                  assignment_id: Number(CQ.id),
-                                  // question_mark: Number(CQ.question_mark),
-                                  // total_mark: Number(CQ.total_mark),
-                                  // total_question: Number(CQ.total_question),
-                                  submitted: "true",
-                                  question_number: Number(CQ.question_number),
-                                  week: CQ.week,
-                                });
+                                handleChange(e.target.value, CQ);
                               }}
                               value={CQ.option1 || ""}
                               disabled={objectiveSubmitted}
@@ -286,24 +413,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
                               style={{ width: "20px", height: "20px" }}
                               id={`answer-${index}-2`}
                               onChange={(e) => {
-                                addObjectiveAnsFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  student_id: Number(user?.id),
-                                  subject_id: Number(subject_id),
-                                  question: CQ.question,
-                                  question_type: "objective",
-                                  answer: e.target.value,
-                                  correct_answer: CQ.answer,
-                                  assignment_id: Number(CQ.id),
-                                  // question_mark: Number(CQ.question_mark),
-                                  // total_mark: Number(CQ.total_mark),
-                                  // total_question: Number(CQ.total_question),
-                                  submitted: "true",
-                                  question_number: Number(CQ.question_number),
-                                  week: CQ.week,
-                                });
+                                handleChange(e.target.value, CQ);
                               }}
                               value={CQ.option2 || ""}
                               disabled={objectiveSubmitted}
@@ -324,24 +434,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
                               }
                               id={`answer-${index}-3`}
                               onChange={(e) => {
-                                addObjectiveAnsFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  student_id: Number(user?.id),
-                                  subject_id: Number(subject_id),
-                                  question: CQ.question,
-                                  question_type: "objective",
-                                  answer: e.target.value,
-                                  correct_answer: CQ.answer,
-                                  assignment_id: Number(CQ.id),
-                                  // question_mark: Number(CQ.question_mark),
-                                  // total_mark: Number(CQ.total_mark),
-                                  // total_question: Number(CQ.total_question),
-                                  submitted: "true",
-                                  question_number: Number(CQ.question_number),
-                                  week: CQ.week,
-                                });
+                                handleChange(e.target.value, CQ);
                               }}
                               value={CQ.option3 || ""}
                               disabled={objectiveSubmitted}
@@ -362,24 +455,7 @@ const Objective = ({ assignmentLoading, objectiveQ }) => {
                               }
                               id={`answer-${index}-4`}
                               onChange={(e) => {
-                                addObjectiveAnsFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  student_id: Number(user?.id),
-                                  subject_id: Number(subject_id),
-                                  question: CQ.question,
-                                  question_type: "objective",
-                                  answer: e.target.value,
-                                  correct_answer: CQ.answer,
-                                  assignment_id: Number(CQ.id),
-                                  // question_mark: Number(CQ.question_mark),
-                                  // total_mark: Number(CQ.total_mark),
-                                  // total_question: Number(CQ.total_question),
-                                  submitted: "true",
-                                  question_number: Number(CQ.question_number),
-                                  week: CQ.week,
-                                });
+                                handleChange(e.target.value, CQ);
                               }}
                               value={CQ.option4 || ""}
                               disabled={objectiveSubmitted}

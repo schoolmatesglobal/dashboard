@@ -23,6 +23,15 @@ const View = ({
   studentSubjects,
   assignmentTab,
   setAssignmentTab,
+  answeredObjectiveQ,
+  setAnsweredObjectiveQ,
+  answeredTheoryQ,
+  setAnsweredTheoryQ,
+  objectiveSubmitted,
+  setObjectiveSubmitted,
+  theorySubmitted,
+  setTheorySubmitted,
+  subjects,
 }) => {
   const {
     apiServices,
@@ -258,7 +267,7 @@ const View = ({
         const tsortedData = theo?.filter(
           (dt) => dt?.subject === subject && Number(dt?.week) === Number(week)
         );
-        console.log({ theo, data, tsortedData });
+        // console.log({ theo, data, tsortedData });
         return tsortedData;
       },
       onSuccess(data) {
@@ -344,7 +353,7 @@ const View = ({
   ];
 
   const showNoAssignment = () => {
-    if (setObjectiveQ?.length === 0 && setTheoryQ?.length === 0) {
+    if (objectiveQ?.length === 0 && theoryQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -361,38 +370,7 @@ const View = ({
   const location = useLocation();
   // const history = useHistory();
 
-  useEffect(() => {
-    // const unlisten = location.listen((location, action) => {
-    //   // Do something when the route changes
-    //   resetLoadObjectiveAnsFxn();
-    //   resetLoadTheoryAnsFxn();
-    //   resetAddObjectiveAnsFxn();
-    //   resetTheoryAnsFxn();
-    //   updateObjectiveSubmittedFxn(false);
-    //   updateTheorySubmittedFxn(false);
-    //   console.log(`Route changed to ${location.pathname}`);
-    // });
-    // // Clean up the listener when the component unmounts
-    // return () => {
-    //   unlisten();
-    // };
-  }, []);
-
-  console.log({ studentSubjects, createQ2, theoryQ, objectiveQ });
-
-  // useEffect(() => {
-  //   if (permission?.view) {
-  //     updateActiveT("5");
-  //   } else if (permission?.create) {
-  //     updateActiveT("1");
-  //   }
-  // }, []);
-
-  // console.log({ answeredObjectiveQ2, answeredTheoryQ2 });
-
-  // useEffect(() => {
-  //   updateAssignmentTabFxn("1"),
-  // }, [])
+  useEffect(() => {}, []);
 
   return (
     <div>
@@ -422,26 +400,8 @@ const View = ({
                 setCreateQ2((prev) => {
                   return { ...prev, week: value };
                 });
-                // updateAnswerQuestionFxn({
-                //   week: value,
-                // });
-                // if (subject !== "") {
-                //   // setShowLoading(true);
-                //   // resetLoadObjectiveAnsFxn();
-                //   // resetLoadTheoryAnsFxn();
-                //   // resetAddObjectiveAnsFxn();
-                //   // resetTheoryAnsFxn();
-                //   // updateObjectiveSubmittedFxn(false);
-                //   // updateTheorySubmittedFxn(false);
-                //   // refetchAssignment();
-                //   // refetchAssignment2();
-                //   // refetchObjAnsweredAssignment();
-                //   // refetchTheoryAnsweredAssignment();
-                //   // setTimeout(() => {
-                //   //   setShowLoading(false);
-                //   // }, 2000);
-                //   // updateAssignmentTabFxn("1");
-                // }
+                setObjectiveSubmitted(false);
+                setTheorySubmitted(false);
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -455,38 +415,8 @@ const View = ({
                 setCreateQ2((prev) => {
                   return { ...prev, subject: value };
                 });
-                // resetAnswerQuestionFxn({
-                //   subject,
-                //   week,
-                //   period,
-                //   session,
-                //   term,
-                // });
-                // updateAnswerQuestionFxn({
-                //   subject: value,
-                //   subject_id: findSubjectId(value),
-                // });
-                // resetLoadObjectiveAnsFxn();
-                // resetLoadTheoryAnsFxn();
-                // resetAddObjectiveAnsFxn();
-                // resetTheoryAnsFxn();
-                // updateObjectiveSubmittedFxn(false);
-                // updateTheorySubmittedFxn(false);
-                // refetchAssignment();
-                // refetchAssignment2();
-                // refetchObjAnsweredAssignment();
-                // refetchTheoryAnsweredAssignment();
-                // updateAssignmentTabFxn("1");
-                // if (week !== "") {
-                //   setShowLoading(true);
-                //   refetchAssignment();
-                //   refetchAssignment2();
-                //   refetchObjAnsweredAssignment();
-                //   refetchTheoryAnsweredAssignment();
-                //   setTimeout(() => {
-                //     setShowLoading(false);
-                //   }, 2000);
-                // }
+                setObjectiveSubmitted(false);
+                setTheorySubmitted(false);
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'
@@ -507,20 +437,34 @@ const View = ({
 
         <div className=''>
           {/* objective Answers */}
-          {assignmentTab === "1" && objectiveQ.length >= 1 && (
+          {assignmentTab === "1" && objectiveQ?.length >= 1 && (
             <Objective
               assignmentLoading={assignmentLoading}
               buttonOptions2={buttonOptions2}
               objectiveQ={objectiveQ}
+              answeredObjectiveQ={answeredObjectiveQ}
+              setAnsweredObjectiveQ={setAnsweredObjectiveQ}
+              objectiveSubmitted={objectiveSubmitted}
+              setObjectiveSubmitted={setObjectiveSubmitted}
+              createQ2={createQ2}
+              setCreateQ2={setCreateQ2}
+              subjects={subjects}
             />
           )}
 
           {/* Theory Answers */}
-          {assignmentTab === "2" && theoryQ.length >= 1 && (
+          {assignmentTab === "2" && theoryQ?.length >= 1 && (
             <Theory
               assignmentLoading={assignmentLoading}
               buttonOptions2={buttonOptions2}
               theoryQ={theoryQ}
+              answeredTheoryQ={answeredTheoryQ}
+              setAnsweredTheoryQ={setAnsweredTheoryQ}
+              theorySubmitted={theorySubmitted}
+              setTheorySubmitted={setTheorySubmitted}
+              createQ2={createQ2}
+              setCreateQ2={setCreateQ2}
+              subjects={subjects}
             />
           )}
         </div>
