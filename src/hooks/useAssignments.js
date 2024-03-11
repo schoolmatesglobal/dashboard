@@ -93,7 +93,24 @@ export const useAssignments = () => {
 
   const [objectiveQ, setObjectiveQ] = useState([]);
   const [theoryQ, setTheoryQ] = useState([]);
+  const [answeredObjQ, setAnsweredObjQ] = useState([]);
+  const [markedObjQ, setMarkedObjQ] = useState([]);
+  const [answeredTheoQ, setAnsweredTheoQ] = useState([]);
+  const [markedTheoQ, setMarkedTheoQ] = useState([]);
   const [objMark, setObjMark] = useState(0);
+
+  const [answerQ, setAnswerQ] = useState({
+    question_type: "",
+    subject: "",
+
+    term: "",
+    period: "",
+    session: "",
+    subject_id: "",
+    week: "",
+    student_id: "",
+    student: "",
+  });
 
   const [createQ, setCreateQ] = useState({
     option1: "",
@@ -168,8 +185,8 @@ export const useAssignments = () => {
 
     // SUBMISSION
     answeredQuestion,
-    answeredObjectiveQ,
-    answeredTheoryQ,
+    // answeredObjQ,
+    // answeredTheoQ,
     markedObjectiveQ,
     markedObjectiveQ2,
     markedTheoryQ,
@@ -666,8 +683,8 @@ export const useAssignments = () => {
     updateObjectiveMarkedFxn,
     //
     answeredQuestion,
-    answeredObjectiveQ,
-    answeredTheoryQ,
+    // answeredObjQ,
+    // answeredTheoQ,
     markedObjectiveQ,
     markedObjectiveQ2,
     markedTheoryQ,
@@ -716,5 +733,18 @@ export const useAssignments = () => {
 
     objMark,
     setObjMark,
+
+    answerQ,
+    setAnswerQ,
+
+    answeredObjQ,
+    setAnsweredObjQ,
+    answeredTheoQ,
+    setAnsweredTheoQ,
+
+    markedObjQ,
+    setMarkedObjQ,
+    markedTheoQ,
+    setMarkedTheoQ,
   };
 };

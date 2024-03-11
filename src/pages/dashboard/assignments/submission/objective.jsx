@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {useAssignments}  from "../../../../hooks/useAssignments";
-import AuthSelect from "../../../../components/inputs/auth-select";
-import Button from "../../../../components/buttons/button";
-import { HiOutlineDocumentPlus } from "react-icons/hi2";
-import ButtonGroup from "../../../../components/buttons/button-group";
-import { useQuery, useQueryClient } from "react-query";
-import queryKeys from "../../../../utils/queryKeys";
-import { Spinner } from "reactstrap";
-import GoBack from "../../../../components/common/go-back";
+import { useAssignments } from "../../../../hooks/useAssignments";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
@@ -85,7 +77,7 @@ const Objective = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
   };
 
   const showNoAssignment = () => {
-    if (setObjectiveQ.length === 0) {
+    if (setObjectiveQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -210,105 +202,64 @@ const Objective = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
             <p className={styles.assignment_submitted_text}>Submitted</p>
           )} */}
           <div
-            className={`${objectiveSubmitted && styles.assignment_submitted}`}
+            className=''
           >
-            <p className={styles.view__questions_heading}>Objective Section</p>
-            <div className={styles.view__questions}>
-              {data.map((CQ, index) => {
-                // console.log({ CQS: CQ });
-                return (
-                  <div className={styles.view__questions_container} key={index}>
-                    <p className={styles.view__questions_question}>
-                      {index + 1}. {CQ.question} ({CQ.question_mark}mks)
-                      {/* {CQ.question_number}. {CQ.question} */}
-                    </p>
-                    {CQ.image && (
-                      <div className="mb-4 ">
-                        <img src={CQ.image} width={70} height={70} alt="" />
-                      </div>
-                    )}
-                    <>
-                      {/* Correct Answer */}
-                      <div className={styles.view__questions_answer}>
-                        {/* <p className="">{CQ.option1}</p> */}
-                        <label
-                          className={styles.create_question_label}
-                          // style={{ fontSize: "15px", fontWeight: 600 }}
-                        >
-                          Correct Answer:
-                        </label>
-                        <label>
-                          <p className={styles.answer_text}>
-                            {CQ.correct_answer}
-                          </p>
-                        </label>
-                      </div>
-                    </>
-                    <>
-                      {/* Student's Answer */}
-                      <div className={styles.view__questions_answer}>
-                        {/* <p className="">{CQ.option1}</p> */}
-                        <label
-                          className={styles.create_question_label}
-                          // style={{ fontSize: "15px", fontWeight: 600 }}
-                        >
-                          Student's Answer:
-                        </label>
-                        <label>
-                          <p className={styles.answer_text}>{CQ.answer}</p>
-                        </label>
-                      </div>
-                    </>
-                    <>
-                      <div className={styles.view__questions_answer}>
-                        <input
-                          type="radio"
-                          name={`radio-${index}`}
-                          checked={
-                            checkedData(CQ.question, CQ.answer) ||
-                            checkedData2(CQ.question, CQ.answer)
-                          }
-                          style={{ width: "18px", height: "18px" }}
-                          id={`answer-${index}-1`}
-                          onChange={(e) => {
-                            addObjectiveMarkFxn({
-                              period: user?.period,
-                              term: user?.term,
-                              session: user?.session,
-                              student_id: Number(CQ.student_id),
-                              // student_id: CQ.student_id,
-                              subject_id: Number(CQ.subject_id),
-                              // subject_id: CQ.subject_id,
-                              assignment_id: Number(CQ.assignment_id),
-                              // question_id: CQ.question_id,
-                              question: CQ.question,
-                              // question_number: Number(CQ.question_number),
-                              question_number: CQ.question_number,
-                              question_type: CQ.question_type,
-                              answer: CQ.answer,
-                              correct_answer: CQ.correct_answer,
-                              submitted: CQ.submitted,
-                              // teacher_mark: Number(inputValue),
-                              teacher_mark: e.target.value,
-                              week: CQ.week,
-                            });
-                          }}
-                          value={1}
-                          disabled={objectiveSubmitted}
-                        />
-                        {/* <p className="">{CQ.option1}</p> */}
-                        <label htmlFor={`answer-${index}-1`}>
-                          <p className={styles.answer_text}>Submit mark</p>
-                        </label>
-                      </div>
-                    </>
-                  </div>
-                );
-              })}
+            <p className='fw-bold fs-2 mt-5'>Objective Section</p>
+            <div className='d-flex flex-column my-5 gap-3'>
+              {data
+                ?.sort((a, b) => {
+                  if (a.question_number < b.question_number) {
+                    return -1;
+                  }
+                  if (a.question_number > b.question_number) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                .map((CQ, index) => {
+                  // console.log({ CQS: CQ });
+                  return (
+                    <div
+                      className='w-100 border border-2 rounded-1 border-opacity-25 p-5'
+                      key={index}
+                    >
+                      <p className='fs-3 mb-3 lh-base'>
+                        <span className='fw-bold fs-3'>
+                          {CQ.question_number}.
+                        </span>{" "}
+                        {CQ.question}{" "}
+                      </p>
+                      <p className='fw-bold fs-3 mb-4 lh-base'>
+                        ({CQ.question_mark} mk(s) )
+                      </p>
+                      {CQ.image && (
+                        <div className='mb-4 '>
+                          <img src={CQ.image} width={70} height={70} alt='' />
+                        </div>
+                      )}
+                      <>
+                        {/* Correct Answer */}
+                        <p className='fs-3 mb-3 lh-base'>
+                          <span className='fw-bold fs-3'>Correct Answer:</span>{" "}
+                          {CQ.correct_answer}{" "}
+                        </p>
+                      </>
+                      <>
+                        {/* Student's Answer */}
+                        <p className={`fs-3 lh-base ${CQ.correct_answer === CQ.answer ? "text-success": "text-danger"}`}>
+                          <span className='fw-bold fs-3'>
+                            Student's Answer:
+                          </span>{" "}
+                          {CQ.answer}{" "}
+                        </p>
+                      </>
+                    </div>
+                  );
+                })}
             </div>
-            <div className="d-flex justify-content-center ">
+            {/* <div className='d-flex justify-content-center '>
               <ButtonGroup options={buttonOptions2} />
-            </div>
+            </div> */}
             <Prompt
               isOpen={loginPrompt}
               toggle={() => setLoginPrompt(!loginPrompt)}

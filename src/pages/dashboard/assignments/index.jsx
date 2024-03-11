@@ -29,6 +29,18 @@ const Assignments = () => {
     permission,
     objMark,
     setObjMark,
+    answerQ,
+    setAnswerQ,
+
+    answeredObjQ,
+    setAnsweredObjQ,
+    answeredTheoQ,
+    setAnsweredTheoQ,
+
+    markedObjQ,
+    setMarkedObjQ,
+    markedTheoQ,
+    setMarkedTheoQ,
   } = useAssignments();
 
   const {
@@ -240,7 +252,20 @@ const Assignments = () => {
           />
         )}
         {/* {activeTab === "2" && permission?.created && <Created />} */}
-        {activeTab === "3" && permission?.submissions && <Submission />}
+        {activeTab === "3" && permission?.submissions && (
+          <Submission
+            answerQ={answerQ}
+            setAnswerQ={setAnswerQ}
+            answeredObjQ={answeredObjQ}
+            setAnsweredObjQ={setAnsweredObjQ}
+            answeredTheoQ={answeredTheoQ}
+            setAnsweredTheoQ={setAnsweredTheoQ}
+            markedObjQ={markedObjQ}
+            setMarkedObjQ={setMarkedObjQ}
+            markedTheoQ={markedTheoQ}
+            setMarkedTheoQ={setMarkedTheoQ}
+          />
+        )}
         {activeTab === "4" && permission?.results && <Results />}
         {activeTab === "6" && permission?.student_results && <StudentResults />}
       </div>
