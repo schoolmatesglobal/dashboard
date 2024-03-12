@@ -97,12 +97,26 @@ export const useAssignments = () => {
   const [markedObjQ, setMarkedObjQ] = useState([]);
   const [answeredTheoQ, setAnsweredTheoQ] = useState([]);
   const [markedTheoQ, setMarkedTheoQ] = useState([]);
+  const [markedTheoQ2, setMarkedTheoQ2] = useState([]);
+  const [answeredObjResults, setAnsweredObjResults] = useState([]);
+  const [answeredTheoryResults, setAnsweredTheoryResults] = useState([]);
   const [objMark, setObjMark] = useState(0);
 
   const [answerQ, setAnswerQ] = useState({
     question_type: "",
     subject: "",
+    term: "",
+    period: "",
+    session: "",
+    subject_id: "",
+    week: "",
+    student_id: "",
+    student: "",
+  });
 
+  const [markedQ, setMarkedQ] = useState({
+    question_type: "",
+    subject: "",
     term: "",
     period: "",
     session: "",
@@ -196,8 +210,8 @@ export const useAssignments = () => {
 
     // RESULTS
     markedQuestion,
-    answeredObjResults,
-    answeredTheoryResults,
+    // answeredObjResults,
+    // answeredTheoryResults,
   } = useSelector(getAllTeacherDetails);
 
   const { apiServices, errorHandler, permission, user } =
@@ -487,29 +501,6 @@ export const useAssignments = () => {
     },
   ];
 
-  //// POST MARKED THEORY ASSIGNMENT ///////
-  const {
-    mutateAsync: submitMarkedTheoryAssignment,
-    isLoading: submitMarkedTheoryAssignmentLoading,
-  } = useMutation(
-    () => apiServices.submitMarkedTheoryAssignment(markedTheoryQ),
-    {
-      onSuccess() {
-        // queryClient.invalidateQueries(
-        //   queryKeys.GET_ASSIGNMENT,
-        //   user?.period,
-        //   user?.term,
-        //   user?.session,
-        //   question_type
-        // );
-        toast.success("Theory assignment has been marked successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
-
   // POST MARKED OBJECTIVE ASSIGNMENT ////
   const {
     mutateAsync: submitMarkedObjectiveAssignment,
@@ -540,7 +531,7 @@ export const useAssignments = () => {
 
   // const isLoading = assignmentLoading || addObjectAssignmentLoading;
 
-  // console.log({ classSubjects });
+  // console.log({ markedTheoQ });
 
   // console.log({
   //   createQ,
@@ -571,8 +562,8 @@ export const useAssignments = () => {
     submitMarkedObjectiveAssignment,
     submitMarkedObjectiveAssignmentLoading,
     //
-    submitMarkedTheoryAssignment,
-    submitMarkedTheoryAssignmentLoading,
+    // submitMarkedTheoryAssignment,
+    // submitMarkedTheoryAssignmentLoading,
     //
     // addObjectiveAssignments,
     // addObjectAssignmentLoading,
@@ -701,9 +692,9 @@ export const useAssignments = () => {
     //
     markedQuestion,
     //
-    answeredObjResults,
+    // answeredObjResults,
     //
-    answeredTheoryResults,
+    // answeredTheoryResults,
     //
 
     option1,
@@ -744,7 +735,19 @@ export const useAssignments = () => {
 
     markedObjQ,
     setMarkedObjQ,
+
     markedTheoQ,
     setMarkedTheoQ,
+
+    markedTheoQ2,
+    setMarkedTheoQ2,
+
+    markedQ,
+    setMarkedQ,
+
+    answeredObjResults,
+    setAnsweredObjResults,
+    answeredTheoryResults,
+    setAnsweredTheoryResults,
   };
 };

@@ -41,6 +41,17 @@ const Assignments = () => {
     setMarkedObjQ,
     markedTheoQ,
     setMarkedTheoQ,
+
+    markedTheoQ2,
+    setMarkedTheoQ2,
+
+    markedQ,
+    setMarkedQ,
+
+    answeredObjResults,
+    setAnsweredObjResults,
+    answeredTheoryResults,
+    setAnsweredTheoryResults,
   } = useAssignments();
 
   const {
@@ -264,9 +275,20 @@ const Assignments = () => {
             setMarkedObjQ={setMarkedObjQ}
             markedTheoQ={markedTheoQ}
             setMarkedTheoQ={setMarkedTheoQ}
+            markedTheoQ2={markedTheoQ2}
+            setMarkedTheoQ2={setMarkedTheoQ2}
           />
         )}
-        {activeTab === "4" && permission?.results && <Results />}
+        {activeTab === "4" && permission?.results && (
+          <Results
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
         {activeTab === "6" && permission?.student_results && <StudentResults />}
       </div>
 

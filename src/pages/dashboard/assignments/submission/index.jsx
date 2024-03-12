@@ -33,6 +33,8 @@ const Submission = ({
   setMarkedObjQ,
   markedTheoQ,
   setMarkedTheoQ,
+  markedTheoQ2,
+  setMarkedTheoQ2,
 }) => {
   const {
     updateActiveTabFxn,
@@ -41,68 +43,10 @@ const Submission = ({
     errorHandler,
     permission,
     user,
-    // sortBy,
-    // setSortBy,
-    // sorted,
-    // setSorted,
-    // indexStatus,
-    // setIndexStatus,
-    // questionType,
-    // subjects,
-    // handleSortBy,
-    // updateCreateQ,
-    // updateCreatedQ,
-    // updateObjectiveQs,
-    // updateTheoryQs,
-    // createQuestion,
-    // createdQuestion,
-    // ObjectiveQuestions,
-    // TheoryQuestions,
-    // ObjectiveQ,
-    // TheoryQ,
+
     answeredQuestion,
     myStudents,
-    // updatePreviewAnswerFxn,
-    // previewAnswer,
-    // submittedQuestion,
-    // markedQuestion,
-    // updateMarkedQuestionFxn,
-    // updateSubmittedQuestionFxn,
-    // submitMarkedTheoryAssignment,
-    // submitMarkedTheoryAssignmentLoading,
-    // theoryMarked,
-
-    // SUBMISSION
-    updateAnsweredQuestionFxn,
-    //
-    updateAnsweredObjectiveQFxn,
-    // emptyAnsweredObjectiveQFxn,
-    //
-    updateAnsweredTheoryQFxn,
-    // emptyAnsweredTheoryQFxn,
-    //
-    // addObjectiveMarkFxn,
-    resetObjectiveMarkFxn,
-    //
-    // addTheoryMarkFxn,
-    resetTheoryMarkFxn,
-    //
-    loadMarkedObjectiveAnsFxn,
-    resetMarkedObjectiveAnsFxn,
-    //
-    loadMarkedTheoryAnsFxn,
-    resetMarkedTheoryAnsFxn,
-    //
-    updateTheoryMarkedFxn,
-    updateObjectiveMarkedFxn,
-    //
-    // answeredObjQ,
-    // answeredTheoQ,
   } = useAssignments();
-
-  // const sessions = useAcademicSession();
-
-  // const { studentByClassAndSession } = useStudent();
 
   const {
     question_type,
@@ -139,6 +83,28 @@ const Submission = ({
       return true;
     } else {
       return false;
+    }
+  };
+
+  const findStudentId = () => {
+    const findObject = myStudents?.find((opt) => opt.value === student);
+    if (findObject) {
+      return findObject.id;
+    }
+  };
+
+  const findSubjectId = () => {
+    const findObject = subjects?.find((opt) => opt.subject === subject);
+    if (findObject) {
+      return findObject.id;
+    }
+  };
+
+  const activateRetrieve2 = () => {
+    if (!week || !student_id || !question_type || !subject_id) {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -186,28 +152,12 @@ const Submission = ({
             return 0;
           });
 
-        console.log({ ffk, data, sorted });
+        // console.log({ ffk, data, sorted });
 
         return sorted;
       },
 
-      onSuccess(data) {
-        // const sortedBySubject = data?.filter(
-        //   (dt) => Number(dt?.subject_id) === subject_id
-        // );
-        // const sortByStudent = sortedBySubject?.filter(
-        //   (st) => st?.student === student
-        // );
-        // const sortByWeek = sortByStudent?.filter(
-        //   (st) => Number(st?.week) === Number(week)
-        // );
-        // const sortedByQN = sortQuestionsByNumber(sortByWeek);
-        // if (question_type === "objective") {
-        //   updateAnsweredObjectiveQFxn(sortedByQN);
-        // } else if (question_type === "theory") {
-        //   updateAnsweredTheoryQFxn(sortedByQN);
-        // }
-      },
+      onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
@@ -219,6 +169,7 @@ const Submission = ({
   const {
     isLoading: markedAssignmentLoading,
     refetch: refetchMarkedAssignment,
+    data: markedAssignment,
   } = useQuery(
     [
       queryKeys.GET_MARKED_ASSIGNMENT,
@@ -238,39 +189,39 @@ const Submission = ({
       ),
     {
       retry: 3,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: false,
-      // enabled: activateRetrieve() && permission?.submissions,
+      enabled: activateRetrieve() && permission?.submissions,
       // enabled: false,
-      onSuccess(data) {
-        // console.log({ rdata: data });
-        const sortedBySubject = data?.filter(
-          (dt) => Number(dt?.subject_id) === subject_id
-        );
 
-        const sortedByQN = sortQuestionsByNumber(sortedBySubject);
+      select: (data) => {
+        const hhk = apiServices.formatData(data);
 
-        if (question_type === "objective" && sortedByQN?.length > 0) {
-          resetMarkedObjectiveAnsFxn();
-          loadMarkedObjectiveAnsFxn(sortedByQN);
-          updateObjectiveMarkedFxn(true);
-        } else if (question_type === "objective" && sortedByQN?.length === 0) {
-          updateObjectiveMarkedFxn(false);
-        } else if (question_type === "theory" && sortedByQN?.length > 0) {
-          resetMarkedTheoryAnsFxn();
-          loadMarkedTheoryAnsFxn(sortedByQN);
-          updateTheoryMarkedFxn(true);
-        } else if (question_type === "theory" && sortedByQN?.length === 0) {
-          updateTheoryMarkedFxn(false);
-        }
+        const sorted = hhk
+          ?.filter(
+            (dt) =>
+              dt?.subject_id === subject_id &&
+              Number(dt?.student_id) === Number(student_id) &&
+              dt?.week === week
+          )
+          ?.sort((a, b) => {
+            if (a.question_number < b.question_number) {
+              return -1;
+            }
+            if (a.question_number > b.question_number) {
+              return 1;
+            }
+            return 0;
+          });
 
-        // console.log({ data, theory: sortByStudent, theoryMarked });
-        console.log({ data, student_id });
+        console.log({ hhk, data, sorted });
+
+        return sorted ?? [];
       },
+
+      // onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
     }
   );
 
@@ -317,26 +268,20 @@ const Submission = ({
   };
 
   const showNoAssignment2 = () => {
-    if (question_type === "" && answeredObjQ?.length === 0) {
+    if (question_type === "objective" && answeredObjQ?.length === 0) {
       return true;
-    } else if (question_type === "" && answeredTheoQ?.length === 0) {
+    } else if (question_type === "theory" && answeredTheoQ?.length === 0) {
       return true;
     } else {
       return false;
     }
   };
 
-  const findSubjectId = (value) => {
-    const findObject = classSubjects?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
-    }
-  };
-
-  const findStudentId = (value) => {
-    const findObject = myStudents?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
+  const showNoAssignment3 = () => {
+    if (!week || !subject || !question_type || !student) {
+      return true;
+    } else {
+      return false;
     }
   };
 
@@ -398,15 +343,27 @@ const Submission = ({
   //     }`;
   // const percentage = convertToPercentage(score);
 
-  // console.log({ answerQ });
-  console.log({
-    answeredTheoQ,
-    theoScore,
-    answeredObjQ,
-    objScore,
-    submittedAssignment,
-    answerQ,
-  });
+  // console.log({
+  //   answerQ,
+  //   // findStudentId: findStudentId(),
+  //   myStudents,
+  //   subjects,
+  //   markedAssignment,
+  //   activateRetrieve2: activateRetrieve2(),
+  //   student_id,
+  //   allLoading,
+  //   showLoading,
+  //   submittedAssignmentLoading,
+  //   markedAssignmentLoading,
+  // });
+  // console.log({
+  //   answeredTheoQ,
+  //   theoScore,
+  //   answeredObjQ,
+  //   objScore,
+  //   submittedAssignment,
+  //   answerQ,
+  // });
 
   return (
     <div>
@@ -436,18 +393,6 @@ const Submission = ({
                 setAnswerQ((prev) => {
                   return { ...prev, week: value };
                 });
-                // resetObjectiveMarkFxn();
-                // resetTheoryMarkFxn();
-                // resetMarkedObjectiveAnsFxn();
-                // resetMarkedTheoryAnsFxn();
-                // if (subject !== "" && question_type !== "" && student !== "") {
-                //   setShowLoading(true);
-                //   setTimeout(() => {
-                //     setShowLoading(false);
-                //   }, 1500);
-                //   refetchSubmittedAssignment();
-                //   refetchMarkedAssignment();
-                // }
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -458,8 +403,15 @@ const Submission = ({
               value={subject}
               // defaultValue={subject && subject}
               onChange={({ target: { value } }) => {
+                const fId = () => {
+                  const ff = subjects?.find((opt) => opt.subject === value);
+                  if (ff) {
+                    return ff?.id?.toString();
+                  }
+                };
+
                 setAnswerQ((prev) => {
-                  return { ...prev, subject: value };
+                  return { ...prev, subject: value, subject_id: fId() };
                 });
 
                 // resetObjectiveMarkFxn();
@@ -523,9 +475,15 @@ const Submission = ({
               value={student}
               // defaultValue={student && student}
               onChange={({ target: { value } }) => {
+                const fId = () => {
+                  const ff = myStudents?.find((opt) => opt.value === value);
+                  if (ff) {
+                    return ff?.id?.toString();
+                  }
+                };
                 //
                 setAnswerQ((prev) => {
-                  return { ...prev, student: value };
+                  return { ...prev, student: value, student_id: fId() };
                 });
 
                 // resetObjectiveMarkFxn();
@@ -559,12 +517,15 @@ const Submission = ({
           </div>
         )}
 
-        {!allLoading && (showNoAssignment() || showNoAssignment2()) && (
-          <div className={styles.placeholder_container}>
-            <MdOutlineLibraryBooks className={styles.icon} />
-            <p className={styles.heading}>No Submission</p>
-          </div>
-        )}
+        {!allLoading &&
+          (showNoAssignment() ||
+            showNoAssignment2() ||
+            showNoAssignment3()) && (
+            <div className={styles.placeholder_container}>
+              <MdOutlineLibraryBooks className={styles.icon} />
+              <p className={styles.heading}>No Submission</p>
+            </div>
+          )}
 
         {!allLoading &&
           answeredObjQ?.length >= 1 &&
@@ -585,7 +546,7 @@ const Submission = ({
           )}
 
         {!allLoading &&
-          answeredTheoQ.length >= 1 &&
+          answeredTheoQ?.length >= 1 &&
           question_type === "theory" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center mt-5 '>
@@ -601,6 +562,9 @@ const Submission = ({
                 data={answeredTheoQ}
                 markedTheoQ={markedTheoQ}
                 setMarkedTheoQ={setMarkedTheoQ}
+                markedTheoQ2={markedTheoQ2}
+                setMarkedTheoQ2={setMarkedTheoQ2}
+                markedAssignment={markedAssignment}
               />
             </div>
           )}

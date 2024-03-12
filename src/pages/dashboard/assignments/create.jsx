@@ -806,10 +806,14 @@ const Create = ({
               option4: editOption4,
             },
           ]);
+          refetchAssignmentCreated();
+          setTimeout(() => {
+            refetchAssignmentCreated();
+          }, 1000);
           setTimeout(() => {
             setEditPrompt(false);
-          }, 1000);
-          refetchAssignmentCreated();
+            refetchAssignmentCreated();
+          }, 2000);
         } else if (question_type === "theory") {
           editTheoryAssignment({
             id: editQuestionId,
@@ -820,9 +824,14 @@ const Create = ({
               question_mark: editMark,
             },
           });
+          refetchAssignmentCreated();
+          setTimeout(() => {
+            refetchAssignmentCreated();
+          }, 1000);
           setTimeout(() => {
             setEditPrompt(false);
-          }, 1000);
+            refetchAssignmentCreated();
+          }, 2000);
         }
       },
       variant: "outline",

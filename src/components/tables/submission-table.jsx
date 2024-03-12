@@ -17,7 +17,7 @@ import styles from "../../assets/scss/pages/dashboard/assignment.module.scss";
 import ButtonGroup from "../buttons/button-group";
 import {
   addQuestionMarkTotal,
-  countCorrectAnswers
+  countCorrectAnswers,
 } from "../../pages/dashboard/assignments/constant";
 
 const SubmissionTable = ({
@@ -234,13 +234,13 @@ const SubmissionTable = ({
   const displayStatus = (render) => {
     switch (render) {
       case "disabled":
-        return <p className="text-danger">Inactive</p>;
+        return <p className='text-danger'>Inactive</p>;
 
       case "withdrawn":
-        return <p className="text-danger">Withdrawn</p>;
+        return <p className='text-danger'>Withdrawn</p>;
 
       default:
-        return <p className="text-success">Active</p>;
+        return <p className='text-success'>Active</p>;
     }
   };
 
@@ -311,10 +311,10 @@ const SubmissionTable = ({
   // });
 
   return (
-    <div className="custom-table-wrapper">
+    <div className='custom-table-wrapper'>
       {isLoading && (
-        <div className="d-flex align-items-center justify-content-center w-full">
-          <Spinner /> <p className="ms-2">Loading...</p>
+        <div className='d-flex align-items-center justify-content-center w-full'>
+          <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
@@ -329,7 +329,7 @@ const SubmissionTable = ({
                   {hasCheckBox && (
                     <th>
                       <Input
-                        type="checkbox"
+                        type='checkbox'
                         checked={checkedRows.length === memoisedData.length}
                         onChange={checkAllBoxes}
                       />
@@ -356,7 +356,7 @@ const SubmissionTable = ({
                     {hasCheckBox && (
                       <td>
                         <Input
-                          type="checkbox"
+                          type='checkbox'
                           checked={checkedRows.includes(row.original.id)}
                           onChange={() => checkSingleRow(row.original.id)}
                         />
@@ -377,7 +377,7 @@ const SubmissionTable = ({
                     {rowHasView && (
                       <td>
                         <Button
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => {
                             filterData(data, row.values);
                           }}
@@ -394,7 +394,7 @@ const SubmissionTable = ({
                               ? "dark"
                               : "warning"
                           }
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "disable")}
                         >
                           {row.original.status === "disabled"
@@ -406,8 +406,8 @@ const SubmissionTable = ({
                     {rowHasDelete && (
                       <td>
                         <Button
-                          variant="danger"
-                          className="d-block mx-auto"
+                          variant='danger'
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "delete")}
                         >
                           Delete
@@ -422,7 +422,7 @@ const SubmissionTable = ({
                           }
                           toggle={() => toggleAction(row.original.id)}
                         >
-                          <DropdownToggle tag="div">
+                          <DropdownToggle tag='div'>
                             <Action
                               onClick={() => toggleAction(row.original.id)}
                             />
@@ -431,7 +431,7 @@ const SubmissionTable = ({
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}
-                                className="px-5 py-3"
+                                className='px-5 py-3'
                                 key={key}
                               >
                                 {title}
@@ -447,7 +447,7 @@ const SubmissionTable = ({
             </tbody>
           </Table>
           {permission?.results && (
-            <div className="d-flex justify-content-center ">
+            <div className='d-flex justify-content-center '>
               <ButtonGroup options={buttonOptions2} />
             </div>
           )}
@@ -456,10 +456,10 @@ const SubmissionTable = ({
             toggle={() => setLoginPrompt2(!loginPrompt2)}
             hasGroupedButtons={true}
             groupedButtonProps={buttonOptions3}
-            singleButtonText="Preview"
+            singleButtonText='Preview'
             promptHeader={`CONFIRM RESULT SUBMISSION`}
           >
-            <div className="">
+            <div className=''>
               <label
                 className={styles.create_question_label}
                 // style={{ fontSize: "15px", fontWeight: 600 }}
@@ -519,35 +519,19 @@ const SubmissionTable = ({
             toggle={() => setLoginPrompt(!loginPrompt)}
             promptHeader={`PREVIEW ANSWER `}
           >
-            <div className="">
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Question
-              </label>
+            <div className=''>
+              <p className='fs-3 fw-bold mb-3'>Question</p>
+              <p className='fs-3 mb-5 lh-base'>{previewAns?.question}</p>
+              <p className='fs-3 fw-bold mb-3'>Correct Answer</p>
+              <p className='fs-3 mb-5'>{previewAns?.correct_answer}</p>
+              <p className='fs-3 fw-bold mb-3'>Student's Answer</p>
               <p
-                className={styles.create_question_question}
-                // style={{ fontSize: "15px", lineHeight: "20px" }}
+                className={`${
+                  previewAns?.answer === previewAns?.correct_answer
+                    ? "text-success"
+                    : "text-danger"
+                } fs-3 mb-5`}
               >
-                {previewAns?.question}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Correct Answer
-              </label>
-              <p className={styles.create_question_answer}>
-                {previewAns?.correct_answer}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Answer
-              </label>
-              <p className={styles.create_question_answer}>
                 {previewAns?.answer}
               </p>
             </div>
@@ -603,7 +587,7 @@ const SubmissionTable = ({
         </div>
       ) : null}
       {!memoisedData.length && !isLoading ? (
-        <p className="text-center">No data to display.</p>
+        <p className='text-center'>No data to display.</p>
       ) : null}
     </div>
   );

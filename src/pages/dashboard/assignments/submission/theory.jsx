@@ -5,6 +5,8 @@ import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.mo
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
 import AuthInput from "../../../../components/inputs/auth-input";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
 
 const Theory = ({
   assignmentLoading,
@@ -12,12 +14,15 @@ const Theory = ({
   refetchMarkedAssignment,
   markedTheoQ,
   setMarkedTheoQ,
+  markedTheoQ2,
+  setMarkedTheoQ2,
+  markedAssignment,
 }) => {
   const {
     // apiServices,
     // permission,
     // user,
-    answerQuestion,
+    // answerQuestion,
     // setObjectiveQ,
     // setTheoryQ,
     // answeredObjectiveQ,
@@ -47,13 +52,13 @@ const Theory = ({
   // const [value, setValue] = useState("");
 
   const {
-    // apiServices,
-    // permission,
+    apiServices,
+    permission,
     user,
     addTheoryMarkFxn,
     // resetTheoryMarkFxn,
     markedTheoryQ,
-    submitMarkedTheoryAssignment,
+    // submitMarkedTheoryAssignment,
     // submitMarkedTheoryAssignmentLoading,
     // updateTheoryMarkedFxn,
     // loadMarkedTheoryAnsFxn,
@@ -61,20 +66,6 @@ const Theory = ({
     markedTheoryQ2,
     resetMarkedTheoryAnsFxn,
   } = useAssignments();
-
-  const {
-    // question_type,
-    // question,
-    // subject,
-    // image,
-    // imageName,
-    // term,
-    // period,
-    // session,
-    // subject_id,
-    // week,
-    // student_id,
-  } = answerQuestion;
 
   // const showNoAssignment = () => {
   //   if (data?.length === 0) {
@@ -85,6 +76,19 @@ const Theory = ({
   // };
 
   // const [theoryDefaultValue, settheoryDefaultValue] = useState([]);
+
+  //// POST MARKED THEORY ASSIGNMENT ///////
+  const {
+    mutateAsync: submitMarkedTheoryAssignment,
+    isLoading: submitMarkedTheoryAssignmentLoading,
+  } = useMutation(() => apiServices.submitMarkedTheoryAssignment(markedTheoQ), {
+    onSuccess() {
+      toast.success("Theory assignment has been marked successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   const checkEmptyQuestions = () => {
     if (
@@ -101,18 +105,18 @@ const Theory = ({
   };
 
   const checkedData = (question, CQ) => {
-    const indexToCheck = markedTheoryQ.findIndex(
+    const indexToCheck = markedTheoQ?.findIndex(
       (ob) => ob.question === question && ob.answer === CQ
     );
     if (indexToCheck !== -1) {
-      return markedTheoryQ[indexToCheck].teacher_mark;
+      return markedTheoQ[indexToCheck]?.teacher_mark;
     } else {
       return "";
     }
   };
 
   const checkedData2 = (question, CQ) => {
-    const quest = markedTheoryQ2.find(
+    const quest = markedAssignment?.find(
       (ob) => ob.question === question && ob.answer === CQ
     );
     if (quest) {
@@ -140,15 +144,17 @@ const Theory = ({
       onClick: () => {
         // updateTheorySubmittedFxn(true);
         // updateTheoryMarkedFxn(true);
-        resetMarkedTheoryAnsFxn();
+        // resetMarkedTheoryAnsFxn();
         submitMarkedTheoryAssignment();
-        refetchMarkedAssignment();
+        // refetchMarkedAssignment();
+
         // resetTheoryAnsFxn();
         // resetTheoryMarkFxn();
-
-        setLoginPrompt(false);
+        setTimeout(() => {
+          setLoginPrompt(false);
+        }, 1000);
       },
-      // isLoading: submitTheoryAssignmentLoading,
+      isLoading: submitMarkedTheoryAssignmentLoading,
       // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
       //
       // variant: "outline",
@@ -168,7 +174,7 @@ const Theory = ({
   ];
 
   // console.log({ answeredTheoryQ, data });
-  console.log({ markedTheoryQ, markedTheoryQ2 });
+  console.log({ markedTheoQ, markedAssignment });
   // console.log({ setTheoryQ });
 
   return (
@@ -260,6 +266,7 @@ const Theory = ({
                               Question's Mark
                             </p>
                           </div>
+
                           {/* Total Questions */}
                           <div style={{ width: "200px" }}>
                             <AuthInput
@@ -276,55 +283,93 @@ const Theory = ({
                               onChange={(e) => {
                                 const inputValue = e.target.value;
 
-                                if (inputValue >= Number(CQ?.question_mark))
+                                if (
+                                  Number(inputValue) > Number(CQ?.question_mark)
+                                )
                                   return;
 
-                                setMarkedTheoQ([
-                                  {
-                                    period: user?.period,
-                                    term: user?.term,
-                                    session: user?.session,
-                                    // student_id: Number(CQ.student_id),
-                                    student_id: CQ.student_id,
-                                    // subject_id: Number(CQ.subject_id),
-                                    subject_id: CQ.subject_id,
-                                    // question_id: Number(CQ.id),
-                                    assignment_id: CQ.assignment_id,
-                                    question: CQ.question,
-                                    // question_number: Number(CQ.question_number),
-                                    question_number: CQ.question_number,
-                                    question_type: CQ.question_type,
-                                    answer: CQ.answer,
-                                    correct_answer: CQ.correct_answer,
-                                    submitted: CQ.submitted,
-                                    // teacher_mark: Number(inputValue),
-                                    teacher_mark: inputValue,
-                                    week: CQ.week,
-                                  },
-                                ]);
+                                const indexToUpdate = markedTheoQ?.findIndex(
+                                  (item) => item.question === CQ.question
+                                );
+
+                                const filteredArray = markedTheoQ?.filter(
+                                  (ans) => ans.question !== CQ.question
+                                );
+
+                                if (indexToUpdate !== -1) {
+                                  setMarkedTheoQ([
+                                    ...filteredArray,
+                                    {
+                                      period: user?.period,
+                                      term: user?.term,
+                                      session: user?.session,
+                                      // student_id: Number(CQ.student_id),
+                                      student_id: CQ.student_id,
+                                      // subject_id: Number(CQ.subject_id),
+                                      subject_id: CQ.subject_id,
+                                      // question_id: Number(CQ.id),
+                                      assignment_id: CQ.assignment_id,
+                                      question: CQ.question,
+                                      // question_number: Number(CQ.question_number),
+                                      question_number: CQ.question_number,
+                                      question_type: CQ.question_type,
+                                      answer: CQ.answer,
+                                      correct_answer: CQ.correct_answer,
+                                      submitted: CQ.submitted,
+                                      // teacher_mark: Number(inputValue),
+                                      teacher_mark: inputValue,
+                                      week: CQ.week,
+                                    },
+                                  ]);
+                                } else {
+                                  setMarkedTheoQ([
+                                    ...markedTheoQ,
+                                    {
+                                      period: user?.period,
+                                      term: user?.term,
+                                      session: user?.session,
+                                      // student_id: Number(CQ.student_id),
+                                      student_id: CQ.student_id,
+                                      // subject_id: Number(CQ.subject_id),
+                                      subject_id: CQ.subject_id,
+                                      // question_id: Number(CQ.id),
+                                      assignment_id: CQ.assignment_id,
+                                      question: CQ.question,
+                                      // question_number: Number(CQ.question_number),
+                                      question_number: CQ.question_number,
+                                      question_type: CQ.question_type,
+                                      answer: CQ.answer,
+                                      correct_answer: CQ.correct_answer,
+                                      submitted: CQ.submitted,
+                                      // teacher_mark: Number(inputValue),
+                                      teacher_mark: inputValue,
+                                      week: CQ.week,
+                                    },
+                                  ]);
+                                }
 
                                 // You can add additional validation if needed
-                                addTheoryMarkFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  // student_id: Number(CQ.student_id),
-                                  student_id: CQ.student_id,
-                                  // subject_id: Number(CQ.subject_id),
-                                  subject_id: CQ.subject_id,
-                                  // question_id: Number(CQ.id),
-                                  assignment_id: CQ.assignment_id,
-                                  question: CQ.question,
-                                  // question_number: Number(CQ.question_number),
-                                  question_number: CQ.question_number,
-                                  question_type: CQ.question_type,
-                                  answer: CQ.answer,
-                                  correct_answer: CQ.correct_answer,
-                                  submitted: CQ.submitted,
-                                  // teacher_mark: Number(inputValue),
-                                  teacher_mark: inputValue,
-                                  week: CQ.week,
-                                });
+                                // addTheoryMarkFxn({
+                                //   period: user?.period,
+                                //   term: user?.term,
+                                //   session: user?.session,
+                                //   // student_id: Number(CQ.student_id),
+                                //   student_id: CQ.student_id,
+                                //   // subject_id: Number(CQ.subject_id),
+                                //   subject_id: CQ.subject_id,
+                                //   // question_id: Number(CQ.id),
+                                //   assignment_id: CQ.assignment_id,
+                                //   question: CQ.question,
+                                //   // question_number: Number(CQ.question_number),
+                                //   question_number: CQ.question_number,
+                                //   question_type: CQ.question_type,
+                                //   answer: CQ.answer,
+                                //   correct_answer: CQ.correct_answer,
+                                //   submitted: CQ.submitted,
+                                //   // teacher_mark: Number(inputValue),
+                                //   teacher_mark: inputValue,
+                                //   week: CQ.week,
+                                // });
                               }}
                               wrapperClassName=''
                             />

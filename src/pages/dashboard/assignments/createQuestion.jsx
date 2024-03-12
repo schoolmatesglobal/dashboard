@@ -215,28 +215,6 @@ const CreateQuestion = ({
                 setAllowFetch(true);
 
                 refetchAssignmentCreated();
-                // setObjectiveQ([
-                //   ...objectiveQ,
-                //   {
-                //     term: user?.term,
-                //     period: user?.period,
-                //     session: user?.session,
-                //     week,
-                //     question_type,
-                //     question,
-                //     answer,
-                //     subject_id,
-                //     // image,
-                //     option1,
-                //     option2,
-                //     option3,
-                //     option4,
-                //     total_question: Number(total_question),
-                //     total_mark: Number(total_mark),
-                //     question_mark: Number(question_mark),
-                //     question_number: Number(question_number),
-                //   },
-                // ]);
 
                 setCreateQ({
                   ...createQ,
@@ -270,25 +248,6 @@ const CreateQuestion = ({
 
                 refetchAssignmentCreated();
 
-                // setTheoryQ([
-                //   ...theoryQ,
-                //   {
-                //     term: user?.term,
-                //     period: user?.period,
-                //     session: user?.session,
-                //     week,
-                //     question_type,
-                //     question,
-                //     answer,
-                //     subject_id,
-                //     image,
-                //     total_question: Number(total_question),
-                //     total_mark: Number(theory_total_mark),
-                //     question_mark: Number(question_mark),
-                //     question_number: Number(question_number),
-                //   },
-                // ]);
-
                 setCreateQ({
                   ...createQ,
                   option1: "",
@@ -320,16 +279,7 @@ const CreateQuestion = ({
               setActiveTab("1");
             }
           : () => {
-              // updateCreateQuestionFxn({
-              //   image: previewUrl,
-              //   imageName: imageNam,
-              // });
-
-              // setCreateQ((prev) => ({
-              //   ...prev,
-              //   image: previewUrl,
-              //   imageName: imageNam,
-              // }));
+             
 
               if (question_type === "theory") {
                 setCreateQ((prev) => ({
