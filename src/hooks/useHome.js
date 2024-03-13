@@ -113,10 +113,10 @@ export const useHome = () => {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
       retry: 3,
       select: (data) => {
-        // console.log({ ddata: data, sd: data?.data });
+        console.log({ ddata: data, sd: data?.data });
 
-        return data?.data;
-        // return data?.data[0];
+        // return data?.data;
+        return data?.data[0];
       },
       onSuccess(data) {
         updateUser({
@@ -129,7 +129,6 @@ export const useHome = () => {
       onError(err) {
         errorHandler(err);
       },
-      
     }
   );
 

@@ -165,11 +165,10 @@ const Results = () => {
         onClick: () => displayPrompt("view"),
       });
     }
-
     return arr;
   };
 
-  // console.log({ user });
+  console.log({ sessions });
 
   return (
     <div>
@@ -258,6 +257,7 @@ const Results = () => {
             <p className='error-message'>{errors.session}</p>
           )}
         </div>
+
         {user?.designation_name === "Principal" && (
           <div className='form-group mb-4'>
             <AuthSelect
@@ -266,7 +266,7 @@ const Results = () => {
               name='class_name'
               hasError={!!errors.class_name}
               onChange={handleChange}
-              options={(classes || []).map((x) => ({
+              options={(classes || [])?.map((x) => ({
                 value: x?.class_name,
                 title: x?.class_name,
               }))}

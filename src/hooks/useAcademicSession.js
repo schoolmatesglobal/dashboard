@@ -8,7 +8,10 @@ export const useAcademicSession = () => {
     [queryKeys.GET_ACADEMIC_SESSIONS],
     apiServices.getAcademicSessions,
     {
-      select: (data) => data?.data,
+      select: (data) => {
+        console.log({ datam: data });
+        return data?.data;
+      },
       onError: apiServices.errorHandler,
     }
   );

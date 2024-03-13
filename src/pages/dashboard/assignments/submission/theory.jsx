@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAssignments } from "../../../../hooks/useAssignments";
 import ButtonGroup from "../../../../components/buttons/button-group";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
@@ -17,65 +17,26 @@ const Theory = ({
   markedTheoQ2,
   setMarkedTheoQ2,
   markedAssignment,
+  question_type,
+  subject,
+  week,
+  student,
+  loading1,
+  setLoading1,
 }) => {
-  const {
-    // apiServices,
-    // permission,
-    // user,
-    // answerQuestion,
-    // setObjectiveQ,
-    // setTheoryQ,
-    // answeredObjectiveQ,
-    // answeredTheoryQ,
-    // answeredTheoryQ2,
-    // answeredTheoryQ3,
-    // studentSubjects,
-    // errorHandler,
-    // addTheoryAnsFxn,
-    // addTheoryAnsFxn2,
-    // addTheoryAnsFxn3,
-    // addObjectiveAnsFxn,
-    // updateAnswerQuestionFxn,
-    // updateSetObjectiveQFxn,
-    // updateSetTheoryQFxn,
-    // resetAnswerQuestionFxn,
-    // assignmentTab,
-    // updateAssignmentTabFxn,
-    // updateObjectiveSubmittedFxn,
-    // updateTheorySubmittedFxn,
-    // objectiveSubmitted,
-    theorySubmitted,
-    // submitTheoryAssignment,
-    // submitTheoryAssignmentLoading,
-  } = useStudentAssignments();
-
-  // const [value, setValue] = useState("");
+  const { theorySubmitted } = useStudentAssignments();
 
   const {
     apiServices,
     permission,
     user,
     addTheoryMarkFxn,
-    // resetTheoryMarkFxn,
     markedTheoryQ,
-    // submitMarkedTheoryAssignment,
-    // submitMarkedTheoryAssignmentLoading,
-    // updateTheoryMarkedFxn,
-    // loadMarkedTheoryAnsFxn,
-    // theoryMarked,
     markedTheoryQ2,
-    resetMarkedTheoryAnsFxn,
   } = useAssignments();
 
-  // const showNoAssignment = () => {
-  //   if (data?.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
-
-  // const [theoryDefaultValue, settheoryDefaultValue] = useState([]);
+  const [marked, setMarked] = useState(false);
+  const [array, setArray] = useState([]);
 
   //// POST MARKED THEORY ASSIGNMENT ///////
   const {
@@ -92,14 +53,11 @@ const Theory = ({
 
   const checkEmptyQuestions = () => {
     if (
-      markedTheoryQ?.length !== data?.length ||
-      markedTheoryQ2?.length !== data?.length
+      markedTheoQ?.length === array?.length ||
+      markedAssignment?.length === array?.length
     ) {
       return false;
-    } else if (
-      markedTheoryQ?.length === data?.length ||
-      markedTheoryQ2?.length === data?.length
-    ) {
+    } else {
       return true;
     }
   };
@@ -140,16 +98,9 @@ const Theory = ({
     },
     {
       title: "Yes Submit",
-      // disabled: !checkEmptyQuestions(),
+      disabled: checkEmptyQuestions(),
       onClick: () => {
-        // updateTheorySubmittedFxn(true);
-        // updateTheoryMarkedFxn(true);
-        // resetMarkedTheoryAnsFxn();
         submitMarkedTheoryAssignment();
-        // refetchMarkedAssignment();
-
-        // resetTheoryAnsFxn();
-        // resetTheoryMarkFxn();
         setTimeout(() => {
           setLoginPrompt(false);
         }, 1000);
@@ -169,12 +120,36 @@ const Theory = ({
           : "Submit Theory Marking"
       }`,
       onClick: () => displayPrompt(),
-      disabled: theorySubmitted,
+      disabled: checkEmptyQuestions(),
     },
   ];
 
   // console.log({ answeredTheoryQ, data });
-  console.log({ markedTheoQ, markedAssignment });
+
+  useEffect(() => {
+   
+
+    if (markedAssignment?.length > 0) {
+      setArray(markedAssignment);
+    } else {
+      const newA = data?.map((mk, i) => {
+        return {
+          ...mk,
+          teacher_mark: "",
+        };
+      });
+      setArray(newA);
+    }
+  }, [markedAssignment, data,]);
+
+  console.log({
+    markedTheoQ,
+    markedAssignment,
+    data,
+    array,
+    checkEmptyQuestions: checkEmptyQuestions(),
+  });
+
   // console.log({ setTheoryQ });
 
   return (
@@ -185,15 +160,12 @@ const Theory = ({
           <p className={styles.heading}>No Theory Assignment</p>
         </div>
       )} */}
-      {!assignmentLoading && data?.length >= 1 && (
+      {!assignmentLoading && array?.length >= 1 && (
         <div className={styles.objective}>
-          {/* {theorySubmitted && (
-            <p className={styles.assignment_submitted_text}>Submitted</p>
-          )} */}
           <div className=''>
             <p className='fw-bold fs-2 mt-5'>Theory Section</p>
             <div className='d-flex flex-column my-5 gap-3'>
-              {data
+              {array
                 ?.sort((a, b) => {
                   if (a.question_number < b.question_number) {
                     return -1;
@@ -253,13 +225,7 @@ const Theory = ({
                               disabled
                               value={Number(CQ.question_mark)}
                               name='option'
-                              onChange={(e) => {
-                                // updateCreateQ({
-                                //   total_question: e.target.value,
-                                //   // total_mark: e.target.value * question_mark,
-                                // });
-                                // calcObjTotal();
-                              }}
+                              onChange={(e) => {}}
                               wrapperClassName=''
                             />
                             <p className='mb-4 fw-bold mt-3 fs-4'>
@@ -273,10 +239,13 @@ const Theory = ({
                               type='number'
                               placeholder="Teacher's Mark"
                               // hasError={!!errors.username}
-                              value={
-                                checkedData(CQ.question, CQ.answer) ||
-                                checkedData2(CQ.question, CQ.answer)
-                              }
+                              // defaultValue={checkedData2(
+                              //   CQ.question,
+                              //   CQ.answer
+                              // )}
+                              defaultValue={CQ?.teacher_mark}
+                              // value={checkedData(CQ.question, CQ.answer)}
+                              // value={checkedData(CQ.question, CQ.answer)}
                               // name="option"
                               max={Number(CQ?.question_mark)}
                               min={0}
@@ -347,29 +316,6 @@ const Theory = ({
                                     },
                                   ]);
                                 }
-
-                                // You can add additional validation if needed
-                                // addTheoryMarkFxn({
-                                //   period: user?.period,
-                                //   term: user?.term,
-                                //   session: user?.session,
-                                //   // student_id: Number(CQ.student_id),
-                                //   student_id: CQ.student_id,
-                                //   // subject_id: Number(CQ.subject_id),
-                                //   subject_id: CQ.subject_id,
-                                //   // question_id: Number(CQ.id),
-                                //   assignment_id: CQ.assignment_id,
-                                //   question: CQ.question,
-                                //   // question_number: Number(CQ.question_number),
-                                //   question_number: CQ.question_number,
-                                //   question_type: CQ.question_type,
-                                //   answer: CQ.answer,
-                                //   correct_answer: CQ.correct_answer,
-                                //   submitted: CQ.submitted,
-                                //   // teacher_mark: Number(inputValue),
-                                //   teacher_mark: inputValue,
-                                //   week: CQ.week,
-                                // });
                               }}
                               wrapperClassName=''
                             />
@@ -392,11 +338,7 @@ const Theory = ({
               hasGroupedButtons={true}
               groupedButtonProps={buttonOptions}
               // singleButtonText="Preview"
-              promptHeader={`${
-                checkEmptyQuestions()
-                  ? "CONFIRM ASSIGNMENT MARKING"
-                  : "INCOMPLETE MARKING"
-              }`}
+              promptHeader={`CONFIRM ASSIGNMENT MARKING`}
             >
               {checkEmptyQuestions() ? (
                 <p className={styles.warning_text}>

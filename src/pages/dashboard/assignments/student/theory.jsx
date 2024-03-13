@@ -147,9 +147,9 @@ const Theory = ({
   // const [theoryDefaultValue, settheoryDefaultValue] = useState([]);
 
   const checkEmptyQuestions = () => {
-    if (answeredTheoryQ.length !== theoryQ.length) {
+    if (answeredTheoryQ.length === theoryQ.length) {
       return false;
-    } else if (answeredTheoryQ.length === theoryQ.length) {
+    } else {
       return true;
     }
   };
@@ -200,7 +200,7 @@ const Theory = ({
     },
     {
       title: "Yes Submit",
-      disabled: !checkEmptyQuestions(),
+      // disabled: !checkEmptyQuestions(),
       onClick: () => {
         setTheorySubmitted(true);
         submitTheoryAssignment();
@@ -223,7 +223,7 @@ const Theory = ({
     {
       title: "Submit Theory Assignment",
       onClick: () => displayPrompt(),
-      disabled: theorySubmitted,
+      disabled: checkEmptyQuestions(),
     },
   ];
 
@@ -373,8 +373,8 @@ const Theory = ({
                               }}
                               type='text'
                               value={
-                                checkedData(CQ.question, CQ.answer) 
-                                || checkedData2(CQ.question, CQ.answer)
+                                checkedData(CQ.question, CQ.answer) ||
+                                checkedData2(CQ.question, CQ.answer)
                               }
                               placeholder='Type the answer'
                               disabled={theorySubmitted}
@@ -401,22 +401,11 @@ const Theory = ({
               hasGroupedButtons={true}
               groupedButtonProps={buttonOptions}
               // singleButtonText="Preview"
-              promptHeader={`${
-                checkEmptyQuestions()
-                  ? "CONFIRM ASSIGNMENT SUBMISSION"
-                  : "INCOMPLETE SUBMISSION"
-              }`}
+              promptHeader={`CONFIRM ASSIGNMENT SUBMISSION`}
             >
-              {checkEmptyQuestions() ? (
-                <p className={styles.warning_text}>
-                  Are you sure you want to submit this assignment.
-                </p>
-              ) : (
-                <p className={styles.warning_text}>
-                  Please go through the questions again and ensure you answer
-                  all.
-                </p>
-              )}
+              <p className={styles.warning_text}>
+                Are you sure you want to submit this assignment.
+              </p>
             </Prompt>
           </div>
         </div>

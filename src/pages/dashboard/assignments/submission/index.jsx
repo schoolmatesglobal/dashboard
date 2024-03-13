@@ -317,7 +317,10 @@ const Submission = ({
 
   // const allLoading = showLoading || assignmentLoading;
   const allLoading =
-    showLoading || submittedAssignmentLoading || markedAssignmentLoading;
+    showLoading ||
+    submittedAssignmentLoading ||
+    markedAssignmentLoading ||
+    loading1;
 
   const theoScore = answeredTheoQ?.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),
@@ -329,41 +332,13 @@ const Submission = ({
     0
   );
 
-  // const totalMarks =
-  //   answeredObjQ[answeredObjQ?.length - 1]?.question_mark *
-  //   answeredObjQ?.length;
-  // const totalMarks2 = addQuestionMarkTotal(answeredTheoQ);
-  // const score = `${
-  //   correctCount *
-  //   answeredObjQ[answeredObjQ?.length - 1]?.question_mark
-  // } /
-  //     ${
-  //       answeredObjQ[answeredObjQ?.length - 1]?.total_question *
-  //       answeredObjQ[answeredObjQ?.length - 1]?.question_mark
-  //     }`;
-  // const percentage = convertToPercentage(score);
 
-  // console.log({
-  //   answerQ,
-  //   // findStudentId: findStudentId(),
-  //   myStudents,
-  //   subjects,
-  //   markedAssignment,
-  //   activateRetrieve2: activateRetrieve2(),
-  //   student_id,
-  //   allLoading,
-  //   showLoading,
-  //   submittedAssignmentLoading,
-  //   markedAssignmentLoading,
-  // });
-  // console.log({
-  //   answeredTheoQ,
-  //   theoScore,
-  //   answeredObjQ,
-  //   objScore,
-  //   submittedAssignment,
-  //   answerQ,
-  // });
+  useEffect(() => {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, 500);
+  }, [question_type, subject, week, student]);
 
   return (
     <div>
@@ -393,6 +368,8 @@ const Submission = ({
                 setAnswerQ((prev) => {
                   return { ...prev, week: value };
                 });
+                // refetchMarkedAssignment();
+                setMarkedTheoQ([]);
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -413,6 +390,8 @@ const Submission = ({
                 setAnswerQ((prev) => {
                   return { ...prev, subject: value, subject_id: fId() };
                 });
+                // refetchMarkedAssignment();
+                setMarkedTheoQ([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -448,6 +427,8 @@ const Submission = ({
                 setAnswerQ((prev) => {
                   return { ...prev, question_type: value };
                 });
+                // refetchMarkedAssignment();
+                setMarkedTheoQ([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -485,6 +466,8 @@ const Submission = ({
                 setAnswerQ((prev) => {
                   return { ...prev, student: value, student_id: fId() };
                 });
+                // refetchMarkedAssignment();
+                setMarkedTheoQ([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -565,6 +548,12 @@ const Submission = ({
                 markedTheoQ2={markedTheoQ2}
                 setMarkedTheoQ2={setMarkedTheoQ2}
                 markedAssignment={markedAssignment}
+                question_type={question_type}
+                subject={subject}
+                week={week}
+                student={student}
+                loading1={loading1}
+                setLoading1={setLoading1}
               />
             </div>
           )}

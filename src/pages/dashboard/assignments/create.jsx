@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
 import { PiWarningCircleBold } from "react-icons/pi";
-// import { useAssignments } from "../../../hooks/useAssignments";
-// useAssignments
-
 import CreateQuestion from "./createQuestion";
 import AuthSelect from "../../../components/inputs/auth-select";
 import Button from "../../../components/buttons/button";
@@ -23,8 +20,6 @@ import TheoryViewCard from "./theoryViewCard";
 import MarkCard from "./markCard";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
-// import ObjectiveViewCard from "./ObjectiveViewCard";
-// import ObjectiveViewCard from "./ObjectiveViewCard";
 
 const Create = ({
   createQ,
@@ -41,70 +36,17 @@ const Create = ({
   const {
     updateActiveTabFxn,
 
-    // createQ,
-    // setCreateQ,
-    // objectiveQ,
-    // theoryQ,
-    // setObjectiveQ,
-    // setTheoryQ,
-    // obj,
-    // setObj,
-
     subjectsByTeacher,
     subjectsByTeacherLoading,
 
-    // activeTab,
     createQuestionPrompt,
     setCreateQuestionPrompt,
-    //
-    // myStudents,
     classSubjects,
     apiServices,
     errorHandler,
     permission,
     user,
-    //
-
-    // QUERIES
-    // addObjectiveAssignments,
-    // addObjectAssignmentLoading,
-    //
-    // addTheoryAssignments,
-    // addTheoryAssignmentLoading,
-    //
-
-    // CREATE
-    updateCheckObjectiveQuestionFxn,
-    checkObjectiveQ,
-    //
-    updateCheckTheoryQuestionFxn,
-    checkTheoryQ,
-    //
-    updateCreateQuestionFxn,
-    // emptyCreateQuestionFxn,
-    createQuestion,
-    //
-    // updateObjectiveQuestionFxn,
-    // addObjectiveQuestionFxn,
-    editObjectiveQuestionFxn,
-    deleteObjectiveQuestionFxn,
-    emptyObjectiveQFxn,
-    updateObjectiveQMarkFxn,
-    updateObjectiveTotalQuestionFxn,
-    // objectiveQ,
-    //
-    // addTheoryQuestionFxn,
-    editTheoryQuestionFxn,
-    deleteTheoryQuestionFxn,
-    emptyTheoryQFxn,
-    updateTheoryTotalQuestionFxn,
-    // theoryQ,
-    //
-
-    // CREATED
-    updateCreatedQuestionFxn,
-
-    //
+    
   } = useAssignments();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
@@ -151,22 +93,6 @@ const Create = ({
     });
   }
 
-  // const {
-
-  //   question_type,
-
-  //   subject,
-
-  //   subject_id,
-  //   week,
-  //   total_question,
-
-  // } = createQuestion;
-
-  // const [promptStatus, setPromptStatus] = useState("compute");
-
-  // const [loginPrompt, setLoginPrompt] = useState(false);
-  // const [createQuestionPrompt, setCreateQuestionPrompt] = useState(false);
   const [warningPrompt, setWarningPrompt] = useState(false);
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
   const [deletePrompt, setDeletePrompt] = useState(false);
@@ -421,9 +347,6 @@ const Create = ({
     useMutation(() => apiServices.deleteAssignment(editQuestionId), {
       onSuccess() {
         refetchAssignmentCreated();
-        //  setTimeout(() => {
-        //    refetchAssignmentCreated();
-        //  }, 2000);
         toast.success("Question has been deleted successfully");
       },
       onError(err) {
@@ -459,18 +382,6 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        // updateCreateQuestionFxn({
-        //   total_question: 0,
-        //   total_mark: 0,
-        //   question_mark: 0,
-        //   theory_total_mark: 0,
-        //   option1: "",
-        //   option2: "",
-        //   option3: "",
-        //   option4: "",
-        //   question: "",
-        //   answer: "",
-        // });
         setCreateQ((prev) => ({
           ...prev,
           total_question: 0,
@@ -487,99 +398,9 @@ const Create = ({
         setObjectiveQ([]);
         setObj([]);
         setTheoryQ([]);
-        // emptyObjectiveQFxn();
-        // emptyTheoryQFxn();
         setClearAllPrompt(false);
       },
       variant: "outline",
-    },
-  ];
-
-  const buttonOptions3 = [
-    {
-      title: "Cancel",
-      onClick: () => setWarningPrompt(false),
-      variant: "outline",
-    },
-    {
-      title: "Yes Submit",
-      isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-      disabled:
-        question_type === "objective"
-          ? !completedQuestion()
-          : question_type === "theory"
-          ? !completedQuestion2()
-          : "",
-      onClick: () => {
-        if (finalObjectiveArray?.length >= 1) {
-          // updateCreatedQuestionFxn({
-          //   subject,
-          //   subject_id,
-          //   question_type,
-          //   week,
-          // });
-          setShowLoading(true);
-          setTimeout(() => {
-            setShowLoading(false);
-          }, 1500);
-          addObjectiveAssignments();
-          // refetchAssignment();
-          updateCreateQuestionFxn({
-            total_question: 0,
-            total_mark: 0,
-            question_mark: 0,
-            theory_total_mark: 0,
-            option1: "",
-            option2: "",
-            option3: "",
-            option4: "",
-            question: "",
-            answer: "",
-          });
-
-          emptyObjectiveQFxn();
-
-          refetchAssignmentCreated();
-          setTimeout(() => {
-            refetchAssignmentCreated();
-          }, 2000);
-          // updateActiveTabFxn("2");
-          setWarningPrompt(false);
-        } else if (finalTheoryArray?.length >= 1) {
-          // updateCreatedQuestionFxn({
-          //   subject,
-          //   subject_id,
-          //   question_type,
-          //   week,
-          // });
-          setShowLoading(true);
-          setTimeout(() => {
-            setShowLoading(false);
-          }, 1500);
-          addTheoryAssignments();
-          // refetchAssignment();
-          updateCreateQuestionFxn({
-            total_question: 0,
-            total_mark: 0,
-            question_mark: 0,
-            theory_total_mark: 0,
-            option1: "",
-            option2: "",
-            option3: "",
-            option4: "",
-            question: "",
-            answer: "",
-          });
-          emptyTheoryQFxn();
-
-          refetchAssignmentCreated();
-          setTimeout(() => {
-            refetchAssignmentCreated();
-          }, 2000);
-          // updateActiveTabFxn("2");
-          setWarningPrompt(false);
-        }
-      },
     },
   ];
 
@@ -611,25 +432,6 @@ const Create = ({
     //   },
     //   // variant: `${activeTab === "2" ? "" : "outline"}`,
     // },
-  ];
-
-  const buttonOptions4 = [
-    {
-      title: "Edit",
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-      onClick: () => {
-        setWarningPrompt(true);
-      },
-      // variant: `${activeTab === "2" ? "" : "outline"}`,
-    },
-    {
-      title: "Delete",
-      onClick: () => {
-        emptyObjectiveQFxn();
-        emptyTheoryQFxn();
-      },
-      variant: "outline",
-    },
   ];
 
   const EditDeleteButtons = [
@@ -950,7 +752,7 @@ const Create = ({
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 1000);
+    }, 500);
 
     const filteredAssignments =
       assignmentCreated?.filter(
@@ -1067,9 +869,6 @@ const Create = ({
             onClick={() => {
               if (question_type === "theory") {
                 setAllowFetch(false);
-                // updateCreateQuestionFxn({
-                //   question_number: theoryQ?.length + 1,
-                // });
                 setCreateQ((prev) => {
                   return {
                     ...prev,
@@ -1078,9 +877,6 @@ const Create = ({
                 });
               } else if (question_type === "objective") {
                 setAllowFetch(false);
-                // updateCreateQuestionFxn({
-                //   question_number: ObjectiveQ?.length + 1,
-                // });
                 if (!obj) {
                   setObj([]);
                 }
@@ -1282,36 +1078,6 @@ const Create = ({
         objMark={objMark}
         setObjMark={setObjMark}
       />
-      {/* submit assignment prompt */}
-      <Prompt
-        // promptHeader={`INCOMPLETE QUESTION(S) `}
-        promptHeader={`${
-          completedQuestion() || completedQuestion2()
-            ? "CONFIRM ASSIGNMENT CREATION"
-            : "INCOMPLETE QUESTION(S)"
-        }`}
-        toggle={() => setWarningPrompt(!warningPrompt)}
-        isOpen={warningPrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={buttonOptions3}
-      >
-        {completedQuestion() || completedQuestion2() ? (
-          <p
-            className={styles.create_question_question}
-            // style={{ fontSize: "15px", lineHeight: "20px" }}
-          >
-            Are you sure you want to submit created question(s)?
-          </p>
-        ) : (
-          <p
-            className={styles.create_question_question}
-            // style={{ fontSize: "15px", lineHeight: "20px" }}
-          >
-            The amount of created question(s) is not equal to the total amount
-            of question(s) you specified.
-          </p>
-        )}
-      </Prompt>
 
       {/* clear all prompt */}
       <Prompt
@@ -1321,10 +1087,7 @@ const Create = ({
         hasGroupedButtons={true}
         groupedButtonProps={clearAllButtons}
       >
-        <p
-          className={styles.create_question_question}
-          // style={{ fontSize: "15px", lineHeight: "20px" }}
-        >
+        <p className={styles.create_question_question}>
           Are you sure you want to clear all questions created?
         </p>
       </Prompt>
@@ -1616,13 +1379,6 @@ const Create = ({
                     value={editMark}
                     name='option'
                     onChange={(e) => {
-                      // setCreateQ((prev) => ({
-                      //   ...prev,
-                      //   theory_total_mark:
-                      //     Number(theory_total_mark) -
-                      //     Number(editMark) +
-                      //     Number(e.target.value),
-                      // }));
                       setEditMark(e.target.value);
                     }}
                     wrapperClassName=''
@@ -1641,45 +1397,6 @@ const Create = ({
                 </div>
               </div>
               {/* Total Question */}
-              {/* <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Total Question'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    min={theoryQ?.length}
-                    value={editTotalQuestion}
-                    name='option'
-                    onChange={(e) => {
-                      setEditTotalQuestion(e.target.value);
-                      updateTheoryTotalQuestionFxn({
-                        newValue: e.target.value,
-                      });
-                      updateCreateQuestionFxn({
-                        total_question: e.target.value,
-                        // total_mark: e.target.value * question_mark,
-                      });
-                      // updateCreateQuestionFxn({
-                      //   question_mark: e.target.value,
-                      //   total_mark: e.target.value * total_question,
-                      // });
-                    }}
-                    wrapperClassName=''
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p
-                    className=''
-                    style={{
-                      lineHeight: "18px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Total Question
-                  </p>
-                </div>
-              </div> */}
             </div>
           </div>
         )}
@@ -1692,10 +1409,7 @@ const Create = ({
         hasGroupedButtons={true}
         groupedButtonProps={deleteButtons}
       >
-        <p
-          className={styles.create_question_question}
-          // style={{ fontSize: "15px", lineHeight: "20px" }}
-        >
+        <p className={styles.create_question_question}>
           Are you sure you want to delete this question?
         </p>
       </Prompt>

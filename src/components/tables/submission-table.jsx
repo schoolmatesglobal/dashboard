@@ -13,12 +13,7 @@ import Button from "../buttons/button";
 import Prompt from "../modals/prompt";
 import Action from "../buttons/action";
 import { useAssignments } from "../../hooks/useAssignments";
-import styles from "../../assets/scss/pages/dashboard/assignment.module.scss";
 import ButtonGroup from "../buttons/button-group";
-import {
-  addQuestionMarkTotal,
-  countCorrectAnswers,
-} from "../../pages/dashboard/assignments/constant";
 
 const SubmissionTable = ({
   addAssignmentResult,
@@ -42,36 +37,11 @@ const SubmissionTable = ({
   markedQ,
   result,
 }) => {
-  const {
-    // updateActiveTabFxn,
-    // classSubjects,
-    myStudents,
-    // apiServices,
-    // errorHandler,
-    permission,
-    // user,
 
-    // RESULTS
-    updateMarkedQuestionFxn,
-    markedQuestion,
-    updateAnsweredObjResultsFxn,
-    updateAnsweredTheoryResultsFxn,
-    answeredObjResults,
-    answeredTheoryResults,
-  } = useAssignments();
+  
+  const { myStudents, permission } = useAssignments();
 
-  const {
-    question_type,
-    subject,
-    // image,
-    // term,
-    // period,
-    // session,
-    // subject_id,
-    // student_id,
-    // week,
-    student,
-  } = markedQ;
+  const { question_type, subject, student } = markedQ;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [actionDropdown, setActionDropdown] = useState(false);
@@ -87,41 +57,6 @@ const SubmissionTable = ({
 
   const [value, setValue] = useState("");
 
-  // const handleInputChange = (event) => {
-  //   const inputValue = event.target.value;
-
-  //   // You can add additional validation if needed
-  //   if (inputValue <= Number(previewAns?.question_mark)) {
-  //     setValue(inputValue);
-  //   }
-  // };
-
-  // const qn = Number(previewAns?.question_mark);
-
-  function updateMarkedValue() {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].question_number === Number(previewAns?.question_mark)) {
-        data[i].marked = "marked";
-        break; // Assuming there is only one object with question_number 1
-      }
-    }
-    // console.log({ data });
-    // updateAnsweredTheoryQFxn(data);
-  }
-
-  const updateMarked = (data, number) => {
-    // const indexToCheck = data.findIndex(
-    //   (ob) => ob.question === question && ob.answer === CQ
-    // );
-    // // console.log({ indexToCheck });
-    // if (indexToCheck !== -1) {
-    //   const check = answeredObjectiveQ[indexToCheck]?.answer === CQ;
-    //   return check;
-    // } else {
-    //   return null;
-    // }
-  };
-
   const disableMark = () => {
     if (value === "") {
       return true;
@@ -136,15 +71,6 @@ const SubmissionTable = ({
       onClick: () => setLoginPrompt(false),
       variant: "outline",
     },
-    // {
-    //   title: `Mark`,
-    //   onClick: () => {
-    //     updateMarkedValue();
-    //     setLoginPrompt(false);
-    //   },
-    //   disabled: disableMark(),
-    //   // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
-    // },
   ];
 
   const buttonOptions2 = [
@@ -157,32 +83,6 @@ const SubmissionTable = ({
           : ""
       }`,
       onClick: () => {
-        // console.log({
-        //   period: user?.period,
-        //   term: user?.term,
-        //   session: user?.session,
-        //   student_id: subject_id,
-        //   subject_id: subject_id,
-        //   question_type: question_type,
-        //   mark:
-        //     question_type === "theory"
-        //       ? score2
-        //       : question_type === "objective"
-        //       ? score
-        //       : "",
-        //   total_mark:
-        //     question_type === "theory"
-        //       ? totalMarks2
-        //       : question_type === "objective"
-        //       ? totalMarks
-        //       : "",
-        //   score:
-        //     question_type === "theory"
-        //       ? score2
-        //       : question_type === "objective"
-        //       ? score
-        //       : "",
-        // });
         setLoginPrompt2(true);
       },
       // disabled: objectiveSubmitted,
@@ -293,31 +193,6 @@ const SubmissionTable = ({
     }
   };
 
-  const correctCount = countCorrectAnswers(answeredObjResults);
-
-  const totalMarks =
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark *
-    answeredObjResults?.length;
-  const totalMarks2 = addQuestionMarkTotal(answeredTheoryResults);
-  const score2 = `${
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.sum_mark
-  }`;
-  const score = `${
-    correctCount *
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark
-  } `;
-
-  const answerHighlight =
-    previewAns?.answer === previewAns?.correct_answer &&
-    previewAns?.question_type === "objective";
-
-  // console.log({
-  //   markedQuestion,
-  //   myStudents,
-  //   data,
-  //   answeredObjResults,
-  //   answeredTheoryResults,
-  // });
   // console.log({ previewAns, answerHighlight, markedQ, result });
 
   return (

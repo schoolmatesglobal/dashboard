@@ -88,42 +88,6 @@ const Assignments = () => {
 
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
 
-  // const { apiServices, errorHandler, permission, user } =
-  //   useAppContext("assignments");
-  // const [activeTab, setActiveTab] = useState("1");
-  // const [selected, setSelected] = React.useState("photos");
-  // const [assignment, setAssignment] = useState([]);
-
-  // const [activate, setActivate] = useState(false);
-
-  // const buttonOptions = [
-  //   {
-  //     title: "View",
-  //     onClick: () => updateActiveTabFxn("5"),
-  //     variant: `${activeTab === "5" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Create",
-  //     onClick: () => updateActiveTabFxn("1"),
-  //     variant: `${activeTab === "1" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Created",
-  //     onClick: () => updateActiveTabFxn("2"),
-  //     variant: `${activeTab === "2" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Submissions",
-  //     onClick: () => updateActiveTabFxn("3"),
-  //     variant: `${activeTab === "3" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Results",
-  //     onClick: () => updateActiveTabFxn("4"),
-  //     variant: `${activeTab === "4" ? "" : "outline"}`,
-  //   },
-  // ];
-
   const getToggleButtons = () => {
     let arr = [];
 
@@ -175,21 +139,6 @@ const Assignments = () => {
     return arr;
   };
 
-  // const getDefaultTab = () => {
-  //   if (permission?.view) {
-  //     updateActiveT("5");
-  //   } else if (permission?.create) {
-  //     updateActiveT("1");
-  //   }
-  // };
-
-  // const updateActiveTCallback = useCallback(() => {
-  //   if (permission?.view) {
-  //     updateActiveT("5");
-  //   } else if (permission?.create) {
-  //     updateActiveT("1");
-  //   }
-  // }, [permission, updateActiveT]);
   const clearAllButtons = [
     {
       title: "Ok",
@@ -203,21 +152,10 @@ const Assignments = () => {
   useEffect(() => {
     if (permission?.view) {
       setActiveTab("5");
-      // refetchObjAnsweredAssignment();
-      // refetchTheoryAnsweredAssignment();
-      // resetAddObjectiveAnsFxn();
-      // resetTheoryAnsFxn();
     } else if (permission?.create) {
       setActiveTab("1");
     }
   }, []);
-
-  // useEffect(() => {
-  //   // resetLoadObjectiveAnsFxn();
-  //   // resetLoadTheoryAnsFxn();
-  //   // refetchObjAnsweredAssignment();
-  //   // refetchTheoryAnsweredAssignment();
-  // }, []);
 
   console.log({ user });
 
@@ -291,7 +229,16 @@ const Assignments = () => {
             setAnsweredTheoryResults={setAnsweredTheoryResults}
           />
         )}
-        {activeTab === "6" && permission?.student_results && <StudentResults />}
+        {activeTab === "6" && permission?.student_results && (
+          <StudentResults
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
       </div>
 
       <Prompt

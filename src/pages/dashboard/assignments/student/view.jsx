@@ -402,6 +402,7 @@ const View = ({
                 });
                 setObjectiveSubmitted(false);
                 setTheorySubmitted(false);
+                setAnsweredTheoryQ([])
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -417,6 +418,7 @@ const View = ({
                 });
                 setObjectiveSubmitted(false);
                 setTheorySubmitted(false);
+                setAnsweredTheoryQ([])
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'

@@ -310,14 +310,7 @@ export const useAssignments = () => {
   const emptyTheoryQFxn = () => {
     dispatch(emptyTheoryQ());
   };
-  // CREATED PAGE
-  const activateRetrieveCreated = () => {
-    if (subject !== "" && question_type !== "" && week !== "") {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
     isLoading: assignmentCreatedLoading,
@@ -561,16 +554,7 @@ export const useAssignments = () => {
     // QUERIES
     submitMarkedObjectiveAssignment,
     submitMarkedObjectiveAssignmentLoading,
-    //
-    // submitMarkedTheoryAssignment,
-    // submitMarkedTheoryAssignmentLoading,
-    //
-    // addObjectiveAssignments,
-    // addObjectAssignmentLoading,
-    //
-    // addTheoryAssignments,
-    // addTheoryAssignmentLoading,
-    //
+  
 
     updateActiveTabFxn,
     // activeTab,
@@ -583,8 +567,7 @@ export const useAssignments = () => {
     errorHandler,
     permission,
     user,
-    //
-    // submittedQuestion,
+    
 
     // CREATE
     updateCheckObjectiveQuestionFxn,

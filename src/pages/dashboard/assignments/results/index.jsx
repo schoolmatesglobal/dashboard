@@ -4,8 +4,6 @@ import AuthSelect from "../../../../components/inputs/auth-select";
 import styles from "../../../../assets/scss/pages/dashboard/assignment.module.scss";
 import { useAssignments } from "../../../../hooks/useAssignments";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { Spinner } from "reactstrap";
 import queryKeys from "../../../../utils/queryKeys";
 import SubmissionTable from "../../../../components/tables/submission-table";
@@ -15,8 +13,6 @@ import {
   analyzeQuestions,
   convertToPercentage,
   countCorrectAnswers,
-  sortQuestionsByNumber,
-  updateQuestionNumbers,
 } from "../constant";
 import Prompt from "../../../../components/modals/prompt";
 import { toast } from "react-toastify";
@@ -31,68 +27,18 @@ const Results = ({
   setAnsweredTheoryResults,
 }) => {
   const {
-    updateActiveTabFxn,
     classSubjects,
     apiServices,
     errorHandler,
     permission,
     user,
-    // sortBy,
-    // setSortBy,
-    // sorted,
-    // setSorted,
-    // indexStatus,
-    // setIndexStatus,
-    // questionType,
-    // subjects,
-    // handleSortBy,
-    // updateCreateQ,
-    // updateCreatedQ,
-    // updateObjectiveQs,
-    // updateTheoryQs,
-    // updateAnsweredObjectiveQFxn,
-    // updateAnsweredTheoryQFxn,
-    // updateAnsweredQuestionFxn,
-    // createQuestion,
     createdQuestion,
-    // ObjectiveQuestions,
-    // TheoryQuestions,
-    // ObjectiveQ,
-    // TheoryQ,
-    // answeredObjectiveQ,
-    // answeredTheoryQ,
-    // answeredQuestion,
     myStudents,
     updatePreviewAnswerFxn,
-    // previewAnswer,
-
-    // RESULTS
-    updateMarkedQuestionFxn,
-    //
-    updateAnsweredObjResultsFxn,
-    //
-    updateAnsweredTheoryResultsFxn,
-    //
-    markedQuestion,
-    //
-    // answeredObjResults,
-    //
-    // answeredTheoryResults,
-    //
   } = useAssignments();
 
-  const {
-    question_type,
-    subject,
-    // image,
-    term,
-    period,
-    session,
-    subject_id,
-    student_id,
-    week,
-    student,
-  } = markedQ;
+  const { question_type, subject, subject_id, student_id, week, student } =
+    markedQ;
 
   const [newSubjects, setNewSubjects] = useState([]);
   const { subjects, isLoading: subjectLoading } = useSubject();
@@ -248,13 +194,6 @@ const Results = ({
     }
   );
 
-  const findStudentId = (value) => {
-    const findObject = myStudents?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
-    }
-  };
-
   const buttonOptions = [
     {
       title: "Cancel",
@@ -269,9 +208,6 @@ const Results = ({
       // variant: "outline",
     },
   ];
-
-  const correctCount = countCorrectAnswers(answeredObjResults);
-  // const correctCount2 = analyzeQuestions(answeredObjectiveQ);
 
   const showNoAssignment = () => {
     if (
@@ -310,57 +246,7 @@ const Results = ({
     }
   };
 
-  const findSubjectId = (value) => {
-    const findObject = classSubjects?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
-    }
-  };
-
-  const studentName = (value) => {
-    const findObject = classSubjects?.find((opt) => opt.id === value);
-    if (findObject) {
-      return findObject.id;
-    }
-  };
-
   const allLoading = showLoading || markedAssignmentResultsLoading;
-
-  // const totalMark = findHighestTotalMark(answeredTheoryQ);
-
-  const totalMarks = submittedAssignment?.questions?.reduce(
-    (acc, question) => acc + Number(question.question_mark),
-    0
-  );
-
-  const totalMarks2 = addQuestionMarkTotal(answeredTheoryResults);
-  const score2 = `${
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.sum_mark
-  } /
-        ${totalMarks2}`;
-  const score = `${
-    correctCount *
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark
-  } /
-        ${totalMarks}`;
-  const percentage = parseFloat(convertToPercentage(score));
-  const percentage2 = parseFloat(convertToPercentage(score2));
-
-  const studentScore2 = `${
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.sum_mark
-  }`;
-  const studentScore = `${
-    correctCount *
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark
-  }`;
-
-  const studentId =
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.student_id;
-
-  const assignment_id1 =
-    answeredObjResults[answeredObjResults?.length - 1]?.assignment_id;
-  const assignment_id2 =
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.assignment_id;
 
   /////// POST ASSIGNMENT RESULT ////
   const {
@@ -448,8 +334,8 @@ const Results = ({
   return (
     <div>
       <div className={styles.created}>
-        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '>
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
+        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between'>
+          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
             <AuthSelect
               sort
               options={[
@@ -587,6 +473,7 @@ const Results = ({
                 centered
                 isLoading={allLoading}
                 addAssignmentResult={addAssignmentResult}
+                isStudent={false}
                 addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
@@ -653,6 +540,7 @@ const Results = ({
                 addAssignmentResult={addAssignmentResult}
                 addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
+                isStudent={false}
                 columns={[
                   {
                     Header: "Question Type",
