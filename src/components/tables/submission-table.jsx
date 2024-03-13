@@ -39,6 +39,8 @@ const SubmissionTable = ({
   setCheckedRows = () => null,
   rowHasAction = false,
   action = [],
+  markedQ,
+  result,
 }) => {
   const {
     // updateActiveTabFxn,
@@ -69,7 +71,7 @@ const SubmissionTable = ({
     // student_id,
     // week,
     student,
-  } = markedQuestion;
+  } = markedQ;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [actionDropdown, setActionDropdown] = useState(false);
@@ -197,7 +199,10 @@ const SubmissionTable = ({
       title: "Yes Submit",
       onClick: () => {
         addAssignmentResult();
-        setLoginPrompt2(false);
+
+        setTimeout(() => {
+          setLoginPrompt2(false);
+        }, 1000);
       },
       //   disabled: activatePreview(),
       isLoading: addAssignmentResultLoading,
@@ -302,6 +307,10 @@ const SubmissionTable = ({
     answeredObjResults[answeredObjResults?.length - 1]?.question_mark
   } `;
 
+  const answerHighlight =
+    previewAns?.answer === previewAns?.correct_answer &&
+    previewAns?.question_type === "objective";
+
   // console.log({
   //   markedQuestion,
   //   myStudents,
@@ -309,6 +318,7 @@ const SubmissionTable = ({
   //   answeredObjResults,
   //   answeredTheoryResults,
   // });
+  // console.log({ previewAns, answerHighlight, markedQ, result });
 
   return (
     <div className='custom-table-wrapper'>
@@ -460,56 +470,20 @@ const SubmissionTable = ({
             promptHeader={`CONFIRM RESULT SUBMISSION`}
           >
             <div className=''>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Name:
-              </label>
-              <p
-                className={styles.create_question_question}
-                // style={{ fontSize: "15px", lineHeight: "20px" }}
-              >
-                {student}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Subject
-              </label>
-              <p className={styles.create_question_answer}>
+              <p className='fs-3 fw-bold mb-3'>Student's Name:</p>
+              <p className='fs-3 mb-5 lh-sm'>{student}</p>
+              <p className='fs-3 fw-bold mb-3'>Subject</p>
+              <p className='fs-3 mb-5 lh-sm'>
                 {subject} ({question_type})
               </p>
 
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Score
-              </label>
-              <p className={styles.create_question_answer}>
-                {question_type === "theory"
-                  ? score2
-                  : question_type === "objective"
-                  ? score
-                  : ""}
-              </p>
+              <label className='fs-3 fw-bold mb-3'>Student's Score</label>
+              <p className='fs-3 mb-5 lh-sm'>{result?.score}</p>
 
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Total Score
-              </label>
-              <p className={styles.create_question_answer}>
-                {" "}
-                {question_type === "theory"
-                  ? totalMarks2
-                  : question_type === "objective"
-                  ? totalMarks
-                  : ""}
-              </p>
+              <p className='fs-3 fw-bold mb-3'>Total Score</p>
+              <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
+              <p className='fs-3 fw-bold mb-3'>Percentage</p>
+              <p className='fs-3 mb-5 lh-sm'> {result?.percentage}</p>
             </div>
           </Prompt>
           <Prompt
@@ -521,16 +495,20 @@ const SubmissionTable = ({
           >
             <div className=''>
               <p className='fs-3 fw-bold mb-3'>Question</p>
-              <p className='fs-3 mb-5 lh-base'>{previewAns?.question}</p>
+              <p className='fs-3 mb-5 lh-sm'>{previewAns?.question}</p>
               <p className='fs-3 fw-bold mb-3'>Correct Answer</p>
-              <p className='fs-3 mb-5'>{previewAns?.correct_answer}</p>
+              <p className='fs-3 mb-5 lh-sm'>{previewAns?.correct_answer}</p>
               <p className='fs-3 fw-bold mb-3'>Student's Answer</p>
               <p
                 className={`${
-                  previewAns?.answer === previewAns?.correct_answer
+                  previewAns?.answer === previewAns?.correct_answer &&
+                  previewAns?.question_type === "objective"
                     ? "text-success"
-                    : "text-danger"
-                } fs-3 mb-5`}
+                    : previewAns?.answer !== previewAns?.correct_answer &&
+                      previewAns?.question_type === "objective"
+                    ? "text-danger"
+                    : ""
+                } fs-3 mb-5 lh-sm`}
               >
                 {previewAns?.answer}
               </p>

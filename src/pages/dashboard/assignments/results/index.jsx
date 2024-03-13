@@ -240,25 +240,7 @@ const Results = ({
         // return computedTeacherMark ?? [];
       },
       // enabled: false,
-      onSuccess(data) {
-        // const sortedBySubject = data?.filter(
-        //   (dt) => Number(dt?.subject_id) === Number(subject_id)
-        // );
-        // const sortByStudent = sortedBySubject?.filter(
-        //   (st) => Number(st?.student_id) === Number(student_id)
-        // );
-        // const sortByWeek = sortByStudent?.filter(
-        //   (st) => Number(st?.week) === Number(week)
-        // );
-        // const sortedByQN = sortQuestionsByNumber(sortByWeek);
-        // const computedTeacherMark = addSumMark(sortedByQN);
-        // const calculatedData = analyzeQuestions(sortedByQN);
-        // if (question_type === "objective") {
-        //   updateAnsweredObjResultsFxn(calculatedData?.questions);
-        // } else if (question_type === "theory") {
-        //   updateAnsweredTheoryResultsFxn(computedTeacherMark);
-        // }
-      },
+      onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
@@ -342,11 +324,6 @@ const Results = ({
     }
   };
 
-  // console.log({
-  //   answeredObjectiveQ,
-  // });
-
-  // const allLoading = showLoading || submittedAssignmentLoading;
   const allLoading = showLoading || markedAssignmentResultsLoading;
 
   // const totalMark = findHighestTotalMark(answeredTheoryQ);
@@ -355,10 +332,6 @@ const Results = ({
     (acc, question) => acc + Number(question.question_mark),
     0
   );
-
-  // const totalMarks =
-  //   answeredObjResults[answeredObjResults?.length - 1]?.question_mark *
-  //   answeredObjResults?.length;
 
   const totalMarks2 = addQuestionMarkTotal(answeredTheoryResults);
   const score2 = `${
@@ -404,27 +377,27 @@ const Results = ({
         question_type: question_type,
         assignment_id:
           question_type === "theory"
-            ? assignment_id2
+            ? 2
             : question_type === "objective"
-            ? assignment_id1
+            ? 1
             : "",
         student_mark:
           question_type === "theory"
-            ? Number(studentScore2)
+            ? Number(markedAssignmentResults?.score)
             : question_type === "objective"
-            ? Number(studentScore)
+            ? Number(submittedAssignment?.score)
             : "",
         total_mark:
           question_type === "theory"
-            ? totalMarks2
+            ? Number(markedAssignmentResults?.total_marks)
             : question_type === "objective"
-            ? totalMarks
+            ? Number(submittedAssignment?.total_marks)
             : "",
         score:
           question_type === "theory"
-            ? Number(studentScore2)
+            ? Number(markedAssignmentResults?.score)
             : question_type === "objective"
-            ? Number(studentScore)
+            ? Number(submittedAssignment?.score)
             : "",
         week,
       }),
@@ -438,7 +411,11 @@ const Results = ({
           user?.session,
           createdQuestion?.question_type
         );
-        toast.success("Result has been submitted successfully");
+        toast.success(
+          `${
+            question_type === "objective" ? "Objective" : "Theory"
+          } result has been submitted successfully`
+        );
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -631,6 +608,12 @@ const Results = ({
                   },
                 ]}
                 data={submittedAssignment?.questions}
+                markedQ={markedQ}
+                result={
+                  question_type === "objective"
+                    ? submittedAssignment
+                    : markedAssignmentResults
+                }
               />
             </div>
           )}
@@ -690,6 +673,12 @@ const Results = ({
                   },
                 ]}
                 data={markedAssignmentResults?.questions}
+                markedQ={markedQ}
+                result={
+                  question_type === "objective"
+                    ? submittedAssignment
+                    : markedAssignmentResults
+                }
               />
             </div>
           )}

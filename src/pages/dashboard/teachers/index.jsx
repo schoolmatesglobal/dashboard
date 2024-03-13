@@ -14,18 +14,20 @@ import PageTitle from "../../../components/common/title";
 import { useHome } from "../../../hooks/useHome";
 
 const Teacher = () => {
-  const { isLoading, timetableData, calendarData } = useHome();
+  const { isLoading, timetableData, calendarData, user, academicPeriod } = useHome();
   const navigate = useNavigate();
 
+  // console.log({ userH: user, academicPeriod });
+
   return (
-    <div className="teachers">
+    <div className='teachers'>
       <PageTitle> Teacher {isLoading && <Spinner />}</PageTitle>
-      <ProfileCard type="teacher" />
-      <div className="teachers-cards-wrapper">
+      <ProfileCard type='teacher' />
+      <div className='teachers-cards-wrapper'>
         <HomeCard
           isBadge
-          variant="purple"
-          title="My Students"
+          variant='purple'
+          title='My Students'
           icon={faPeopleLine}
           onClick={() =>
             navigate("/app/students", { state: { status: "myStudents" } })
@@ -33,37 +35,37 @@ const Teacher = () => {
         />
         <HomeCard
           isBadge
-          variant="orange"
-          title="Calender"
+          variant='orange'
+          title='Calender'
           icon={faCalendar}
           isLink
           download
           to={calendarData?.file || "/"}
-          target="_blank"
+          target='_blank'
         />
         <HomeCard
           isBadge
-          title="Timetable"
+          title='Timetable'
           icon={faTimeline}
           to={timetableData?.file || "/"}
           download
-          target="_blank"
+          target='_blank'
           isLink
         />
         <HomeCard
           isBadge
-          variant="green"
-          title="Assignment"
+          variant='green'
+          title='Assignment'
           icon={faBook}
-          to="/app/assignments"
+          to='/app/assignments'
           isLink
         />
         <HomeCard
           isBadge
-          variant="pink"
-          title="Dress Code"
+          variant='pink'
+          title='Dress Code'
           icon={faPersonDress}
-          to="/app/dress-code"
+          to='/app/dress-code'
           isLink
         />
       </div>

@@ -106,12 +106,18 @@ export const useHome = () => {
     }
   );
 
-  const { isLoading: academicPeriodLoading } = useQuery(
+  const { isLoading: academicPeriodLoading, data: academicPeriod } = useQuery(
     [queryKeys.GET_ACADEMIC_PERIOD],
     apiServices.getAcademicPeriod,
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
       retry: 3,
+      select: (data) => {
+        // console.log({ ddata: data, sd: data?.data });
+
+        return data?.data;
+        // return data?.data[0];
+      },
       onSuccess(data) {
         updateUser({
           ...user,
@@ -123,7 +129,7 @@ export const useHome = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) => data?.data[0],
+      
     }
   );
 
@@ -277,6 +283,7 @@ export const useHome = () => {
 
   return {
     user,
+    academicPeriod,
     isLoading,
     outstanding,
     expectedIncome,

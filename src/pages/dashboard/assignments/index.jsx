@@ -16,6 +16,8 @@ import { useSubject } from "../../../hooks/useSubjects";
 
 const Assignments = () => {
   const {
+    user,
+
     activeTab,
     setActiveTab,
     createQ,
@@ -217,7 +219,7 @@ const Assignments = () => {
   //   // refetchTheoryAnsweredAssignment();
   // }, []);
 
-  // console.log({ studentSubjects });
+  console.log({ user });
 
   return (
     <PageSheet>
