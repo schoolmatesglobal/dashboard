@@ -279,8 +279,6 @@ const CreateQuestion = ({
               setActiveTab("1");
             }
           : () => {
-             
-
               if (question_type === "theory") {
                 setCreateQ((prev) => ({
                   ...prev,
@@ -354,20 +352,6 @@ const CreateQuestion = ({
       >
         {activeTab === "1" && (
           <>
-            {/* <div className="">
-              <AuthSelect
-                sort
-                options={sortQuestionType()}
-                value={defaultQuestionType()}
-                label="Question Type"
-                onChange={({ target: { value } }) => {
-                  updateCreateQuestionFxn({ question_type: value, answer: "" });
-                }}
-                placeholder="Select type"
-                wrapperClassName={styles.create_question_select}
-                // defaultValue={questionType[1].value}
-              />
-            </div> */}
             {createQ?.question_type === "theory" && (
               <div>
                 <p
@@ -428,9 +412,6 @@ const CreateQuestion = ({
                     value={createQ?.answer}
                     placeholder='Type the answer to the question'
                     onChange={(e) =>
-                      // updateCreateQuestionFxn({
-                      //   answer: e.target.value,
-                      // })
                       setCreateQ((prev) => {
                         return { ...prev, answer: e.target.value };
                       })
@@ -455,15 +436,9 @@ const CreateQuestion = ({
                       <AuthInput
                         type='number'
                         placeholder='Question Mark'
-                        // hasError={!!errors.username}
                         value={createQ.question_mark}
                         name='option'
                         onChange={(e) => {
-                          // updateCreateQuestionFxn({
-                          //   question_mark: e.target.value,
-                          //   total_mark: e.target.value,
-                          // });
-
                           setCreateQ((prev) => {
                             return {
                               ...prev,
@@ -471,8 +446,6 @@ const CreateQuestion = ({
                               total_mark: e.target.value,
                             };
                           });
-
-                          // calcObjTotal();
                         }}
                         wrapperClassName=''
                       />
@@ -486,43 +459,6 @@ const CreateQuestion = ({
                       </p>
                     </div>
                   </div>
-                  {/* Total Questions */}
-                  {/* <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Total Questions'
-                        // hasError={!!errors.username}
-                        value={createQ?.total_question}
-                        name='option'
-                        onChange={(e) => {
-                          // updateCreateQuestionFxn({
-                          //   total_question: e.target.value,
-                          //                            });
-
-                          setCreateQ((prev) => {
-                            return {
-                              ...prev,
-                              total_question: e.target.value,
-                            };
-                          });
-                          // updateTheoryTotalQuestionFxn({
-                          //   newValue: e.target.value,
-                          // });
-                          // calcObjTotal();
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p
-                        className=''
-                        style={{ lineHeight: "18px", fontSize: "14px" }}
-                      >
-                        Total Questions
-                      </p>
-                    </div>
-                  </div> */}
                 </div>
               </div>
             )}
@@ -547,21 +483,7 @@ const CreateQuestion = ({
                     }}
                   />
                 </div>
-                {/* <>
-                  <label className={styles.create_question_label}>Image</label>
-                  <CustomFileInput
-                    activateError={activateError}
-                    previewUrl={previewUrl}
-                    setPreviewUrl={setPreviewUrl}
-                    setImageUpload={setImageUpload}
-                    imageUpload={imageUpload}
-                    setFileUploadError={setFileUploadError}
-                    fileUploadError={fileUploadError}
-                    imageName={imageNam}
-                    setImageName={setImageNam}
-                    // data={details.personalDetails.profilePictureName}
-                  />
-                </> */}
+
                 <p className='fs-3 fw-bold my-3'>Options</p>
                 <div className='d-flex flex-column gap-3'>
                   {/* option A */}
@@ -574,9 +496,6 @@ const CreateQuestion = ({
                         value={createQ?.option1}
                         name='option'
                         onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   option1: e.target.value,
-                          // })
                           setCreateQ((prev) => {
                             return { ...prev, option1: e.target.value };
                           })
@@ -659,13 +578,9 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option C'
-                        // hasError={!!errors.username}
                         value={createQ?.option3}
                         name='option'
                         onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   option3: e.target.value,
-                          // })
                           setCreateQ((prev) => {
                             return { ...prev, option3: e.target.value };
                           })
@@ -710,10 +625,6 @@ const CreateQuestion = ({
                         value={createQ?.option4}
                         name='option'
                         onChange={(e) =>
-                          // updateCreateQuestionFxn({
-                          //   option4: e.target.value,
-                          // })
-
                           setCreateQ((prev) => {
                             return { ...prev, option4: e.target.value };
                           })
@@ -748,12 +659,7 @@ const CreateQuestion = ({
                     </div>
                   </div>
                 </div>
-                {/* <p className='fs-3 fw-bold mt-5'>{objMark} - Mark(s)</p>
-                {objMark <= 0 && (
-                  <p className='fs-4 mt-5 text-danger w-100 text-center'>
-                    NB: Please assign a mark for all questions first.
-                  </p>
-                )} */}
+
                 <p className='fs-3 fw-bold my-3'>Mark Computation</p>
                 <div className='d-flex flex-column gap-3'>
                   {/*Question Mark */}
@@ -773,15 +679,13 @@ const CreateQuestion = ({
                       />
                     </div>
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p
-                        className=''
-                        style={{ lineHeight: "18px", fontSize: "14px" }}
-                      >
-                        Question Mark
-                      </p>
+                      <p className='fs-3'>Question Mark</p>
                     </div>
                   </div>
                 </div>
+                <p className='fs-4  mt-4 text-danger'>
+                  NB: Mark will be the same for all questions
+                </p>
               </>
             )}
           </>
@@ -807,10 +711,7 @@ const CreateQuestion = ({
               <>
                 <p className='fw-bold fs-4 my-4'>Options</p>
                 <div className='d-flex flex-column gap-3 mb-5'>
-                  <p
-                    // className={styles.create_question_answer}
-                    style={{ fontSize: "16px" }}
-                  >
+                  <p style={{ fontSize: "16px" }}>
                     A. {option1}
                     {answer === option1 && " (Correct Answer)"}
                   </p>

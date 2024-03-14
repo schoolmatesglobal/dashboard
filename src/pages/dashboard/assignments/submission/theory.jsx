@@ -24,7 +24,6 @@ const Theory = ({
   loading1,
   setLoading1,
 }) => {
-  const { theorySubmitted } = useStudentAssignments();
 
   const {
     apiServices,

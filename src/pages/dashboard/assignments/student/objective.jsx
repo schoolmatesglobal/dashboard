@@ -21,48 +21,14 @@ const Objective = ({
   setCreateQ2,
   subjects,
 }) => {
-  const {
-    apiServices,
-    permission,
-    user,
-    errorHandler,
-    // subjects,
-    //
-
-    answerQuestion,
-    // updateAnswerQuestionFxn,
-    // resetAnswerQuestionFxn,
-
-    // OBJECTIVE
-    // objectiveQ,
-    // answeredObjectiveQ,
-    answeredObjectiveQ2,
-    // objectiveSubmitted,
-    //
-    updateObjectiveSubmittedFxn,
-    // updateSetObjectiveQFxn,
-    //
-    addObjectiveAnsFxn,
-    // resetAddObjectiveAnsFxn,
-    //
-    // loadObjectiveAnsFxn,
-    // resetLoadObjectiveAnsFxn,
-    //
-    // submitObjectiveAssignment,
-    // submitObjectiveAssignmentLoading,
-    //
-    // answeredObjAssignmentLoading,
-    // refetchObjAnsweredAssignment,
-    //
-  } = useStudentAssignments();
+  const { apiServices, permission, user, errorHandler, answerQuestion } =
+    useStudentAssignments();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
     query: "(min-width: 768px, max-width: 991px)",
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
-
- 
 
   const student = `${user?.surname} ${user?.firstname}`;
 
@@ -228,8 +194,6 @@ const Objective = ({
     },
   ];
 
-  const lastAnsweredObj = answeredObjectiveQ2[answeredObjectiveQ2?.length - 1];
-
   const objScore = objectiveQ?.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),
     0
@@ -284,9 +248,6 @@ const Objective = ({
       ]);
     }
   };
-
-  // console.log({ user });
-  // console.log({  answeredObjectiveQ, answeredObjectiveQ2 });s
 
   console.log({
     objectiveQ,

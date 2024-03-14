@@ -6,23 +6,16 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import NavbarProvider from "./context/navbar";
 import UserProvider from "./context/user";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
-import { Provider, useSelector } from "react-redux";
-import store from "./store";
 
 import "./assets/scss/index.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-let persistor = persistStore(store);
 
 const queryClient = new QueryClient();
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <UserProvider>
@@ -32,8 +25,6 @@ root.render(
             </UserProvider>
           </BrowserRouter>
         </QueryClientProvider>
-      </PersistGate>
-    </Provider>
   </React.StrictMode>
 );
 

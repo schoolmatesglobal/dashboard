@@ -4,7 +4,6 @@ import Create from "./create";
 import Submission from "./submission";
 import Results from "./results";
 import ButtonGroup from "../../../components/buttons/button-group";
-import Created from "./created";
 import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import View from "./student/view";

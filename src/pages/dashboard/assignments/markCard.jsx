@@ -7,14 +7,7 @@ const MarkCard = ({
   question_type,
   objectiveQ,
   theoryQ,
-  finalObjectiveArray,
-  finalTheoryArray,
-  theory_total_mark,
   published,
-  createQ,
-  setCreateQ,
-  objMark,
-  setObjMark,
 }) => {
   const totalTheoryScore = theoryQ.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),

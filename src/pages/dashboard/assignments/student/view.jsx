@@ -38,111 +38,18 @@ const View = ({
     permission,
     user,
     errorHandler,
-    // studentSubjects,
-    //
-    // assignmentTab,
-    // updateAssignmentTabFxn,
-    //
-    answerQuestion,
-    updateAnswerQuestionFxn,
-    resetAnswerQuestionFxn,
-
-    // OBJECTIVE
-    //
-    // objectiveSubmitted,
-    updateObjectiveSubmittedFxn,
-    //
-    setObjectiveQ,
-    updateSetObjectiveQFxn,
-    //
-    // answeredObjectiveQ,
-    // addObjectiveAnsFxn,
-    resetAddObjectiveAnsFxn,
-    //
-    // answeredObjectiveQ2,
-    // loadObjectiveAnsFxn,
-    resetLoadObjectiveAnsFxn,
-    //
-    // submitObjectiveAssignment,
-    // submitObjectiveAssignmentLoading,
-    //
     answeredObjAssignmentLoading,
-    refetchObjAnsweredAssignment,
-    //
-
-    // THEORY
-    //
-    // theorySubmitted,
-    updateTheorySubmittedFxn,
-    //
-    setTheoryQ,
-    updateSetTheoryQFxn,
-    //
-    // answeredTheoryQ,
-    // addTheoryAnsFxn,
-    resetTheoryAnsFxn,
-    //
-    // answeredTheoryQ2,
-    // loadTheoryAnsFxn,
-    resetLoadTheoryAnsFxn,
-    //
-    // submitTheoryAssignment,
-    // submitTheoryAssignmentLoading,
-    //
     answeredTheoryAssignmentLoading,
     refetchTheoryAnsweredAssignment,
     //
   } = useStudentAssignments();
 
-  // const [imageUpload, setImageUpload] = useState(null);
-
-  // const [previewUrl, setPreviewUrl] = useState("");
-
-  // const [imageNam, setImageNam] = useState("No file selected");
-  // const [activateError, setActivateError] = useState(false);
-  // const [fileUploadError, setFileUploadError] = useState("");
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  // const [promptStatus, setPromptStatus] = useState("compute");
-
-  // const {
-  //   // question_type,
-  //   // question,
-  //   subject,
-  //   // image,
-  //   // imageName,
-  //   term,
-  //   period,
-  //   session,
-  //   subject_id,
-  //   week,
-  //   // student_id,
-  // } = answerQuestion;
 
   const {
-    option1,
-    option2,
-    option3,
-    option4,
-    total_mark,
-    theory_total_mark,
-    total_question,
-    question_mark,
-    question_number,
-    ans1,
-    ans2,
-    ans3,
-    ans4,
-    answer,
-    question_type,
-    question,
     subject,
-    image,
-    imageName,
-    term,
-    period,
-    session,
-    subject_id,
+
     week,
   } = createQ2;
 
@@ -174,16 +81,6 @@ const View = ({
       return false;
     }
   };
-
-  // const showNoAssignment = () => {
-  //   if (question_type === "objective" && ObjectiveQ.length === 0) {
-  //     return true;
-  //   } else if (question_type === "theory" && TheoryQ.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
 
   ///// FETCH OBJECTIVE ASSIGNMENT /////
   const {
@@ -218,19 +115,7 @@ const View = ({
         // console.log({ tsg, data, osortedData });
         return osortedData;
       },
-      onSuccess(data) {
-        // const sortData = () => {
-        //   const osortedData = data?.filter(
-        //     (dt) => dt?.subject === subject && Number(dt?.week) === Number(week)
-        //   );
-        //   const osortedData2 = osortedData?.filter(
-        //     (dt) => Number(dt?.week) === Number(week)
-        //   );
-        //   const sortedByQN = sortQuestionsByNumber(osortedData2);
-        //   return sortedByQN;
-        // };
-        // updateSetObjectiveQFxn(sortData());
-      },
+
       onError(err) {
         errorHandler(err);
       },
@@ -270,22 +155,7 @@ const View = ({
         // console.log({ theo, data, tsortedData });
         return tsortedData;
       },
-      onSuccess(data) {
-        // console.log({
-        //   data,
-        // });
-        // const sortData = () => {
-        //   const tsortedData = data?.filter(
-        //     (dt) => Number(dt?.subject_id) === subject_id
-        //   );
-        //   const sortedData2 = tsortedData?.filter(
-        //     (dt) => Number(dt?.week) === Number(week)
-        //   );
-        //   const sortedByQN = sortQuestionsByNumber(sortedData2);
-        //   return sortedByQN;
-        // };
-        // updateSetTheoryQFxn(sortData());
-      },
+
       onError(err) {
         errorHandler(err);
       },
@@ -301,14 +171,6 @@ const View = ({
   };
 
   const buttonOptions2 = [
-    // {
-    //   title: "Clear All",
-    //   //   onClick: () => {
-    //   //     // emptyObjectiveQ();
-    //   //     // emptyTheoryQ();
-    //   //   },
-    //   variant: "outline",
-    // },
     {
       title: "Submit Assignment",
       onClick: () => displayPrompt(),
@@ -338,19 +200,6 @@ const View = ({
 
     return [];
   };
-
-  const questionTypeOptions = [
-    {
-      title: "Objective",
-      onClick: () => setAssignmentTab("1"),
-      variant: `${assignmentTab === "1" ? "" : "outline"}`,
-    },
-    {
-      title: "Theory",
-      onClick: () => setAssignmentTab("2"),
-      variant: `${assignmentTab === "2" ? "" : "outline"}`,
-    },
-  ];
 
   const showNoAssignment = () => {
     if (objectiveQ?.length === 0 && theoryQ?.length === 0) {
@@ -402,7 +251,7 @@ const View = ({
                 });
                 setObjectiveSubmitted(false);
                 setTheorySubmitted(false);
-                setAnsweredTheoryQ([])
+                setAnsweredTheoryQ([]);
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -418,7 +267,7 @@ const View = ({
                 });
                 setObjectiveSubmitted(false);
                 setTheorySubmitted(false);
-                setAnsweredTheoryQ([])
+                setAnsweredTheoryQ([]);
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'
@@ -477,12 +326,6 @@ const View = ({
             <p className={styles.heading}>No Assignment</p>
           </div>
         )}
-
-        {/* {(setObjectiveQ.length >= 1 || setTheoryQ.length >= 1) && (
-          <div className={styles.footer}>
-            <ButtonGroup options={buttonOptions2} />
-          </div>
-        )} */}
       </div>
       <Prompt
         isOpen={loginPrompt}

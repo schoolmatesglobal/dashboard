@@ -20,37 +20,8 @@ const Theory = ({
   theorySubmitted,
   setTheorySubmitted,
 }) => {
-  const {
-    apiServices,
-    permission,
-    user,
-    errorHandler,
-    answerQuestion,
-    // setObjectiveQ,
-
-    // answeredObjectiveQ,
-    // answeredTheoryQ,
-    answeredTheoryQ2,
-    // answeredTheoryQ3,
-    // subjects,
-    addTheoryAnsFxn,
-    // addTheoryAnsFxn2,
-    // addTheoryAnsFxn3,
-    // addObjectiveAnsFxn,
-    // updateAnswerQuestionFxn,
-    // updateSetObjectiveQFxn,
-    // updateSetTheoryQFxn,
-    // resetAnswerQuestionFxn,
-    // assignmentTab,
-    // updateAssignmentTabFxn,
-    // updateObjectiveSubmittedFxn,
-    updateTheorySubmittedFxn,
-    // objectiveSubmitted,
-    // theorySubmitted,
-    // submitTheoryAssignment,
-    // submitTheoryAssignmentLoading,
-    // resetTheoryAnsFxn,
-  } = useStudentAssignments();
+  const { apiServices, permission, user, errorHandler } =
+    useStudentAssignments();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({

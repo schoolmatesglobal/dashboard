@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
-import { PiWarningCircleBold } from "react-icons/pi";
 import CreateQuestion from "./createQuestion";
 import AuthSelect from "../../../components/inputs/auth-select";
 import Button from "../../../components/buttons/button";
@@ -8,10 +7,8 @@ import Prompt from "../../../components/modals/prompt";
 import ButtonGroup from "../../../components/buttons/button-group";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import AuthInput from "../../../components/inputs/auth-input";
-import { addQuestionMarks, updateQuestionNumbers } from "./constant";
 import queryKeys from "../../../utils/queryKeys";
 import { useMutation, useQuery } from "react-query";
-import { sortQuestionsByNumber } from "./constant";
 import { Spinner } from "reactstrap";
 import { useAssignments } from "../../../hooks/useAssignments";
 import { useSubject } from "../../../hooks/useSubjects";
@@ -34,19 +31,13 @@ const Create = ({
   setObjMark,
 }) => {
   const {
-    updateActiveTabFxn,
-
-    subjectsByTeacher,
-    subjectsByTeacherLoading,
 
     createQuestionPrompt,
     setCreateQuestionPrompt,
-    classSubjects,
     apiServices,
     errorHandler,
     permission,
     user,
-    
   } = useAssignments();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
@@ -114,6 +105,7 @@ const Create = ({
   const [newSubjects, setNewSubjects] = useState([]);
   const [allowFetch, setAllowFetch] = useState(true);
   const [loading1, setLoading1] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const [published, setPublished] = useState(false);
   // const navigate = useNavigate();
 
@@ -151,7 +143,6 @@ const Create = ({
       retry: 3,
 
       // enabled: false,
-      // enabled: activateRetrieveCreated() && permission?.created,
       enabled: activateRetrieveCreated() && permission?.created && allowFetch,
 
       select: (data) => {
@@ -296,9 +287,6 @@ const Create = ({
     onSuccess() {
       setAllowFetch(true);
       refetchAssignmentCreated();
-      // setTimeout(() => {
-      //   refetchAssignmentCreated();
-      // }, 2000);
       toast.success("Objective question has been edited successfully");
     },
     onError(err) {
@@ -314,9 +302,6 @@ const Create = ({
     onSuccess() {
       setAllowFetch(true);
       refetchAssignmentCreated();
-      // setTimeout(() => {
-      //   refetchAssignmentCreated();
-      // }, 2000);
       toast.success(
         `Assignment has been ${
           published ? "unpublished" : "published"
@@ -354,20 +339,7 @@ const Create = ({
       },
     });
 
-  const completedQuestion = () => {
-    if (objectiveQ?.length !== Number(total_question)) {
-      return false;
-    } else if (objectiveQ?.length === Number(total_question)) {
-      return true;
-    }
-  };
-  const completedQuestion2 = () => {
-    if (theoryQ?.length !== Number(total_question)) {
-      return false;
-    } else if (theoryQ?.length === Number(total_question)) {
-      return true;
-    }
-  };
+ 
 
   const clearAllButtons = [
     {
@@ -423,33 +395,6 @@ const Create = ({
       isLoading: publishAssignmentLoading,
       variant: `${published ? "danger" : "success"}`,
     },
-    // {
-    //   title: "Submit",
-    //   // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-    //   onClick: () => {
-    //     // setClearAllPrompt(true);
-    //     setWarningPrompt(true);
-    //   },
-    //   // variant: `${activeTab === "2" ? "" : "outline"}`,
-    // },
-  ];
-
-  const EditDeleteButtons = [
-    {
-      title: "Edit",
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-      onClick: () => {
-        setEditPrompt(true);
-      },
-      // variant: `${activeTab === "2" ? "" : "outline"}`,
-    },
-    {
-      title: "Delete",
-      onClick: () => {
-        setDeletePrompt(true);
-      },
-      variant: "outline",
-    },
   ];
 
   const deleteButtons = [
@@ -486,34 +431,6 @@ const Create = ({
     },
   ];
 
-  const findSubjectId = (value) => {
-    const findObject = classSubjects?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
-    }
-  };
-
-  const checkedTheory = (question, answer) => {
-    const indexToCheck = theoryQ.findIndex(
-      (ob) => ob.question === question && ob.answer === answer
-    );
-    if (indexToCheck !== -1) {
-      return theoryQ[indexToCheck];
-    } else {
-      return "";
-    }
-  };
-  const checkedObjective = (question, CQ) => {
-    const indexToCheck = theoryQ.findIndex(
-      (ob) => ob.question === question && ob.answer === CQ
-    );
-    if (indexToCheck !== -1) {
-      return theoryQ[indexToCheck];
-    } else {
-      return "";
-    }
-  };
-
   const questionType = [
     {
       value: "objective",
@@ -526,49 +443,6 @@ const Create = ({
     },
   ];
 
-  const sortQuestionType = () => {
-    let arr = [];
-    if (objectiveQ?.length >= 1) {
-      arr.push({
-        value: "objective",
-        title: "objective",
-      });
-    } else if (theoryQ?.length >= 1) {
-      arr.push({
-        value: "theory",
-        title: "theory",
-      });
-    } else {
-      arr.push(
-        {
-          value: "objective",
-          title: "Objective",
-        },
-
-        {
-          value: "theory",
-          title: "Theory",
-        }
-      );
-    }
-    return arr;
-  };
-
-  const defaultQuestionType = () => {
-    switch (question_type) {
-      case "theory":
-        return questionType[1].value;
-        break;
-      case "objective":
-        return questionType[0].value;
-        break;
-
-      default:
-        return "";
-        break;
-    }
-  };
-
   const filterArray = objectiveQ?.filter((obj) => obj.id !== editQuestionId);
 
   const newArray = filterArray?.map((obj) => {
@@ -577,8 +451,6 @@ const Create = ({
       question_mark: editMark,
     };
   });
-
-  // const quest = checkedTheory(editQuestion, editAnswer)?.question;
 
   const editButtons = [
     {
@@ -650,78 +522,19 @@ const Create = ({
           : question_type === "theory"
           ? !editQuestion || !editAnswer || !editMark
           : false,
-      // () => {
-      //   if (question_type === "objective") {
-      //     return (
-      //       !!editQuestion ||
-      //       !!editAnswer ||
-      //       !!editOption1 ||
-      //       !!editOption2 ||
-      //       !!editOption3 ||
-      //       !!editOption4
-      //     );
-      //   } else if (question_type === "theory") {
-      //     return (
-      //       !!editQuestion ||
-      //       !!editAnswer
-      //       // !!editOption1 ||
-      //       // !!editOption2 ||
-      //       // !!editOption3 ||
-      //       // !!editOption4
-      //     );
-      //   }
-      // }
+  
     },
   ];
 
-  const totalMark = addQuestionMarks(theoryQ);
 
-  // const finalTheoryArray = updateQuestionNumbers(totalMark);
-
-  // const finalObjectiveArray = updateQuestionNumbers(objectiveQ);
-  const finalObjectiveArray =
-    objectiveQ?.length !== 1
-      ? updateQuestionNumbers(objectiveQ)
-      : objectiveQ?.length === 1
-      ? objectiveQ
-      : [];
-
-  // const finalTheoryArray =
-  //   theoryQ?.length !== 1
-  //     ? updateQuestionNumbers(theoryQ)
-  //     : theoryQ?.length === 1
-  //     ? theoryQ
-  //     : [];
-
-  useEffect(() => {
-    setFinalTheoryArray(
-      theoryQ?.length !== 1
-        ? updateQuestionNumbers(theoryQ)
-        : theoryQ?.length === 1
-        ? theoryQ
-        : []
-    );
-  }, []);
-
-  // const finalObjectiveArray = () => {
-  //   if (ObjectiveQ?.length !== 1) {
-  //     return updateQuestionNumbers(ObjectiveQ);
-  //   } else if (ObjectiveQ?.length === 1) {
-  //     return ObjectiveQ;
-  //   }
-  // };
-
-  const allLoading = showLoading || assignmentCreatedLoading || loading1;
+  const allLoading =
+    showLoading || assignmentCreatedLoading || loading1 || loading2;
 
   const activateAddQuestion = () => {
     if (!subject_id || !week || !question_type) {
       return true;
-      // setShowAddQuestion(true);
-      // return showAddQuestion;
     } else {
       return false;
-      // setShowAddQuestion(false);
-      // return showAddQuestion;
     }
   };
 
@@ -764,7 +577,7 @@ const Create = ({
     } else if (question_type === "theory") {
       setTheoryQ(filteredAssignments);
     }
-  }, [assignmentCreated, question_type, subject_id, week]);
+  }, [assignmentCreated, subject_id, week]);
 
   console.log({
     editNumber,
@@ -818,30 +631,23 @@ const Create = ({
                 setCreateQ((prev) => {
                   return { ...prev, week: value };
                 });
-                // refetchAssignmentCreated();
               }}
               placeholder='Select Week'
-              // disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
               wrapperClassName='w-100'
             />
             {/* subjects */}
             <AuthSelect
               sort
               options={newSubjects}
-              // options={subjects}
               value={subject_id}
-              // options={classSubjects}
-              // value={subject}
               onChange={({ target: { value } }) => {
                 setAllowFetch(true);
 
                 setCreateQ((prev) => {
                   return { ...prev, subject_id: value };
                 });
-                // refetchAssignmentCreated();
               }}
               placeholder='Select Subject'
-              // disabled={objectiveQ?.length >= 1 || theoryQ?.length >= 1}
               wrapperClassName='w-100'
             />
             {/* questionType */}
@@ -849,18 +655,20 @@ const Create = ({
               sort
               options={questionType}
               value={question_type}
-              // label="Question Type"
               onChange={({ target: { value } }) => {
                 setAllowFetch(true);
+
+                setLoading2(true);
+                setTimeout(() => {
+                  setLoading2(false);
+                }, 800);
 
                 setCreateQ((prev) => {
                   return { ...prev, question_type: value, answer: "" };
                 });
-                // refetchAssignmentCreated();
               }}
               placeholder='Select type'
               wrapperClassName='w-100'
-              // defaultValue={questionType[1].value}
             />
           </div>
 
@@ -933,14 +741,7 @@ const Create = ({
             question_type={question_type}
             objectiveQ={objectiveQ}
             theoryQ={theoryQ}
-            finalObjectiveArray={finalObjectiveArray}
-            finalTheoryArray={finalTheoryArray}
-            theory_total_mark={theory_total_mark}
             published={published}
-            createQ={createQ}
-            setCreateQ={setCreateQ}
-            objMark={objMark}
-            setObjMark={setObjMark}
           />
         )}
 
