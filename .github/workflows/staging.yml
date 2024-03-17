@@ -2,7 +2,7 @@ on:
     push:
       branches:
         - dev
-name: 🚀 Deploy to live
+name: 🚀 Deploy to staging
 jobs:
   web-deploy:
     name: 🎉 Deploy
@@ -19,7 +19,7 @@ jobs:
     - name: 🔨 Build Project
       run: |
         npm install
-        npm run build
+        npm run build --no-warnings
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
