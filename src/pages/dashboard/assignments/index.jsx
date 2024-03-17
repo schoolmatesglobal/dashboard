@@ -4,7 +4,6 @@ import Create from "./create";
 import Submission from "./submission";
 import Results from "./results";
 import ButtonGroup from "../../../components/buttons/button-group";
-import Created from "./created";
 import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import View from "./student/view";
@@ -12,9 +11,12 @@ import { useEffect } from "react";
 import StudentResults from "./student/studentResults";
 import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
 import Prompt from "../../../components/modals/prompt";
+import { useSubject } from "../../../hooks/useSubjects";
 
 const Assignments = () => {
   const {
+    user,
+
     activeTab,
     setActiveTab,
     createQ,
@@ -26,44 +28,64 @@ const Assignments = () => {
     obj,
     setObj,
     permission,
+    objMark,
+    setObjMark,
+    answerQ,
+    setAnswerQ,
+
+    answeredObjQ,
+    setAnsweredObjQ,
+    answeredTheoQ,
+    setAnsweredTheoQ,
+
+    markedObjQ,
+    setMarkedObjQ,
+    markedTheoQ,
+    setMarkedTheoQ,
+
+    markedTheoQ2,
+    setMarkedTheoQ2,
+
+    markedQ,
+    setMarkedQ,
+
+    answeredObjResults,
+    setAnsweredObjResults,
+    answeredTheoryResults,
+    setAnsweredTheoryResults,
   } = useAssignments();
+
+  const {
+    objectiveQ2,
+    setObjectiveQ2,
+    theoryQ2,
+    setTheoryQ2,
+    createQ2,
+    setCreateQ2,
+
+    answeredObjectiveQ,
+    setAnsweredObjectiveQ,
+
+    answeredTheoryQ,
+    setAnsweredTheoryQ,
+
+    studentSubjectsLoading,
+    refetchStudentSubjectsLoading,
+    studentSubjects,
+
+    assignmentTab,
+    setAssignmentTab,
+
+    objectiveSubmitted,
+    setObjectiveSubmitted,
+
+    theorySubmitted,
+    setTheorySubmitted,
+  } = useStudentAssignments();
+
+  const { subjects } = useSubject();
+
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
-
-  // const { apiServices, errorHandler, permission, user } =
-  //   useAppContext("assignments");
-  // const [activeTab, setActiveTab] = useState("1");
-  // const [selected, setSelected] = React.useState("photos");
-  // const [assignment, setAssignment] = useState([]);
-
-  // const [activate, setActivate] = useState(false);
-
-  // const buttonOptions = [
-  //   {
-  //     title: "View",
-  //     onClick: () => updateActiveTabFxn("5"),
-  //     variant: `${activeTab === "5" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Create",
-  //     onClick: () => updateActiveTabFxn("1"),
-  //     variant: `${activeTab === "1" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Created",
-  //     onClick: () => updateActiveTabFxn("2"),
-  //     variant: `${activeTab === "2" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Submissions",
-  //     onClick: () => updateActiveTabFxn("3"),
-  //     variant: `${activeTab === "3" ? "" : "outline"}`,
-  //   },
-  //   {
-  //     title: "Results",
-  //     onClick: () => updateActiveTabFxn("4"),
-  //     variant: `${activeTab === "4" ? "" : "outline"}`,
-  //   },
-  // ];
 
   const getToggleButtons = () => {
     let arr = [];
@@ -116,21 +138,6 @@ const Assignments = () => {
     return arr;
   };
 
-  // const getDefaultTab = () => {
-  //   if (permission?.view) {
-  //     updateActiveT("5");
-  //   } else if (permission?.create) {
-  //     updateActiveT("1");
-  //   }
-  // };
-
-  // const updateActiveTCallback = useCallback(() => {
-  //   if (permission?.view) {
-  //     updateActiveT("5");
-  //   } else if (permission?.create) {
-  //     updateActiveT("1");
-  //   }
-  // }, [permission, updateActiveT]);
   const clearAllButtons = [
     {
       title: "Ok",
@@ -144,23 +151,12 @@ const Assignments = () => {
   useEffect(() => {
     if (permission?.view) {
       setActiveTab("5");
-      // refetchObjAnsweredAssignment();
-      // refetchTheoryAnsweredAssignment();
-      // resetAddObjectiveAnsFxn();
-      // resetTheoryAnsFxn();
     } else if (permission?.create) {
       setActiveTab("1");
     }
   }, []);
 
-  // useEffect(() => {
-  //   // resetLoadObjectiveAnsFxn();
-  //   // resetLoadTheoryAnsFxn();
-  //   // refetchObjAnsweredAssignment();
-  //   // refetchTheoryAnsweredAssignment();
-  // }, []);
-
-  // console.log({ objectiveQ, theoryQ });
+  console.log({ user });
 
   return (
     <PageSheet>
@@ -169,7 +165,28 @@ const Assignments = () => {
 
         <hr className={styles.home_divider} />
 
-        {activeTab === "5" && permission?.view && <View />}
+        {activeTab === "5" && permission?.view && (
+          <View
+            objectiveQ2={objectiveQ2}
+            setObjectiveQ2={setObjectiveQ2}
+            theoryQ2={theoryQ2}
+            setTheoryQ2={setTheoryQ2}
+            createQ2={createQ2}
+            setCreateQ2={setCreateQ2}
+            studentSubjects={studentSubjects}
+            assignmentTab={assignmentTab}
+            setAssignmentTab={setAssignmentTab}
+            answeredObjectiveQ={answeredObjectiveQ}
+            setAnsweredObjectiveQ={setAnsweredObjectiveQ}
+            answeredTheoryQ={answeredTheoryQ}
+            setAnsweredTheoryQ={setAnsweredTheoryQ}
+            objectiveSubmitted={objectiveSubmitted}
+            setObjectiveSubmitted={setObjectiveSubmitted}
+            theorySubmitted={theorySubmitted}
+            setTheorySubmitted={setTheorySubmitted}
+            subjects={subjects}
+          />
+        )}
         {activeTab === "1" && permission?.create && (
           <Create
             createQ={createQ}
@@ -180,12 +197,47 @@ const Assignments = () => {
             setTheoryQ={setTheoryQ}
             obj={obj}
             setObj={setObj}
+            objMark={objMark}
+            setObjMark={setObjMark}
           />
         )}
         {/* {activeTab === "2" && permission?.created && <Created />} */}
-        {activeTab === "3" && permission?.submissions && <Submission />}
-        {activeTab === "4" && permission?.results && <Results />}
-        {activeTab === "6" && permission?.student_results && <StudentResults />}
+        {activeTab === "3" && permission?.submissions && (
+          <Submission
+            answerQ={answerQ}
+            setAnswerQ={setAnswerQ}
+            answeredObjQ={answeredObjQ}
+            setAnsweredObjQ={setAnsweredObjQ}
+            answeredTheoQ={answeredTheoQ}
+            setAnsweredTheoQ={setAnsweredTheoQ}
+            markedObjQ={markedObjQ}
+            setMarkedObjQ={setMarkedObjQ}
+            markedTheoQ={markedTheoQ}
+            setMarkedTheoQ={setMarkedTheoQ}
+            markedTheoQ2={markedTheoQ2}
+            setMarkedTheoQ2={setMarkedTheoQ2}
+          />
+        )}
+        {activeTab === "4" && permission?.results && (
+          <Results
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
+        {activeTab === "6" && permission?.student_results && (
+          <StudentResults
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
       </div>
 
       <Prompt

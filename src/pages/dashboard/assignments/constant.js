@@ -611,6 +611,13 @@ export function analyzeQuestions(questions) {
   let correctNumber = 0;
   const analyzedQuestions = [];
 
+  const totalMarks = questions?.reduce(
+    (acc, question) => acc + Number(question.question_mark),
+    0
+  );
+
+  // Loop through each object in the 'questions' array
+
   // Iterate through each question object.
   for (const question of questions) {
     // Check if the answer and correct_answer are the same.
@@ -632,10 +639,17 @@ export function analyzeQuestions(questions) {
     analyzedQuestions.push(analyzedQuestion);
   }
 
+  const score = correctNumber * (totalMarks / analyzedQuestions?.length);
+
+  const percentage = (score / totalMarks) * 100;
+
   // Return the result object with the correct_number and analyzed questions.
   return {
     correct_number: correctNumber,
+    score,
     questions: analyzedQuestions,
+    total_marks: totalMarks,
+    percentage: `${percentage.toFixed()}%`,
   };
 }
 
@@ -650,11 +664,23 @@ export function updateMarkedValue(arrayOfObjects, qn) {
 }
 
 export function addSumMark(questions) {
-  const sumMark = questions.reduce(
+  const score = questions.reduce(
     (acc, question) => acc + Number(question.teacher_mark),
     0
   );
-  return questions.map((question) => ({ ...question, sum_mark: sumMark }));
+  const total_marks = questions.reduce(
+    (acc, question) => acc + Number(question.question_mark),
+    0
+  );
+  const percentage = (score / total_marks) * 100;
+  const ss = questions?.map((question) => ({ ...question, sum_mark: score }));
+
+  return {
+    questions: ss,
+    score,
+    total_marks,
+    percentage: `${percentage.toFixed()}%`,
+  };
 }
 
 export function addQuestionMarks(questions) {

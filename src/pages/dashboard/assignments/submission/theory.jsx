@@ -1,112 +1,79 @@
-import React, { useState } from "react";
-import {useAssignments} from "../../../../hooks/useAssignments";
+import React, { useEffect, useState } from "react";
+import { useAssignments } from "../../../../hooks/useAssignments";
 import ButtonGroup from "../../../../components/buttons/button-group";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
 import AuthInput from "../../../../components/inputs/auth-input";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
 
-const Theory = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
-  const {
-    // apiServices,
-    // permission,
-    // user,
-    answerQuestion,
-    // setObjectiveQ,
-    // setTheoryQ,
-    // answeredObjectiveQ,
-    // answeredTheoryQ,
-    // answeredTheoryQ2,
-    // answeredTheoryQ3,
-    // studentSubjects,
-    // errorHandler,
-    // addTheoryAnsFxn,
-    // addTheoryAnsFxn2,
-    // addTheoryAnsFxn3,
-    // addObjectiveAnsFxn,
-    // updateAnswerQuestionFxn,
-    // updateSetObjectiveQFxn,
-    // updateSetTheoryQFxn,
-    // resetAnswerQuestionFxn,
-    // assignmentTab,
-    // updateAssignmentTabFxn,
-    // updateObjectiveSubmittedFxn,
-    // updateTheorySubmittedFxn,
-    // objectiveSubmitted,
-    theorySubmitted,
-    // submitTheoryAssignment,
-    // submitTheoryAssignmentLoading,
-  } = useStudentAssignments();
-
-  // const [value, setValue] = useState("");
+const Theory = ({
+  assignmentLoading,
+  data,
+  refetchMarkedAssignment,
+  markedTheoQ,
+  setMarkedTheoQ,
+  markedTheoQ2,
+  setMarkedTheoQ2,
+  markedAssignment,
+  question_type,
+  subject,
+  week,
+  student,
+  loading1,
+  setLoading1,
+}) => {
 
   const {
-    // apiServices,
-    // permission,
+    apiServices,
+    permission,
     user,
     addTheoryMarkFxn,
-    // resetTheoryMarkFxn,
     markedTheoryQ,
-    submitMarkedTheoryAssignment,
-    // submitMarkedTheoryAssignmentLoading,
-    // updateTheoryMarkedFxn,
-    // loadMarkedTheoryAnsFxn,
-    // theoryMarked,
     markedTheoryQ2,
-    resetMarkedTheoryAnsFxn,
   } = useAssignments();
 
+  const [marked, setMarked] = useState(false);
+  const [array, setArray] = useState([]);
+
+  //// POST MARKED THEORY ASSIGNMENT ///////
   const {
-    // question_type,
-    // question,
-    // subject,
-    // image,
-    // imageName,
-    // term,
-    // period,
-    // session,
-    // subject_id,
-    // week,
-    // student_id,
-  } = answerQuestion;
-
-  // const showNoAssignment = () => {
-  //   if (data?.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
-
-  // const [theoryDefaultValue, settheoryDefaultValue] = useState([]);
+    mutateAsync: submitMarkedTheoryAssignment,
+    isLoading: submitMarkedTheoryAssignmentLoading,
+  } = useMutation(() => apiServices.submitMarkedTheoryAssignment(markedTheoQ), {
+    onSuccess() {
+      toast.success("Theory assignment has been marked successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   const checkEmptyQuestions = () => {
     if (
-      markedTheoryQ?.length !== data?.length ||
-      markedTheoryQ2?.length !== data?.length
+      markedTheoQ?.length === array?.length ||
+      markedAssignment?.length === array?.length
     ) {
       return false;
-    } else if (
-      markedTheoryQ?.length === data?.length ||
-      markedTheoryQ2?.length === data?.length
-    ) {
+    } else {
       return true;
     }
   };
 
   const checkedData = (question, CQ) => {
-    const indexToCheck = markedTheoryQ.findIndex(
+    const indexToCheck = markedTheoQ?.findIndex(
       (ob) => ob.question === question && ob.answer === CQ
     );
     if (indexToCheck !== -1) {
-      return markedTheoryQ[indexToCheck].teacher_mark;
+      return markedTheoQ[indexToCheck]?.teacher_mark;
     } else {
       return "";
     }
   };
 
   const checkedData2 = (question, CQ) => {
-    const quest = markedTheoryQ2.find(
+    const quest = markedAssignment?.find(
       (ob) => ob.question === question && ob.answer === CQ
     );
     if (quest) {
@@ -130,19 +97,14 @@ const Theory = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
     },
     {
       title: "Yes Submit",
-      // disabled: !checkEmptyQuestions(),
+      disabled: checkEmptyQuestions(),
       onClick: () => {
-        // updateTheorySubmittedFxn(true);
-        // updateTheoryMarkedFxn(true);
-        resetMarkedTheoryAnsFxn();
         submitMarkedTheoryAssignment();
-        refetchMarkedAssignment();
-        // resetTheoryAnsFxn();
-        // resetTheoryMarkFxn();
-
-        setLoginPrompt(false);
+        setTimeout(() => {
+          setLoginPrompt(false);
+        }, 1000);
       },
-      // isLoading: submitTheoryAssignmentLoading,
+      isLoading: submitMarkedTheoryAssignmentLoading,
       // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
       //
       // variant: "outline",
@@ -157,168 +119,216 @@ const Theory = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
           : "Submit Theory Marking"
       }`,
       onClick: () => displayPrompt(),
-      disabled: theorySubmitted,
+      disabled: checkEmptyQuestions(),
     },
   ];
 
   // console.log({ answeredTheoryQ, data });
-  console.log({ markedTheoryQ, markedTheoryQ2 });
+
+  useEffect(() => {
+   
+
+    if (markedAssignment?.length > 0) {
+      setArray(markedAssignment);
+    } else {
+      const newA = data?.map((mk, i) => {
+        return {
+          ...mk,
+          teacher_mark: "",
+        };
+      });
+      setArray(newA);
+    }
+  }, [markedAssignment, data,]);
+
+  console.log({
+    markedTheoQ,
+    markedAssignment,
+    data,
+    array,
+    checkEmptyQuestions: checkEmptyQuestions(),
+  });
+
   // console.log({ setTheoryQ });
 
   return (
-    <div className="">
+    <div className=''>
       {/* {!assignmentLoading && showNoAssignment() && (
         <div className={styles.placeholder_container}>
           <HiOutlineDocumentPlus className={styles.icon} />
           <p className={styles.heading}>No Theory Assignment</p>
         </div>
       )} */}
-      {!assignmentLoading && data?.length >= 1 && (
+      {!assignmentLoading && array?.length >= 1 && (
         <div className={styles.objective}>
-          {/* {theorySubmitted && (
-            <p className={styles.assignment_submitted_text}>Submitted</p>
-          )} */}
-          <div className={`${theorySubmitted && styles.assignment_submitted}`}>
-            <p className={styles.view__questions_heading}>Theory Section</p>
-            <div className={styles.view__questions}>
-              {data.map((CQ, index) => {
-                // console.log({ CQT: CQ });
+          <div className=''>
+            <p className='fw-bold fs-2 mt-5'>Theory Section</p>
+            <div className='d-flex flex-column my-5 gap-3'>
+              {array
+                ?.sort((a, b) => {
+                  if (a.question_number < b.question_number) {
+                    return -1;
+                  }
+                  if (a.question_number > b.question_number) {
+                    return 1;
+                  }
+                  return 0;
+                })
+                .map((CQ, index) => {
+                  // console.log({ CQT: CQ });
 
-                return (
-                  <div
-                    className={styles.view__questions_container}
-                    key={index}
-                    // style={{ width: "300px" }}
-                  >
-                    <p
-                      className={styles.view__questions_question}
-                      // style={{ fontSize: "15px", lineHeight: "20px" }}
+                  return (
+                    <div
+                      className='w-100 border border-2 rounded-1 border-opacity-25 p-5'
+                      key={index}
+                      // style={{ width: "300px" }}
                     >
-                      {CQ.question_number}. {CQ.question}{" "}
-                      {/* {markedTheoryQ2?.length >= 0 ? "(MARKED)" : ""} */}
-                    </p>
-                    {CQ.image && (
-                      <div className="mb-4 ">
-                        <img src={CQ.image} width={70} height={70} alt="" />
-                      </div>
-                    )}
-                    <>
-                      {/* Correct Answer */}
-                      <div className="d-flex flex-column gap-4 mb-4">
-                        {/* <p className="">{CQ.option1}</p> */}
-                        <label
-                          className={styles.create_question_label}
-                          // style={{ fontSize: "15px", fontWeight: 600 }}
-                        >
-                          Correct Answer:
-                        </label>
-                        <label>
-                          <p className={styles.answer_text}>
-                            {CQ.correct_answer}
-                          </p>
-                        </label>
-                      </div>
-                    </>
-                    <>
-                      {/* Student's Answer */}
-                      <div className="d-flex flex-column gap-4 mb-4">
-                        {/* <p className="">{CQ.option1}</p> */}
-                        <p
-                          className={styles.create_question_label}
-                          // style={{ fontSize: "15px", fontWeight: 600 }}
-                        >
-                          Student's Answer:
+                      <p className='fs-3 mb-3 lh-base'>
+                        <span className='fw-bold fs-3'>
+                          {CQ.question_number}.
+                        </span>{" "}
+                        {CQ.question}{" "}
+                      </p>
+                      {/* <p className='fw-bold fs-3 mb-4 lh-base'>
+                        ({CQ.question_mark} mk(s) )
+                      </p> */}
+                      {CQ.image && (
+                        <div className='mb-4 '>
+                          <img src={CQ.image} width={70} height={70} alt='' />
+                        </div>
+                      )}
+                      <>
+                        {/* Correct Answer */}
+                        <p className='fs-3 mb-3 lh-base'>
+                          <span className='fw-bold fs-3'>Correct Answer:</span>{" "}
+                          {CQ.correct_answer}{" "}
                         </p>
-                        <label>
-                          <p className={styles.answer_text}>{CQ.answer}</p>
-                        </label>
-                      </div>
-                    </>
-                    <>
-                      {/* Question Score */}
-                      <div className="d-flex align-items-center gap-5 mt-4">
-                        {/* Total Questions */}
-                        <div style={{ width: "200px" }}>
-                          <label
-                            className="mb-4"
-                            // style={{ fontSize: "15px", fontWeight: 600 }}
-                          >
-                            Teacher's Mark
-                          </label>
-                          <AuthInput
-                            type="number"
-                            placeholder="Teacher's Mark"
-                            // hasError={!!errors.username}
-                            value={
-                              checkedData(CQ.question, CQ.answer) ||
-                              checkedData2(CQ.question, CQ.answer)
-                            }
-                            // name="option"
-                            max={Number(CQ?.question_mark)}
-                            min={0}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
+                      </>
+                      <>
+                        {/* Student's Answer */}
+                        <p className={`fs-3 lh-base`}>
+                          <span className='fw-bold fs-3'>
+                            Student's Answer:
+                          </span>{" "}
+                          {CQ.answer}{" "}
+                        </p>
+                      </>
+                      <>
+                        {/* Question Score */}
+                        <div className='d-flex flex-column flex-md-row align-items-md-center gap-md-5 mt-5'>
+                          <div style={{ width: "200px" }}>
+                            <AuthInput
+                              type='number'
+                              placeholder="Question's Mark"
+                              // defaultValue={!!errors.username}
+                              disabled
+                              value={Number(CQ.question_mark)}
+                              name='option'
+                              onChange={(e) => {}}
+                              wrapperClassName=''
+                            />
+                            <p className='mb-4 fw-bold mt-3 fs-4'>
+                              Question's Mark
+                            </p>
+                          </div>
 
-                              // You can add additional validation if needed
-                              if (inputValue <= Number(CQ?.question_mark)) {
-                                // setValue(inputValue);
-                                addTheoryMarkFxn({
-                                  period: user?.period,
-                                  term: user?.term,
-                                  session: user?.session,
-                                  // student_id: Number(CQ.student_id),
-                                  student_id: CQ.student_id,
-                                  // subject_id: Number(CQ.subject_id),
-                                  subject_id: CQ.subject_id,
-                                  // question_id: Number(CQ.id),
-                                  assignment_id: CQ.assignment_id,
-                                  question: CQ.question,
-                                  // question_number: Number(CQ.question_number),
-                                  question_number: CQ.question_number,
-                                  question_type: CQ.question_type,
-                                  answer: CQ.answer,
-                                  correct_answer: CQ.correct_answer,
-                                  submitted: CQ.submitted,
-                                  // teacher_mark: Number(inputValue),
-                                  teacher_mark: inputValue,
-                                  week: CQ.week,
-                                });
-                              }
-                            }}
-                            wrapperClassName=""
-                          />
+                          {/* Total Questions */}
+                          <div style={{ width: "200px" }}>
+                            <AuthInput
+                              type='number'
+                              placeholder="Teacher's Mark"
+                              // hasError={!!errors.username}
+                              // defaultValue={checkedData2(
+                              //   CQ.question,
+                              //   CQ.answer
+                              // )}
+                              defaultValue={CQ?.teacher_mark}
+                              // value={checkedData(CQ.question, CQ.answer)}
+                              // value={checkedData(CQ.question, CQ.answer)}
+                              // name="option"
+                              max={Number(CQ?.question_mark)}
+                              min={0}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+
+                                if (
+                                  Number(inputValue) > Number(CQ?.question_mark)
+                                )
+                                  return;
+
+                                const indexToUpdate = markedTheoQ?.findIndex(
+                                  (item) => item.question === CQ.question
+                                );
+
+                                const filteredArray = markedTheoQ?.filter(
+                                  (ans) => ans.question !== CQ.question
+                                );
+
+                                if (indexToUpdate !== -1) {
+                                  setMarkedTheoQ([
+                                    ...filteredArray,
+                                    {
+                                      period: user?.period,
+                                      term: user?.term,
+                                      session: user?.session,
+                                      // student_id: Number(CQ.student_id),
+                                      student_id: CQ.student_id,
+                                      // subject_id: Number(CQ.subject_id),
+                                      subject_id: CQ.subject_id,
+                                      // question_id: Number(CQ.id),
+                                      assignment_id: CQ.assignment_id,
+                                      question: CQ.question,
+                                      // question_number: Number(CQ.question_number),
+                                      question_number: CQ.question_number,
+                                      question_type: CQ.question_type,
+                                      answer: CQ.answer,
+                                      correct_answer: CQ.correct_answer,
+                                      submitted: CQ.submitted,
+                                      // teacher_mark: Number(inputValue),
+                                      teacher_mark: inputValue,
+                                      week: CQ.week,
+                                    },
+                                  ]);
+                                } else {
+                                  setMarkedTheoQ([
+                                    ...markedTheoQ,
+                                    {
+                                      period: user?.period,
+                                      term: user?.term,
+                                      session: user?.session,
+                                      // student_id: Number(CQ.student_id),
+                                      student_id: CQ.student_id,
+                                      // subject_id: Number(CQ.subject_id),
+                                      subject_id: CQ.subject_id,
+                                      // question_id: Number(CQ.id),
+                                      assignment_id: CQ.assignment_id,
+                                      question: CQ.question,
+                                      // question_number: Number(CQ.question_number),
+                                      question_number: CQ.question_number,
+                                      question_type: CQ.question_type,
+                                      answer: CQ.answer,
+                                      correct_answer: CQ.correct_answer,
+                                      submitted: CQ.submitted,
+                                      // teacher_mark: Number(inputValue),
+                                      teacher_mark: inputValue,
+                                      week: CQ.week,
+                                    },
+                                  ]);
+                                }
+                              }}
+                              wrapperClassName=''
+                            />
+                            <p className='mb-4 fw-bold mt-3 fs-4'>
+                              Teacher's Mark
+                            </p>
+                          </div>
                         </div>
-                        <div style={{ width: "200px" }}>
-                          <label
-                            className="mb-4"
-                            // style={{ fontSize: "15px", fontWeight: 600 }}
-                          >
-                            Question's Mark
-                          </label>
-                          <AuthInput
-                            type="number"
-                            placeholder="Question's Mark"
-                            // defaultValue={!!errors.username}
-                            disabled
-                            value={Number(CQ.question_mark)}
-                            name="option"
-                            onChange={(e) => {
-                              // updateCreateQ({
-                              //   total_question: e.target.value,
-                              //   // total_mark: e.target.value * question_mark,
-                              // });
-                              // calcObjTotal();
-                            }}
-                            wrapperClassName=""
-                          />
-                        </div>
-                      </div>
-                    </>
-                  </div>
-                );
-              })}
+                      </>
+                    </div>
+                  );
+                })}
             </div>
-            <div className="d-flex justify-content-center ">
+            <div className='d-flex justify-content-center '>
               <ButtonGroup options={buttonOptions2} />
             </div>
             <Prompt
@@ -327,11 +337,7 @@ const Theory = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
               hasGroupedButtons={true}
               groupedButtonProps={buttonOptions}
               // singleButtonText="Preview"
-              promptHeader={`${
-                checkEmptyQuestions()
-                  ? "CONFIRM ASSIGNMENT MARKING"
-                  : "INCOMPLETE MARKING"
-              }`}
+              promptHeader={`CONFIRM ASSIGNMENT MARKING`}
             >
               {checkEmptyQuestions() ? (
                 <p className={styles.warning_text}>

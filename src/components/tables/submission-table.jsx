@@ -13,12 +13,7 @@ import Button from "../buttons/button";
 import Prompt from "../modals/prompt";
 import Action from "../buttons/action";
 import { useAssignments } from "../../hooks/useAssignments";
-import styles from "../../assets/scss/pages/dashboard/assignment.module.scss";
 import ButtonGroup from "../buttons/button-group";
-import {
-  addQuestionMarkTotal,
-  countCorrectAnswers
-} from "../../pages/dashboard/assignments/constant";
 
 const SubmissionTable = ({
   addAssignmentResult,
@@ -39,37 +34,14 @@ const SubmissionTable = ({
   setCheckedRows = () => null,
   rowHasAction = false,
   action = [],
+  markedQ,
+  result,
 }) => {
-  const {
-    // updateActiveTabFxn,
-    // classSubjects,
-    myStudents,
-    // apiServices,
-    // errorHandler,
-    permission,
-    // user,
 
-    // RESULTS
-    updateMarkedQuestionFxn,
-    markedQuestion,
-    updateAnsweredObjResultsFxn,
-    updateAnsweredTheoryResultsFxn,
-    answeredObjResults,
-    answeredTheoryResults,
-  } = useAssignments();
+  
+  const { myStudents, permission } = useAssignments();
 
-  const {
-    question_type,
-    subject,
-    // image,
-    // term,
-    // period,
-    // session,
-    // subject_id,
-    // student_id,
-    // week,
-    student,
-  } = markedQuestion;
+  const { question_type, subject, student } = markedQ;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [actionDropdown, setActionDropdown] = useState(false);
@@ -85,41 +57,6 @@ const SubmissionTable = ({
 
   const [value, setValue] = useState("");
 
-  // const handleInputChange = (event) => {
-  //   const inputValue = event.target.value;
-
-  //   // You can add additional validation if needed
-  //   if (inputValue <= Number(previewAns?.question_mark)) {
-  //     setValue(inputValue);
-  //   }
-  // };
-
-  // const qn = Number(previewAns?.question_mark);
-
-  function updateMarkedValue() {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].question_number === Number(previewAns?.question_mark)) {
-        data[i].marked = "marked";
-        break; // Assuming there is only one object with question_number 1
-      }
-    }
-    // console.log({ data });
-    // updateAnsweredTheoryQFxn(data);
-  }
-
-  const updateMarked = (data, number) => {
-    // const indexToCheck = data.findIndex(
-    //   (ob) => ob.question === question && ob.answer === CQ
-    // );
-    // // console.log({ indexToCheck });
-    // if (indexToCheck !== -1) {
-    //   const check = answeredObjectiveQ[indexToCheck]?.answer === CQ;
-    //   return check;
-    // } else {
-    //   return null;
-    // }
-  };
-
   const disableMark = () => {
     if (value === "") {
       return true;
@@ -134,15 +71,6 @@ const SubmissionTable = ({
       onClick: () => setLoginPrompt(false),
       variant: "outline",
     },
-    // {
-    //   title: `Mark`,
-    //   onClick: () => {
-    //     updateMarkedValue();
-    //     setLoginPrompt(false);
-    //   },
-    //   disabled: disableMark(),
-    //   // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
-    // },
   ];
 
   const buttonOptions2 = [
@@ -155,32 +83,6 @@ const SubmissionTable = ({
           : ""
       }`,
       onClick: () => {
-        // console.log({
-        //   period: user?.period,
-        //   term: user?.term,
-        //   session: user?.session,
-        //   student_id: subject_id,
-        //   subject_id: subject_id,
-        //   question_type: question_type,
-        //   mark:
-        //     question_type === "theory"
-        //       ? score2
-        //       : question_type === "objective"
-        //       ? score
-        //       : "",
-        //   total_mark:
-        //     question_type === "theory"
-        //       ? totalMarks2
-        //       : question_type === "objective"
-        //       ? totalMarks
-        //       : "",
-        //   score:
-        //     question_type === "theory"
-        //       ? score2
-        //       : question_type === "objective"
-        //       ? score
-        //       : "",
-        // });
         setLoginPrompt2(true);
       },
       // disabled: objectiveSubmitted,
@@ -197,7 +99,10 @@ const SubmissionTable = ({
       title: "Yes Submit",
       onClick: () => {
         addAssignmentResult();
-        setLoginPrompt2(false);
+
+        setTimeout(() => {
+          setLoginPrompt2(false);
+        }, 1000);
       },
       //   disabled: activatePreview(),
       isLoading: addAssignmentResultLoading,
@@ -234,13 +139,13 @@ const SubmissionTable = ({
   const displayStatus = (render) => {
     switch (render) {
       case "disabled":
-        return <p className="text-danger">Inactive</p>;
+        return <p className='text-danger'>Inactive</p>;
 
       case "withdrawn":
-        return <p className="text-danger">Withdrawn</p>;
+        return <p className='text-danger'>Withdrawn</p>;
 
       default:
-        return <p className="text-success">Active</p>;
+        return <p className='text-success'>Active</p>;
     }
   };
 
@@ -288,33 +193,13 @@ const SubmissionTable = ({
     }
   };
 
-  const correctCount = countCorrectAnswers(answeredObjResults);
-
-  const totalMarks =
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark *
-    answeredObjResults?.length;
-  const totalMarks2 = addQuestionMarkTotal(answeredTheoryResults);
-  const score2 = `${
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.sum_mark
-  }`;
-  const score = `${
-    correctCount *
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark
-  } `;
-
-  // console.log({
-  //   markedQuestion,
-  //   myStudents,
-  //   data,
-  //   answeredObjResults,
-  //   answeredTheoryResults,
-  // });
+  // console.log({ previewAns, answerHighlight, markedQ, result });
 
   return (
-    <div className="custom-table-wrapper">
+    <div className='custom-table-wrapper'>
       {isLoading && (
-        <div className="d-flex align-items-center justify-content-center w-full">
-          <Spinner /> <p className="ms-2">Loading...</p>
+        <div className='d-flex align-items-center justify-content-center w-full'>
+          <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
@@ -329,7 +214,7 @@ const SubmissionTable = ({
                   {hasCheckBox && (
                     <th>
                       <Input
-                        type="checkbox"
+                        type='checkbox'
                         checked={checkedRows.length === memoisedData.length}
                         onChange={checkAllBoxes}
                       />
@@ -356,7 +241,7 @@ const SubmissionTable = ({
                     {hasCheckBox && (
                       <td>
                         <Input
-                          type="checkbox"
+                          type='checkbox'
                           checked={checkedRows.includes(row.original.id)}
                           onChange={() => checkSingleRow(row.original.id)}
                         />
@@ -377,7 +262,7 @@ const SubmissionTable = ({
                     {rowHasView && (
                       <td>
                         <Button
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => {
                             filterData(data, row.values);
                           }}
@@ -394,7 +279,7 @@ const SubmissionTable = ({
                               ? "dark"
                               : "warning"
                           }
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "disable")}
                         >
                           {row.original.status === "disabled"
@@ -406,8 +291,8 @@ const SubmissionTable = ({
                     {rowHasDelete && (
                       <td>
                         <Button
-                          variant="danger"
-                          className="d-block mx-auto"
+                          variant='danger'
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "delete")}
                         >
                           Delete
@@ -422,7 +307,7 @@ const SubmissionTable = ({
                           }
                           toggle={() => toggleAction(row.original.id)}
                         >
-                          <DropdownToggle tag="div">
+                          <DropdownToggle tag='div'>
                             <Action
                               onClick={() => toggleAction(row.original.id)}
                             />
@@ -431,7 +316,7 @@ const SubmissionTable = ({
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}
-                                className="px-5 py-3"
+                                className='px-5 py-3'
                                 key={key}
                               >
                                 {title}
@@ -447,7 +332,7 @@ const SubmissionTable = ({
             </tbody>
           </Table>
           {permission?.results && (
-            <div className="d-flex justify-content-center ">
+            <div className='d-flex justify-content-center '>
               <ButtonGroup options={buttonOptions2} />
             </div>
           )}
@@ -456,60 +341,24 @@ const SubmissionTable = ({
             toggle={() => setLoginPrompt2(!loginPrompt2)}
             hasGroupedButtons={true}
             groupedButtonProps={buttonOptions3}
-            singleButtonText="Preview"
+            singleButtonText='Preview'
             promptHeader={`CONFIRM RESULT SUBMISSION`}
           >
-            <div className="">
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Name:
-              </label>
-              <p
-                className={styles.create_question_question}
-                // style={{ fontSize: "15px", lineHeight: "20px" }}
-              >
-                {student}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Subject
-              </label>
-              <p className={styles.create_question_answer}>
+            <div className=''>
+              <p className='fs-3 fw-bold mb-3'>Student's Name:</p>
+              <p className='fs-3 mb-5 lh-sm'>{student}</p>
+              <p className='fs-3 fw-bold mb-3'>Subject</p>
+              <p className='fs-3 mb-5 lh-sm'>
                 {subject} ({question_type})
               </p>
 
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Score
-              </label>
-              <p className={styles.create_question_answer}>
-                {question_type === "theory"
-                  ? score2
-                  : question_type === "objective"
-                  ? score
-                  : ""}
-              </p>
+              <label className='fs-3 fw-bold mb-3'>Student's Score</label>
+              <p className='fs-3 mb-5 lh-sm'>{result?.score}</p>
 
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Total Score
-              </label>
-              <p className={styles.create_question_answer}>
-                {" "}
-                {question_type === "theory"
-                  ? totalMarks2
-                  : question_type === "objective"
-                  ? totalMarks
-                  : ""}
-              </p>
+              <p className='fs-3 fw-bold mb-3'>Total Score</p>
+              <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
+              <p className='fs-3 fw-bold mb-3'>Percentage</p>
+              <p className='fs-3 mb-5 lh-sm'> {result?.percentage}</p>
             </div>
           </Prompt>
           <Prompt
@@ -519,35 +368,23 @@ const SubmissionTable = ({
             toggle={() => setLoginPrompt(!loginPrompt)}
             promptHeader={`PREVIEW ANSWER `}
           >
-            <div className="">
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Question
-              </label>
+            <div className=''>
+              <p className='fs-3 fw-bold mb-3'>Question</p>
+              <p className='fs-3 mb-5 lh-sm'>{previewAns?.question}</p>
+              <p className='fs-3 fw-bold mb-3'>Correct Answer</p>
+              <p className='fs-3 mb-5 lh-sm'>{previewAns?.correct_answer}</p>
+              <p className='fs-3 fw-bold mb-3'>Student's Answer</p>
               <p
-                className={styles.create_question_question}
-                // style={{ fontSize: "15px", lineHeight: "20px" }}
+                className={`${
+                  previewAns?.answer === previewAns?.correct_answer &&
+                  previewAns?.question_type === "objective"
+                    ? "text-success"
+                    : previewAns?.answer !== previewAns?.correct_answer &&
+                      previewAns?.question_type === "objective"
+                    ? "text-danger"
+                    : ""
+                } fs-3 mb-5 lh-sm`}
               >
-                {previewAns?.question}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Correct Answer
-              </label>
-              <p className={styles.create_question_answer}>
-                {previewAns?.correct_answer}
-              </p>
-              <label
-                className={styles.create_question_label}
-                // style={{ fontSize: "15px", fontWeight: 600 }}
-              >
-                Student's Answer
-              </label>
-              <p className={styles.create_question_answer}>
                 {previewAns?.answer}
               </p>
             </div>
@@ -603,7 +440,7 @@ const SubmissionTable = ({
         </div>
       ) : null}
       {!memoisedData.length && !isLoading ? (
-        <p className="text-center">No data to display.</p>
+        <p className='text-center'>No data to display.</p>
       ) : null}
     </div>
   );

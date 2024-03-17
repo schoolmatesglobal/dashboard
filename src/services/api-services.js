@@ -2348,9 +2348,9 @@ class APIServies extends Helpers {
 
     return data;
   }
-  async editObjectiveAssignment({ id, body }) {
+  async editObjectiveAssignment(body) {
     const { data } = await axios.patch(
-      `${backendAPI}/edit-obj-assignment/${id}`,
+      `${backendAPI}/edit-obj-assignment`,
       body,
       {
         headers: {
@@ -2362,6 +2362,22 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async publishAssignment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/publish/assignment`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  
   async editTheoryAssignment({ id, body }) {
     const { data } = await axios.patch(
       `${backendAPI}/edit-thoery-assignment/${id}`,

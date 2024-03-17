@@ -1,67 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineLibraryBooks } from "react-icons/md";
 import AuthSelect from "../../../../components/inputs/auth-select";
 import styles from "../../../../assets/scss/pages/dashboard/assignment.module.scss";
-import {useAssignments} from "../../../../hooks/useAssignments";
-import { useQuery } from "react-query";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { useAssignments } from "../../../../hooks/useAssignments";
+import { useQuery, useQueryClient } from "react-query";
 import { Spinner } from "reactstrap";
 import queryKeys from "../../../../utils/queryKeys";
 import SubmissionTable from "../../../../components/tables/submission-table";
-import {
-  addQuestionMarkTotal,
-  addSumMark,
-  analyzeQuestions,
-  convertToPercentage,
-  countCorrectAnswers, updateQuestionNumbers
-} from "../constant";
+import { addSumMark, analyzeQuestions } from "../constant";
 import Prompt from "../../../../components/modals/prompt";
-import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
+import { useSubject } from "../../../../hooks/useSubjects";
 
-const StudentResults = () => {
-  const { updateActiveTabFxn } = useAssignments();
-
+const StudentResults = ({
+  markedQ,
+  setMarkedQ,
+  answeredObjResults,
+  setAnsweredObjResults,
+  answeredTheoryResults,
+  setAnsweredTheoryResults,
+}) => {
   const {
     apiServices,
     errorHandler,
     permission,
     user,
-    studentSubjects,
+    updatePreviewAnswerFxn,
+  } = useAssignments();
 
-    // STUDENTS RESULT
-    updateMarkedQuestionFxn,
-    //
-    updateAnsweredObjResultsFxn,
-    //
-    updateAnsweredTheoryResultsFxn,
-    //
-    markedQuestion,
-    //
-    answeredObjResults,
-    //
-    answeredTheoryResults,
-    //
-  } = useStudentAssignments();
+  const { question_type, subject, subject_id, student_id, week, student } =
+    markedQ;
 
-  const {
-    question_type,
-    subject,
-    // image,
-    // term,
-    // period,
-    // session,
-    subject_id,
-    // student_id,
-    week,
-    // student,
-  } = markedQuestion;
+  const [newSubjects, setNewSubjects] = useState([]);
+  const { subjects, isLoading: subjectLoading } = useSubject();
 
   const [showLoading, setShowLoading] = useState(false);
 
   const [loginPrompt, setLoginPrompt] = useState(false);
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const activateRetrieve = () => {
     if (subject !== "" && question_type !== "" && week !== "") {
@@ -71,20 +47,22 @@ const StudentResults = () => {
     }
   };
 
-  ///// FETCH MARKED QUESTIONS //////
+  /////// FETCH ANSWERED ASSIGNMENTS /////
   const {
-    isLoading: markedAssignmentResultsLoading,
-    refetch: refetchMarkedAssignmentResults,
+    isLoading: submittedAssignmentLoading,
+    refetch: refetchSubmittedAssignment,
+    data: submittedAssignment,
   } = useQuery(
     [
-      queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
+      queryKeys.GET_SUBMITTED_ASSIGNMENT,
       user?.period,
       user?.term,
       user?.session,
       question_type,
+      "2",
     ],
     () =>
-      apiServices.getMarkedAssignment(
+      apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
@@ -93,63 +71,113 @@ const StudentResults = () => {
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.student_results,
-      // enabled: false,
-      onSuccess(data) {
-        // console.log({ dataR: data });
-        const sortedBySubject = data?.filter(
-          (dt) => Number(dt?.subject_id) === Number(subject_id)
-        );
-        const sortByStudent = sortedBySubject?.filter(
-          (st) => Number(st?.student_id) === Number(user?.id)
-        );
-        const sortByWeek = sortByStudent?.filter(
-          (st) => Number(st?.week) === Number(week)
-        );
+      enabled: activateRetrieve(),
+      select: (data) => {
+        const ffk = apiServices.formatData(data);
 
-        // const sortedByQN = sortQuestionsByNumber(sortByStudent);
+        const sorted = ffk
+          ?.filter(
+            (dt) =>
+              dt?.subject === subject &&
+              dt?.student === student &&
+              dt?.week === week
+          )
+          ?.sort((a, b) => {
+            if (a.question_number < b.question_number) {
+              return -1;
+            }
+            if (a.question_number > b.question_number) {
+              return 1;
+            }
+            return 0;
+          });
 
-        const computedTeacherMark = addSumMark(sortByWeek);
+        const calculatedData = analyzeQuestions(sorted);
 
-        // updateAnsweredTheoryQFxn(computedTeacherMark);
-
-        const calculatedData = analyzeQuestions(sortByWeek);
-
-        console.log({ data, sortByStudent, sortByWeek });
-        // console.log({
-        //   data,
-        //   subject_id,
-        //   student_id,
-        //   question_type,
-        //   sortByStudent,
-        // });
-
+        console.log({ ffk, data, sorted });
         if (question_type === "objective") {
-          updateAnsweredObjResultsFxn(calculatedData?.questions);
-        } else if (question_type === "theory") {
-          updateAnsweredTheoryResultsFxn(computedTeacherMark);
+          return calculatedData ?? {};
+        } else {
+          return {};
         }
       },
+
+      onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
-      select: apiServices.formatData,
+      // select: apiServices.formatData,
     }
   );
 
-  // const buttonOptions2 = [
-  //   {
-  //     title: `${
-  //       question_type === "objective"
-  //         ? "Submit Objective Assignment"
-  //         : question_type === "theory"
-  //         ? "Submit Theory Assignment"
-  //         : ""
-  //     }`,
-  //     onClick: () => setLoginPrompt(true),
-  //     // disabled: objectiveSubmitted,
-  //   },
-  // ];
+  ///// FETCH MARKED QUESTIONS //////
+  const {
+    isLoading: markedAssignmentResultsLoading,
+    refetch: refetchMarkedAssignmentResults,
+    data: markedAssignmentResults,
+  } = useQuery(
+    [
+      queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
+      student_id,
+      user?.period,
+      user?.term,
+      user?.session,
+      question_type,
+    ],
+    () =>
+      apiServices.getMarkedAssignmentByStudentId(
+        student_id,
+        user?.period,
+        user?.term,
+        user?.session,
+        question_type
+      ),
+
+    {
+      retry: 3,
+      // enabled: permission?.read || permission?.readClass,
+      enabled: activateRetrieve(),
+
+      select: (data) => {
+        const mmk = apiServices.formatData(data);
+
+        const sorted = mmk
+          ?.filter(
+            (dt) =>
+              dt?.subject_id === subject_id &&
+              Number(dt?.student_id) === Number(student_id) &&
+              dt?.week === week
+          )
+          ?.sort((a, b) => {
+            if (a.question_number < b.question_number) {
+              return -1;
+            }
+            if (a.question_number > b.question_number) {
+              return 1;
+            }
+            return 0;
+          });
+
+        console.log({ mmk, data, sorted });
+
+        const computedTeacherMark = addSumMark(sorted);
+
+        if (question_type === "theory") {
+          return computedTeacherMark ?? {};
+        } else {
+          return {};
+        }
+
+        // return computedTeacherMark ?? [];
+      },
+      // enabled: false,
+      onSuccess(data) {},
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   const buttonOptions = [
     {
@@ -166,15 +194,15 @@ const StudentResults = () => {
     },
   ];
 
-  const correctCount = countCorrectAnswers(answeredObjResults);
-  // const correctCount2 = analyzeQuestions(answeredObjectiveQ);
-
   const showNoAssignment = () => {
-    if (question_type === "objective" && answeredObjResults.length === 0) {
+    if (
+      question_type === "objective" &&
+      submittedAssignment?.questions?.length === 0
+    ) {
       return true;
     } else if (
       question_type === "theory" &&
-      answeredTheoryResults.length === 0
+      markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
     } else {
@@ -183,72 +211,66 @@ const StudentResults = () => {
   };
 
   const showNoAssignment2 = () => {
-    if (question_type === "" && answeredObjResults.length === 0) {
+    if (question_type === "" && submittedAssignment?.questions?.length === 0) {
       return true;
-    } else if (question_type === "" && answeredTheoryResults.length === 0) {
+    } else if (
+      question_type === "" &&
+      submittedAssignment?.questions?.length === 0
+    ) {
       return true;
     } else {
       return false;
     }
   };
 
-  const findSubjectId = (value) => {
-    const findObject = studentSubjects?.find((opt) => opt.value === value);
-    if (findObject) {
-      return findObject.id;
+  const showNoAssignment3 = () => {
+    if (!week || !subject || !question_type || !student) {
+      return true;
+    } else {
+      return false;
     }
   };
 
-  // const studentName = (value) => {
-  //   const findObject = studentSubjects?.find((opt) => opt.id === value);
-  //   if (findObject) {
-  //     return findObject.id;
-  //   }
-  // };
-
-  // console.log({
-  //   answeredObjectiveQ,
-  // });
-
-  // const allLoading = showLoading || submittedAssignmentLoading;
   const allLoading = showLoading || markedAssignmentResultsLoading;
 
-  // const totalMark = findHighestTotalMark(answeredTheoryQ);
+  useEffect(() => {
+    const sbb = subjects?.map((sb) => {
+      return {
+        value: sb.subject,
+        // value: sb.id,
+        title: sb.subject,
+      };
+    });
 
-  const totalMarks =
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark *
-    answeredObjResults?.length;
-  const totalMarks2 = addQuestionMarkTotal(answeredTheoryResults);
-  const score2 = `${
-    answeredTheoryResults[answeredTheoryResults?.length - 1]?.sum_mark
-  } /
-      ${totalMarks2}`;
-  const score = `${
-    correctCount *
-    answeredObjResults[answeredObjResults?.length - 1]?.question_mark
-  } /
-      ${totalMarks}`;
-  const percentage = parseFloat(convertToPercentage(score));
-  const percentage2 = parseFloat(convertToPercentage(score2));
+    if (sbb?.length > 0) {
+      setNewSubjects(sbb);
+    } else {
+      setNewSubjects([]);
+    }
+  }, [subjects]);
 
-  // const studentId =
-  //   answeredTheoryResults[answeredTheoryResults?.length - 1]?.student_id;
+  useEffect(() => {
+    setMarkedQ((prev) => {
+      return {
+        ...prev,
+        student: `${user?.surname} ${user?.firstname}`,
+        student_id: user?.id,
+      };
+    });
+  }, []);
 
-  // console.log({
-  //   ar: activateRetrieve(),
-  //   markedQuestion,
-  //   answeredObjResults,
-  //   answeredTheoryResults,
-  // });
-
-  // console.log({ answeredTheoryQ, markedQuestion, totalMarks2 });
-  console.log({ markedQuestion });
+  console.log({
+    user,
+    markedQ,
+    submittedAssignment,
+    markedAssignmentResults,
+  });
 
   return (
     <div>
       <div className={styles.created}>
-        <div className={styles.created__options}>
-          <div className={styles.auth_select_container}>
+        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between'>
+          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
             <AuthSelect
               sort
               options={[
@@ -267,49 +289,35 @@ const StudentResults = () => {
                 { value: "13", title: "Week 13" },
               ]}
               value={week}
-              defaultValue={week && week}
+              // defaultValue={week && week}
               onChange={({ target: { value } }) => {
-                updateMarkedQuestionFxn({
-                  week: value,
+                setMarkedQ((prev) => {
+                  return { ...prev, week: value };
                 });
-                if (subject !== "" && question_type !== "") {
-                  setShowLoading(true);
-                  setTimeout(() => {
-                    setShowLoading(false);
-                  }, 1500);
-                  refetchMarkedAssignmentResults();
-                }
               }}
-              placeholder="Week"
-              wrapperClassName={styles.auth_select}
+              placeholder='Select Week'
+              wrapperClassName='w-100'
             />
 
             <AuthSelect
               sort
-              options={studentSubjects}
+              options={newSubjects}
               value={subject}
-              defaultValue={subject && subject}
+              // defaultValue={subject && subject}
               onChange={({ target: { value } }) => {
-                // updatePreviewAnswerFxn({
-                //   he: "help",
-                // });
-                //
-                updateMarkedQuestionFxn({
-                  subject: value,
-                  subject_id: Number(findSubjectId(value)),
-                });
-                if (question_type !== "" && week !== "") {
-                  setShowLoading(true);
-                  setTimeout(() => {
-                    setShowLoading(false);
-                  }, 1500);
-                  // refetchSubmittedAssignment();
+                const fId = () => {
+                  const ff = subjects?.find((opt) => opt.subject === value);
+                  if (ff) {
+                    return ff?.id?.toString();
+                  }
+                };
 
-                  refetchMarkedAssignmentResults();
-                }
+                setMarkedQ((prev) => {
+                  return { ...prev, subject: value, subject_id: fId() };
+                });
               }}
-              placeholder="Select Subject"
-              wrapperClassName={styles.auth_select}
+              placeholder='Select Subject'
+              wrapperClassName='w-100'
               // label="Subject"
             />
 
@@ -320,96 +328,65 @@ const StudentResults = () => {
                 { value: "theory", title: "Theory" },
               ]}
               value={question_type}
-              defaultValue={question_type && question_type}
+              // defaultValue={question_type && question_type}
               onChange={({ target: { value } }) => {
-                updateMarkedQuestionFxn({
-                  question_type: value,
+                setMarkedQ((prev) => {
+                  return { ...prev, question_type: value };
                 });
-                if (subject !== "" && week !== "") {
-                  setShowLoading(true);
-                  setTimeout(() => {
-                    setShowLoading(false);
-                  }, 1500);
-                  // refetchSubmittedAssignment();
-                  refetchMarkedAssignmentResults();
-                }
               }}
-              placeholder="Question Type"
-              wrapperClassName={styles.auth_select}
+              placeholder='Question Type'
+              wrapperClassName='w-100'
             />
-          </div>
-          <div className="">
-            <button
-              type="button"
-              className="btn go-back-button"
-              // style={{ height: "50px" }}
-              onClick={() => updateActiveTabFxn("5")}
-            >
-              <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Back to
-              View
-            </button>
           </div>
         </div>
 
         {allLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className="">Loading...</p>
-          </div>
-        )}
-
-        {!allLoading && (showNoAssignment() || showNoAssignment2()) && (
-          <div className={styles.placeholder_container}>
-            <MdOutlineLibraryBooks className={styles.icon} />
-            <p className={styles.heading}>No Result</p>
+            <Spinner /> <p className=''>Loading...</p>
           </div>
         )}
 
         {!allLoading &&
-          answeredObjResults.length >= 1 &&
+          (showNoAssignment() ||
+            showNoAssignment2() ||
+            showNoAssignment3()) && (
+            <div className={styles.placeholder_container}>
+              <MdOutlineLibraryBooks className={styles.icon} />
+              <p className={styles.heading}>No Result</p>
+            </div>
+          )}
+
+        {!allLoading &&
+          submittedAssignment?.questions?.length > 0 &&
           question_type === "objective" && (
-            <div className="">
-              {/* <div className={styles.compile_student}>
-                <p className={styles.compile_student_name}>
-                  {answeredObjectiveQ[answeredObjectiveQ?.length - 1]?.student}
-                  'S OBJECTIVE SUBMISSION
-                </p>
-              </div> */}
-              <div className={styles.compile_row}>
+            <div className=''>
+              <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
-                {/* <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Total Marks</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{totalMarks}</p>
-                  </div>
-                </div> */}
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Total Marks</p>
+                  <p className='fs-1 fw-bold'>
+                    {submittedAssignment?.total_marks}
+                  </p>
+                </div>
                 {/* score */}
-                <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Score</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{score}</p>
-                  </div>
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Score</p>
+                  <p className='fs-1 fw-bold'>{submittedAssignment?.score}</p>
                 </div>
                 {/* percentage */}
-                <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Percentage</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{percentage}%</p>
-                  </div>
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Percentage</p>
+                  <p className='fs-1 fw-bold'>
+                    {submittedAssignment?.percentage}
+                  </p>
                 </div>
-                {/* grade */}
-                {/* <div className={styles.compile_container}>
-                <p className={styles.compile_tag}>Grade</p>
-                <div className={styles.compile_box}>
-                  <p className={styles.compile_score}>3 / 5</p>
-                </div>
-              </div> */}
               </div>
               <SubmissionTable
                 centered
                 isLoading={allLoading}
-                // onRowStatusToggle={async (data) => await onStatusToggle(data)}
-                // onRowUpdate={(id) => navigate(`${location.pathname}/edit/${id}`)}
-                // onRowDelete={async (data) => await onDelete(data)}
+                isStudent={true}
+                // addAssignmentResult={addAssignmentResult}
+                // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
                   {
@@ -429,59 +406,52 @@ const StudentResults = () => {
                     accessor: "answer_state",
                   },
                 ]}
-                data={updateQuestionNumbers(answeredObjResults)}
+                data={submittedAssignment?.questions}
+                markedQ={markedQ}
+                result={
+                  question_type === "objective"
+                    ? submittedAssignment
+                    : markedAssignmentResults
+                }
               />
             </div>
           )}
 
         {!allLoading &&
-          answeredTheoryResults.length >= 1 &&
+          markedAssignmentResults?.questions?.length > 0 &&
           question_type === "theory" && (
-            <div className="">
-              {/* <div className={styles.compile_student}>
-                <p className={styles.compile_student_name}>
-                  {findStudentId2(studentId)}
-                  'S THEORY SUBMISSION
-                </p>
-              </div> */}
-              <div className={styles.compile_row}>
+            <div className=''>
+              <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
-                {/* <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Total Marks</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{totalMarks2}</p>
-                  </div>
-                </div> */}
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Total Marks</p>
+                  <p className='fs-1 fw-bold'>
+                    {markedAssignmentResults?.total_marks}
+                  </p>
+                </div>
                 {/* score */}
-                <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Score</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{score2}</p>
-                  </div>
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Score</p>
+                  <p className='fs-1 fw-bold'>
+                    {markedAssignmentResults?.score}
+                  </p>
                 </div>
                 {/* percentage */}
-                <div className={styles.compile_container}>
-                  <p className={styles.compile_tag}>Percentage</p>
-                  <div className={styles.compile_box}>
-                    <p className={styles.compile_score}>{percentage2}%</p>
-                  </div>
+                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                  <p className='fs-3 fw-bold'>Percentage</p>
+                  <p className='fs-1 fw-bold'>
+                    {markedAssignmentResults?.percentage}
+                  </p>
                 </div>
-                {/* grade */}
-                {/* <div className={styles.compile_container}>
-                <p className={styles.compile_tag}>Grade</p>
-                <div className={styles.compile_box}>
-                  <p className={styles.compile_score}>3 / 5</p>
-                </div>
-              </div> */}
               </div>
               <SubmissionTable
-                // updatePreviewAnswerFxn={updatePreviewAnswerFxn}
+                updatePreviewAnswerFxn={updatePreviewAnswerFxn}
                 // previewAnswer={previewAnswer}
                 centered
                 isLoading={allLoading}
-                // onRowStatusToggle={async (data) => await onStatusToggle(data)}
-                // onRowUpdate={(id) => navigate(`${location.pathname}/edit/${id}`)}
-                // onRowDelete={async (data) => await onDelete(data)}
+                isStudent={true}
+                // addAssignmentResult={addAssignmentResult}
+                // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
                   {
@@ -502,7 +472,13 @@ const StudentResults = () => {
                     accessor: "teacher_mark",
                   },
                 ]}
-                data={updateQuestionNumbers(answeredTheoryResults)}
+                data={markedAssignmentResults?.questions}
+                markedQ={markedQ}
+                result={
+                  question_type === "objective"
+                    ? submittedAssignment
+                    : markedAssignmentResults
+                }
               />
             </div>
           )}
@@ -512,7 +488,7 @@ const StudentResults = () => {
         toggle={() => setLoginPrompt(!loginPrompt)}
         hasGroupedButtons={true}
         groupedButtonProps={buttonOptions}
-        singleButtonText="Preview"
+        singleButtonText='Preview'
         promptHeader={` CONFIRM RESULT SUBMISSION `}
       ></Prompt>
     </div>

@@ -1,8 +1,5 @@
-// import { getAllMoverDetails } from "@/store/moverSlice";
-// import { Button } from "@nextui-org/button";
 import React, { useRef } from "react";
 import Button from "../buttons/button";
-// import { useSelector } from "react-redux";
 
 const CustomFileInput = ({
   activateError,
