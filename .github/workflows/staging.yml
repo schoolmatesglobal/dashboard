@@ -36,5 +36,3 @@ jobs:
       run: |
         mkdir -p staging.com
         mv build/* staging.com/
-    
-      
