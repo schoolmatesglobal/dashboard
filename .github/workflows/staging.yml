@@ -28,6 +28,15 @@ jobs:
         username: ${{ secrets.staging_username }}
         password: ${{ secrets.staging_password }}
 
+    - name: 📂 List files before move
+      run: |
+        ls -l build/
+    
     - name: 📂 Move files
       run: |
-          mv build/* ./
+        mv build/* ./
+    
+    - name: 📂 List files after move
+      run: |
+        ls -l
+      
