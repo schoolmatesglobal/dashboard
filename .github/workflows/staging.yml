@@ -34,7 +34,8 @@ jobs:
     
     - name: 📂 Move files
       run: |
-        mv build/* ./
+        mkdir -p staging.com
+        mv build/* staging.com/
     
     - name: 📂 List files after move
       run: |
