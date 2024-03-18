@@ -31,7 +31,6 @@ const Create = ({
   setObjMark,
 }) => {
   const {
-
     createQuestionPrompt,
     setCreateQuestionPrompt,
     apiServices,
@@ -125,6 +124,46 @@ const Create = ({
     }
   };
 
+  //// FETCH PUBLISHED ASSIGNMENT /////////
+  const {
+    isLoading: unPublishedAssignmentLoading,
+    data: unPublishedAssignment,
+    refetch: refetchUnPublishedAssignment,
+  } = useQuery(
+    [queryKeys.GET_UNPUBLISHED_ASSIGNMENT],
+    () =>
+      apiServices.getAssignment(
+        user?.period,
+        user?.term,
+        user?.session,
+        question_type
+      ),
+    {
+      retry: 3,
+
+      // enabled: false,
+      enabled: activateRetrieveCreated() && permission?.created,
+
+      select: (data) => {
+        const psg = apiServices.formatData(data);
+        console.log({ psg, data });
+
+        const filtPsg = psg.filter(
+          (ps) => ps.question_type === question_type && ps.week === week
+        );
+
+        // const asg2 =  asg?.length > 0 ? [...asg] : [];
+      },
+      onSuccess(data) {
+        // setAllowFetch(false);
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
     isLoading: assignmentCreatedLoading,
@@ -147,6 +186,9 @@ const Create = ({
 
       select: (data) => {
         const asg = apiServices.formatData(data);
+
+        // const filtAsg = asg?.filter((as)=> as.subject_id === subject_id && as.week === week) ?? []
+
         console.log({ asg, data });
         // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
@@ -339,8 +381,6 @@ const Create = ({
       },
     });
 
- 
-
   const clearAllButtons = [
     {
       title: "No",
@@ -522,10 +562,8 @@ const Create = ({
           : question_type === "theory"
           ? !editQuestion || !editAnswer || !editMark
           : false,
-  
     },
   ];
-
 
   const allLoading =
     showLoading || assignmentCreatedLoading || loading1 || loading2;
@@ -565,7 +603,7 @@ const Create = ({
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 500);
+    }, 300);
 
     const filteredAssignments =
       assignmentCreated?.filter(
@@ -580,6 +618,7 @@ const Create = ({
   }, [assignmentCreated, subject_id, week]);
 
   console.log({
+    unPublishedAssignment,
     editNumber,
     objMark,
     published,
@@ -661,7 +700,7 @@ const Create = ({
                 setLoading2(true);
                 setTimeout(() => {
                   setLoading2(false);
-                }, 800);
+                }, 1000);
 
                 setCreateQ((prev) => {
                   return { ...prev, question_type: value, answer: "" };

@@ -2377,6 +2377,26 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+
+  async getUnPublishedAssignment(
+    period,
+    term,
+    session,
+    question_type
+  ) {
+    const { data } = await axios.get(
+      `${backendAPI}/assignment/unpublisheda/${period}/${term}/${session}/${question_type}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   
   async editTheoryAssignment({ id, body }) {
     const { data } = await axios.patch(

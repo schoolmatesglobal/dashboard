@@ -332,7 +332,6 @@ const Submission = ({
     0
   );
 
-
   useEffect(() => {
     setLoading1(true);
     setTimeout(() => {

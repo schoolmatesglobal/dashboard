@@ -12,6 +12,7 @@ import StudentResults from "./student/studentResults";
 import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
 import Prompt from "../../../components/modals/prompt";
 import { useSubject } from "../../../hooks/useSubjects";
+import Performances from "./performances";
 
 const Assignments = () => {
   const {
@@ -105,14 +106,6 @@ const Assignments = () => {
         variant: `${activeTab === "1" ? "" : "outline"}`,
       });
     }
-
-    // if (permission?.created) {
-    //   arr.push({
-    //     title: "Created",
-    //     onClick: () => setActiveTab("2"),
-    //     variant: `${activeTab === "2" ? "" : "outline"}`,
-    //   });
-    // }
     if (permission?.submissions) {
       arr.push({
         title: "Submissions",
@@ -132,6 +125,20 @@ const Assignments = () => {
         title: "Results",
         onClick: () => setActiveTab("6"),
         variant: `${activeTab === "6" ? "" : "outline"}`,
+      });
+    }
+    if (permission?.performances) {
+      arr.push({
+        title: "Performance",
+        onClick: () => setActiveTab("7"),
+        variant: `${activeTab === "7" ? "" : "outline"}`,
+      });
+    }
+    if (permission?.student_performances) {
+      arr.push({
+        title: "Performance",
+        onClick: () => setActiveTab("8"),
+        variant: `${activeTab === "8" ? "" : "outline"}`,
       });
     }
 
@@ -156,7 +163,7 @@ const Assignments = () => {
     }
   }, []);
 
-  console.log({ user });
+  console.log({ permission, user });
 
   return (
     <PageSheet>
@@ -229,6 +236,26 @@ const Assignments = () => {
           />
         )}
         {activeTab === "6" && permission?.student_results && (
+          <StudentResults
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
+        {activeTab === "7" && permission?.performances && (
+          <Performances
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            answeredObjResults={answeredObjResults}
+            setAnsweredObjResults={setAnsweredObjResults}
+            answeredTheoryResults={answeredTheoryResults}
+            setAnsweredTheoryResults={setAnsweredTheoryResults}
+          />
+        )}
+        {activeTab === "8" && permission?.student_performances && (
           <StudentResults
             markedQ={markedQ}
             setMarkedQ={setMarkedQ}
