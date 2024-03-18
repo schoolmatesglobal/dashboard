@@ -27,9 +27,6 @@ jobs:
         server: cloud102.hostgator.com
         username: ${{ secrets.staging_username }}
         password: ${{ secrets.staging_password }}
-
-    - name: 📂 Create staging.com directory
-      run: mkdir -p staging.com
-      
-    - name: 📂 Move files
-      run: mv build/* staging.com/
+ 
+    - name: 📂 Copy files
+      run: cp build/* /
