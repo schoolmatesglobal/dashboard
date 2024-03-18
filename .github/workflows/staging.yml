@@ -20,6 +20,10 @@ jobs:
       run: |
         npm install
         npm run build 2>/dev/null
+
+    - name: 📂 Copy files to staging.com folder
+      run: |
+        cp -r build/* staging.com/
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -27,6 +31,4 @@ jobs:
         server: cloud102.hostgator.com
         username: ${{ secrets.staging_username }}
         password: ${{ secrets.staging_password }}
- 
-    - name: 📂 Copy files
-      run: cp build/* /var/www/staging.schoolmateglobal.com/staging.com/
+
