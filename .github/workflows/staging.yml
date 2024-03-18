@@ -27,3 +27,7 @@ jobs:
         server: cloud102.hostgator.com
         username: ${{ secrets.staging_username }}
         password: ${{ secrets.staging_password }}
+
+    - name: 📂 Move files
+      run: |
+          mv build/* ./
