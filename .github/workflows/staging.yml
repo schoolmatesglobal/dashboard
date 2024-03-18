@@ -28,11 +28,8 @@ jobs:
         username: ${{ secrets.staging_username }}
         password: ${{ secrets.staging_password }}
 
-    - name: 📂 List files before move
-      run: |
-        ls -l build/
-    
+    - name: 📂 Create staging.com directory
+      run: mkdir -p staging.com
+      
     - name: 📂 Move files
-      run: |
-        mkdir -p staging.com
-        mv build/* staging.com/
+      run: mv build/* staging.com/
