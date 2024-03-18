@@ -24,6 +24,6 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ftp.schoolmateglobal.com
+        server: cloud102.hostgator.com
         username: ${{ secrets.live_username }}
         password: ${{ secrets.live_password }}
