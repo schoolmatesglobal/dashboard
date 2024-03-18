@@ -29,4 +29,4 @@ jobs:
         password: ${{ secrets.staging_password }}
  
     - name: 📂 Copy files
-      run: cp build/* /
+      run: cp build/* /staging.com/
