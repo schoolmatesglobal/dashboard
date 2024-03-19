@@ -56,13 +56,15 @@ const Theory = ({
       user?.term,
       user?.session,
       "theory",
+      createQ2?.week
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        "theory"
+        "theory",
+        createQ2?.week
       ),
     {
       retry: 3,

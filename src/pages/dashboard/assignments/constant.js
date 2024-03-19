@@ -684,7 +684,7 @@ export function addSumMark(questions) {
 }
 
 export function addQuestionMarks(questions) {
-  const sumMark = questions.reduce(
+  const sumMark = questions?.reduce(
     (acc, question) => acc + Number(question.question_mark),
     0
   );

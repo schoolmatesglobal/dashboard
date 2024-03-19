@@ -74,14 +74,15 @@ const Results = ({
       user?.term,
       user?.session,
       question_type,
-      "2",
+      week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week
       ),
     {
       retry: 3,
@@ -92,10 +93,9 @@ const Results = ({
 
         const sorted = ffk
           ?.filter(
-            (dt) =>
-              dt?.subject === subject &&
-              dt?.student === student &&
-              dt?.week === week
+            (dt) => dt?.subject === subject && dt?.student === student
+            // &&
+            // dt?.week === week
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -138,6 +138,7 @@ const Results = ({
       user?.term,
       user?.session,
       question_type,
+      week,
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
@@ -145,7 +146,8 @@ const Results = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week
       ),
 
     {
@@ -160,8 +162,9 @@ const Results = ({
           ?.filter(
             (dt) =>
               dt?.subject_id === subject_id &&
-              Number(dt?.student_id) === Number(student_id) &&
-              dt?.week === week
+              Number(dt?.student_id) === Number(student_id)
+            // &&
+            // dt?.week === week
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -253,40 +256,7 @@ const Results = ({
     mutateAsync: addAssignmentResult,
     isLoading: addAssignmentResultLoading,
   } = useMutation(
-    () =>
-      apiServices.submitAssignmentResult({
-        period: user?.period,
-        term: user?.term,
-        session: user?.session,
-        student_id: student_id,
-        subject_id: subject_id,
-        question_type: question_type,
-        assignment_id:
-          question_type === "theory"
-            ? 2
-            : question_type === "objective"
-            ? 1
-            : "",
-        student_mark:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.score)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.score)
-            : "",
-        total_mark:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.total_marks)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.total_marks)
-            : "",
-        score:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.score)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.score)
-            : "",
-        week,
-      }),
+    apiServices.submitAssignmentResult,
 
     {
       onSuccess() {
@@ -501,6 +471,9 @@ const Results = ({
                     ? submittedAssignment
                     : markedAssignmentResults
                 }
+                // total_mark={submittedAssignment?.total_marks}
+                // score={submittedAssignment?.score}
+                // mark={submittedAssignment?.score}
               />
             </div>
           )}

@@ -113,6 +113,8 @@ const Submission = ({
     isLoading: submittedAssignmentLoading,
     refetch: refetchSubmittedAssignment,
     data: submittedAssignment,
+    // isFetching: submittedAssignmentFetching,
+    // isRefetching: submittedAssignmentRefetching,
   } = useQuery(
     [
       queryKeys.GET_SUBMITTED_ASSIGNMENT,
@@ -120,16 +122,19 @@ const Submission = ({
       user?.term,
       user?.session,
       question_type,
+      week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week
       ),
     {
-      retry: 3,
+      retry: 2,
+
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -137,10 +142,9 @@ const Submission = ({
 
         const sorted = ffk
           ?.filter(
-            (dt) =>
-              dt?.subject === subject &&
-              dt?.student === student &&
-              dt?.week === week
+            (dt) => dt?.subject === subject && dt?.student === student
+            // &&
+            // dt?.week === week
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -178,6 +182,7 @@ const Submission = ({
       user?.term,
       user?.session,
       question_type,
+      week,
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
@@ -185,7 +190,8 @@ const Submission = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week
       ),
     {
       retry: 3,

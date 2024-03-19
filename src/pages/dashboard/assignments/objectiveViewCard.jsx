@@ -26,7 +26,7 @@ const ObjectiveViewCard = ({
     >
       <p className='fs-3 mb-3 lh-base'>
         <span className='fw-bold fs-3'>Q{CQ.question_number}.</span>{" "}
-        {CQ.question}{" "}
+        {CQ.question}
       </p>
       <p className='fw-bold fs-3 mb-3 lh-base'>({CQ.question_mark} mk(s) )</p>
       {CQ.image && (
@@ -64,41 +64,57 @@ const ObjectiveViewCard = ({
           </p>
         </div>
       )}
-      <ButtonGroup
-        options={[
-          {
-            title: "Edit",
-            // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-            onClick: () => {
-              setEditPrompt(true);
-              setEditQuestion(CQ.question);
-              setEditAnswer(CQ.answer);
-              setEditTotalQuestion(CQ.total_question);
-              setEditMark(CQ.question_mark);
-              setEditNumber(CQ.question_number);
-              setEditSwitchNumber(CQ.question_number);
-              setEditOption1(CQ.option1);
-              setEditOption2(CQ.option2);
-              setEditOption3(CQ.option3);
-              setEditOption4(CQ.option4);
-              setEditQuestionId(CQ.id)
+      <div className='d-flex justify-content-between'>
+        <ButtonGroup
+          options={[
+            {
+              title: "Edit",
+              // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+              onClick: () => {
+                setEditPrompt(true);
+                setEditQuestion(CQ.question);
+                setEditAnswer(CQ.answer);
+                setEditTotalQuestion(CQ.total_question);
+                setEditMark(CQ.question_mark);
+                setEditNumber(CQ.question_number);
+                setEditSwitchNumber(CQ.question_number);
+                setEditOption1(CQ.option1);
+                setEditOption2(CQ.option2);
+                setEditOption3(CQ.option3);
+                setEditOption4(CQ.option4);
+                setEditQuestionId(CQ.id);
+              },
+              // variant: `${activeTab === "2" ? "" : "outline"}`,
             },
-            // variant: `${activeTab === "2" ? "" : "outline"}`,
-          },
-          {
-            title: "Delete",
-            onClick: () => {
-              setDeletePrompt(true);
-              setEditQuestion(CQ.question);
-              setEditAnswer(CQ.answer);
-              setEditMark(CQ.question_mark);
-              setEditNumber(CQ.question_number);
-              setEditQuestionId(CQ.id)
+            {
+              title: "Delete",
+              onClick: () => {
+                setDeletePrompt(true);
+                setEditQuestion(CQ.question);
+                setEditAnswer(CQ.answer);
+                setEditMark(CQ.question_mark);
+                setEditNumber(CQ.question_number);
+                setEditQuestionId(CQ.id);
+              },
+              variant: "outline-danger",
             },
-            variant: "outline-danger",
-          },
-        ]}
-      />
+          ]}
+        />
+
+        <div
+          className={`d-flex justify-content-center align-items-center py-0 px-4 my-3  ${
+            CQ.status === "published" ? "bg-success  " : "bg-danger"
+          } bg-opacity-10 `}
+        >
+          <p
+            className={`${
+              CQ.status === "published" ? "text-success  " : "text-danger"
+            }  `}
+          >
+            {CQ.status === "published" ? "published" : "Not published"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

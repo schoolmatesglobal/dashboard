@@ -2143,11 +2143,11 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getAssignment(period, term, session, question_type) {
+  async getAssignment(period, term, session, question_type, week) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/assignment/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/assignment/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2251,11 +2251,11 @@ class APIServies extends Helpers {
 
     return data;
   }
-  async getSubmittedAssignment(period, term, session, question_type) {
+  async getSubmittedAssignment(period, term, session, question_type, week) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/assignment-answer/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/assignment-answer/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2266,11 +2266,11 @@ class APIServies extends Helpers {
 
     return data;
   }
-  async getMarkedAssignment(period, term, session, question_type) {
+  async getMarkedAssignment(period, term, session, question_type, week) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/marked-assignment/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/marked-assignment/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2286,12 +2286,13 @@ class APIServies extends Helpers {
     period,
     term,
     session,
-    question_type
+    question_type,
+    week
   ) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/marked-assignments/${student_id}/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/marked-assignments/${student_id}/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2312,11 +2313,11 @@ class APIServies extends Helpers {
 
     return data;
   }
-  async getAssignmentResult(period, term, session, question_type) {
+  async getAssignmentResult(period, term, session, question_type, week) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/get-assignment-result/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/get-assignment-result/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2332,12 +2333,13 @@ class APIServies extends Helpers {
     period,
     term,
     session,
-    question_type
+    question_type,
+    week
   ) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
-      `${backendAPI}/get-student-result/${student_id}/${period}/${term}/${session}/${question_type}`,
+      `${backendAPI}/get-student-result/${student_id}/${period}/${term}/${session}/${question_type}/${week}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2378,13 +2380,7 @@ class APIServies extends Helpers {
     return data;
   }
 
-
-  async getUnPublishedAssignment(
-    period,
-    term,
-    session,
-    question_type
-  ) {
+  async getUnPublishedAssignment(period, term, session, question_type) {
     const { data } = await axios.get(
       `${backendAPI}/assignment/unpublisheda/${period}/${term}/${session}/${question_type}`,
       {
@@ -2397,7 +2393,7 @@ class APIServies extends Helpers {
 
     return data;
   }
-  
+
   async editTheoryAssignment({ id, body }) {
     const { data } = await axios.patch(
       `${backendAPI}/edit-thoery-assignment/${id}`,

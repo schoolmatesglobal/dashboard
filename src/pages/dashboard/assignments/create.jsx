@@ -124,50 +124,13 @@ const Create = ({
     }
   };
 
-  //// FETCH PUBLISHED ASSIGNMENT /////////
-  const {
-    isLoading: unPublishedAssignmentLoading,
-    data: unPublishedAssignment,
-    refetch: refetchUnPublishedAssignment,
-  } = useQuery(
-    [queryKeys.GET_UNPUBLISHED_ASSIGNMENT],
-    () =>
-      apiServices.getAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        question_type
-      ),
-    {
-      retry: 3,
-
-      // enabled: false,
-      enabled: activateRetrieveCreated() && permission?.created,
-
-      select: (data) => {
-        const psg = apiServices.formatData(data);
-        console.log({ psg, data });
-
-        const filtPsg = psg.filter(
-          (ps) => ps.question_type === question_type && ps.week === week
-        );
-
-        // const asg2 =  asg?.length > 0 ? [...asg] : [];
-      },
-      onSuccess(data) {
-        // setAllowFetch(false);
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-      // select: apiServices.formatData,
-    }
-  );
 
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
     isLoading: assignmentCreatedLoading,
     data: assignmentCreated,
+    isFetching: assignmentCreatedFetching,
+    isRefetching: assignmentCreatedRefetching,
     refetch: refetchAssignmentCreated,
   } = useQuery(
     [queryKeys.GET_CREATED_ASSIGNMENT],
@@ -176,23 +139,29 @@ const Create = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week
       ),
     {
-      retry: 3,
+      retry: 2,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
 
-      // enabled: false,
-      enabled: activateRetrieveCreated() && permission?.created && allowFetch,
+      enabled: false,
+      // enabled: activateRetrieveCreated() && permission?.created && allowFetch,
 
       select: (data) => {
         const asg = apiServices.formatData(data);
 
-        // const filtAsg = asg?.filter((as)=> as.subject_id === subject_id && as.week === week) ?? []
+        const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ asg, data });
+        console.log({ asg, data, filtAsg });
         // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
-          return asg?.map((ag, i) => {
+          return filtAsg?.map((ag, i) => {
             return {
               id: ag?.id,
               term: user?.term,
@@ -212,10 +181,11 @@ const Create = ({
               total_mark: ag?.total_mark,
               question_mark: ag?.question_mark,
               question_number: ag?.question_number,
+              status: ag?.status,
             };
           });
         } else if (question_type === "theory") {
-          return asg?.map((ag, i) => {
+          return filtAsg?.map((ag, i) => {
             return {
               id: ag?.id,
               term: user?.term,
@@ -231,6 +201,7 @@ const Create = ({
               total_mark: ag?.total_mark,
               question_mark: ag?.question_mark,
               question_number: ag?.question_number,
+              status: ag?.status,
             };
           });
           // setTheoryQ(theo);
@@ -238,7 +209,12 @@ const Create = ({
         }
       },
       onSuccess(data) {
-        setAllowFetch(false);
+        if (question_type === "objective") {
+          setObjectiveQ(data);
+        } else if (question_type === "theory") {
+          setTheoryQ(data);
+        }
+        // setAllowFetch(false);
       },
       onError(err) {
         errorHandler(err);
@@ -346,7 +322,7 @@ const Create = ({
       refetchAssignmentCreated();
       toast.success(
         `Assignment has been ${
-          published ? "unpublished" : "published"
+          published ? "published" : "unpublished"
         } successfully`
       );
     },
@@ -394,46 +370,47 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        setCreateQ((prev) => ({
-          ...prev,
-          total_question: 0,
-          total_mark: 0,
-          question_mark: 0,
-          theory_total_mark: 0,
-          option1: "",
-          option2: "",
-          option3: "",
-          option4: "",
-          question: "",
-          answer: "",
-        }));
-        setObjectiveQ([]);
-        setObj([]);
-        setTheoryQ([]);
-        setClearAllPrompt(false);
-      },
-      variant: "outline",
-    },
-  ];
-
-  const buttonOptions2 = [
-    {
-      title: `${published ? "Unpublish" : "Publish"}`,
-      onClick: () => {
         publishAssignment({
           term: user?.term,
           period: user?.period,
           session: user?.session,
           question_type,
           week,
-          is_publish: published ? 0 : 1,
+          is_publish: published ? 1 : 0,
         });
-        setAllowFetch(true);
+
         refetchAssignmentCreated();
-        setPublished((prev) => !prev);
+        setTimeout(() => {
+          refetchAssignmentCreated();
+          setClearAllPrompt(false);
+        }, 500);
+        setTimeout(() => {
+          refetchAssignmentCreated();
+        }, 1000);
+      },
+      variant: "outline",
+      isLoading: publishAssignmentLoading,
+    },
+  ];
+
+  const buttonOptions2 = [
+    {
+      title: `Publish All`,
+      onClick: () => {
+        setPublished(true);
+        setClearAllPrompt(true);
       },
       isLoading: publishAssignmentLoading,
-      variant: `${published ? "danger" : "success"}`,
+      variant: "success",
+    },
+    {
+      title: `Unpublish All`,
+      onClick: () => {
+        setPublished(false);
+        setClearAllPrompt(true);
+      },
+      isLoading: publishAssignmentLoading,
+      variant: "danger",
     },
   ];
 
@@ -523,11 +500,11 @@ const Create = ({
           refetchAssignmentCreated();
           setTimeout(() => {
             refetchAssignmentCreated();
-          }, 1000);
-          setTimeout(() => {
             setEditPrompt(false);
+          }, 500);
+          setTimeout(() => {
             refetchAssignmentCreated();
-          }, 2000);
+          }, 1000);
         } else if (question_type === "theory") {
           editTheoryAssignment({
             id: editQuestionId,
@@ -541,9 +518,9 @@ const Create = ({
           refetchAssignmentCreated();
           setTimeout(() => {
             refetchAssignmentCreated();
-          }, 1000);
-          setTimeout(() => {
             setEditPrompt(false);
+          }, 500);
+          setTimeout(() => {
             refetchAssignmentCreated();
           }, 2000);
         }
@@ -566,7 +543,12 @@ const Create = ({
   ];
 
   const allLoading =
-    showLoading || assignmentCreatedLoading || loading1 || loading2;
+    showLoading ||
+    assignmentCreatedLoading ||
+    assignmentCreatedRefetching ||
+    assignmentCreatedFetching ||
+    loading1 ||
+    loading2;
 
   const activateAddQuestion = () => {
     if (!subject_id || !week || !question_type) {
@@ -600,41 +582,38 @@ const Create = ({
   }, [subjects]);
 
   useEffect(() => {
-    setLoading1(true);
-    setTimeout(() => {
-      setLoading1(false);
-    }, 300);
-
-    const filteredAssignments =
-      assignmentCreated?.filter(
-        (og) => og.subject_id === subject_id && og.week === week
-      ) ?? [];
-
-    if (question_type === "objective") {
-      setObjectiveQ(filteredAssignments);
-    } else if (question_type === "theory") {
-      setTheoryQ(filteredAssignments);
+    if (activateRetrieveCreated()) {
+      refetchAssignmentCreated();
     }
-  }, [assignmentCreated, subject_id, week]);
+    // refetchAssignmentCreated();
+    // setLoading1(true);
+    // setTimeout(() => {
+    //   setLoading1(false);
+    // }, 700);
+  }, [subject_id, week, question_type]);
 
   console.log({
-    unPublishedAssignment,
-    editNumber,
-    objMark,
+    // unPublishedAssignment,
+    activateRetrieveCreated: activateRetrieveCreated(),
+    assignmentCreatedFetching,
+    assignmentCreatedRefetching,
     published,
-    createQ,
-    newSubjects,
+    // editNumber,
+    // objMark,
+    // published,
+    // createQ,
+    // newSubjects,
     objectiveQ,
     theoryQ,
-    assignmentCreated,
-    allowFetch,
-    allLoading,
-    subjects,
-    period,
-    term,
-    session,
-    question_type,
-    week,
+    // assignmentCreated,
+    // allowFetch,
+    // allLoading,
+    // subjects,
+    // period,
+    // term,
+    // session,
+    // question_type,
+    // week,
   });
 
   return (
@@ -666,7 +645,6 @@ const Create = ({
               ]}
               value={week}
               onChange={({ target: { value } }) => {
-                setAllowFetch(true);
                 setCreateQ((prev) => {
                   return { ...prev, week: value };
                 });
@@ -680,8 +658,6 @@ const Create = ({
               options={newSubjects}
               value={subject_id}
               onChange={({ target: { value } }) => {
-                setAllowFetch(true);
-
                 setCreateQ((prev) => {
                   return { ...prev, subject_id: value };
                 });
@@ -695,13 +671,6 @@ const Create = ({
               options={questionType}
               value={question_type}
               onChange={({ target: { value } }) => {
-                setAllowFetch(true);
-
-                setLoading2(true);
-                setTimeout(() => {
-                  setLoading2(false);
-                }, 1000);
-
                 setCreateQ((prev) => {
                   return { ...prev, question_type: value, answer: "" };
                 });
@@ -919,17 +888,15 @@ const Create = ({
         setObjMark={setObjMark}
       />
 
-      {/* clear all prompt */}
+      {/* publish all prompt */}
       <Prompt
-        promptHeader={`CONFIRM CLEAR-ALL ACTION`}
+        promptHeader={`${published ? "PUBLISH" : "UNPUBLISH"} ALL QUESTIONS`}
         toggle={() => setClearAllPrompt(!clearAllPrompt)}
         isOpen={clearAllPrompt}
         hasGroupedButtons={true}
         groupedButtonProps={clearAllButtons}
       >
-        <p className={styles.create_question_question}>
-          Are you sure you want to clear all questions created?
-        </p>
+        <p className='fs-3 w-100 text-center fw-semibold'>Are you sure?</p>
       </Prompt>
 
       {/* Edit question prompt */}

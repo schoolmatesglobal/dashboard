@@ -36,10 +36,11 @@ const SubmissionTable = ({
   action = [],
   markedQ,
   result,
+  total_mark,
+  score,
+  mark,
 }) => {
-
-  
-  const { myStudents, permission } = useAssignments();
+  const { myStudents, permission, user } = useAssignments();
 
   const { question_type, subject, student } = markedQ;
 
@@ -98,7 +99,23 @@ const SubmissionTable = ({
     {
       title: "Yes Submit",
       onClick: () => {
-        addAssignmentResult();
+        const assg = data?.map((as, i) => {
+          return {
+            period: user?.period,
+            term: user?.term,
+            session: user?.session,
+            student_id: as?.student_id,
+            subject_id: as?.subject_id,
+            question_type: as?.question_type,
+            assignment_id: as?.assignment_id,
+            mark: result?.score,
+            total_mark: result?.total_marks,
+            score: result?.score,
+            week: as?.week,
+          };
+        });
+
+        addAssignmentResult(assg);
 
         setTimeout(() => {
           setLoginPrompt2(false);

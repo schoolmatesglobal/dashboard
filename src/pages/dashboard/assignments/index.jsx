@@ -163,7 +163,7 @@ const Assignments = () => {
     }
   }, []);
 
-  console.log({ permission, user });
+  // console.log({ permission, user });
 
   return (
     <PageSheet>
