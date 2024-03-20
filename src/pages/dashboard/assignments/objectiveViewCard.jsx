@@ -17,6 +17,7 @@ const ObjectiveViewCard = ({
   setDeletePrompt,
   setEditSwitchNumber,
   setEditQuestionId,
+  setEditPublish,
 }) => {
   return (
     <div
@@ -83,6 +84,7 @@ const ObjectiveViewCard = ({
                 setEditOption3(CQ.option3);
                 setEditOption4(CQ.option4);
                 setEditQuestionId(CQ.id);
+                setEditPublish(CQ.status === "published" ? true : false)
               },
               // variant: `${activeTab === "2" ? "" : "outline"}`,
             },

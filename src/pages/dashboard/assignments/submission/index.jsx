@@ -375,6 +375,7 @@ const Submission = ({
                 });
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
+                setMarkedTheoQ2([]);
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -397,6 +398,7 @@ const Submission = ({
                 });
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
+                setMarkedTheoQ2([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -434,6 +436,7 @@ const Submission = ({
                 });
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
+                setMarkedTheoQ2([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -473,6 +476,7 @@ const Submission = ({
                 });
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
+                setMarkedTheoQ2([]);
 
                 // resetObjectiveMarkFxn();
                 // resetTheoryMarkFxn();
@@ -546,6 +550,7 @@ const Submission = ({
 
               <Theory
                 refetchMarkedAssignment={refetchMarkedAssignment}
+                refetchSubmittedAssignment={refetchSubmittedAssignment}
                 assignmentLoading={allLoading}
                 data={answeredTheoQ}
                 markedTheoQ={markedTheoQ}

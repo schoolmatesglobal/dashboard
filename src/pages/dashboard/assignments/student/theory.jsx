@@ -56,7 +56,7 @@ const Theory = ({
       user?.term,
       user?.session,
       "theory",
-      createQ2?.week
+      createQ2?.week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
@@ -321,7 +321,8 @@ const Theory = ({
                     >
                       <p className='fs-3 mb-4 lh-base'>
                         <span className='fs-3 fw-bold'>
-                          {CQ.question_number}.{/* Q{index + 1}. */}
+                          {/* {CQ.question_number}. */}
+                          {index + 1}.
                         </span>{" "}
                         {CQ.question}
                       </p>

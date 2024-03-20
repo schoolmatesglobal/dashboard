@@ -70,7 +70,7 @@ const Objective = ({
         user?.term,
         user?.session,
         "objective",
-        createQ2?.week,
+        createQ2?.week
       ),
     {
       retry: 3,
@@ -330,7 +330,7 @@ const Objective = ({
                     >
                       <p className='fs-3 mb-3 lh-base'>
                         <span className='fw-bold fs-3'>
-                          {CQ.question_number}.
+                          {index + 1}.{/* {CQ.question_number}. */}
                         </span>{" "}
                         {CQ.question}{" "}
                       </p>

@@ -98,6 +98,7 @@ const Create = ({
   const [editNumber, setEditNumber] = useState(0);
   const [editSwitchNumber, setEditSwitchNumber] = useState(editNumber ?? 0);
   const [editQuestionId, setEditQuestionId] = useState("");
+  const [editPublish, setEditPublish] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [finalTheoryArray, setFinalTheoryArray] = useState([]);
   const [switchArray, setSwitchArray] = useState([]);
@@ -123,7 +124,6 @@ const Create = ({
       return false;
     }
   };
-
 
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
@@ -495,6 +495,7 @@ const Create = ({
               option2: editOption2,
               option3: editOption3,
               option4: editOption4,
+              status: editPublish ? "published" : "unpublished",
             },
           ]);
           refetchAssignmentCreated();
@@ -513,6 +514,7 @@ const Create = ({
               answer: editAnswer,
               question_number: editNumber,
               question_mark: editMark,
+              status: editPublish ? "published" : "unpublished",
             },
           });
           refetchAssignmentCreated();
@@ -785,6 +787,7 @@ const Create = ({
                         setEditQuestion={setEditQuestion}
                         setEditAnswer={setEditAnswer}
                         setEditSwitchNumber={setEditSwitchNumber}
+                        setEditPublish={setEditPublish}
                         editQuestionId={editQuestionId}
                         setEditQuestionId={setEditQuestionId}
                         index={index}
@@ -829,6 +832,7 @@ const Create = ({
                       setEditQuestion={setEditQuestion}
                       setEditAnswer={setEditAnswer}
                       setEditSwitchNumber={setEditSwitchNumber}
+                      setEditPublish={setEditPublish}
                       editQuestionId={editQuestionId}
                       setEditQuestionId={setEditQuestionId}
                     />
@@ -1074,7 +1078,7 @@ const Create = ({
                 </div>
               </div>
             </div>
-            <p className='fw-bold fs-4 my-4'>Mark Computation</p>
+            <p className='fw-bold fs-4 mb-4 mt-5'>Mark Computation</p>
             <div className='d-flex flex-column gap-3'>
               <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
@@ -1097,6 +1101,37 @@ const Create = ({
                   <p className='fs-4'>Question Mark</p>
                 </div>
               </div>
+            </div>
+
+            <p className='fw-bold fs-4 mb-4 mt-5'>Publish Status</p>
+            <div
+              className={`d-flex align-items-center gap-3 cursor-pointer ${
+                editPublish ? "bg-success" : "bg-danger"
+              } py-4 px-3 bg-opacity-10`}
+            >
+              <input
+                type='checkbox'
+                name='radio-1'
+                className=''
+                checked={editPublish}
+                id='publishedStatus'
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  // color: "green",
+                  // borderRadius: "100px",
+                }}
+                onChange={(e) => setEditPublish((prev) => !prev)}
+                value={editPublish}
+              />
+              <label
+                htmlFor='publishedStatus'
+                className={`fs-4 ${
+                  editPublish ? "text-success" : "text-danger"
+                }`}
+              >
+                {editPublish ? "Published" : "Unpublished"}
+              </label>
             </div>
           </div>
         )}
@@ -1165,15 +1200,7 @@ const Create = ({
                 }}
               />
             </div>
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                margin: "10px 0px",
-              }}
-            >
-              Mark Computation
-            </p>
+            <p className='fw-bold fs-4 mb-4 mt-5'>Mark Computation</p>
             <div className='d-flex flex-column gap-3'>
               {/*Question Mark */}
               <div className='d-flex align-items-center gap-3'>
@@ -1204,6 +1231,37 @@ const Create = ({
                 </div>
               </div>
               {/* Total Question */}
+            </div>
+
+            <p className='fw-bold fs-4 mb-4 mt-5'>Publish Status</p>
+            <div
+              className={`d-flex align-items-center gap-3 cursor-pointer ${
+                editPublish ? "bg-success" : "bg-danger"
+              } py-4 px-3 bg-opacity-10`}
+            >
+              <input
+                type='checkbox'
+                name='radio-1'
+                className=''
+                checked={editPublish}
+                id='publishedStatus'
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  // color: "green",
+                  // borderRadius: "100px",
+                }}
+                onChange={(e) => setEditPublish((prev) => !prev)}
+                value={editPublish}
+              />
+              <label
+                htmlFor='publishedStatus'
+                className={`fs-4 ${
+                  editPublish ? "text-success" : "text-danger"
+                }`}
+              >
+                {editPublish ? "Published" : "Unpublished"}
+              </label>
             </div>
           </div>
         )}

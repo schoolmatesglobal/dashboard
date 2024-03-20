@@ -2251,6 +2251,21 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async editMarkedTheoryAssignment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/update/theory/assignment/mark`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   async getSubmittedAssignment(period, term, session, question_type, week) {
     // const tempBackend =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";

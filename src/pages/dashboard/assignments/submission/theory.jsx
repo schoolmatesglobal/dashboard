@@ -12,6 +12,7 @@ const Theory = ({
   assignmentLoading,
   data,
   refetchMarkedAssignment,
+  refetchSubmittedAssignment,
   markedTheoQ,
   setMarkedTheoQ,
   markedTheoQ2,
@@ -24,7 +25,6 @@ const Theory = ({
   loading1,
   setLoading1,
 }) => {
-
   const {
     apiServices,
     permission,
@@ -43,6 +43,23 @@ const Theory = ({
     isLoading: submitMarkedTheoryAssignmentLoading,
   } = useMutation(() => apiServices.submitMarkedTheoryAssignment(markedTheoQ), {
     onSuccess() {
+      toast.success("Theory assignment has been marked successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
+
+  //// EDIT MARKED ASSIGNMENT ////
+  const {
+    mutateAsync: editMarkedTheoryAssignment,
+    isLoading: editMarkedTheoryAssignmentLoading,
+  } = useMutation(() => apiServices.editMarkedTheoryAssignment(markedTheoQ2), {
+    onSuccess() {
+      // setAllowFetch(true);
+      // refetchAssignmentCreated();
+      refetchMarkedAssignment();
+      refetchSubmittedAssignment();
       toast.success("Theory assignment has been marked successfully");
     },
     onError(err) {
@@ -99,12 +116,19 @@ const Theory = ({
       title: "Yes Submit",
       disabled: checkEmptyQuestions(),
       onClick: () => {
-        submitMarkedTheoryAssignment();
+        if (markedAssignment?.length > 0) {
+          editMarkedTheoryAssignment();
+        } else {
+          submitMarkedTheoryAssignment();
+        }
         setTimeout(() => {
           setLoginPrompt(false);
         }, 1000);
       },
-      isLoading: submitMarkedTheoryAssignmentLoading,
+      isLoading:
+        markedAssignment?.length > 0
+          ? editMarkedTheoryAssignmentLoading
+          : submitMarkedTheoryAssignmentLoading,
       // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
       //
       // variant: "outline",
@@ -126,8 +150,6 @@ const Theory = ({
   // console.log({ answeredTheoryQ, data });
 
   useEffect(() => {
-   
-
     if (markedAssignment?.length > 0) {
       setArray(markedAssignment);
     } else {
@@ -139,10 +161,11 @@ const Theory = ({
       });
       setArray(newA);
     }
-  }, [markedAssignment, data,]);
+  }, [markedAssignment, data]);
 
   console.log({
     markedTheoQ,
+    markedTheoQ2,
     markedAssignment,
     data,
     array,
@@ -237,83 +260,117 @@ const Theory = ({
                             <AuthInput
                               type='number'
                               placeholder="Teacher's Mark"
-                              // hasError={!!errors.username}
-                              // defaultValue={checkedData2(
-                              //   CQ.question,
-                              //   CQ.answer
-                              // )}
                               defaultValue={CQ?.teacher_mark}
-                              // value={checkedData(CQ.question, CQ.answer)}
-                              // value={checkedData(CQ.question, CQ.answer)}
-                              // name="option"
                               max={Number(CQ?.question_mark)}
                               min={0}
-                              onChange={(e) => {
-                                const inputValue = e.target.value;
-
-                                if (
-                                  Number(inputValue) > Number(CQ?.question_mark)
-                                )
+                              onChange={({ target: { value } }) => {
+                                if (Number(value) > Number(CQ?.question_mark))
                                   return;
 
-                                const indexToUpdate = markedTheoQ?.findIndex(
-                                  (item) => item.question === CQ.question
-                                );
+                                console.log({ value, cq: CQ?.question_mark });
 
-                                const filteredArray = markedTheoQ?.filter(
-                                  (ans) => ans.question !== CQ.question
-                                );
+                                if (markedAssignment?.length > 0) {
+                                  const indexToUpdate = markedTheoQ2?.findIndex(
+                                    (item) => item.question === CQ.question
+                                  );
 
-                                if (indexToUpdate !== -1) {
-                                  setMarkedTheoQ([
-                                    ...filteredArray,
-                                    {
-                                      period: user?.period,
-                                      term: user?.term,
-                                      session: user?.session,
-                                      // student_id: Number(CQ.student_id),
-                                      student_id: CQ.student_id,
-                                      // subject_id: Number(CQ.subject_id),
-                                      subject_id: CQ.subject_id,
-                                      // question_id: Number(CQ.id),
-                                      assignment_id: CQ.assignment_id,
-                                      question: CQ.question,
-                                      // question_number: Number(CQ.question_number),
-                                      question_number: CQ.question_number,
-                                      question_type: CQ.question_type,
-                                      answer: CQ.answer,
-                                      correct_answer: CQ.correct_answer,
-                                      submitted: CQ.submitted,
-                                      // teacher_mark: Number(inputValue),
-                                      teacher_mark: inputValue,
-                                      week: CQ.week,
-                                    },
-                                  ]);
+                                  const filteredArray = markedTheoQ2?.filter(
+                                    (ans) => ans.question !== CQ.question
+                                  );
+
+                                  if (indexToUpdate !== -1) {
+                                    setMarkedTheoQ2([
+                                      ...filteredArray,
+                                      {
+                                        id: CQ.student_id,
+                                        period: user?.period,
+                                        term: user?.term,
+                                        session: user?.session,
+                                        assignment_id: CQ.assignment_id,
+                                        student_id: CQ.student_id,
+                                        subject_id: CQ.subject_id,
+                                        question: CQ.question,
+                                        question_number: CQ.question_number,
+                                        question_type: CQ.question_type,
+                                        answer: CQ.answer,
+                                        correct_answer: CQ.correct_answer,
+                                        submitted: CQ.submitted,
+                                        teacher_mark: value,
+                                        week: CQ.week,
+                                      },
+                                    ]);
+                                  } else {
+                                    setMarkedTheoQ2([
+                                      ...markedTheoQ2,
+                                      {
+                                        id: CQ.student_id,
+                                        period: user?.period,
+                                        term: user?.term,
+                                        session: user?.session,
+                                        assignment_id: CQ.assignment_id,
+                                        student_id: CQ.student_id,
+                                        subject_id: CQ.subject_id,
+                                        question: CQ.question,
+                                        question_number: CQ.question_number,
+                                        question_type: CQ.question_type,
+                                        answer: CQ.answer,
+                                        correct_answer: CQ.correct_answer,
+                                        submitted: CQ.submitted,
+                                        teacher_mark: value,
+                                        week: CQ.week,
+                                      },
+                                    ]);
+                                  }
                                 } else {
-                                  setMarkedTheoQ([
-                                    ...markedTheoQ,
-                                    {
-                                      period: user?.period,
-                                      term: user?.term,
-                                      session: user?.session,
-                                      // student_id: Number(CQ.student_id),
-                                      student_id: CQ.student_id,
-                                      // subject_id: Number(CQ.subject_id),
-                                      subject_id: CQ.subject_id,
-                                      // question_id: Number(CQ.id),
-                                      assignment_id: CQ.assignment_id,
-                                      question: CQ.question,
-                                      // question_number: Number(CQ.question_number),
-                                      question_number: CQ.question_number,
-                                      question_type: CQ.question_type,
-                                      answer: CQ.answer,
-                                      correct_answer: CQ.correct_answer,
-                                      submitted: CQ.submitted,
-                                      // teacher_mark: Number(inputValue),
-                                      teacher_mark: inputValue,
-                                      week: CQ.week,
-                                    },
-                                  ]);
+                                  const indexToUpdate = markedTheoQ?.findIndex(
+                                    (item) => item.question === CQ.question
+                                  );
+
+                                  const filteredArray = markedTheoQ?.filter(
+                                    (ans) => ans.question !== CQ.question
+                                  );
+
+                                  if (indexToUpdate !== -1) {
+                                    setMarkedTheoQ([
+                                      ...filteredArray,
+                                      {
+                                        period: user?.period,
+                                        term: user?.term,
+                                        session: user?.session,
+                                        assignment_id: CQ.assignment_id,
+                                        student_id: CQ.student_id,
+                                        subject_id: CQ.subject_id,
+                                        question: CQ.question,
+                                        question_number: CQ.question_number,
+                                        question_type: CQ.question_type,
+                                        answer: CQ.answer,
+                                        correct_answer: CQ.correct_answer,
+                                        submitted: CQ.submitted,
+                                        teacher_mark: value,
+                                        week: CQ.week,
+                                      },
+                                    ]);
+                                  } else {
+                                    setMarkedTheoQ([
+                                      ...markedTheoQ,
+                                      {
+                                        period: user?.period,
+                                        term: user?.term,
+                                        session: user?.session,
+                                        assignment_id: CQ.assignment_id,
+                                        student_id: CQ.student_id,
+                                        subject_id: CQ.subject_id,
+                                        question: CQ.question,
+                                        question_number: CQ.question_number,
+                                        question_type: CQ.question_type,
+                                        answer: CQ.answer,
+                                        correct_answer: CQ.correct_answer,
+                                        submitted: CQ.submitted,
+                                        teacher_mark: value,
+                                        week: CQ.week,
+                                      },
+                                    ]);
+                                  }
                                 }
                               }}
                               wrapperClassName=''

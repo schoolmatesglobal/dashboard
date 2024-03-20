@@ -17,6 +17,7 @@ const TheoryViewCard = ({
   setDeletePrompt,
   editQuestionId,
   setEditQuestionId,
+  setEditPublish,
 }) => {
   return (
     <div className={styles.create__questions_container}>
@@ -57,6 +58,7 @@ const TheoryViewCard = ({
                 setEditOption4(CQ.option4);
                 setEditPrompt(true);
                 setEditQuestionId(CQ.id);
+                setEditPublish(CQ.status === "published" ? true : false);
                 // console.log({ editMark, qm: CQ.question_mark });
               },
               // variant: `${activeTab === "2" ? "" : "outline"}`,
