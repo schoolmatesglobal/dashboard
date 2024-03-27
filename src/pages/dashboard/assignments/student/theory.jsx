@@ -196,7 +196,7 @@ const Theory = ({
     {
       title: "Submit Theory Assignment",
       onClick: () => displayPrompt(),
-      disabled: checkEmptyQuestions(),
+      disabled: checkEmptyQuestions() || checkEmptyStatus(),
     },
   ];
 
@@ -249,6 +249,12 @@ const Theory = ({
       ]);
     }
   };
+
+  function checkEmptyStatus() {
+    return (
+      answeredTheoryQ.some((obj) => obj.answer === "") 
+    );
+  }
 
   // console.log({ answeredTheoryQ });
   console.log({

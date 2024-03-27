@@ -23,7 +23,7 @@ const ObjectiveViewCard = ({
     <div
       // className={styles.create__questions_container}
       // style={{ width: "100%" }}
-      className='w-100 border border-2 rounded-1 border-opacity-25 p-5'
+      className='w-100 border border-2 rounded-1 border-opacity-25 p-5 bg-white'
     >
       <p className='fs-3 mb-3 lh-base'>
         <span className='fw-bold fs-3'>Q{CQ.question_number}.</span>{" "}

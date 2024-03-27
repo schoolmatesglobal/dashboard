@@ -53,75 +53,49 @@ const Performances = ({
 
   const newStudents = [
     { value: "all students", title: "All Students", id: 999 },
-    ...myStudents
+    ...myStudents,
   ];
 
   const activateRetrieve = () => {
-    if (
-      subject !== "" &&
-      question_type !== "" &&
-      student !== "" &&
-      week !== ""
-    ) {
+    if (subject !== "" && student !== "") {
       return true;
     } else {
       return false;
     }
   };
 
-  /////// FETCH ANSWERED ASSIGNMENTS /////
+  /////// FETCH OBJECTIVE PERFORMANCE /////
   const {
-    isLoading: submittedAssignmentLoading,
-    refetch: refetchSubmittedAssignment,
-    data: submittedAssignment,
+    isLoading: objectivePerformanceLoading,
+    refetch: refetchObjectivePerformance,
+    data: objectivePerformance,
   } = useQuery(
     [
       queryKeys.GET_SUBMITTED_ASSIGNMENT,
       user?.period,
       user?.term,
       user?.session,
-      question_type,
-      "2",
+      student_id,
+      "objective",
+      subject_id,
     ],
     () =>
-      apiServices.getSubmittedAssignment(
+      apiServices.getStudentPerformance(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        student_id,
+        "objective",
+        subject_id
       ),
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
-        const ffk = apiServices.formatData(data);
+        const ook = apiServices.formatData(data);
 
-        const sorted = ffk
-          ?.filter(
-            (dt) =>
-              dt?.subject === subject &&
-              dt?.student === student &&
-              dt?.week === week
-          )
-          ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
-              return -1;
-            }
-            if (a.question_number > b.question_number) {
-              return 1;
-            }
-            return 0;
-          });
-
-        const calculatedData = analyzeQuestions(sorted);
-
-        // console.log({ ffk, data, sorted });
-        if (question_type === "objective") {
-          return calculatedData ?? {};
-        } else {
-          return {};
-        }
+        console.log({ ook, data });
       },
 
       onSuccess(data) {},
@@ -131,68 +105,45 @@ const Performances = ({
       // select: apiServices.formatData,
     }
   );
-
-  ///// FETCH MARKED QUESTIONS //////
+  /////// FETCH THEORY PERFORMANCE /////
   const {
-    isLoading: markedAssignmentResultsLoading,
-    refetch: refetchMarkedAssignmentResults,
-    data: markedAssignmentResults,
+    isLoading: theoryPerformanceLoading,
+    refetch: refetchTheoryPerformance,
+    data: theoryPerformance,
   } = useQuery(
     [
-      queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
-      student_id,
+      queryKeys.GET_SUBMITTED_ASSIGNMENT,
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      student_id,
+      "theory",
+      subject_id,
     ],
     () =>
-      apiServices.getMarkedAssignmentByStudentId(
-        student_id,
+      apiServices.getStudentPerformance(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        student_id,
+        "theory",
+        subject_id
       ),
-
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
-
       select: (data) => {
-        const mmk = apiServices.formatData(data);
+        // const ttk = apiServices.formatData(data);
+        const ttk = data?.data[0]?.students;
 
-        const sorted = mmk
-          ?.filter(
-            (dt) =>
-              dt?.subject_id === subject_id &&
-              Number(dt?.student_id) === Number(student_id) &&
-              dt?.week === week
-          )
-          ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
-              return -1;
-            }
-            if (a.question_number > b.question_number) {
-              return 1;
-            }
-            return 0;
-          });
+        const newData = ttk?.map((tk)=>{
+          return Number(tk.percentage_score) * 100
+        })
 
-        console.log({ mmk, data, sorted });
-
-        const computedTeacherMark = addSumMark(sorted);
-
-        if (question_type === "theory") {
-          return computedTeacherMark ?? {};
-        } else {
-          return {};
-        }
-
-        // return computedTeacherMark ?? [];
+        console.log({ ttk, data, newData });
       },
-      // enabled: false,
+
       onSuccess(data) {},
       onError(err) {
         errorHandler(err);
@@ -216,105 +167,8 @@ const Performances = ({
     },
   ];
 
-  const showNoAssignment = () => {
-    if (
-      question_type === "objective" &&
-      submittedAssignment?.questions?.length === 0
-    ) {
-      return true;
-    } else if (
-      question_type === "theory" &&
-      markedAssignmentResults?.questions?.length === 0
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const showNoAssignment2 = () => {
-    if (question_type === "" && submittedAssignment?.questions?.length === 0) {
-      return true;
-    } else if (
-      question_type === "" &&
-      submittedAssignment?.questions?.length === 0
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const showNoAssignment3 = () => {
-    if (!week || !subject || !question_type || !student) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const allLoading = showLoading || markedAssignmentResultsLoading;
-
-  /////// POST ASSIGNMENT RESULT ////
-  const {
-    mutateAsync: addAssignmentResult,
-    isLoading: addAssignmentResultLoading,
-  } = useMutation(
-    () =>
-      apiServices.submitAssignmentResult({
-        period: user?.period,
-        term: user?.term,
-        session: user?.session,
-        student_id: student_id,
-        subject_id: subject_id,
-        question_type: question_type,
-        assignment_id:
-          question_type === "theory"
-            ? 2
-            : question_type === "objective"
-            ? 1
-            : "",
-        student_mark:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.score)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.score)
-            : "",
-        total_mark:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.total_marks)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.total_marks)
-            : "",
-        score:
-          question_type === "theory"
-            ? Number(markedAssignmentResults?.score)
-            : question_type === "objective"
-            ? Number(submittedAssignment?.score)
-            : "",
-        week,
-      }),
-
-    {
-      onSuccess() {
-        queryClient.invalidateQueries(
-          queryKeys.GET_ASSIGNMENT,
-          user?.period,
-          user?.term,
-          user?.session,
-          createdQuestion?.question_type
-        );
-        toast.success(
-          `${
-            question_type === "objective" ? "Objective" : "Theory"
-          } result has been submitted successfully`
-        );
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
+  const allLoading =
+    showLoading || objectivePerformanceLoading || theoryPerformanceLoading;
 
   const studentData = [
     { name: "Lukaku Romelu", scores: [65, 70, 68, 72, 75, 80, 85, 82, 78, 75] },
@@ -340,11 +194,8 @@ const Performances = ({
   }, [subjects]);
 
   console.log({
-    markedQ,
-    submittedAssignment,
-    markedAssignmentResults,
-    myStudents,
-    newStudents,
+    subject_id,
+    student_id,
   });
 
   return (
@@ -352,7 +203,7 @@ const Performances = ({
       <div className={styles.created}>
         <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between'>
           <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
-            <AuthSelect
+            {/* <AuthSelect
               sort
               options={[
                 { value: "1", title: "Week 1" },
@@ -378,7 +229,7 @@ const Performances = ({
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
-            />
+            /> */}
 
             <AuthSelect
               sort
@@ -402,7 +253,7 @@ const Performances = ({
               // label="Subject"
             />
 
-            <AuthSelect
+            {/* <AuthSelect
               sort
               options={[
                 { value: "objective", title: "Objective" },
@@ -417,7 +268,7 @@ const Performances = ({
               }}
               placeholder='Question Type'
               wrapperClassName='w-100'
-            />
+            /> */}
 
             <AuthSelect
               sort
@@ -462,11 +313,19 @@ const Performances = ({
           )} */}
 
         <div className='mt-5'>
-          {student !== 'all students' &&<LineChart chartTitle={`${student ? 'Performance chart for': "No Chart Result"} ${student}`} />}
-         {student === 'all students' && <LineChart2
-            chartTitle={`Class Chart Performance`}
-            studentData={studentData}
-          />}
+          {student !== "all students" && (
+            <LineChart
+              chartTitle={`${
+                student ? "Performance chart for" : "No Chart Result"
+              } ${student}`}
+            />
+          )}
+          {student === "all students" && (
+            <LineChart2
+              chartTitle={`Class Chart Performance`}
+              studentData={studentData}
+            />
+          )}
         </div>
       </div>
       {/* <div className="d-flex justify-content-center ">

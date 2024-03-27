@@ -35,37 +35,86 @@ const Theory = ({
   } = useAssignments();
 
   const [marked, setMarked] = useState(false);
+  const [checkMark, setCheckMark] = useState([]);
   const [array, setArray] = useState([]);
 
   //// POST MARKED THEORY ASSIGNMENT ///////
   const {
     mutateAsync: submitMarkedTheoryAssignment,
     isLoading: submitMarkedTheoryAssignmentLoading,
-  } = useMutation(() => apiServices.submitMarkedTheoryAssignment(markedTheoQ), {
-    onSuccess() {
-      toast.success("Theory assignment has been marked successfully");
+  } = useMutation(
+    () => {
+      const newTheo = markedTheoQ?.map((th) => {
+        return {
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          assignment_id: th.assignment_id,
+          student_id: th.student_id,
+          subject_id: th.subject_id,
+          question: th.question,
+          question_number: th.question_number,
+          question_type: th.question_type,
+          answer: th.answer,
+          correct_answer: th.correct_answer,
+          submitted: th.submitted,
+          teacher_mark: th.teacher_mark,
+          week: th.week,
+        };
+      });
+      apiServices.submitMarkedTheoryAssignment(newTheo);
     },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+    {
+      onSuccess() {
+        toast.success("Theory assignment has been marked successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
   //// EDIT MARKED ASSIGNMENT ////
   const {
     mutateAsync: editMarkedTheoryAssignment,
     isLoading: editMarkedTheoryAssignmentLoading,
-  } = useMutation(() => apiServices.editMarkedTheoryAssignment(markedTheoQ2), {
-    onSuccess() {
-      // setAllowFetch(true);
-      // refetchAssignmentCreated();
-      refetchMarkedAssignment();
-      refetchSubmittedAssignment();
-      toast.success("Theory assignment has been marked successfully");
+  } = useMutation(
+    () => {
+      const newTheo = markedTheoQ2?.map((th) => {
+        return {
+          id: th.id,
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+          assignment_id: th.assignment_id,
+          student_id: th.student_id,
+          subject_id: th.subject_id,
+          question: th.question,
+          question_number: th.question_number,
+          question_type: th.question_type,
+          question_mark: th.question_mark,
+          answer: th.answer,
+          correct_answer: th.correct_answer,
+          submitted: th.submitted,
+          teacher_mark: th.teacher_mark,
+          week: th.week,
+        };
+      });
+      apiServices.editMarkedTheoryAssignment(newTheo);
     },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+    {
+      onSuccess() {
+        // setAllowFetch(true);
+        // refetchAssignmentCreated();
+        refetchMarkedAssignment();
+        refetchSubmittedAssignment();
+        toast.success("Theory assignment has been marked successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
   const checkEmptyQuestions = () => {
     if (
@@ -123,12 +172,11 @@ const Theory = ({
         }
         setTimeout(() => {
           setLoginPrompt(false);
-        }, 1000);
+        }, 500);
       },
       isLoading:
-        markedAssignment?.length > 0
-          ? editMarkedTheoryAssignmentLoading
-          : submitMarkedTheoryAssignmentLoading,
+        editMarkedTheoryAssignmentLoading ||
+        submitMarkedTheoryAssignmentLoading,
       // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
       //
       // variant: "outline",
@@ -143,7 +191,8 @@ const Theory = ({
           : "Submit Theory Marking"
       }`,
       onClick: () => displayPrompt(),
-      disabled: checkEmptyQuestions(),
+      disabled:
+        checkEmptyQuestions() || checkMarkStatus() || checkMarkStatus2(),
     },
   ];
 
@@ -163,9 +212,25 @@ const Theory = ({
     }
   }, [markedAssignment, data]);
 
+  function checkMarkStatus() {
+    return (
+      markedTheoQ.some((obj) => obj.teacher_mark > obj.question_mark) ||
+      markedTheoQ2.some((obj) => obj.teacher_mark > obj.question_mark)
+    );
+  }
+
+  function checkMarkStatus2() {
+    return (
+      markedTheoQ.some((obj) => obj.teacher_mark === "") ||
+      markedTheoQ2.some((obj) => obj.teacher_mark === "")
+    );
+  }
+
   console.log({
     markedTheoQ,
     markedTheoQ2,
+    checkMarkStatus: checkMarkStatus(),
+    checkMarkStatus2: checkMarkStatus2(),
     markedAssignment,
     data,
     array,
@@ -260,14 +325,27 @@ const Theory = ({
                             <AuthInput
                               type='number'
                               placeholder="Teacher's Mark"
+                              // onKeyDown={(e) => {}}
                               defaultValue={CQ?.teacher_mark}
                               max={Number(CQ?.question_mark)}
                               min={0}
-                              onChange={({ target: { value } }) => {
-                                if (Number(value) > Number(CQ?.question_mark))
-                                  return;
+                              onChange={(e) => {
+                                let value = e.target.value;
 
-                                console.log({ value, cq: CQ?.question_mark });
+                                // setCheckMark([...checkMark, false]);
+
+                                // console.log({
+                                //   value,
+                                //   cq: CQ?.question_mark,
+                                //   checkMark,
+                                // });
+
+                                // if (value > CQ?.question_mark) {
+                                //   // setCheckMark([...checkMark, true]);
+                                //   toast.error(
+                                //     "Mark should not be greater than question mark"
+                                //   );
+                                // }
 
                                 if (markedAssignment?.length > 0) {
                                   const indexToUpdate = markedTheoQ2?.findIndex(
@@ -282,7 +360,7 @@ const Theory = ({
                                     setMarkedTheoQ2([
                                       ...filteredArray,
                                       {
-                                        id: CQ.student_id,
+                                        id: CQ.id,
                                         period: user?.period,
                                         term: user?.term,
                                         session: user?.session,
@@ -292,6 +370,7 @@ const Theory = ({
                                         question: CQ.question,
                                         question_number: CQ.question_number,
                                         question_type: CQ.question_type,
+                                        question_mark: CQ.question_mark,
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
                                         submitted: CQ.submitted,
@@ -303,7 +382,7 @@ const Theory = ({
                                     setMarkedTheoQ2([
                                       ...markedTheoQ2,
                                       {
-                                        id: CQ.student_id,
+                                        id: CQ.id,
                                         period: user?.period,
                                         term: user?.term,
                                         session: user?.session,
@@ -312,6 +391,7 @@ const Theory = ({
                                         subject_id: CQ.subject_id,
                                         question: CQ.question,
                                         question_number: CQ.question_number,
+                                        question_mark: CQ.question_mark,
                                         question_type: CQ.question_type,
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
@@ -342,6 +422,7 @@ const Theory = ({
                                         subject_id: CQ.subject_id,
                                         question: CQ.question,
                                         question_number: CQ.question_number,
+                                        question_mark: CQ.question_mark,
                                         question_type: CQ.question_type,
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
@@ -362,6 +443,7 @@ const Theory = ({
                                         subject_id: CQ.subject_id,
                                         question: CQ.question,
                                         question_number: CQ.question_number,
+                                        question_mark: CQ.question_mark,
                                         question_type: CQ.question_type,
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
@@ -375,7 +457,10 @@ const Theory = ({
                               }}
                               wrapperClassName=''
                             />
-                            <p className='mb-4 fw-bold mt-3 fs-4'>
+                            <p className={`mb-4 fw-bold mt-3 fs-4 `}>
+                              {/* {checkMark
+                                ? "Mark should not be greater"
+                                : "Teacher's Mark"} */}
                               Teacher's Mark
                             </p>
                           </div>
@@ -388,6 +473,17 @@ const Theory = ({
             <div className='d-flex justify-content-center '>
               <ButtonGroup options={buttonOptions2} />
             </div>
+            {checkMarkStatus() && (
+              <p className='w-100 text-center text-danger fs-4 mt-3'>
+                Review marking, teacher's mark should not be more than the
+                question mark.
+              </p>
+            )}
+            {checkMarkStatus2() && (
+              <p className='w-100 text-center text-danger fs-4 mt-3'>
+                Review marking, teacher's mark should not be empty.
+              </p>
+            )}
             <Prompt
               isOpen={loginPrompt}
               toggle={() => setLoginPrompt(!loginPrompt)}
