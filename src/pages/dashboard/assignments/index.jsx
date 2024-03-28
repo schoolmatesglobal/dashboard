@@ -13,6 +13,7 @@ import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
 import Prompt from "../../../components/modals/prompt";
 import { useSubject } from "../../../hooks/useSubjects";
 import Performances from "./performances";
+import Performances2 from "./performances/students";
 
 const Assignments = () => {
   const {
@@ -246,24 +247,10 @@ const Assignments = () => {
           />
         )}
         {activeTab === "7" && permission?.performances && (
-          <Performances
-            markedQ={markedQ}
-            setMarkedQ={setMarkedQ}
-            answeredObjResults={answeredObjResults}
-            setAnsweredObjResults={setAnsweredObjResults}
-            answeredTheoryResults={answeredTheoryResults}
-            setAnsweredTheoryResults={setAnsweredTheoryResults}
-          />
+          <Performances markedQ={markedQ} setMarkedQ={setMarkedQ} />
         )}
         {activeTab === "8" && permission?.student_performances && (
-          <StudentResults
-            markedQ={markedQ}
-            setMarkedQ={setMarkedQ}
-            answeredObjResults={answeredObjResults}
-            setAnsweredObjResults={setAnsweredObjResults}
-            answeredTheoryResults={answeredTheoryResults}
-            setAnsweredTheoryResults={setAnsweredTheoryResults}
-          />
+          <Performances2 markedQ={markedQ} setMarkedQ={setMarkedQ} />
         )}
       </div>
 

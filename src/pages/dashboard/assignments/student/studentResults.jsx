@@ -59,14 +59,15 @@ const StudentResults = ({
       user?.term,
       user?.session,
       question_type,
-      "2",
+      week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week,
       ),
     {
       retry: 3,
@@ -79,8 +80,7 @@ const StudentResults = ({
           ?.filter(
             (dt) =>
               dt?.subject === subject &&
-              dt?.student === student &&
-              dt?.week === week
+              dt?.student === student 
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -123,6 +123,7 @@ const StudentResults = ({
       user?.term,
       user?.session,
       question_type,
+      week,
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
@@ -130,7 +131,8 @@ const StudentResults = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        question_type,
+        week,
       ),
 
     {
@@ -145,8 +147,7 @@ const StudentResults = ({
           ?.filter(
             (dt) =>
               dt?.subject_id === subject_id &&
-              Number(dt?.student_id) === Number(student_id) &&
-              dt?.week === week
+              Number(dt?.student_id) === Number(student_id)
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {

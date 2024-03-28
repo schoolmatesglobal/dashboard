@@ -435,7 +435,7 @@ const Results = ({
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Percentage</p>
                   <p className='fs-1 fw-bold'>
-                    {submittedAssignment?.percentage}
+                    {`${submittedAssignment?.percentage}%`}
                   </p>
                 </div>
               </div>
@@ -501,7 +501,7 @@ const Results = ({
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Percentage</p>
                   <p className='fs-1 fw-bold'>
-                    {markedAssignmentResults?.percentage}
+                    {`${markedAssignmentResults?.percentage}%`}
                   </p>
                 </div>
               </div>

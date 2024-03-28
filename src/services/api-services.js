@@ -167,9 +167,23 @@ class APIServies extends Helpers {
 
     return data;
   }
-  async getStudentPerformance(period, term, session, student_id, type, subject_id) {
+  async getStudentPerformance(period, term, session, subject_id, student_id) {
     const { data } = await axios.get(
-      `${backendAPI}/assignment/performance?period=${period}&term=${term}&session=${session}&student_id=${student_id}&type=${type}&subject_id=${subject_id}`,
+      `${backendAPI}/assignment/performance?period=${period}&term=${term}&session=${session}&student_id=${student_id}&subject_id=${subject_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getAllStudentPerformance(period, term, session, subject_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/assignment/performance?period=${period}&term=${term}&session=${session}&subject_id=${subject_id}`,
       {
         headers: {
           "Content-Type": "application/json",

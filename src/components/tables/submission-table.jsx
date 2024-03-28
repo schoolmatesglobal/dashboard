@@ -108,9 +108,9 @@ const SubmissionTable = ({
             subject_id: as?.subject_id,
             question_type: as?.question_type,
             assignment_id: as?.assignment_id,
-            mark: result?.score,
+            mark: result?.percentage,
             total_mark: result?.total_marks,
-            score: result?.score,
+            score: result?.percentage,
             week: as?.week,
           };
         });
@@ -375,7 +375,7 @@ const SubmissionTable = ({
               <p className='fs-3 fw-bold mb-3'>Total Score</p>
               <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
               <p className='fs-3 fw-bold mb-3'>Percentage</p>
-              <p className='fs-3 mb-5 lh-sm'> {result?.percentage}</p>
+              <p className='fs-3 mb-5 lh-sm'> {`${result?.percentage}%`}</p>
             </div>
           </Prompt>
           <Prompt
