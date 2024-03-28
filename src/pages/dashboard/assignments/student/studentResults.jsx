@@ -123,7 +123,7 @@ const StudentResults = ({
       user?.term,
       user?.session,
       question_type,
-      week,
+      week
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
@@ -132,7 +132,7 @@ const StudentResults = ({
         user?.term,
         user?.session,
         question_type,
-        week,
+        week
       ),
 
     {

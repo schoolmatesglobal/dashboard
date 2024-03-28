@@ -19,12 +19,9 @@ import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
-import { recreateArray } from "./constant";
+import { generateNewArray, recreateArray, recreateArray2 } from "./constant";
 
-const Performances = ({
-  markedQ,
-  setMarkedQ,
-}) => {
+const Performances = ({ markedQ, setMarkedQ }) => {
   const {
     classSubjects,
     apiServices,
@@ -53,6 +50,13 @@ const Performances = ({
     ...myStudents,
   ];
 
+  const findStudentName = (id) => {
+    const studentObj = myStudents?.find((my) => {
+      return Number(my.id) === Number(id);
+    });
+    return studentObj?.title;
+  };
+
   const activateRetrieve = () => {
     if (subject !== "" && student !== "") {
       return true;
@@ -69,6 +73,21 @@ const Performances = ({
     }
   };
 
+  function groupByStudentId(result) {
+    const grouped = {};
+
+    result.forEach((item) => {
+      const { student_id } = item;
+      if (!grouped[student_id]) {
+        grouped[student_id] = [item];
+      } else {
+        grouped[student_id].push(item);
+      }
+    });
+
+    return grouped;
+  }
+
   /////// FETCH ALL PERFORMANCE /////
   const {
     isLoading: allPerformanceLoading,
@@ -83,7 +102,7 @@ const Performances = ({
       subject_id,
     ],
     () =>
-      apiServices.getStudentPerformance(
+      apiServices.getAllStudentPerformance(
         user?.period,
         user?.term,
         user?.session,
@@ -96,7 +115,20 @@ const Performances = ({
       select: (data) => {
         const app = data?.data[0]?.students;
 
-        console.log({ app, data });
+        // const app2 = groupByStudentId(app);
+
+        const app2 = generateNewArray(app)?.map((ap) => {
+          return {
+            name: findStudentName(ap?.student_id),
+            scores: ap?.weekScores,
+          };
+        });
+
+        // const app4 = app3
+
+        console.log({ app, data, app2 });
+
+        return app2;
       },
 
       onSuccess(data) {},
@@ -222,6 +254,7 @@ const Performances = ({
     subject_id,
     student_id,
     performance,
+    allPerformance
   });
 
   return (
@@ -296,7 +329,7 @@ const Performances = ({
             {student === "all students" && (
               <LineChart2
                 chartTitle={`Class Chart Performance`}
-                studentData={studentData}
+                studentData={allPerformance}
               />
             )}
           </div>
