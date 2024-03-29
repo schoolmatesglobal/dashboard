@@ -281,14 +281,16 @@ const Results = ({
   );
 
   useEffect(() => {
-    const sbb2 = subjectsByTeacher?.map((sb) => {
+    const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+      const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+
       return {
-        value: sb.value[0]?.name,
-        title: sb.title[0]?.name,
+        value: sb?.name,
+        title: sb?.name,
       };
     });
 
-    // console.log({sbb2})
+    console.log({sbb2})
 
     if (sbb2?.length > 0) {
       setNewSubjects(sbb2);
