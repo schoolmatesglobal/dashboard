@@ -61,8 +61,31 @@ const AssignClass = () => {
       () => apiServices.getSubjectByClass2(findId()),
       {
         enabled: !!findId(),
-        select: apiServices.formatData,
+        select: (data) => {
+          const newData = apiServices.formatData(data);
+          return newData;
+          // console.log({ data, newData });
+        },
         onError: apiServices.errorHandler,
+        // onSuccess: (data) => {
+        //   // const newData = apiServices.formatData(data);
+
+        //   let name;
+
+        //   const dataIds = staffData?.subjects?.map((x) => {
+        //     data[0]?.subject?.forEach((sb) => {
+        //       if (sb.name === x.name) {
+        //         const xs = subjects?.find((ss) => ss.subject === sb.name);
+        //         name = xs.id;
+        //       }
+        //     });
+        //     // if (x.name === )
+        //     return name;
+        //   });
+
+        //   setCheckedSubjects(dataIds);
+        //   console.log({ dataIds, data, staffData });
+        // },
       }
     );
 
@@ -78,9 +101,9 @@ const AssignClass = () => {
 
   const convertSubjectsArray = () => {
     if (subjectsByClass3?.length > 0) {
-      const st = subjectsByClass3[0]?.subject.map((sg) => {
+      const st = subjectsByClass3[0]?.subject?.map((sg) => {
         let sub = {};
-        subjects.forEach((fe) => {
+        subjects?.forEach((fe) => {
           if (fe.subject === sg.name) {
             sub = fe;
           }
@@ -124,7 +147,7 @@ const AssignClass = () => {
       return;
     }
 
-    if (assignSubjectValue2()?.length === 0) {
+    if (assignSubjectValue()?.length === 0) {
       toast.error("Please ensure subject(s) is assigned");
       return;
     }
@@ -134,7 +157,7 @@ const AssignClass = () => {
       body: {
         class_id: findId(),
         class_assigned: data.class_assigned,
-        subjects: assignSubjectValue2(),
+        subjects: assignSubjectValue(),
       },
       id: staffData.id,
     });
@@ -150,20 +173,24 @@ const AssignClass = () => {
         class_assigned: staffData.class_assigned,
         // sub_class: staffData.sub_class,
       });
-      const dataIds = staffData?.subjects?.map((x) => {
-        subjects?.forEach((sb) => {
-          if (sb.subject === x.name) {
-            name = sb.id;
-          }
+
+      if (subjectsByClass3?.length > 0) {
+        const dataIds = staffData?.subjects?.map((x) => {
+          subjectsByClass3[0]?.subject?.forEach((sb) => {
+            if (sb.name === x.name) {
+              const xs = subjects?.find((ss) => ss.subject === sb.name);
+              name = xs.id;
+            }
+          });
+          // if (x.name === )
+          return name;
         });
-        // if (x.name === )
-        return name;
-      });
-      // setCheckedSubjects([]);
-      setCheckedSubjects(dataIds);
-      // console.log({ dataIds, sd: staffData.subjects, checkedSubjects });
+
+        setCheckedSubjects(dataIds);
+      }
+
     }
-  }, [staffData, subjects]);
+  }, [staffData, subjects, subjectsByClass3]);
 
   const isLoading =
     promoteIsLoading ||
@@ -175,6 +202,8 @@ const AssignClass = () => {
     staffData,
     currentSubjects,
     checkedSubjects,
+    subjects,
+    subjectsByClass3,
     //   // subjects,
     //   // checkedSubjects,
     // assignSubjectValue: assignSubjectValue(),

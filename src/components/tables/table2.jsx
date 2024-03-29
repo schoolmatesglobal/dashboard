@@ -90,8 +90,8 @@ const CustomTable2 = ({
 
   const checkSingleRow = (id) => {
     if (checkedRows.includes(id)) {
-      const filter = checkedRows.filter((r) => r !== id);
-      const filter2 = currentSubjects.filter((r) => r !== id);
+      const filter = checkedRows?.filter((r) => r !== id);
+      const filter2 = currentSubjects?.filter((r) => r !== id);
       setCheckedRows(filter);
       setCurrentSubjects(filter2);
     } else {

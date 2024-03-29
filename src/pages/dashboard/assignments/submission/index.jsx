@@ -49,9 +49,7 @@ const Submission = ({
     myStudents,
   } = useAssignments();
 
-  const {
-    studentByClass2
-  } = useStudentAssignments();
+  const { studentByClass2 } = useStudentAssignments();
 
   const {
     question_type,
@@ -236,8 +234,6 @@ const Submission = ({
     }
   );
 
- 
-
   const buttonOptions = [
     {
       title: "Cancel",
@@ -330,6 +326,8 @@ const Submission = ({
     (acc, quest) => acc + Number(quest?.question_mark),
     0
   );
+
+ 
 
   useEffect(() => {
     setLoading1(true);

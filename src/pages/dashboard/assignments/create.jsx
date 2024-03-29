@@ -18,7 +18,6 @@ import MarkCard from "./markCard";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
 
-
 const Create = ({
   createQ,
   setCreateQ,
@@ -126,6 +125,13 @@ const Create = ({
     }
   };
 
+  function trigger() {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, 500);
+  }
+
   //// FETCH ASSIGNMENTS CREATED /////////
   const {
     isLoading: assignmentCreatedLoading,
@@ -210,6 +216,7 @@ const Create = ({
         }
       },
       onSuccess(data) {
+        trigger();
         if (question_type === "objective") {
           setObjectiveQ(data);
         } else if (question_type === "theory") {
@@ -381,13 +388,14 @@ const Create = ({
         });
 
         refetchAssignmentCreated();
-        setTimeout(() => {
-          refetchAssignmentCreated();
-          setClearAllPrompt(false);
-        }, 500);
-        setTimeout(() => {
-          refetchAssignmentCreated();
-        }, 1000);
+        setClearAllPrompt(false);
+        // trigger();
+        // setTimeout(() => {
+        //   refetchAssignmentCreated();
+        // }, 500);
+        // setTimeout(() => {
+        //   refetchAssignmentCreated();
+        // }, 1000);
       },
       variant: "outline",
       isLoading: publishAssignmentLoading,
@@ -500,13 +508,14 @@ const Create = ({
             },
           ]);
           refetchAssignmentCreated();
-          setTimeout(() => {
-            refetchAssignmentCreated();
-            setEditPrompt(false);
-          }, 500);
-          setTimeout(() => {
-            refetchAssignmentCreated();
-          }, 1000);
+          setEditPrompt(false);
+          // trigger();
+          // setTimeout(() => {
+          //   refetchAssignmentCreated();
+          // }, 500);
+          // setTimeout(() => {
+          //   refetchAssignmentCreated();
+          // }, 1000);
         } else if (question_type === "theory") {
           editTheoryAssignment({
             id: editQuestionId,
@@ -519,13 +528,11 @@ const Create = ({
             },
           });
           refetchAssignmentCreated();
-          setTimeout(() => {
-            refetchAssignmentCreated();
-            setEditPrompt(false);
-          }, 500);
-          setTimeout(() => {
-            refetchAssignmentCreated();
-          }, 2000);
+          setEditPrompt(false);
+          // trigger();
+          // setTimeout(() => {
+          //   refetchAssignmentCreated();
+          // }, 500);
         }
       },
       variant: "outline",
@@ -601,22 +608,9 @@ const Create = ({
     assignmentCreatedFetching,
     assignmentCreatedRefetching,
     published,
-    // editNumber,
-    // objMark,
-    // published,
-    // createQ,
-    // newSubjects,
+
     objectiveQ,
     theoryQ,
-    // assignmentCreated,
-    // allowFetch,
-    // allLoading,
-    // subjects,
-    // period,
-    // term,
-    // session,
-    // question_type,
-    // week,
   });
 
   return (
