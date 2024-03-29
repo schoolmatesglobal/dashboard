@@ -67,25 +67,7 @@ const AssignClass = () => {
           // console.log({ data, newData });
         },
         onError: apiServices.errorHandler,
-        // onSuccess: (data) => {
-        //   // const newData = apiServices.formatData(data);
-
-        //   let name;
-
-        //   const dataIds = staffData?.subjects?.map((x) => {
-        //     data[0]?.subject?.forEach((sb) => {
-        //       if (sb.name === x.name) {
-        //         const xs = subjects?.find((ss) => ss.subject === sb.name);
-        //         name = xs.id;
-        //       }
-        //     });
-        //     // if (x.name === )
-        //     return name;
-        //   });
-
-        //   setCheckedSubjects(dataIds);
-        //   console.log({ dataIds, data, staffData });
-        // },
+    
       }
     );
 
@@ -190,7 +172,7 @@ const AssignClass = () => {
       }
 
     }
-  }, [staffData, subjects, subjectsByClass3]);
+  }, [staffData,  subjectsByClass3]);
 
   const isLoading =
     promoteIsLoading ||
