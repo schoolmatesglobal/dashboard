@@ -37,6 +37,7 @@ const Create = ({
     errorHandler,
     permission,
     user,
+    subjectsByTeacher,
   } = useAssignments();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
@@ -577,19 +578,23 @@ const Create = ({
   ];
 
   useEffect(() => {
-    const sbb = subjects?.map((sb) => {
+   
+
+    const sbb2 = subjectsByTeacher?.map((sb) => {
       return {
-        value: sb.id,
-        title: sb.subject,
+        value: sb.value[0]?.name,
+        title: sb.title[0]?.name,
       };
     });
 
-    if (sbb?.length > 0) {
-      setNewSubjects(sbb);
+    // console.log({sbb2})
+
+    if (sbb2?.length > 0) {
+      setNewSubjects(sbb2);
     } else {
       setNewSubjects([]);
     }
-  }, [subjects]);
+  }, [subjectsByTeacher]);
 
   useEffect(() => {
     if (activateRetrieveCreated()) {
@@ -604,13 +609,16 @@ const Create = ({
 
   console.log({
     // unPublishedAssignment,
-    activateRetrieveCreated: activateRetrieveCreated(),
-    assignmentCreatedFetching,
-    assignmentCreatedRefetching,
-    published,
+    // activateRetrieveCreated: activateRetrieveCreated(),
+    // assignmentCreatedFetching,
+    // assignmentCreatedRefetching,
+    // published,
 
-    objectiveQ,
-    theoryQ,
+    // objectiveQ,
+    // theoryQ,
+    subjectsByTeacher,
+    subjects,
+    newSubjects,
   });
 
   return (

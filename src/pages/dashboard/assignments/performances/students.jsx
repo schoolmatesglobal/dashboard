@@ -21,7 +21,7 @@ import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
 import { recreateArray } from "./constant";
 
-const Performances2 = ({ markedQ, setMarkedQ }) => {
+const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
   const {
     classSubjects,
     apiServices,
@@ -162,7 +162,7 @@ const Performances2 = ({ markedQ, setMarkedQ }) => {
           <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
             <AuthSelect
               sort
-              options={newSubjects}
+              options={studentSubjects}
               value={subject}
               // defaultValue={subject && subject}
               onChange={({ target: { value } }) => {

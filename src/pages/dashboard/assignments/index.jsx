@@ -156,8 +156,6 @@ const Assignments = () => {
     },
   ];
 
- 
-
   useEffect(() => {
     if (permission?.view) {
       setActiveTab("5");
@@ -252,7 +250,11 @@ const Assignments = () => {
           <Performances markedQ={markedQ} setMarkedQ={setMarkedQ} />
         )}
         {activeTab === "8" && permission?.student_performances && (
-          <Performances2 markedQ={markedQ} setMarkedQ={setMarkedQ} />
+          <Performances2
+            markedQ={markedQ}
+            setMarkedQ={setMarkedQ}
+            studentSubjects={studentSubjects}
+          />
         )}
       </div>
 
