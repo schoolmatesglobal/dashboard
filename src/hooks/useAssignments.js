@@ -105,11 +105,11 @@ export const useAssignments = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("assignments");
 
-  const { studentByClassAndSession } = useStudent();
+  const { studentByClass2 } = useStudent();
 
   const [createQuestionPrompt, setCreateQuestionPrompt] = useState(false);
 
-  const myStudents = studentByClassAndSession?.map((ms, index) => {
+  const myStudents = studentByClass2?.map((ms, index) => {
     return {
       value: `${ms.surname} ${ms.firstname}`,
       title: `${ms.surname} ${ms.firstname}`,
@@ -153,6 +153,8 @@ export const useAssignments = () => {
       },
     }
   );
+
+  // console.log({ studentByClass2, studentByClassAndSession });
 
   return {
     activeTab,

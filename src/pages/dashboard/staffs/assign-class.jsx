@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-formid";
 import { toast } from "react-toastify";
 import { Col, Row } from "reactstrap";
@@ -21,6 +21,8 @@ const AssignClass = () => {
     // subjects: subjectsByClass,
     // subjectsByClass2,
   } = useClasses();
+
+  const [currentSubjects, setCurrentSubjects] = useState([]);
 
   const {
     assignClass,
@@ -99,22 +101,21 @@ const AssignClass = () => {
 
   const assignSubjectValue = () => {
     return checkedSubjects?.map((rowId) => {
-      const findSubject = subjects.find((ns) => ns.id === rowId);
+      const findSubject = subjects?.find((ns) => ns.id === rowId);
+      // return { name: rowId };
+      return { name: findSubject?.subject };
+    });
+  };
+
+  const assignSubjectValue2 = () => {
+    return currentSubjects?.map((rowId) => {
+      const findSubject = subjects?.find((ns) => ns.id === rowId);
       // return { name: rowId };
       return { name: findSubject?.subject };
     });
   };
 
   const onSubmit = async (data) => {
-    // console.log({
-    //   body: {
-    //     class_id: findId(),
-    //     class_assigned: data.class_assigned,
-    //     subjects: assignSubjectValue(),
-    //   },
-    //   id: staffData.id,
-    // });
-
     if (staffData.designation_id !== "4")
       return toast.error("Staff is not a teacher");
 
@@ -123,16 +124,17 @@ const AssignClass = () => {
       return;
     }
 
-    if (assignSubjectValue()?.length === 0) {
+    if (assignSubjectValue2()?.length === 0) {
       toast.error("Please ensure subject(s) is assigned");
       return;
     }
+    // console.log({dc: data.class_assigned})
 
     assignClass({
       body: {
         class_id: findId(),
         class_assigned: data.class_assigned,
-        subjects: assignSubjectValue(),
+        subjects: assignSubjectValue2(),
       },
       id: staffData.id,
     });
@@ -169,18 +171,14 @@ const AssignClass = () => {
     subjectIsLoading ||
     subjectsByClassLoading3;
 
-  // console.log({
-  //   staffData,
-  //   //   // subjects,
-  //   //   // checkedSubjects,
-  //   //   // assignSubjectValue: assignSubjectValue(),
-  //   //   // sub: subjectsByClass3?.subject,
-  //   //   // convertSubjectsArray: convertSubjectsArray(),
-  //   //   // subjectsByClass3,
-  //   //   // inputclass: inputs.class_assigned,
-  //   //   // findId: findId(),
-  //   //   // classes,
-  // });
+  console.log({
+    staffData,
+    currentSubjects,
+    checkedSubjects,
+    //   // subjects,
+    //   // checkedSubjects,
+    // assignSubjectValue: assignSubjectValue(),
+  });
 
   return (
     <DetailView
@@ -239,6 +237,8 @@ const AssignClass = () => {
           checkedRows={checkedSubjects}
           centered
           setCheckedRows={setCheckedSubjects}
+          setCurrentSubjects={setCurrentSubjects}
+          currentSubjects={currentSubjects}
           isLoading={isLoading}
           columns={[
             // {

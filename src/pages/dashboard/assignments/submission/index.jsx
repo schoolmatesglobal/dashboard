@@ -20,6 +20,7 @@ import Prompt from "../../../../components/modals/prompt";
 import Objective from "./objective";
 import Theory from "./theory";
 import { useSubject } from "../../../../hooks/useSubjects";
+import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const Submission = ({
@@ -47,6 +48,10 @@ const Submission = ({
     answeredQuestion,
     myStudents,
   } = useAssignments();
+
+  const {
+    studentByClass2
+  } = useStudentAssignments();
 
   const {
     question_type,
@@ -231,19 +236,7 @@ const Submission = ({
     }
   );
 
-  // const buttonOptions2 = [
-  //   {
-  //     title: `${
-  //       question_type === "objective"
-  //         ? "Submit Objective Assignment"
-  //         : question_type === "theory"
-  //         ? "Submit Theory Assignment"
-  //         : ""
-  //     }`,
-  //     onClick: () => setLoginPrompt(true),
-  //     // disabled: objectiveSubmitted,
-  //   },
-  // ];
+ 
 
   const buttonOptions = [
     {
@@ -344,6 +337,8 @@ const Submission = ({
       setLoading1(false);
     }, 500);
   }, [question_type, subject, week, student]);
+
+  // console.log({studentByClass2})
 
   return (
     <div>

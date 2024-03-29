@@ -28,6 +28,8 @@ const CustomTable2 = ({
   hasCheckBox = false,
   checkedRows = [],
   setCheckedRows = () => null,
+  currentSubjects = [],
+  setCurrentSubjects = () => null,
   rowHasAction = false,
   action = [],
 }) => {
@@ -67,13 +69,13 @@ const CustomTable2 = ({
   const displayStatus = (render) => {
     switch (render) {
       case "disabled":
-        return <p className="text-danger">Inactive</p>;
+        return <p className='text-danger'>Inactive</p>;
 
       case "withdrawn":
-        return <p className="text-danger">Withdrawn</p>;
+        return <p className='text-danger'>Withdrawn</p>;
 
       default:
-        return <p className="text-success">Active</p>;
+        return <p className='text-success'>Active</p>;
     }
   };
 
@@ -89,9 +91,12 @@ const CustomTable2 = ({
   const checkSingleRow = (id) => {
     if (checkedRows.includes(id)) {
       const filter = checkedRows.filter((r) => r !== id);
+      const filter2 = currentSubjects.filter((r) => r !== id);
       setCheckedRows(filter);
+      setCurrentSubjects(filter2);
     } else {
       setCheckedRows([...checkedRows, id]);
+      setCurrentSubjects([...currentSubjects, id]);
     }
   };
 
@@ -103,10 +108,10 @@ const CustomTable2 = ({
     useTable({ columns: memoisedColumns, data: memoisedData });
 
   return (
-    <div className="custom-table-wrapper">
+    <div className='custom-table-wrapper'>
       {isLoading && (
-        <div className="d-flex align-items-center justify-content-center w-full">
-          <Spinner /> <p className="ms-2">Loading...</p>
+        <div className='d-flex align-items-center justify-content-center w-full'>
+          <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
@@ -121,7 +126,7 @@ const CustomTable2 = ({
                   {hasCheckBox && (
                     <th>
                       <Input
-                        type="checkbox"
+                        type='checkbox'
                         checked={checkedRows.length === memoisedData.length}
                         onChange={checkAllBoxes}
                       />
@@ -147,7 +152,7 @@ const CustomTable2 = ({
                     {hasCheckBox && (
                       <td>
                         <Input
-                          type="checkbox"
+                          type='checkbox'
                           checked={checkedRows.includes(row.original.id)}
                           onChange={() => checkSingleRow(row.original.id)}
                         />
@@ -168,7 +173,7 @@ const CustomTable2 = ({
                     {rowHasUpdate && (
                       <td>
                         <Button
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => onRowUpdate(row.original.id)}
                         >
                           Update
@@ -183,7 +188,7 @@ const CustomTable2 = ({
                               ? "dark"
                               : "warning"
                           }
-                          className="d-block mx-auto"
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "disable")}
                         >
                           {row.original.status === "disabled"
@@ -195,8 +200,8 @@ const CustomTable2 = ({
                     {rowHasDelete && (
                       <td>
                         <Button
-                          variant="danger"
-                          className="d-block mx-auto"
+                          variant='danger'
+                          className='d-block mx-auto'
                           onClick={() => openModal(row, "delete")}
                         >
                           Delete
@@ -211,7 +216,7 @@ const CustomTable2 = ({
                           }
                           toggle={() => toggleAction(row.original.id)}
                         >
-                          <DropdownToggle tag="div">
+                          <DropdownToggle tag='div'>
                             <Action
                               onClick={() => toggleAction(row.original.id)}
                             />
@@ -220,7 +225,7 @@ const CustomTable2 = ({
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}
-                                className="px-5 py-3"
+                                className='px-5 py-3'
                                 key={key}
                               >
                                 {title}
@@ -251,7 +256,7 @@ const CustomTable2 = ({
         </div>
       ) : null}
       {!memoisedData.length && !isLoading ? (
-        <p className="text-center">No data to display.</p>
+        <p className='text-center'>No data to display.</p>
       ) : null}
     </div>
   );

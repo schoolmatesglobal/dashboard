@@ -176,9 +176,7 @@ export const useStudent = () => {
           ? state?.creds?.class_name
           : user?.class_assigned
       ),
-    // apiServices.getStudentByClass2(
-    //   user?.class_assigned || principalClassName
-    // ),
+   
     {
       enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
