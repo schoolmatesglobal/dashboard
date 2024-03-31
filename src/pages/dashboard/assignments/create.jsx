@@ -585,7 +585,7 @@ const Create = ({
         value: subId,
         title: sb?.name,
       };
-    });
+    }) ?? []
 
     console.log({sbb2})
 
@@ -774,8 +774,7 @@ const Create = ({
                     return 1;
                   }
                   return 0;
-                })
-                .map((CQ, index) => {
+                })?.map((CQ, index) => {
                   // console.log({ tk: CQ });
                   return (
                     <div className='w-100' key={index}>

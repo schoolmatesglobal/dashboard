@@ -288,7 +288,7 @@ const Results = ({
         value: sb?.name,
         title: sb?.name,
       };
-    });
+    }) ?? []
 
     console.log({sbb2})
 

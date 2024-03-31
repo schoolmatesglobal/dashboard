@@ -289,7 +289,7 @@ const Submission = ({
         value: sb?.name,
         title: sb?.name,
       };
-    });
+    }) ?? []
 
     // console.log({sbb2})
 

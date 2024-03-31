@@ -243,7 +243,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
         value: sb?.name,
         title: sb?.name,
       };
-    });
+    }) ?? []
 
 
     if (sbb2?.length > 0) {
