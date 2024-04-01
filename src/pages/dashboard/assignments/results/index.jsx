@@ -17,6 +17,7 @@ import {
 import Prompt from "../../../../components/modals/prompt";
 import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
+import ButtonGroup from "../../../../components/buttons/button-group";
 
 const Results = ({
   markedQ,
@@ -25,6 +26,8 @@ const Results = ({
   setAnsweredObjResults,
   answeredTheoryResults,
   setAnsweredTheoryResults,
+  ResultTab,
+  setResultTab,
 }) => {
   const {
     classSubjects,
@@ -53,7 +56,7 @@ const Results = ({
   const activateRetrieve = () => {
     if (
       subject !== "" &&
-      question_type !== "" &&
+      // question_type !== "" &&
       student !== "" &&
       week !== ""
     ) {
@@ -74,7 +77,7 @@ const Results = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      "objective",
       week,
     ],
     () =>
@@ -82,7 +85,7 @@ const Results = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type,
+        "objective",
         week
       ),
     {
@@ -111,11 +114,12 @@ const Results = ({
         const calculatedData = analyzeQuestions(sorted);
 
         // console.log({ ffk, data, sorted });
-        if (question_type === "objective") {
-          return calculatedData ?? {};
-        } else {
-          return {};
-        }
+        // if (question_type === "objective") {
+        //   return calculatedData ?? {};
+        // } else {
+        //   return {};
+        // }
+        return calculatedData ?? {};
       },
 
       onSuccess(data) {},
@@ -138,7 +142,7 @@ const Results = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      "theory",
       week,
     ],
     () =>
@@ -147,7 +151,7 @@ const Results = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type,
+        "theory",
         week
       ),
 
@@ -181,11 +185,13 @@ const Results = ({
 
         const computedTeacherMark = addSumMark(sorted);
 
-        if (question_type === "theory") {
-          return computedTeacherMark ?? {};
-        } else {
-          return {};
-        }
+        // if (question_type === "theory") {
+        //   return computedTeacherMark ?? {};
+        // } else {
+        //   return {};
+        // }
+
+        return computedTeacherMark ?? {};
 
         // return computedTeacherMark ?? [];
       },
@@ -214,13 +220,10 @@ const Results = ({
   ];
 
   const showNoAssignment = () => {
-    if (
-      question_type === "objective" &&
-      submittedAssignment?.questions?.length === 0
-    ) {
+    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
       return true;
     } else if (
-      question_type === "theory" &&
+      ResultTab === "2" &&
       markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
@@ -230,11 +233,11 @@ const Results = ({
   };
 
   const showNoAssignment2 = () => {
-    if (question_type === "" && submittedAssignment?.questions?.length === 0) {
+    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
       return true;
     } else if (
-      question_type === "" &&
-      submittedAssignment?.questions?.length === 0
+      ResultTab === "2" &&
+      markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
     } else {
@@ -243,7 +246,7 @@ const Results = ({
   };
 
   const showNoAssignment3 = () => {
-    if (!week || !subject || !question_type || !student) {
+    if (!week || !subject || !student) {
       return true;
     } else {
       return false;
@@ -261,16 +264,30 @@ const Results = ({
 
     {
       onSuccess() {
-        queryClient.invalidateQueries(
-          queryKeys.GET_ASSIGNMENT,
-          user?.period,
-          user?.term,
-          user?.session,
-          createdQuestion?.question_type
-        );
+        if (ResultTab === "1") {
+          queryClient.invalidateQueries(
+            queryKeys.GET_SUBMITTED_ASSIGNMENT,
+            user?.period,
+            user?.term,
+            user?.session,
+            "objective",
+            week
+          );
+        } else {
+          queryClient.invalidateQueries(
+            queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
+            student_id,
+            user?.period,
+            user?.term,
+            user?.session,
+            "theory",
+            week
+          );
+        }
+
         toast.success(
           `${
-            question_type === "objective" ? "Objective" : "Theory"
+            ResultTab === "1" ? "Objective" : "Theory"
           } result has been submitted successfully`
         );
       },
@@ -279,6 +296,33 @@ const Results = ({
       },
     }
   );
+
+  const optionTabShow = () => {
+    const objectiveTab = {
+      title: "Objective",
+      onClick: () => setResultTab("1"),
+      variant: ResultTab === "1" ? "" : "outline",
+    };
+
+    const theoryTab = {
+      title: "Theory",
+      onClick: () => setResultTab("2"),
+      variant: ResultTab === "2" ? "" : "outline",
+    };
+
+    if (
+      submittedAssignment?.questions?.length >= 1 &&
+      markedAssignmentResults?.questions?.length >= 1
+    ) {
+      return [objectiveTab, theoryTab];
+    } else if (submittedAssignment?.questions?.length >= 1) {
+      return [objectiveTab];
+    } else if (markedAssignmentResults?.questions?.length >= 1) {
+      return [theoryTab];
+    }
+
+    return [];
+  };
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
@@ -295,6 +339,15 @@ const Results = ({
       setNewSubjects([]);
     }
   }, [subjectsByTeacher]);
+
+  useEffect(() => {
+   
+    if (markedAssignmentResults?.questions?.length >= 1) {
+      setResultTab("2");
+    } else {
+      setResultTab("1");
+    }
+  }, [week, subject, student]);
 
   console.log({
     markedQ,
@@ -357,7 +410,7 @@ const Results = ({
               // label="Subject"
             />
 
-            <AuthSelect
+            {/* <AuthSelect
               sort
               options={[
                 { value: "objective", title: "Objective" },
@@ -372,7 +425,7 @@ const Results = ({
               }}
               placeholder='Question Type'
               wrapperClassName='w-100'
-            />
+            /> */}
 
             <AuthSelect
               sort
@@ -399,6 +452,10 @@ const Results = ({
           </div>
         </div>
 
+        <div className='w-100 d-flex justify-content-center mt-4'>
+          <ButtonGroup options={optionTabShow()} />
+        </div>
+
         {allLoading && (
           <div className={styles.spinner_container}>
             <Spinner /> <p className=''>Loading...</p>
@@ -417,7 +474,7 @@ const Results = ({
 
         {!allLoading &&
           submittedAssignment?.questions?.length > 0 &&
-          question_type === "objective" && (
+          ResultTab === "1" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
@@ -448,10 +505,10 @@ const Results = ({
                 addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
-                  {
-                    Header: "Question Type",
-                    accessor: "question_type",
-                  },
+                  // {
+                  //   Header: "Question Type",
+                  //   accessor: "question_type",
+                  // },
                   {
                     Header: "Question Number",
                     accessor: "question_number",
@@ -467,11 +524,8 @@ const Results = ({
                 ]}
                 data={submittedAssignment?.questions}
                 markedQ={markedQ}
-                result={
-                  question_type === "objective"
-                    ? submittedAssignment
-                    : markedAssignmentResults
-                }
+                result={submittedAssignment}
+                ResultTab={ResultTab}
                 // total_mark={submittedAssignment?.total_marks}
                 // score={submittedAssignment?.score}
                 // mark={submittedAssignment?.score}
@@ -481,7 +535,7 @@ const Results = ({
 
         {!allLoading &&
           markedAssignmentResults?.questions?.length > 0 &&
-          question_type === "theory" && (
+          ResultTab === "2" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
@@ -516,10 +570,10 @@ const Results = ({
                 rowHasView={true}
                 isStudent={false}
                 columns={[
-                  {
-                    Header: "Question Type",
-                    accessor: "question_type",
-                  },
+                  // {
+                  //   Header: "Question Type",
+                  //   accessor: "question_type",
+                  // },
                   {
                     Header: "Question Number",
                     accessor: "question_number",
@@ -536,11 +590,8 @@ const Results = ({
                 ]}
                 data={markedAssignmentResults?.questions}
                 markedQ={markedQ}
-                result={
-                  question_type === "objective"
-                    ? submittedAssignment
-                    : markedAssignmentResults
-                }
+                result={markedAssignmentResults}
+                ResultTab={ResultTab}
               />
             </div>
           )}

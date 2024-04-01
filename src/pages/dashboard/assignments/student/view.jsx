@@ -234,6 +234,14 @@ const View = ({
     }
   };
 
+  useEffect(() => {
+    if (theoryQ?.length >= 1) {
+      setAssignmentTab("2");
+    } else {
+      setAssignmentTab("1");
+    }
+  }, [week, subject]);
+
   const assignmentLoading =
     showLoading ||
     objectiveQLoading ||
@@ -247,16 +255,6 @@ const View = ({
   // objectiveQIsRefetching;
 
   const location = useLocation();
-  // const history = useHistory();
-
-  // activateRetrieve();
-
-  // useEffect(() => {
-  //   if (activateRetrieve()) {
-  //     refetchObjectiveQ();
-  //     refetchTheoryQ();
-  //   }
-  // }, [subject, week]);
 
   return (
     <div>

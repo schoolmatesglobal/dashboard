@@ -55,6 +55,11 @@ const Assignments = () => {
     setAnsweredObjResults,
     answeredTheoryResults,
     setAnsweredTheoryResults,
+
+    submissionTab,
+    setSubmissionTab,
+    ResultTab,
+    setResultTab,
   } = useAssignments();
 
   const {
@@ -224,6 +229,8 @@ const Assignments = () => {
             setMarkedTheoQ={setMarkedTheoQ}
             markedTheoQ2={markedTheoQ2}
             setMarkedTheoQ2={setMarkedTheoQ2}
+            submissionTab={submissionTab}
+    setSubmissionTab={setSubmissionTab}
           />
         )}
         {activeTab === "4" && permission?.results && (
@@ -234,6 +241,8 @@ const Assignments = () => {
             setAnsweredObjResults={setAnsweredObjResults}
             answeredTheoryResults={answeredTheoryResults}
             setAnsweredTheoryResults={setAnsweredTheoryResults}
+            ResultTab={ResultTab}
+            setResultTab={setResultTab}
           />
         )}
         {activeTab === "6" && permission?.student_results && (
@@ -244,6 +253,8 @@ const Assignments = () => {
             setAnsweredObjResults={setAnsweredObjResults}
             answeredTheoryResults={answeredTheoryResults}
             setAnsweredTheoryResults={setAnsweredTheoryResults}
+            ResultTab={ResultTab}
+            setResultTab={setResultTab}
           />
         )}
         {activeTab === "7" && permission?.performances && (

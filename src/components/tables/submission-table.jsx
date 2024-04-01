@@ -39,6 +39,7 @@ const SubmissionTable = ({
   total_mark,
   score,
   mark,
+  ResultTab
 }) => {
   const { myStudents, permission, user } = useAssignments();
 
@@ -77,9 +78,9 @@ const SubmissionTable = ({
   const buttonOptions2 = [
     {
       title: `${
-        data[data.length - 1]?.question_type === "objective"
+        ResultTab === "1"
           ? "Submit Objective Result"
-          : data[data.length - 1]?.question_type === "theory"
+          : ResultTab === "2"
           ? "Submit Theory Result"
           : ""
       }`,
@@ -106,7 +107,7 @@ const SubmissionTable = ({
             session: user?.session,
             student_id: as?.student_id,
             subject_id: as?.subject_id,
-            question_type: as?.question_type,
+            question_type: ResultTab === '1' ? 'objective' : "theory",
             assignment_id: as?.assignment_id,
             mark: result?.percentage,
             total_mark: result?.total_marks,
@@ -366,7 +367,7 @@ const SubmissionTable = ({
               <p className='fs-3 mb-5 lh-sm'>{student}</p>
               <p className='fs-3 fw-bold mb-3'>Subject</p>
               <p className='fs-3 mb-5 lh-sm'>
-                {subject} ({question_type})
+                {subject} ({ResultTab === '1' ? 'objective' : "theory"})
               </p>
 
               <label className='fs-3 fw-bold mb-3'>Student's Score</label>

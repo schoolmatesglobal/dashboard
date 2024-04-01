@@ -21,6 +21,7 @@ import Objective from "./objective";
 import Theory from "./theory";
 import { useSubject } from "../../../../hooks/useSubjects";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
+import ButtonGroup from "../../../../components/buttons/button-group";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const Submission = ({
@@ -36,6 +37,8 @@ const Submission = ({
   setMarkedTheoQ,
   markedTheoQ2,
   setMarkedTheoQ2,
+  submissionTab,
+  setSubmissionTab,
 }) => {
   const {
     updateActiveTabFxn,
@@ -81,7 +84,7 @@ const Submission = ({
     if (
       week !== "" &&
       subject !== "" &&
-      question_type !== "" &&
+      // question_type !== "" &&
       student !== ""
     ) {
       return true;
@@ -112,11 +115,11 @@ const Submission = ({
     }
   };
 
-  /////// FETCH ANSWERED ASSIGNMENTS /////
+  /////// FETCH ANSWERED OBJECTIVE ASSIGNMENTS /////
   const {
-    isLoading: submittedAssignmentLoading,
-    refetch: refetchSubmittedAssignment,
-    data: submittedAssignment,
+    isLoading: submittedObjAssignmentLoading,
+    refetch: refetchSubmittedObjAssignment,
+    data: submittedObjAssignment,
     // isFetching: submittedAssignmentFetching,
     // isRefetching: submittedAssignmentRefetching,
   } = useQuery(
@@ -125,7 +128,7 @@ const Submission = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      "objective",
       week,
     ],
     () =>
@@ -133,7 +136,73 @@ const Submission = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type,
+        "objective",
+        week
+      ),
+    {
+      retry: 3,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+      enabled: activateRetrieve() && permission?.submissions,
+      // enabled: false,
+      select: (data) => {
+        const ffk = apiServices.formatData(data);
+
+        const sorted = ffk
+          ?.filter(
+            (dt) => dt?.subject === subject && dt?.student === student
+            // &&
+            // dt?.week === week
+          )
+          ?.sort((a, b) => {
+            if (a.question_number < b.question_number) {
+              return -1;
+            }
+            if (a.question_number > b.question_number) {
+              return 1;
+            }
+            return 0;
+          });
+          
+          console.log({ ffk, data, sorted });
+          
+        return sorted;
+      },
+
+      onSuccess(data) {
+        // trigger();
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+  /////// FETCH ANSWERED THEORY ASSIGNMENTS /////
+  const {
+    isLoading: submittedTheoAssignmentLoading,
+    refetch: refetchSubmittedTheoAssignment,
+    data: submittedTheoAssignment,
+    // isFetching: submittedAssignmentFetching,
+    // isRefetching: submittedAssignmentRefetching,
+  } = useQuery(
+    [
+      queryKeys.GET_SUBMITTED_ASSIGNMENT,
+      user?.period,
+      user?.term,
+      user?.session,
+      "theory",
+      week,
+    ],
+    () =>
+      apiServices.getSubmittedAssignment(
+        user?.period,
+        user?.term,
+        user?.session,
+        "theory",
         week
       ),
     {
@@ -165,7 +234,9 @@ const Submission = ({
         return sorted;
       },
 
-      onSuccess(data) {},
+      onSuccess(data) {
+        // trigger();
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -185,7 +256,7 @@ const Submission = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      "theory",
       week,
     ],
     () =>
@@ -194,7 +265,7 @@ const Submission = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type,
+        "theory",
         week
       ),
     {
@@ -227,7 +298,9 @@ const Submission = ({
         return sorted ?? [];
       },
 
-      // onSuccess(data) {},
+      onSuccess(data) {
+        trigger();
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -254,9 +327,9 @@ const Submission = ({
   // const correctCount2 = analyzeQuestions(answeredObjQ);
 
   const showNoAssignment = () => {
-    if (question_type === "objective" && answeredObjQ?.length === 0) {
+    if (submissionTab === "1" && answeredObjQ?.length === 0) {
       return true;
-    } else if (question_type === "theory" && answeredTheoQ?.length === 0) {
+    } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -264,9 +337,9 @@ const Submission = ({
   };
 
   const showNoAssignment2 = () => {
-    if (question_type === "objective" && answeredObjQ?.length === 0) {
+    if (submissionTab === "1" && answeredObjQ?.length === 0) {
       return true;
-    } else if (question_type === "theory" && answeredTheoQ?.length === 0) {
+    } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -274,7 +347,7 @@ const Submission = ({
   };
 
   const showNoAssignment3 = () => {
-    if (!week || !subject || !question_type || !student) {
+    if (!week || !subject || !student) {
       return true;
     } else {
       return false;
@@ -298,14 +371,33 @@ const Submission = ({
   }, [subjectsByTeacher]);
 
   useEffect(() => {
-    if (question_type === "objective") {
-      // setObjectiveQ(filteredAssignments);
-      setAnsweredObjQ(submittedAssignment);
-    } else if (question_type === "theory") {
-      // setTheoryQ(filteredAssignments);
-      setAnsweredTheoQ(submittedAssignment);
+    setAnsweredObjQ(submittedObjAssignment);
+    setAnsweredTheoQ(submittedTheoAssignment);
+  }, [submittedObjAssignment, submittedTheoAssignment, week, subject, student]);
+
+  const optionTabShow = () => {
+    const objectiveTab = {
+      title: "Objective",
+      onClick: () => setSubmissionTab("1"),
+      variant: submissionTab === "1" ? "" : "outline",
+    };
+
+    const theoryTab = {
+      title: "Theory",
+      onClick: () => setSubmissionTab("2"),
+      variant: submissionTab === "2" ? "" : "outline",
+    };
+
+    if (answeredObjQ?.length >= 1 && answeredTheoQ?.length >= 1) {
+      return [objectiveTab, theoryTab];
+    } else if (answeredObjQ?.length >= 1) {
+      return [objectiveTab];
+    } else if (answeredTheoQ?.length >= 1) {
+      return [theoryTab];
     }
-  }, [submittedAssignment, week, subject, question_type, student]);
+
+    return [];
+  };
 
   // console.log({
   //   answeredObjQ,
@@ -313,10 +405,15 @@ const Submission = ({
 
   // const allLoading = showLoading || assignmentLoading;
   const allLoading =
-    showLoading ||
-    submittedAssignmentLoading ||
+    submittedObjAssignmentLoading ||
+    submittedTheoAssignmentLoading ||
     markedAssignmentLoading ||
     loading1;
+
+  const allLoadingObj = submittedObjAssignmentLoading;
+
+  const allLoadingTheo =
+    submittedTheoAssignmentLoading || markedAssignmentLoading || loading1;
 
   const theoScore = answeredTheoQ?.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),
@@ -328,14 +425,23 @@ const Submission = ({
     0
   );
 
-  useEffect(() => {
+  const trigger = () => {
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 500);
-  }, [question_type, subject, week, student]);
+    }, 1000);
+  };
 
-  // console.log({studentByClass2})
+  useEffect(() => {
+    trigger();
+    if (answeredTheoQ?.length >= 1) {
+      setSubmissionTab("2");
+    } else {
+      setSubmissionTab("1");
+    }
+  }, [subject, week, student]);
+
+  console.log({ answeredObjQ, answeredTheoQ, submissionTab });
 
   return (
     <div>
@@ -391,30 +497,13 @@ const Submission = ({
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
                 setMarkedTheoQ2([]);
-
-                // resetObjectiveMarkFxn();
-                // resetTheoryMarkFxn();
-                // resetMarkedObjectiveAnsFxn();
-                // resetMarkedTheoryAnsFxn();
-                // updateAnsweredQuestionFxn({
-                //   subject: value,
-                //   subject_id: findSubjectId(value),
-                // });
-                // if (question_type !== "" && week !== "" && student !== "") {
-                //   setShowLoading(true);
-                //   setTimeout(() => {
-                //     setShowLoading(false);
-                //   }, 1500);
-                //   refetchSubmittedAssignment();
-                //   refetchMarkedAssignment();
-                // }
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'
               // label="Subject"
             />
 
-            <AuthSelect
+            {/* <AuthSelect
               sort
               options={[
                 { value: "objective", title: "Objective" },
@@ -430,25 +519,11 @@ const Submission = ({
                 setMarkedTheoQ([]);
                 setMarkedTheoQ2([]);
 
-                // resetObjectiveMarkFxn();
-                // resetTheoryMarkFxn();
-                // resetMarkedObjectiveAnsFxn();
-                // resetMarkedTheoryAnsFxn();
-                // updateAnsweredQuestionFxn({
-                //   question_type: value,
-                // });
-                // if (subject !== "" && week !== "" && student !== "") {
-                //   setShowLoading(true);
-                //   setTimeout(() => {
-                //     setShowLoading(false);
-                //   }, 1500);
-                //   refetchSubmittedAssignment();
-                //   refetchMarkedAssignment();
-                // }
+              
               }}
               placeholder='Question Type'
               wrapperClassName='w-100'
-            />
+            /> */}
 
             <AuthSelect
               sort
@@ -469,30 +544,16 @@ const Submission = ({
                 // refetchMarkedAssignment();
                 setMarkedTheoQ([]);
                 setMarkedTheoQ2([]);
-
-                // resetObjectiveMarkFxn();
-                // resetTheoryMarkFxn();
-                // resetMarkedObjectiveAnsFxn();
-                // resetMarkedTheoryAnsFxn();
-                // updateAnsweredQuestionFxn({
-                //   student: value,
-                //   student_id: findStudentId(value),
-                //   // subject_id: findSubjectId(value),
-                // });
-                // if (subject !== "" && week !== "" && student !== "") {
-                //   setShowLoading(true);
-                //   setTimeout(() => {
-                //     setShowLoading(false);
-                //   }, 1500);
-                //   refetchSubmittedAssignment();
-                //   refetchMarkedAssignment();
-                // }
               }}
               placeholder='Select Student'
               wrapperClassName='w-100'
               // label="Subject"
             />
           </div>
+        </div>
+
+        <div className='w-100 d-flex justify-content-center mt-4'>
+          <ButtonGroup options={optionTabShow()} />
         </div>
 
         {allLoading && (
@@ -511,54 +572,52 @@ const Submission = ({
             </div>
           )}
 
-        {!allLoading &&
-          answeredObjQ?.length >= 1 &&
-          question_type === "objective" && (
-            <div className=''>
-              <div className='d-flex justify-content-center align-items-center mt-5 '>
-                <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-                  <p className='fs-3 fw-bold'>Total Marks:</p>
-                  <p className='fs-3 fw-bold'>{objScore} mk(s)</p>
-                </div>
+        {!allLoading && answeredObjQ?.length >= 1 && submissionTab === "1" && (
+          <div className=''>
+            <div className='d-flex justify-content-center align-items-center mt-5 '>
+              <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
+                <p className='fs-3 fw-bold'>Total Marks:</p>
+                <p className='fs-3 fw-bold'>{objScore} mk(s)</p>
               </div>
-              <Objective
-                assignmentLoading={allLoading}
-                data={answeredObjQ}
-                refetchMarkedAssignment={refetchMarkedAssignment}
-              />
             </div>
-          )}
+            <Objective
+              assignmentLoading={allLoading}
+              data={answeredObjQ}
+              refetchMarkedAssignment={refetchSubmittedObjAssignment}
+            />
+          </div>
+        )}
 
-        {!allLoading &&
-          answeredTheoQ?.length >= 1 &&
-          question_type === "theory" && (
-            <div className=''>
-              <div className='d-flex justify-content-center align-items-center mt-5 '>
-                <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-                  <p className='fs-3 fw-bold'>Total Marks:</p>
-                  <p className='fs-3 fw-bold'>{theoScore} mk(s)</p>
-                </div>
+        {!allLoading && answeredTheoQ?.length >= 1 && submissionTab === "2" && (
+          <div className=''>
+            <div className='d-flex justify-content-center align-items-center mt-5 '>
+              <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
+                <p className='fs-3 fw-bold'>Total Marks:</p>
+                <p className='fs-3 fw-bold'>{theoScore} mk(s)</p>
               </div>
-
-              <Theory
-                refetchMarkedAssignment={refetchMarkedAssignment}
-                refetchSubmittedAssignment={refetchSubmittedAssignment}
-                assignmentLoading={allLoading}
-                data={answeredTheoQ}
-                markedTheoQ={markedTheoQ}
-                setMarkedTheoQ={setMarkedTheoQ}
-                markedTheoQ2={markedTheoQ2}
-                setMarkedTheoQ2={setMarkedTheoQ2}
-                markedAssignment={markedAssignment}
-                question_type={question_type}
-                subject={subject}
-                week={week}
-                student={student}
-                loading1={loading1}
-                setLoading1={setLoading1}
-              />
             </div>
-          )}
+
+            <Theory
+              refetchMarkedAssignment={refetchMarkedAssignment}
+              refetchSubmittedAssignment={refetchSubmittedTheoAssignment}
+              trigger={trigger}
+              assignmentLoading={allLoading}
+              data={answeredTheoQ}
+              markedTheoQ={markedTheoQ}
+              setMarkedTheoQ={setMarkedTheoQ}
+              markedTheoQ2={markedTheoQ2}
+              setMarkedTheoQ2={setMarkedTheoQ2}
+              markedAssignment={markedAssignment}
+              question_type={question_type}
+              subject={subject}
+              week={week}
+              student={student}
+              student_id={student_id}
+              loading1={loading1}
+              setLoading1={setLoading1}
+            />
+          </div>
+        )}
       </div>
 
       <Prompt

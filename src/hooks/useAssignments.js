@@ -9,6 +9,8 @@ import useLocalStorage from "use-local-storage";
 
 export const useAssignments = () => {
   const [activeTab, setActiveTab] = useState("1");
+  const [submissionTab, setSubmissionTab] = useState("2");
+  const [ResultTab, setResultTab] = useState("2");
 
   const [obj, setObj] = useLocalStorage("obj", []);
 
@@ -236,5 +238,10 @@ export const useAssignments = () => {
     setAnsweredObjResults,
     answeredTheoryResults,
     setAnsweredTheoryResults,
+
+    submissionTab,
+    setSubmissionTab,
+    ResultTab,
+    setResultTab,
   };
 };

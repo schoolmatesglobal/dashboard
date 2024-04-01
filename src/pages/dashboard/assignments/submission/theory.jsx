@@ -7,6 +7,7 @@ import Prompt from "../../../../components/modals/prompt";
 import AuthInput from "../../../../components/inputs/auth-input";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
+import queryKeys from "../../../../utils/queryKeys";
 
 const Theory = ({
   assignmentLoading,
@@ -22,8 +23,10 @@ const Theory = ({
   subject,
   week,
   student,
+  student_id,
   loading1,
   setLoading1,
+  trigger,
 }) => {
   const {
     apiServices,
@@ -35,8 +38,11 @@ const Theory = ({
   } = useAssignments();
 
   const [marked, setMarked] = useState(false);
+  const [load, setLoad] = useState(false);
   const [checkMark, setCheckMark] = useState([]);
   const [array, setArray] = useState([]);
+
+  const queryClient = useQueryClient();
 
   //// POST MARKED THEORY ASSIGNMENT ///////
   const {
@@ -54,7 +60,7 @@ const Theory = ({
           subject_id: th.subject_id,
           question: th.question,
           question_number: th.question_number,
-          question_type: th.question_type,
+          question_type: "theory",
           answer: th.answer,
           correct_answer: th.correct_answer,
           submitted: th.submitted,
@@ -66,6 +72,23 @@ const Theory = ({
     },
     {
       onSuccess() {
+        queryClient.invalidateQueries(
+          queryKeys.GET_SUBMITTED_ASSIGNMENT,
+          user?.period,
+          user?.term,
+          user?.session,
+          "theory",
+          week
+        );
+        queryClient.invalidateQueries(
+          queryKeys.GET_MARKED_ASSIGNMENT,
+          student_id,
+          user?.period,
+          user?.term,
+          user?.session,
+          "theory",
+          week
+        );
         toast.success("Theory assignment has been marked successfully");
       },
       onError(err) {
@@ -91,7 +114,7 @@ const Theory = ({
           subject_id: th.subject_id,
           question: th.question,
           question_number: th.question_number,
-          question_type: th.question_type,
+          question_type: "theory",
           question_mark: th.question_mark,
           answer: th.answer,
           correct_answer: th.correct_answer,
@@ -104,10 +127,25 @@ const Theory = ({
     },
     {
       onSuccess() {
-        // setAllowFetch(true);
-        // refetchAssignmentCreated();
-        refetchMarkedAssignment();
-        refetchSubmittedAssignment();
+        // refetchMarkedAssignment();
+        // refetchSubmittedAssignment();
+        queryClient.invalidateQueries(
+          queryKeys.GET_SUBMITTED_ASSIGNMENT,
+          user?.period,
+          user?.term,
+          user?.session,
+          "theory",
+          week
+        );
+        queryClient.invalidateQueries(
+          queryKeys.GET_MARKED_ASSIGNMENT,
+          student_id,
+          user?.period,
+          user?.term,
+          user?.session,
+          "theory",
+          week
+        );
         toast.success("Theory assignment has been marked successfully");
       },
       onError(err) {
@@ -170,13 +208,16 @@ const Theory = ({
         } else {
           submitMarkedTheoryAssignment();
         }
+        // trigger();
+        setLoad(true);
         setTimeout(() => {
           setLoginPrompt(false);
-        }, 500);
+        }, 700);
       },
-      isLoading:
-        editMarkedTheoryAssignmentLoading ||
-        submitMarkedTheoryAssignmentLoading,
+      isLoading: load,
+      // editMarkedTheoryAssignmentLoading ||
+      // submitMarkedTheoryAssignmentLoading ||
+      // assignmentLoading,
       // isLoading: `${activeTab === "2" ? isLoading : isLoading}`,
       //
       // variant: "outline",
@@ -226,16 +267,16 @@ const Theory = ({
     );
   }
 
-  console.log({
-    markedTheoQ,
-    markedTheoQ2,
-    checkMarkStatus: checkMarkStatus(),
-    checkMarkStatus2: checkMarkStatus2(),
-    markedAssignment,
-    data,
-    array,
-    checkEmptyQuestions: checkEmptyQuestions(),
-  });
+  // console.log({
+  //   markedTheoQ,
+  //   markedTheoQ2,
+  //   checkMarkStatus: checkMarkStatus(),
+  //   checkMarkStatus2: checkMarkStatus2(),
+  //   markedAssignment,
+  //   data,
+  //   array,
+  //   checkEmptyQuestions: checkEmptyQuestions(),
+  // });
 
   // console.log({ setTheoryQ });
 
@@ -247,6 +288,7 @@ const Theory = ({
           <p className={styles.heading}>No Theory Assignment</p>
         </div>
       )} */}
+
       {!assignmentLoading && array?.length >= 1 && (
         <div className={styles.objective}>
           <div className=''>
@@ -332,21 +374,6 @@ const Theory = ({
                               onChange={(e) => {
                                 let value = e.target.value;
 
-                                // setCheckMark([...checkMark, false]);
-
-                                // console.log({
-                                //   value,
-                                //   cq: CQ?.question_mark,
-                                //   checkMark,
-                                // });
-
-                                // if (value > CQ?.question_mark) {
-                                //   // setCheckMark([...checkMark, true]);
-                                //   toast.error(
-                                //     "Mark should not be greater than question mark"
-                                //   );
-                                // }
-
                                 if (markedAssignment?.length > 0) {
                                   const indexToUpdate = markedTheoQ2?.findIndex(
                                     (item) => item.question === CQ.question
@@ -369,7 +396,7 @@ const Theory = ({
                                         subject_id: CQ.subject_id,
                                         question: CQ.question,
                                         question_number: CQ.question_number,
-                                        question_type: CQ.question_type,
+                                        question_type: "theory",
                                         question_mark: CQ.question_mark,
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
@@ -392,7 +419,7 @@ const Theory = ({
                                         question: CQ.question,
                                         question_number: CQ.question_number,
                                         question_mark: CQ.question_mark,
-                                        question_type: CQ.question_type,
+                                        question_type: "theory",
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
                                         submitted: CQ.submitted,
@@ -423,7 +450,7 @@ const Theory = ({
                                         question: CQ.question,
                                         question_number: CQ.question_number,
                                         question_mark: CQ.question_mark,
-                                        question_type: CQ.question_type,
+                                        question_type: "theory",
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
                                         submitted: CQ.submitted,
@@ -444,7 +471,7 @@ const Theory = ({
                                         question: CQ.question,
                                         question_number: CQ.question_number,
                                         question_mark: CQ.question_mark,
-                                        question_type: CQ.question_type,
+                                        question_type: "theory",
                                         answer: CQ.answer,
                                         correct_answer: CQ.correct_answer,
                                         submitted: CQ.submitted,

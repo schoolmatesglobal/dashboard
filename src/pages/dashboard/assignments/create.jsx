@@ -561,6 +561,8 @@ const Create = ({
     loading1 ||
     loading2;
 
+ 
+
   const activateAddQuestion = () => {
     if (!subject_id || !week || !question_type) {
       return true;
