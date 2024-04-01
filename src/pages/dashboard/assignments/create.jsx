@@ -217,12 +217,12 @@ const Create = ({
         }
       },
       onSuccess(data) {
-        trigger();
         if (question_type === "objective") {
           setObjectiveQ(data);
         } else if (question_type === "theory") {
           setTheoryQ(data);
         }
+        trigger();
         // setAllowFetch(false);
       },
       onError(err) {
@@ -578,18 +578,15 @@ const Create = ({
   ];
 
   useEffect(() => {
-    const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-      const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+    if (subjectsByTeacher?.length > 0) {
+      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-      return {
-        value: subId,
-        title: sb?.name,
-      };
-    }) ?? []
-
-    console.log({sbb2})
-
-    if (sbb2?.length > 0) {
+        return {
+          value: subId,
+          title: sb?.name,
+        };
+      });
       setNewSubjects(sbb2);
     } else {
       setNewSubjects([]);
@@ -616,7 +613,6 @@ const Create = ({
 
     // objectiveQ,
     // theoryQ,
-
 
     createQ,
     subjectsByTeacher,
@@ -774,7 +770,8 @@ const Create = ({
                     return 1;
                   }
                   return 0;
-                })?.map((CQ, index) => {
+                })
+                ?.map((CQ, index) => {
                   // console.log({ tk: CQ });
                   return (
                     <div className='w-100' key={index}>

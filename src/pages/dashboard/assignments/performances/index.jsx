@@ -236,17 +236,16 @@ const Performances = ({ markedQ, setMarkedQ }) => {
   ];
 
   useEffect(() => {
-    const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-      const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+    if (subjectsByTeacher?.length > 0) {
+      const sbb2 =
+        subjectsByTeacher[0]?.title?.map((sb) => {
+          const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-      return {
-        value: sb?.name,
-        title: sb?.name,
-      };
-    }) ?? []
-
-
-    if (sbb2?.length > 0) {
+          return {
+            value: sb?.name,
+            title: sb?.name,
+          };
+        })
       setNewSubjects(sbb2);
     } else {
       setNewSubjects([]);

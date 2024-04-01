@@ -35,7 +35,7 @@ const Results = ({
     createdQuestion,
     myStudents,
     updatePreviewAnswerFxn,
-    subjectsByTeacher
+    subjectsByTeacher,
   } = useAssignments();
 
   const { question_type, subject, subject_id, student_id, week, student } =
@@ -281,18 +281,15 @@ const Results = ({
   );
 
   useEffect(() => {
-    const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-      const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+    if (subjectsByTeacher?.length > 0) {
+      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+        // const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-      return {
-        value: sb?.name,
-        title: sb?.name,
-      };
-    }) ?? []
-
-    console.log({sbb2})
-
-    if (sbb2?.length > 0) {
+        return {
+          value: sb?.name,
+          title: sb?.name,
+        };
+      });
       setNewSubjects(sbb2);
     } else {
       setNewSubjects([]);
