@@ -39,7 +39,7 @@ const SubmissionTable = ({
   total_mark,
   score,
   mark,
-  ResultTab
+  ResultTab,
 }) => {
   const { myStudents, permission, user } = useAssignments();
 
@@ -100,23 +100,39 @@ const SubmissionTable = ({
     {
       title: "Yes Submit",
       onClick: () => {
-        const assg = data?.map((as, i) => {
-          return {
+        const assg2 = [
+          {
             period: user?.period,
             term: user?.term,
             session: user?.session,
-            student_id: as?.student_id,
-            subject_id: as?.subject_id,
-            question_type: ResultTab === '1' ? 'objective' : "theory",
-            assignment_id: as?.assignment_id,
+            student_id: data[0]?.student_id,
+            subject_id: data[0]?.subject_id,
+            question_type: ResultTab === "1" ? "objective" : "theory",
+            assignment_id: data[0]?.assignment_id,
             mark: result?.percentage,
             total_mark: result?.total_marks,
             score: result?.percentage,
-            week: as?.week,
-          };
-        });
+            week: data[0]?.week,
+          },
+        ];
 
-        addAssignmentResult(assg);
+        // const assg = data?.map((as, i) => {
+        //   return {
+        //     period: user?.period,
+        //     term: user?.term,
+        //     session: user?.session,
+        //     student_id: as?.student_id,
+        //     subject_id: as?.subject_id,
+        //     question_type: ResultTab === '1' ? 'objective' : "theory",
+        //     assignment_id: as?.assignment_id,
+        //     mark: result?.percentage,
+        //     total_mark: result?.total_marks,
+        //     score: result?.percentage,
+        //     week: as?.week,
+        //   };
+        // });
+
+        addAssignmentResult(assg2);
 
         setTimeout(() => {
           setLoginPrompt2(false);
@@ -367,7 +383,7 @@ const SubmissionTable = ({
               <p className='fs-3 mb-5 lh-sm'>{student}</p>
               <p className='fs-3 fw-bold mb-3'>Subject</p>
               <p className='fs-3 mb-5 lh-sm'>
-                {subject} ({ResultTab === '1' ? 'objective' : "theory"})
+                {subject} ({ResultTab === "1" ? "objective" : "theory"})
               </p>
 
               <label className='fs-3 fw-bold mb-3'>Student's Score</label>
