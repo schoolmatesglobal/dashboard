@@ -17,6 +17,7 @@ import TheoryViewCard from "./theoryViewCard";
 import MarkCard from "./markCard";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Create = ({
   createQ,
@@ -108,7 +109,7 @@ const Create = ({
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [published, setPublished] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const activateRetrieve = () => {
     if (subject !== "" && question_type !== "" && week !== "") {
@@ -130,7 +131,13 @@ const Create = ({
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 500);
+    }, 1000);
+  }
+  function trigger2() {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, 1500);
   }
 
   //// FETCH ASSIGNMENTS CREATED /////////
@@ -152,14 +159,14 @@ const Create = ({
       ),
     {
       retry: 2,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-      refetchIntervalInBackground: false,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
 
-      enabled: false,
-      // enabled: activateRetrieveCreated() && permission?.created && allowFetch,
+      // enabled: false,
+      enabled: activateRetrieveCreated() && permission?.created,
 
       select: (data) => {
         const asg = apiServices.formatData(data);
@@ -223,7 +230,7 @@ const Create = ({
           setTheoryQ(data);
         }
         trigger();
-        // setAllowFetch(false);
+        setAllowFetch(false);
       },
       onError(err) {
         errorHandler(err);
@@ -390,6 +397,13 @@ const Create = ({
 
         refetchAssignmentCreated();
         setClearAllPrompt(false);
+
+        setTimeout(() => {
+          refetchAssignmentCreated();
+        }, 2000);
+        // window.reload();
+
+        // navigate(1);
         // trigger();
         // setTimeout(() => {
         //   refetchAssignmentCreated();
@@ -510,10 +524,16 @@ const Create = ({
           ]);
           refetchAssignmentCreated();
           setEditPrompt(false);
-          // trigger();
+
+          setTimeout(() => {
+            refetchAssignmentCreated();
+          }, 2000);
+
+          // window.location.reload();
+          // trigger2();
           // setTimeout(() => {
           //   refetchAssignmentCreated();
-          // }, 500);
+          // }, 2000);
           // setTimeout(() => {
           //   refetchAssignmentCreated();
           // }, 1000);
@@ -561,8 +581,6 @@ const Create = ({
     loading1 ||
     loading2;
 
- 
-
   const activateAddQuestion = () => {
     if (!subject_id || !week || !question_type) {
       return true;
@@ -605,6 +623,13 @@ const Create = ({
     //   setLoading1(false);
     // }, 700);
   }, [subject_id, week, question_type]);
+
+  // useEffect(() => {
+  //   if (activateRetrieveCreated()) {
+  //     refetchAssignmentCreated();
+  //   }
+
+  // }, [editObjectiveAssignment]);
 
   console.log({
     // unPublishedAssignment,
