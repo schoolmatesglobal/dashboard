@@ -31,24 +31,23 @@ import {
   faSquarePollVertical,
 } from "@fortawesome/free-solid-svg-icons";
 
-// const backendAPI = process.env.REACT_APP_API_URL;
+export const backendAPI = process.env.REACT_APP_API_URL;
 
-export const backendUrl = function () {
-  if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return process.env.REACT_APP_API_URL2; // Update with your development API URL
-  } else if (
-    window.location.href.includes("https://dashboard.schoolmateglobal.com")
-  ) {
-    return process.env.REACT_APP_API_URL2;
-  } else {
-    return process.env.REACT_APP_API_URL;
-  }
-};
+// export const backendUrl = function () {
+//   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
+//     return process.env.REACT_APP_API_URL2; // Update with your development API URL
+//   } else if (
+//     window.location.href.includes("https://dashboard.schoolmateglobal.com")
+//   ) {
+//     return process.env.REACT_APP_API_URL2;
+//   } else {
+//     return process.env.REACT_APP_API_URL;
+//   }
+// };
 
-export const backendAPI = backendUrl();
+// export const backendAPI = backendUrl();
 
-// export const backendAPI = "https://staging.sapsms.com/api";
-// export const backendAPI = "https://dashboard.sapsms.com/api";
+
 
 export const homeUrl = {
   Superadmin: "/app/super-admin",
