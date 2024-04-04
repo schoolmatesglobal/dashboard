@@ -5,7 +5,7 @@ import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.mo
 const Objective = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
   const { markedObjectiveQ, markedObjectiveQ2 } = useAssignments();
 
-  console.log({ markedObjectiveQ, markedObjectiveQ2 });
+  // console.log({ markedObjectiveQ, markedObjectiveQ2 });
 
   return (
     <div>

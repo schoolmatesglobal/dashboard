@@ -87,6 +87,8 @@ const View = ({
     isLoading: objectiveQLoading,
     refetch: refetchObjectiveQ,
     data: objectiveQ,
+    // isFetching: objectiveQIsFetching,
+    // isRefetching: objectiveQIsRefetching,
   } = useQuery(
     [
       queryKeys.GET_ASSIGNMENT_BY_STUDENT,
@@ -94,23 +96,33 @@ const View = ({
       user?.term,
       user?.session,
       "objective",
+      week,
     ],
     () =>
       apiServices.getAssignment(
         user?.period,
         user?.term,
         user?.session,
-        "objective"
+        "objective",
+        week
       ),
     {
       retry: 3,
-      // enabled: permission?.read || permission?.readClass,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+      // enabled: false,
       enabled: activateRetrieve() && permission?.view,
 
       select: (data) => {
         const tsg = apiServices.formatData(data);
         const osortedData = tsg?.filter(
-          (dt) => dt?.subject === subject && Number(dt?.week) === Number(week)
+          (dt) =>
+            dt?.status === "published" &&
+            dt?.subject === subject &&
+            Number(dt?.week) === Number(week)
         );
         // console.log({ tsg, data, osortedData });
         return osortedData;
@@ -127,6 +139,8 @@ const View = ({
     isLoading: theoryQLoading,
     refetch: refetchTheoryQ,
     data: theoryQ,
+    // isFetching: theoryQIsFetching,
+    // isRefetching: theoryQIsRefetching,
   } = useQuery(
     [
       queryKeys.GET_ASSIGNMENT_BY_STUDENT,
@@ -134,23 +148,34 @@ const View = ({
       user?.term,
       user?.session,
       "theory",
+      week,
     ],
     () =>
       apiServices.getAssignment(
         user?.period,
         user?.term,
         user?.session,
-        "theory"
+        "theory",
+        week
       ),
     {
-      retry: 3,
-      // enabled: permission?.read || permission?.readClass,
+      retry: 2,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+
+      // enabled: false,
       enabled: activateRetrieve() && permission?.view,
 
       select: (data) => {
         const theo = apiServices.formatData(data);
         const tsortedData = theo?.filter(
-          (dt) => dt?.subject === subject && Number(dt?.week) === Number(week)
+          (dt) =>
+            dt?.status === "published" &&
+            dt?.subject === subject &&
+            Number(dt?.week) === Number(week)
         );
         // console.log({ theo, data, tsortedData });
         return tsortedData;
@@ -209,17 +234,27 @@ const View = ({
     }
   };
 
+  useEffect(() => {
+    if (theoryQ?.length >= 1) {
+      setAssignmentTab("2");
+    } else {
+      setAssignmentTab("1");
+    }
+  }, [week, subject]);
+
   const assignmentLoading =
     showLoading ||
     objectiveQLoading ||
     theoryQLoading ||
     answeredObjAssignmentLoading ||
     answeredTheoryAssignmentLoading;
+  // ||
+  // theoryQIsFetching ||
+  // theoryQIsRefetching ||
+  // objectiveQIsFetching ||
+  // objectiveQIsRefetching;
 
   const location = useLocation();
-  // const history = useHistory();
-
-  useEffect(() => {}, []);
 
   return (
     <div>

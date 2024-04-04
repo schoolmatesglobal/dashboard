@@ -53,6 +53,8 @@ const Objective = ({
     isLoading: answeredObjAssignmentLoading,
     refetch: refetchObjAnsweredAssignment,
     data: objAnsweredAssignment,
+    isFetching: isFetchingObjAnsweredAssignment,
+    isRefetching: isRefetchingObjAnsweredAssignment,
   } = useQuery(
     [
       queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
@@ -60,17 +62,18 @@ const Objective = ({
       user?.term,
       user?.session,
       "objective",
+      createQ2?.week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        "objective"
+        "objective",
+        createQ2?.week
       ),
     {
       retry: 3,
-      // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,
       select: (data) => {
@@ -95,7 +98,7 @@ const Objective = ({
         }
         return sorted;
       },
-      onSuccess(data) {},
+      // onSuccess(data) {},
       onError(err) {
         errorHandler(err);
       },
@@ -259,6 +262,8 @@ const Objective = ({
     objAnsweredAssignment,
   });
 
+  const allLoading = assignmentLoading || answeredObjAssignmentLoading;
+
   // console.log({ answeredObjectiveQ });
   // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
 
@@ -271,7 +276,7 @@ const Objective = ({
         </div>
       )} */}
 
-      {!assignmentLoading && objectiveQ?.length >= 1 && (
+      {!allLoading && objectiveQ?.length >= 1 && (
         <div className='position-relative'>
           {objectiveSubmitted && (
             <p
@@ -325,7 +330,7 @@ const Objective = ({
                     >
                       <p className='fs-3 mb-3 lh-base'>
                         <span className='fw-bold fs-3'>
-                          {CQ.question_number}.
+                          {index + 1}.{/* {CQ.question_number}. */}
                         </span>{" "}
                         {CQ.question}{" "}
                       </p>

@@ -10,6 +10,7 @@ import SubmissionTable from "../../../../components/tables/submission-table";
 import { addSumMark, analyzeQuestions } from "../constant";
 import Prompt from "../../../../components/modals/prompt";
 import { useSubject } from "../../../../hooks/useSubjects";
+import ButtonGroup from "../../../../components/buttons/button-group";
 
 const StudentResults = ({
   markedQ,
@@ -18,6 +19,8 @@ const StudentResults = ({
   setAnsweredObjResults,
   answeredTheoryResults,
   setAnsweredTheoryResults,
+  ResultTab,
+  setResultTab,
 }) => {
   const {
     apiServices,
@@ -40,7 +43,7 @@ const StudentResults = ({
   const queryClient = useQueryClient();
 
   const activateRetrieve = () => {
-    if (subject !== "" && question_type !== "" && week !== "") {
+    if (subject !== "" && week !== "") {
       return true;
     } else {
       return false;
@@ -58,15 +61,16 @@ const StudentResults = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
-      "2",
+      "objective2",
+      week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        "objective",
+        week
       ),
     {
       retry: 3,
@@ -76,12 +80,7 @@ const StudentResults = ({
         const ffk = apiServices.formatData(data);
 
         const sorted = ffk
-          ?.filter(
-            (dt) =>
-              dt?.subject === subject &&
-              dt?.student === student &&
-              dt?.week === week
-          )
+          ?.filter((dt) => dt?.subject === subject && dt?.student === student)
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
               return -1;
@@ -95,11 +94,7 @@ const StudentResults = ({
         const calculatedData = analyzeQuestions(sorted);
 
         console.log({ ffk, data, sorted });
-        if (question_type === "objective") {
-          return calculatedData ?? {};
-        } else {
-          return {};
-        }
+        return calculatedData ?? {};
       },
 
       onSuccess(data) {},
@@ -122,7 +117,8 @@ const StudentResults = ({
       user?.period,
       user?.term,
       user?.session,
-      question_type,
+      "theory2",
+      week,
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
@@ -130,7 +126,8 @@ const StudentResults = ({
         user?.period,
         user?.term,
         user?.session,
-        question_type
+        "theory",
+        week
       ),
 
     {
@@ -145,8 +142,7 @@ const StudentResults = ({
           ?.filter(
             (dt) =>
               dt?.subject_id === subject_id &&
-              Number(dt?.student_id) === Number(student_id) &&
-              dt?.week === week
+              Number(dt?.student_id) === Number(student_id)
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -162,11 +158,7 @@ const StudentResults = ({
 
         const computedTeacherMark = addSumMark(sorted);
 
-        if (question_type === "theory") {
-          return computedTeacherMark ?? {};
-        } else {
-          return {};
-        }
+        return computedTeacherMark ?? {};
 
         // return computedTeacherMark ?? [];
       },
@@ -195,13 +187,10 @@ const StudentResults = ({
   ];
 
   const showNoAssignment = () => {
-    if (
-      question_type === "objective" &&
-      submittedAssignment?.questions?.length === 0
-    ) {
+    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
       return true;
     } else if (
-      question_type === "theory" &&
+      ResultTab === "2" &&
       markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
@@ -211,11 +200,11 @@ const StudentResults = ({
   };
 
   const showNoAssignment2 = () => {
-    if (question_type === "" && submittedAssignment?.questions?.length === 0) {
+    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
       return true;
     } else if (
-      question_type === "" &&
-      submittedAssignment?.questions?.length === 0
+      ResultTab === "2" &&
+      markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
     } else {
@@ -224,14 +213,49 @@ const StudentResults = ({
   };
 
   const showNoAssignment3 = () => {
-    if (!week || !subject || !question_type || !student) {
+    if (!week || !subject) {
       return true;
     } else {
       return false;
     }
   };
 
+  const optionTabShow = () => {
+    const objectiveTab = {
+      title: "Objective",
+      onClick: () => setResultTab("1"),
+      variant: ResultTab === "1" ? "" : "outline",
+    };
+
+    const theoryTab = {
+      title: "Theory",
+      onClick: () => setResultTab("2"),
+      variant: ResultTab === "2" ? "" : "outline",
+    };
+
+    if (
+      submittedAssignment?.questions?.length >= 1 &&
+      markedAssignmentResults?.questions?.length >= 1
+    ) {
+      return [objectiveTab, theoryTab];
+    } else if (submittedAssignment?.questions?.length >= 1) {
+      return [objectiveTab];
+    } else if (markedAssignmentResults?.questions?.length >= 1) {
+      return [theoryTab];
+    }
+
+    return [];
+  };
+
   const allLoading = showLoading || markedAssignmentResultsLoading;
+
+  useEffect(() => {
+    if (markedAssignmentResults?.questions?.length >= 1) {
+      setResultTab("2");
+    } else {
+      setResultTab("1");
+    }
+  }, [week, subject]);
 
   useEffect(() => {
     const sbb = subjects?.map((sb) => {
@@ -294,6 +318,7 @@ const StudentResults = ({
                 setMarkedQ((prev) => {
                   return { ...prev, week: value };
                 });
+                // setResultTab("2");
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -315,13 +340,15 @@ const StudentResults = ({
                 setMarkedQ((prev) => {
                   return { ...prev, subject: value, subject_id: fId() };
                 });
+
+                // setResultTab("2");
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'
               // label="Subject"
             />
 
-            <AuthSelect
+            {/* <AuthSelect
               sort
               options={[
                 { value: "objective", title: "Objective" },
@@ -336,8 +363,12 @@ const StudentResults = ({
               }}
               placeholder='Question Type'
               wrapperClassName='w-100'
-            />
+            /> */}
           </div>
+        </div>
+
+        <div className='w-100 d-flex justify-content-center mt-4'>
+          <ButtonGroup options={optionTabShow()} />
         </div>
 
         {allLoading && (
@@ -358,7 +389,7 @@ const StudentResults = ({
 
         {!allLoading &&
           submittedAssignment?.questions?.length > 0 &&
-          question_type === "objective" && (
+          ResultTab === "1" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
@@ -389,10 +420,10 @@ const StudentResults = ({
                 // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
-                  {
-                    Header: "Question Type",
-                    accessor: "question_type",
-                  },
+                  // {
+                  //   Header: "Question Type",
+                  //   accessor: "question_type",
+                  // },
                   {
                     Header: "Question Number",
                     accessor: "question_number",
@@ -408,18 +439,15 @@ const StudentResults = ({
                 ]}
                 data={submittedAssignment?.questions}
                 markedQ={markedQ}
-                result={
-                  question_type === "objective"
-                    ? submittedAssignment
-                    : markedAssignmentResults
-                }
+                result={submittedAssignment}
+                ResultTab={ResultTab}
               />
             </div>
           )}
 
         {!allLoading &&
           markedAssignmentResults?.questions?.length > 0 &&
-          question_type === "theory" && (
+          ResultTab === "2" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
                 {/* total marks */}
@@ -454,10 +482,10 @@ const StudentResults = ({
                 // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
-                  {
-                    Header: "Question Type",
-                    accessor: "question_type",
-                  },
+                  // {
+                  //   Header: "Question Type",
+                  //   accessor: "question_type",
+                  // },
                   {
                     Header: "Question Number",
                     accessor: "question_number",
@@ -474,11 +502,8 @@ const StudentResults = ({
                 ]}
                 data={markedAssignmentResults?.questions}
                 markedQ={markedQ}
-                result={
-                  question_type === "objective"
-                    ? submittedAssignment
-                    : markedAssignmentResults
-                }
+                result={markedAssignmentResults}
+                ResultTab={ResultTab}
               />
             </div>
           )}

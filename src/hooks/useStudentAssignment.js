@@ -11,6 +11,7 @@ export const useStudentAssignments = () => {
   const [answeredObjectiveQ2, setAnsweredObjectiveQ2] = useState([]);
   const [answeredTheoryQ, setAnsweredTheoryQ] = useState([]);
   const [assignmentTab, setAssignmentTab] = useState("1");
+  const [ResultTab, setResultTab] = useState("2");
   const [objectiveSubmitted, setObjectiveSubmitted] = useState(false);
   const [theorySubmitted, setTheorySubmitted] = useState(false);
   const [answerQuestion, setAnswerQuestion] = useState({
@@ -136,5 +137,8 @@ export const useStudentAssignments = () => {
 
     theorySubmitted,
     setTheorySubmitted,
+
+    ResultTab,
+setResultTab,
   };
 };

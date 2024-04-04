@@ -9,6 +9,8 @@ import useLocalStorage from "use-local-storage";
 
 export const useAssignments = () => {
   const [activeTab, setActiveTab] = useState("1");
+  const [submissionTab, setSubmissionTab] = useState("2");
+  const [ResultTab, setResultTab] = useState("2");
 
   const [obj, setObj] = useLocalStorage("obj", []);
 
@@ -105,11 +107,11 @@ export const useAssignments = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("assignments");
 
-  const { studentByClassAndSession } = useStudent();
+  const { studentByClass2 } = useStudent();
 
   const [createQuestionPrompt, setCreateQuestionPrompt] = useState(false);
 
-  const myStudents = studentByClassAndSession?.map((ms, index) => {
+  const myStudents = studentByClass2?.map((ms, index) => {
     return {
       value: `${ms.surname} ${ms.firstname}`,
       title: `${ms.surname} ${ms.firstname}`,
@@ -153,6 +155,8 @@ export const useAssignments = () => {
       },
     }
   );
+
+  // console.log({ studentByClass2, studentByClassAndSession });
 
   return {
     activeTab,
@@ -234,5 +238,10 @@ export const useAssignments = () => {
     setAnsweredObjResults,
     answeredTheoryResults,
     setAnsweredTheoryResults,
+
+    submissionTab,
+    setSubmissionTab,
+    ResultTab,
+    setResultTab,
   };
 };

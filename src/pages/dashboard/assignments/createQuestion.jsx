@@ -328,7 +328,7 @@ const CreateQuestion = ({
     setObjMark(objScore);
   }, [objectiveQ]);
 
-  console.log({ activatePreview: activatePreview() });
+  // console.log({ activatePreview: activatePreview() });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({ tl: TheoryQ?.length });

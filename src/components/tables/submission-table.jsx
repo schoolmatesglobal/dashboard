@@ -36,10 +36,12 @@ const SubmissionTable = ({
   action = [],
   markedQ,
   result,
+  total_mark,
+  score,
+  mark,
+  ResultTab,
 }) => {
-
-  
-  const { myStudents, permission } = useAssignments();
+  const { myStudents, permission, user } = useAssignments();
 
   const { question_type, subject, student } = markedQ;
 
@@ -76,9 +78,9 @@ const SubmissionTable = ({
   const buttonOptions2 = [
     {
       title: `${
-        data[data.length - 1]?.question_type === "objective"
+        ResultTab === "1"
           ? "Submit Objective Result"
-          : data[data.length - 1]?.question_type === "theory"
+          : ResultTab === "2"
           ? "Submit Theory Result"
           : ""
       }`,
@@ -98,7 +100,39 @@ const SubmissionTable = ({
     {
       title: "Yes Submit",
       onClick: () => {
-        addAssignmentResult();
+        const assg2 = [
+          {
+            period: user?.period,
+            term: user?.term,
+            session: user?.session,
+            student_id: data[0]?.student_id,
+            subject_id: data[0]?.subject_id,
+            question_type: ResultTab === "1" ? "objective" : "theory",
+            assignment_id: data[0]?.assignment_id,
+            mark: result?.percentage,
+            total_mark: result?.total_marks,
+            score: result?.percentage,
+            week: data[0]?.week,
+          },
+        ];
+
+        // const assg = data?.map((as, i) => {
+        //   return {
+        //     period: user?.period,
+        //     term: user?.term,
+        //     session: user?.session,
+        //     student_id: as?.student_id,
+        //     subject_id: as?.subject_id,
+        //     question_type: ResultTab === '1' ? 'objective' : "theory",
+        //     assignment_id: as?.assignment_id,
+        //     mark: result?.percentage,
+        //     total_mark: result?.total_marks,
+        //     score: result?.percentage,
+        //     week: as?.week,
+        //   };
+        // });
+
+        addAssignmentResult(assg2);
 
         setTimeout(() => {
           setLoginPrompt2(false);
@@ -349,7 +383,7 @@ const SubmissionTable = ({
               <p className='fs-3 mb-5 lh-sm'>{student}</p>
               <p className='fs-3 fw-bold mb-3'>Subject</p>
               <p className='fs-3 mb-5 lh-sm'>
-                {subject} ({question_type})
+                {subject} ({ResultTab === "1" ? "objective" : "theory"})
               </p>
 
               <label className='fs-3 fw-bold mb-3'>Student's Score</label>
@@ -358,7 +392,7 @@ const SubmissionTable = ({
               <p className='fs-3 fw-bold mb-3'>Total Score</p>
               <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
               <p className='fs-3 fw-bold mb-3'>Percentage</p>
-              <p className='fs-3 mb-5 lh-sm'> {result?.percentage}</p>
+              <p className='fs-3 mb-5 lh-sm'> {`${result?.percentage}%`}</p>
             </div>
           </Prompt>
           <Prompt

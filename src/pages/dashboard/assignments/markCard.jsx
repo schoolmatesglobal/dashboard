@@ -17,7 +17,7 @@ const MarkCard = ({
     objectiveQ?.reduce((acc, quest) => acc + Number(quest?.question_mark), 0) /
     objectiveQ?.length;
 
-  console.log({ totalTheoryScore, theoryQ });
+  // console.log({ totalTheoryScore, theoryQ });
 
   // const sumMark = questions.reduce(
   //   (acc, question) => acc + Number(question.teacher_mark),
@@ -94,7 +94,18 @@ const MarkCard = ({
         ((question_type === "objective" && objectiveQ?.length !== 0) ||
           (question_type === "theory" && theoryQ?.length !== 0)) && (
           <div
-            className={`d-flex justify-content-center align-items-center py-4  ${
+            className={`d-flex justify-content-center align-items-center py-4 px-y `}
+          >
+            <p className={`fw-medium fs-4 text-danger`}>
+             *** Only published questions will be displayed to the student ***
+            </p>
+          </div>
+        )}
+      {/* {!allLoading &&
+        ((question_type === "objective" && objectiveQ?.length !== 0) ||
+          (question_type === "theory" && theoryQ?.length !== 0)) && (
+          <div
+            className={`d-flex justify-content-center align-items-center py-4 px-y ${
               published ? "bg-success  " : "bg-danger"
             } bg-opacity-10 `}
           >
@@ -104,7 +115,7 @@ const MarkCard = ({
                 : "Assignment is not yet published"}
             </p>
           </div>
-        )}
+        )} */}
     </div>
   );
 };

@@ -56,13 +56,15 @@ const Theory = ({
       user?.term,
       user?.session,
       "theory",
+      createQ2?.week,
     ],
     () =>
       apiServices.getSubmittedAssignment(
         user?.period,
         user?.term,
         user?.session,
-        "theory"
+        "theory",
+        createQ2?.week
       ),
     {
       retry: 3,
@@ -194,7 +196,7 @@ const Theory = ({
     {
       title: "Submit Theory Assignment",
       onClick: () => displayPrompt(),
-      disabled: checkEmptyQuestions(),
+      disabled: checkEmptyQuestions() || checkEmptyStatus(),
     },
   ];
 
@@ -247,6 +249,12 @@ const Theory = ({
       ]);
     }
   };
+
+  function checkEmptyStatus() {
+    return (
+      answeredTheoryQ.some((obj) => obj.answer === "") 
+    );
+  }
 
   // console.log({ answeredTheoryQ });
   console.log({
@@ -319,7 +327,8 @@ const Theory = ({
                     >
                       <p className='fs-3 mb-4 lh-base'>
                         <span className='fs-3 fw-bold'>
-                          {CQ.question_number}.{/* Q{index + 1}. */}
+                          {/* {CQ.question_number}. */}
+                          {index + 1}.
                         </span>{" "}
                         {CQ.question}
                       </p>

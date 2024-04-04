@@ -649,7 +649,8 @@ export function analyzeQuestions(questions) {
     score,
     questions: analyzedQuestions,
     total_marks: totalMarks,
-    percentage: `${percentage.toFixed()}%`,
+    percentage: percentage.toFixed(),
+    // percentage: `${percentage.toFixed()}%`,
   };
 }
 
@@ -679,12 +680,13 @@ export function addSumMark(questions) {
     questions: ss,
     score,
     total_marks,
-    percentage: `${percentage.toFixed()}%`,
+    percentage: percentage.toFixed(),
+    // percentage: `${percentage.toFixed()}%`,
   };
 }
 
 export function addQuestionMarks(questions) {
-  const sumMark = questions.reduce(
+  const sumMark = questions?.reduce(
     (acc, question) => acc + Number(question.question_mark),
     0
   );
