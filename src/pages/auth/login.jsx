@@ -25,7 +25,12 @@ const Login = () => {
     await login(data);
   };
 
-  console.log({ window, href: window.location.href, backendAPI });
+  console.log({
+    window,
+    href: window.location.href,
+    backendAPI,
+    env: process.env.NODE_ENV,
+  });
 
   return (
     <div className='login-page'>
