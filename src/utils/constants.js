@@ -31,17 +31,18 @@ import {
   faSquarePollVertical,
 } from "@fortawesome/free-solid-svg-icons";
 
-export let backendAPI;
+export const backendAPI = process.env.REACT_APP_API_URL;
 
-if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-  backendAPI = process.env.REACT_APP_API_URL; // Update with your development API URL
-} else if (
-  window.location.href.includes("https://dashboard.schoolmateglobal.com")
-) {
-  backendAPI = process.env.REACT_APP_API_URL2;
-} else {
-  backendAPI = process.env.REACT_APP_API_URL;
-}
+// if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
+//   backendAPI = process.env.REACT_APP_API_URL; // Update with your development API URL
+// } else if (
+//   window.location.href.includes("https://dashboard.schoolmateglobal.com")
+// ) {
+//   backendAPI = process.env.REACT_APP_API_URL2;
+// } else {
+//   backendAPI = process.env.REACT_APP_API_URL;
+// }
+
 // export const backendAPI = "https://staging.sapsms.com/api";
 // export const backendAPI = "https://dashboard.sapsms.com/api";
 
