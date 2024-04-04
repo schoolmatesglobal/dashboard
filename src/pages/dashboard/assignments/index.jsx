@@ -169,7 +169,7 @@ const Assignments = () => {
     }
   }, []);
 
-  // console.log({ permission, user });
+  console.log({ window, href: window.location.href });
 
   return (
     <PageSheet>
@@ -230,7 +230,7 @@ const Assignments = () => {
             markedTheoQ2={markedTheoQ2}
             setMarkedTheoQ2={setMarkedTheoQ2}
             submissionTab={submissionTab}
-    setSubmissionTab={setSubmissionTab}
+            setSubmissionTab={setSubmissionTab}
           />
         )}
         {activeTab === "4" && permission?.results && (
