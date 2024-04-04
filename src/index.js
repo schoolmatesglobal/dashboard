@@ -6,8 +6,11 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import NavbarProvider from "./context/navbar";
 import UserProvider from "./context/user";
+import dotenv from 'dotenv';
 
 import "./assets/scss/index.scss";
+
+dotenv.config(); // Load environment variables
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

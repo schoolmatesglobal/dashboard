@@ -31,9 +31,9 @@ import {
   faSquarePollVertical,
 } from "@fortawesome/free-solid-svg-icons";
 
-export const backendAPI = "https://staging.sapsms.com/api";
+export const backendAPI = process.env.REACT_APP_API_URL;
+// export const backendAPI = "https://staging.sapsms.com/api";
 // export const backendAPI = "https://dashboard.sapsms.com/api";
-
 
 export const homeUrl = {
   Superadmin: "/app/super-admin",
