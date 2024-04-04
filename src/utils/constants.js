@@ -34,7 +34,7 @@ import {
 export let backendAPI;
 
 if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-  backendAPI = process.env.REACT_APP_API_URL2; // Update with your development API URL
+  backendAPI = process.env.REACT_APP_API_URL; // Update with your development API URL
 } else if (
   window.location.href.includes("https://dashboard.schoolmateglobal.com")
 ) {
