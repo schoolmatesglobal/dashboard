@@ -169,7 +169,10 @@ const Assignments = () => {
     }
   }, []);
 
-  console.log({ window, href: window.location.href });
+  console.log({
+    window,
+    href: window.location.href,
+  });
 
   return (
     <PageSheet>

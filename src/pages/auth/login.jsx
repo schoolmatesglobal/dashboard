@@ -4,6 +4,7 @@ import AuthInput from "../../components/inputs/auth-input";
 import { useForm } from "react-formid";
 // import AuthSelect from "../../components/inputs/auth-select";
 import { useAuth } from "../../hooks/useAuth";
+import { backendAPI } from "../../utils/constants";
 
 const Login = () => {
   const { inputs, handleSubmit, handleChange, errors } = useForm({
@@ -24,7 +25,7 @@ const Login = () => {
     await login(data);
   };
 
-  console.log({ window, href: window.location.href });
+  console.log({ window, href: window.location.href, backendAPI });
 
   return (
     <div className='login-page'>
