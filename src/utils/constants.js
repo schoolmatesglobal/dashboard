@@ -41,6 +41,8 @@ export const backendUrl = function () {
     window.location.href.includes("https://dashboard.schoolmateglobal.com")
   ) {
     return process.env.REACT_APP_API_URL2;
+  } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
+    return process.env.REACT_APP_API_URL2;
   } else {
     return process.env.REACT_APP_API_URL;
   }

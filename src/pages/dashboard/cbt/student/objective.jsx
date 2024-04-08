@@ -289,15 +289,7 @@ const Objective = ({
     }
   };
 
-  // console.log({
-  //   objectiveQ,
-  //   answeredObjectiveQ,
-  //   answerQuestion,
-  //   createQ2,
-  //   subjects,
-  //   findSubjectId: findSubjectId(),
-  //   objAnsweredAssignment,
-  // });
+  
 
   const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 
