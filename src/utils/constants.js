@@ -42,7 +42,7 @@ export const backendUrl = function () {
   ) {
     return process.env.REACT_APP_API_URL2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return process.env.REACT_APP_API_URL2;
+    return process.env.REACT_APP_API_URL;
   } else {
     return process.env.REACT_APP_API_URL;
   }
