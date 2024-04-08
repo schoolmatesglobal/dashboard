@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import PageSheet from "../../../components/common/page-sheet";
-import Create from "./create";
-import Submission from "./submission";
-import Results from "./results";
-import ButtonGroup from "../../../components/buttons/button-group";
-import ButtonGroup2 from "../../../components/buttons/button-group2";
-import { useAssignments } from "../../../hooks/useAssignments";
-import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
-import View from "./student/view";
 import { useEffect } from "react";
-import StudentResults from "./student/studentResults";
-import { useStudentAssignments } from "../../../hooks/useStudentAssignment";
+import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
+import ButtonGroup2 from "../../../components/buttons/button-group2";
 import Prompt from "../../../components/modals/prompt";
+import { useCBT } from "../../../hooks/useCBT";
+import { useStudentCBT } from "../../../hooks/useStudentCBT";
 import { useSubject } from "../../../hooks/useSubjects";
+import Create from "./create";
 import Performances from "./performances";
+import Results from "./results";
+import Submission from "./submission";
+import View from "./student/view";
+import StudentResults from "./student/studentResults";
 import Performances2 from "./performances/students";
+// import Performances2 from "./performances/students";
 
-const Assignments = () => {
+const CBTPage = () => {
   const {
     user,
 
@@ -64,7 +64,7 @@ const Assignments = () => {
     setSubmissionTab,
     ResultTab,
     setResultTab,
-  } = useAssignments();
+  } = useCBT();
 
   const {
     objectiveQ2,
@@ -92,7 +92,7 @@ const Assignments = () => {
 
     theorySubmitted,
     setTheorySubmitted,
-  } = useStudentAssignments();
+  } = useStudentCBT();
 
   const { subjects } = useSubject();
 
@@ -173,11 +173,6 @@ const Assignments = () => {
     }
   }, []);
 
-  console.log({
-    window,
-    href: window.location.href,
-  });
-
   return (
     <PageSheet>
       <div className={styles.home}>
@@ -207,6 +202,7 @@ const Assignments = () => {
             subjects={subjects}
           />
         )}
+
         {activeTab === "1" && permission?.create && (
           <Create
             createQ={createQ}
@@ -221,7 +217,6 @@ const Assignments = () => {
             setObjMark={setObjMark}
           />
         )}
-        {/* {activeTab === "2" && permission?.created && <Created />} */}
         {activeTab === "3" && permission?.submissions && (
           <Submission
             answerQ={answerQ}
@@ -294,4 +289,4 @@ const Assignments = () => {
   );
 };
 
-export default Assignments;
+export default CBTPage;

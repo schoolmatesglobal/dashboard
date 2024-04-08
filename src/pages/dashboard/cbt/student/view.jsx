@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AuthSelect from "../../../../components/inputs/auth-select";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
+import { FaComputer } from "react-icons/fa6";
 import ButtonGroup from "../../../../components/buttons/button-group";
 import { useQuery, useQueryClient } from "react-query";
 import queryKeys from "../../../../utils/queryKeys";
@@ -204,7 +205,7 @@ const View = ({
 
   const optionTabShow = () => {
     const objectiveTab = {
-      title: "Objective",
+      title: "CBT Objective",
       onClick: () => setAssignmentTab("1"),
       variant: assignmentTab === "1" ? "" : "outline",
     };
@@ -215,32 +216,20 @@ const View = ({
       variant: assignmentTab === "2" ? "" : "outline",
     };
 
-    if (objectiveQ?.length >= 1 && theoryQ?.length >= 1) {
-      return [objectiveTab, theoryTab];
-    } else if (objectiveQ?.length >= 1) {
+    if (objectiveQ?.length >= 1) {
       return [objectiveTab];
-    } else if (theoryQ?.length >= 1) {
-      return [theoryTab];
     }
 
     return [];
   };
 
   const showNoAssignment = () => {
-    if (objectiveQ?.length === 0 && theoryQ?.length === 0) {
+    if (objectiveQ?.length === 0) {
       return true;
     } else {
       return false;
     }
   };
-
-  // const showNoAssignment = () => {
-  //   if (objectiveQ?.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
 
   const showNoAssignment2 = () => {
     if (!week || !subject) {
@@ -251,9 +240,7 @@ const View = ({
   };
 
   useEffect(() => {
-    if (theoryQ?.length >= 1) {
-      setAssignmentTab("2");
-    } else {
+    if (objectiveQ?.length >= 1) {
       setAssignmentTab("1");
     }
   }, [week, subject]);
@@ -261,9 +248,10 @@ const View = ({
   const assignmentLoading =
     showLoading ||
     objectiveQLoading ||
-    theoryQLoading ||
-    answeredObjAssignmentLoading ||
-    answeredTheoryAssignmentLoading;
+    // theoryQLoading ||
+    answeredObjAssignmentLoading;
+  // ||
+  // answeredTheoryAssignmentLoading;
   // ||
   // theoryQIsFetching ||
   // theoryQIsRefetching ||
@@ -355,7 +343,7 @@ const View = ({
           )}
 
           {/* Theory Answers */}
-          {assignmentTab === "2" && theoryQ?.length >= 1 && (
+          {/* {assignmentTab === "2" && theoryQ?.length >= 1 && (
             <Theory
               assignmentLoading={assignmentLoading}
               buttonOptions2={buttonOptions2}
@@ -368,13 +356,13 @@ const View = ({
               setCreateQ2={setCreateQ2}
               subjects={subjects}
             />
-          )}
+          )} */}
         </div>
 
         {!assignmentLoading && (showNoAssignment() || showNoAssignment2()) && (
           <div className={styles.placeholder_container}>
-            <HiOutlineDocumentPlus className={styles.icon} />
-            <p className='fs-1 fw-bold mt-3'>No Assignment</p>
+            <FaComputer className={styles.icon} />
+            <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
           </div>
         )}
       </div>
