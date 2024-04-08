@@ -106,7 +106,7 @@ const InvoiceTable = ({
     <div className='custom-table-wrapper2'>
       {isLoading && (
         <div className='d-flex align-items-center justify-content-center w-full'>
-          <Spinner /> <p className='ms-2'>Loading...</p>
+          <Spinner /> <p className='fs-3 ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (

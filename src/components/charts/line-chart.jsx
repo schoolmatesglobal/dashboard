@@ -54,7 +54,8 @@ const LineChart = ({ chartTitle, data }) => {
   }, [data, labels]);
 
   return (
-    <div className='chart-wrapper'>
+    // <div className='chart-wrapper'>
+    <div className=''>
       {/* <h4 className='fs-2 w-100 text-center'>{chartTitle}</h4> */}
       <ReactApexChart
         options={state.options}

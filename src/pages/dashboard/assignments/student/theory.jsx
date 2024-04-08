@@ -194,7 +194,7 @@ const Theory = ({
 
   const buttonOptions2 = [
     {
-      title: "Submit Theory Assignment",
+      title: "Submit Theory",
       onClick: () => displayPrompt(),
       disabled: checkEmptyQuestions() || checkEmptyStatus(),
     },
@@ -251,9 +251,7 @@ const Theory = ({
   };
 
   function checkEmptyStatus() {
-    return (
-      answeredTheoryQ.some((obj) => obj.answer === "") 
-    );
+    return answeredTheoryQ.some((obj) => obj.answer === "");
   }
 
   // console.log({ answeredTheoryQ });
@@ -281,7 +279,16 @@ const Theory = ({
               className='text-danger fw-bold position-absolute top-50 opacity-50'
               style={{
                 rotate: "-45deg",
-                left: "40%",
+                // left: "40%",
+                left: `${
+                  isDesktop
+                    ? "40%"
+                    : isTablet
+                    ? "35%"
+                    : isMobile
+                    ? "25%"
+                    : "35%"
+                }`,
                 zIndex: "5000",
                 fontSize: `${
                   isDesktop
@@ -321,7 +328,7 @@ const Theory = ({
                   // console.log({ CQ });
                   return (
                     <div
-                      className={styles.view__questions_container}
+                      className='border border-2 py-sm-5 px-sm-5 py-4 px-4'
                       key={index}
                       // style={{ width: "300px" }}
                     >

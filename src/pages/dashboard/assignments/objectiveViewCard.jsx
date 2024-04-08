@@ -65,7 +65,7 @@ const ObjectiveViewCard = ({
           </p>
         </div>
       )}
-      <div className='d-flex justify-content-between'>
+      <div className='d-flex flex-column flex-sm-row justify-content-sm-between'>
         <ButtonGroup
           options={[
             {
@@ -84,7 +84,7 @@ const ObjectiveViewCard = ({
                 setEditOption3(CQ.option3);
                 setEditOption4(CQ.option4);
                 setEditQuestionId(CQ.id);
-                setEditPublish(CQ.status === "published" ? true : false)
+                setEditPublish(CQ.status === "published" ? true : false);
               },
               // variant: `${activeTab === "2" ? "" : "outline"}`,
             },
@@ -104,7 +104,7 @@ const ObjectiveViewCard = ({
         />
 
         <div
-          className={`d-flex justify-content-center align-items-center py-0 px-4 my-3  ${
+          className={`d-flex justify-content-center align-items-center py-4 py-sm-0 px-4 my-3  ${
             CQ.status === "published" ? "bg-success  " : "bg-danger"
           } bg-opacity-10 `}
         >

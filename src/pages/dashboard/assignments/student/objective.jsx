@@ -191,7 +191,7 @@ const Objective = ({
 
   const buttonOptions2 = [
     {
-      title: "Submit Objective Assignment",
+      title: "Submit Objective",
       onClick: () => displayPrompt(),
       disabled: objectiveSubmitted,
     },
@@ -269,13 +269,6 @@ const Objective = ({
 
   return (
     <div>
-      {/* {!assignmentLoading && showNoAssignment() && (
-        <div className={styles.placeholder_container}>
-          <HiOutlineDocumentPlus className={styles.icon} />
-          <p className={styles.heading}>No Objective Assignment</p>
-        </div>
-      )} */}
-
       {!allLoading && objectiveQ?.length >= 1 && (
         <div className='position-relative'>
           {objectiveSubmitted && (
@@ -283,7 +276,16 @@ const Objective = ({
               className='text-danger fw-bold position-absolute top-50 opacity-50'
               style={{
                 rotate: "-45deg",
-                left: "40%",
+                // left: "40%",
+                left: `${
+                  isDesktop
+                    ? "40%"
+                    : isTablet
+                    ? "35%"
+                    : isMobile
+                    ? "25%"
+                    : "35%"
+                }`,
                 zIndex: "5000",
                 fontSize: `${
                   isDesktop
@@ -310,7 +312,7 @@ const Objective = ({
                 <p className='fs-3 fw-bold'>{objScore}</p>
               </div>
             </div>
-            <div className='d-flex flex-column my-5 gap-3'>
+            <div className='d-flex flex-column my-5 gap-4'>
               {objectiveQ
                 ?.sort((a, b) => {
                   if (a.question_number < b.question_number) {
@@ -325,7 +327,7 @@ const Objective = ({
                   // console.log({ CQ });
                   return (
                     <div
-                      className='w-100 border border-2 rounded-1 border-opacity-25 p-5'
+                      className='w-100 border border-2 rounded-1 border-opacity-25 py-sm-5 px-sm-5 py-4 px-4'
                       key={index}
                     >
                       <p className='fs-3 mb-3 lh-base'>

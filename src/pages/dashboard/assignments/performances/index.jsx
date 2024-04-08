@@ -237,15 +237,14 @@ const Performances = ({ markedQ, setMarkedQ }) => {
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
-      const sbb2 =
-        subjectsByTeacher[0]?.title?.map((sb) => {
-          const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-          return {
-            value: sb?.name,
-            title: sb?.name,
-          };
-        })
+        return {
+          value: sb?.name,
+          title: sb?.name,
+        };
+      });
       setNewSubjects(sbb2);
     } else {
       setNewSubjects([]);
@@ -315,7 +314,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
 
         {allLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className=''>Loading...</p>
+            <Spinner /> <p className='fs-3'>Loading...</p>
           </div>
         )}
 
@@ -324,14 +323,14 @@ const Performances = ({ markedQ, setMarkedQ }) => {
             {student !== "all students" && (
               <LineChart
                 chartTitle={`${
-                  student ? "Performance Chart for" : "No Chart Result"
+                  student ? "Chart for" : "No Chart Result"
                 } ${student}`}
                 data={performance}
               />
             )}
             {student === "all students" && (
               <LineChart2
-                chartTitle={`Class Chart Performance`}
+                chartTitle={`Class Chart`}
                 studentData={allPerformance}
               />
             )}

@@ -317,7 +317,7 @@ const View = ({
 
         {assignmentLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className=''>Loading...</p>
+            <Spinner /> <p className='fs-3'>Loading...</p>
           </div>
         )}
 
@@ -358,7 +358,7 @@ const View = ({
         {!assignmentLoading && showNoAssignment() && (
           <div className={styles.placeholder_container}>
             <HiOutlineDocumentPlus className={styles.icon} />
-            <p className={styles.heading}>No Assignment</p>
+            <p className='fs-1 fw-bold mt-3'>No Assignment</p>
           </div>
         )}
       </div>

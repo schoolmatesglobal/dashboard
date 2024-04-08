@@ -4,6 +4,7 @@ import Create from "./create";
 import Submission from "./submission";
 import Results from "./results";
 import ButtonGroup from "../../../components/buttons/button-group";
+import ButtonGroup2 from "../../../components/buttons/button-group2";
 import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import View from "./student/view";
@@ -177,7 +178,7 @@ const Assignments = () => {
   return (
     <PageSheet>
       <div className={styles.home}>
-        <ButtonGroup options={getToggleButtons()} />
+        <ButtonGroup2 options={getToggleButtons()} />
 
         <hr className={styles.home_divider} />
 

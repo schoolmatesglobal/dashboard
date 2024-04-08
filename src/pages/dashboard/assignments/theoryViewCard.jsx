@@ -40,7 +40,7 @@ const TheoryViewCard = ({
           <p className='fs-3 mb-4 lh-base fw-bold'>({CQ.question_mark} mks)</p>
         </>
       }
-      <div className='d-flex justify-content-between'>
+      <div className='d-flex flex-column flex-sm-row justify-content-sm-between'>
         <ButtonGroup
           options={[
             {
@@ -80,7 +80,7 @@ const TheoryViewCard = ({
         />
 
         <div
-          className={`d-flex justify-content-center align-items-center py-0 px-4 my-3  ${
+          className={`d-flex justify-content-center align-items-center py-4 py-sm-0 px-4 my-3  ${
             CQ.status === "published" ? "bg-success  " : "bg-danger"
           } bg-opacity-10 `}
         >

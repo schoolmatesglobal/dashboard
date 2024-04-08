@@ -26,24 +26,8 @@ const MarkCard = ({
 
   return (
     <div className='d-flex flex-column gap-5'>
-      <div className='d-flex flex-column flex-sm-row justify-content-center align-items-center mt-5 gap-5'>
+      <div className='d-flex flex-column flex-sm-row justify-content-center align-items-center mt-5 gap-4 gap-sm-5'>
         {question_type === "objective" && objectiveQ?.length > 0 && (
-          // <div className='d-flex  justify-content-center align-items-center '>
-          //   <AuthInput
-          //     type='number'
-          //     placeholder='Enter Question Mark'
-          //     // hasError={!!errors.username}
-          //     value={objMark}
-          //     name='option6'
-          //     min='0'
-          //     style={{ width: "150px" }}
-          //     onChange={(e) => {
-          //       setObjMark(e.target.value);
-          //     }}
-          //     wrapperClassName=''
-          //   />
-          //   <Button>Update</Button>
-          // </div>
           <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
             <p className='fs-3 fw-bold'>Each Question Mark:</p>
             <p className='fs-3 fw-bold'>{objScore}</p>
@@ -75,7 +59,9 @@ const MarkCard = ({
         {question_type === "objective" && objectiveQ?.length > 0 && (
           <div className='d-flex justify-content-center align-items-center  gap-3 bg-info bg-opacity-10 py-4 px-4'>
             <p className='fs-3 fw-bold'>Total Marks:</p>
-            <p className='fs-3 fw-bold'>{objScore * objectiveQ?.length} mk(s)</p>
+            <p className='fs-3 fw-bold'>
+              {objScore * objectiveQ?.length} mk(s)
+            </p>
           </div>
         )}
         {question_type === "theory" && theoryQ?.length > 0 && (
@@ -96,8 +82,8 @@ const MarkCard = ({
           <div
             className={`d-flex justify-content-center align-items-center py-4 px-y `}
           >
-            <p className={`fw-medium fs-4 text-danger`}>
-             *** Only published questions will be displayed to the student ***
+            <p className={`fw-medium fs-4 text-danger text-center lh-base`}>
+              *** Only published questions will be displayed to the student ***
             </p>
           </div>
         )}

@@ -713,6 +713,7 @@ const Create = ({
 
           <Button
             variant=''
+            className='w-auto'
             onClick={() => {
               if (question_type === "theory") {
                 setAllowFetch(false);
@@ -746,14 +747,14 @@ const Create = ({
 
         {allLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className=''>Loading...</p>
+            <Spinner /> <p className='fs-3'>Loading...</p>
           </div>
         )}
 
         {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
           <div className={styles.placeholder_container}>
             <HiOutlineDocumentPlus className={styles.icon} />
-            <p className={styles.heading}>Create theory Assignment</p>
+            <p className='fs-1 fw-bold mt-3'>Create theory Assignment</p>
           </div>
         )}
         {!allLoading &&
@@ -761,7 +762,7 @@ const Create = ({
           objectiveQ?.length === 0 && (
             <div className={styles.placeholder_container}>
               <HiOutlineDocumentPlus className={styles.icon} />
-              <p className={styles.heading}>Create Objective Assignment</p>
+              <p className='fs-1 fw-bold mt-3'>Create Objective Assignment</p>
             </div>
           )}
         {!allLoading &&
@@ -770,7 +771,7 @@ const Create = ({
           question_type === "" && (
             <div className={styles.placeholder_container}>
               <HiOutlineDocumentPlus className={styles.icon} />
-              <p className={styles.heading}>Create Assignment</p>
+              <p className='fs-1 fw-bold mt-3'>Create Assignment</p>
             </div>
           )}
 
@@ -874,28 +875,8 @@ const Create = ({
         {!allLoading &&
           ((question_type === "objective" && objectiveQ?.length !== 0) ||
             (question_type === "theory" && theoryQ?.length !== 0)) && (
-            <div className='w-100 d-flex justify-content-end'>
+            <div className='w-100 d-flex justify-content-center justify-content-sm-end'>
               <ButtonGroup options={buttonOptions2} />
-              {/* <div className='d-flex align-items-center gap-3 cursor-pointer'>
-              <input
-                type='checkbox'
-                name='radio-1'
-                className=''
-                // checked={editOption1 === editAnswer}
-
-                id='flexSwitchCheckChecked'
-                checked={published}
-                style={{ width: "20px", height: "20px", color: "green" }}
-                onChange={(e) => setPublished((prev) => !prev)}
-                value={published}
-              />
-              <label
-                htmlFor='flexSwitchCheckChecked'
-                className='fs-4 form-check-label fw-bold'
-              >
-                Publish Assignment
-              </label>
-            </div> */}
             </div>
           )}
       </div>
@@ -942,7 +923,7 @@ const Create = ({
       >
         {question_type === "objective" && (
           <div>
-            <p className='fw-bold fs-4 mb-4'>Question Number</p>
+            <p className='fw-bold fs-3 mb-4'>Question Number</p>
             <div className='d-flex flex-column gap-3 mb-5'>
               <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
@@ -956,18 +937,16 @@ const Create = ({
                     onChange={(e) => {
                       setEditNumber(e.target.value);
                     }}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
               </div>
             </div>
 
-            <p className='fw-bold fs-4 mb-3'>Questions</p>
+            <p className='fw-bold fs-3 mb-3'>Questions</p>
             <div className='auth-textarea-wrapper'>
               <textarea
-                className='form-control'
+                className='form-control fs-3'
                 type='text'
                 value={editQuestion}
                 placeholder='Type the assignment question'
@@ -976,12 +955,11 @@ const Create = ({
                 }}
                 style={{
                   minHeight: "150px",
-                  fontSize: "16px",
                   lineHeight: "22px",
                 }}
               />
             </div>
-            <p className='fw-bold fs-4 my-4'>Options</p>
+            <p className='fw-bold fs-3 my-4'>Options</p>
             <div className='d-flex flex-column gap-3'>
               {/* option - A */}
               <div className='d-flex align-items-center gap-3'>
@@ -995,9 +973,7 @@ const Create = ({
                     onChange={(e) => {
                       setEditOption1(e.target.value);
                     }}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
@@ -1010,8 +986,8 @@ const Create = ({
                     onChange={(e) => setEditAnswer(e.target.value)}
                     value={editOption1}
                   />
-                  <label htmlFor='option-A' className='fs-4'>
-                    Correct answer
+                  <label htmlFor='option-A' className='fs-3'>
+                    Correct Answer
                   </label>
                 </div>
               </div>
@@ -1025,9 +1001,7 @@ const Create = ({
                     value={editOption2}
                     name='option'
                     onChange={(e) => setEditOption2(e.target.value)}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
@@ -1040,8 +1014,8 @@ const Create = ({
                     onChange={(e) => setEditAnswer(e.target.value)}
                     value={editOption2}
                   />
-                  <label htmlFor='option-B' className='fs-4'>
-                    Correct answer
+                  <label htmlFor='option-B' className='fs-3'>
+                    Correct Answer
                   </label>
                 </div>
               </div>
@@ -1055,9 +1029,7 @@ const Create = ({
                     value={editOption3}
                     name='option'
                     onChange={(e) => setEditOption3(e.target.value)}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
@@ -1071,8 +1043,8 @@ const Create = ({
                     onChange={(e) => setEditAnswer(e.target.value)}
                     value={editOption3}
                   />
-                  <label htmlFor='option-C' className='fs-4'>
-                    Correct answer
+                  <label htmlFor='option-C' className='fs-3'>
+                    Correct Answer
                   </label>
                 </div>
               </div>
@@ -1086,9 +1058,7 @@ const Create = ({
                     value={editOption4}
                     name='option'
                     onChange={(e) => setEditOption4(e.target.value)}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
@@ -1101,13 +1071,13 @@ const Create = ({
                     onChange={(e) => setEditAnswer(e.target.value)}
                     value={editOption4}
                   />
-                  <label htmlFor='option-D' className='fs-4'>
-                    Correct answer
+                  <label htmlFor='option-D' className='fs-3'>
+                    Correct Answer
                   </label>
                 </div>
               </div>
             </div>
-            <p className='fw-bold fs-4 mb-4 mt-5'>Mark Computation</p>
+            <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
             <div className='d-flex flex-column gap-3'>
               <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
@@ -1121,18 +1091,16 @@ const Create = ({
                     onChange={(e) => {
                       setEditMark(e.target.value);
                     }}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p className='fs-4'>Question Mark</p>
+                  <p className='fs-3'>Question Mark</p>
                 </div>
               </div>
             </div>
 
-            <p className='fw-bold fs-4 mb-4 mt-5'>Publish Status</p>
+            <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
             <div
               className={`d-flex align-items-center gap-3 cursor-pointer ${
                 editPublish ? "bg-success" : "bg-danger"
@@ -1155,7 +1123,7 @@ const Create = ({
               />
               <label
                 htmlFor='publishedStatus'
-                className={`fs-4 ${
+                className={`fs-3 ${
                   editPublish ? "text-success" : "text-danger"
                 }`}
               >
@@ -1166,7 +1134,7 @@ const Create = ({
         )}
         {question_type === "theory" && (
           <div>
-            <p className='fw-bold fs-4 mb-4'>Question Number</p>
+            <p className='fw-bold fs-3 mb-4'>Question Number</p>
             <div className='d-flex flex-column gap-3 mb-5'>
               <div className='d-flex align-items-center gap-3'>
                 <div style={{ width: "100px" }}>
@@ -1180,17 +1148,15 @@ const Create = ({
                     onChange={(e) => {
                       setEditNumber(e.target.value);
                     }}
-                    style={{
-                      fontSize: "16px",
-                    }}
+                    className='fs-3'
                   />
                 </div>
               </div>
             </div>
-            <p className='fw-bold fs-4 mb-4'>Question</p>
+            <p className='fw-bold fs-3 mb-4'>Question</p>
             <div className='auth-textarea-wrapper'>
               <textarea
-                className='form-control'
+                className='form-control fs-3'
                 type='text'
                 value={editQuestion}
                 placeholder='Type the assignment question'
@@ -1199,23 +1165,14 @@ const Create = ({
                 }}
                 style={{
                   minHeight: "150px",
-                  fontSize: "16px",
                   lineHeight: "22px",
                 }}
               />
             </div>
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                margin: "10px 0px",
-              }}
-            >
-              Answer
-            </p>
+            <p className='fw-bold fs-3 my-4'>Answer</p>
             <div className='auth-textarea-wrapper'>
               <textarea
-                className='form-control'
+                className='form-control fs-3'
                 type='text'
                 value={editAnswer}
                 placeholder='Type the answer to the question'
@@ -1224,12 +1181,11 @@ const Create = ({
                 }}
                 style={{
                   minHeight: "150px",
-                  fontSize: "16px",
                   lineHeight: "22px",
                 }}
               />
             </div>
-            <p className='fw-bold fs-4 mb-4 mt-5'>Mark Computation</p>
+            <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
             <div className='d-flex flex-column gap-3'>
               {/*Question Mark */}
               <div className='d-flex align-items-center gap-3'>
@@ -1245,14 +1201,14 @@ const Create = ({
                       setEditMark(e.target.value);
                     }}
                     wrapperClassName=''
+                    className='fs-3'
                   />
                 </div>
                 <div className='d-flex align-items-center gap-3 cursor-pointer'>
                   <p
-                    className=''
+                    className='fs-3'
                     style={{
                       lineHeight: "18px",
-                      fontSize: "14px",
                     }}
                   >
                     Question Mark
@@ -1262,7 +1218,7 @@ const Create = ({
               {/* Total Question */}
             </div>
 
-            <p className='fw-bold fs-4 mb-4 mt-5'>Publish Status</p>
+            <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
             <div
               className={`d-flex align-items-center gap-3 cursor-pointer ${
                 editPublish ? "bg-success" : "bg-danger"
@@ -1277,15 +1233,13 @@ const Create = ({
                 style={{
                   width: "20px",
                   height: "20px",
-                  // color: "green",
-                  // borderRadius: "100px",
                 }}
                 onChange={(e) => setEditPublish((prev) => !prev)}
                 value={editPublish}
               />
               <label
                 htmlFor='publishedStatus'
-                className={`fs-4 ${
+                className={`fs-3 ${
                   editPublish ? "text-success" : "text-danger"
                 }`}
               >
