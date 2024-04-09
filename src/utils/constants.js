@@ -38,7 +38,7 @@ export const backendUrl = function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
     return process.env.REACT_APP_API_URL2; // Update with your development API URL
   } else if (
-    window.location.href.includes("https://dashboard.schoolmateglobal.com")
+    window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
     return process.env.REACT_APP_API_URL2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {

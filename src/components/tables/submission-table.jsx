@@ -116,10 +116,39 @@ const SubmissionTable = ({
             
           },
         ];
+        const assg3 = {
+          result: [
+            {
+              period: user?.period,
+              term: user?.term,
+              session: user?.session,
+              assignment_id: data[0]?.assignment_id,
+              student_id: data[0]?.student_id,
+              subject_id: data[0]?.subject_id,
+              question_type: ResultTab === "1" ? "objective" : "theory",
+              total_mark: result?.total_marks,
+              score: result?.percentage,
+              week: data[0]?.week,
+              
+            },
+          ],
+          performance: {
+            period: user?.period,
+            term: user?.term,
+            session: user?.session,
+            assignment_id: data[0]?.assignment_id,
+            student_id: data[0]?.student_id,
+            subject_id: data[0]?.subject_id,
+            question_type: ResultTab === "1" ? "objective" : "theory",
+            total_mark: result?.total_marks,
+            percentage_score: result?.percentage,
+            week: data[0]?.week,
+          }
+        }
 
        
 
-        addAssignmentResult(assg2);
+        addAssignmentResult(assg3);
 
         setTimeout(() => {
           setLoginPrompt2(false);
