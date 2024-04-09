@@ -7,10 +7,10 @@ import { useStudent } from "./useStudent";
 
 import useLocalStorage from "use-local-storage";
 
-export const useAssignments = () => {
+export const useCBT = () => {
   const [activeTab, setActiveTab] = useState("1");
-  const [submissionTab, setSubmissionTab] = useState("2");
-  const [ResultTab, setResultTab] = useState("2");
+  const [submissionTab, setSubmissionTab] = useState("1");
+  const [ResultTab, setResultTab] = useState("1");
 
   const [obj, setObj] = useLocalStorage("obj", []);
 
@@ -116,8 +116,7 @@ export const useAssignments = () => {
     week,
   } = createQ;
 
-  const { apiServices, errorHandler, permission, user } =
-    useAppContext("assignments");
+  const { apiServices, errorHandler, permission, user } = useAppContext("cbt");
 
   const { studentByClass2 } = useStudent();
 

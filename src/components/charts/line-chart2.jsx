@@ -68,6 +68,10 @@ const LineChart2 = ({ chartTitle, studentData }) => {
         stroke: {
           curve: "smooth",
         },
+        title: {
+          text: chartTitle,
+          align: "center",
+        },
         xaxis: {
           categories: labels,
         },
@@ -90,8 +94,9 @@ const LineChart2 = ({ chartTitle, studentData }) => {
   }, [studentData, labels]);
 
   return (
-    <div className='chart-wrapper'>
-      <h4 className='fs-2 w-100 text-center'>{chartTitle}</h4>
+    // <div className='chart-wrapper'>
+    <div className=''>
+      {/* <h4 className='fs-2 w-100 text-center'>{chartTitle}</h4> */}
       <ReactApexChart
         options={state.options}
         series={state.series}

@@ -373,7 +373,7 @@ const StudentResults = ({
 
         {allLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className=''>Loading...</p>
+            <Spinner /> <p className='fs-3'>Loading...</p>
           </div>
         )}
 
@@ -383,7 +383,7 @@ const StudentResults = ({
             showNoAssignment3()) && (
             <div className={styles.placeholder_container}>
               <MdOutlineLibraryBooks className={styles.icon} />
-              <p className={styles.heading}>No Result</p>
+              <p className='fs-1 fw-bold mt-3'>No Result</p>
             </div>
           )}
 

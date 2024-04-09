@@ -19,9 +19,10 @@ import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
-import { generateNewArray, recreateArray, recreateArray2 } from "./constant";
+import { recreateArray } from "./constant";
+import { useCBT } from "../../../../hooks/useCBT";
 
-const Performances = ({ markedQ, setMarkedQ }) => {
+const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
   const {
     classSubjects,
     apiServices,
@@ -31,8 +32,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     createdQuestion,
     myStudents,
     updatePreviewAnswerFxn,
-    subjectsByTeacher,
-  } = useAssignments();
+  } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
     markedQ;
@@ -51,94 +51,13 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     ...myStudents,
   ];
 
-  const findStudentName = (id) => {
-    const studentObj = myStudents?.find((my) => {
-      return Number(my.id) === Number(id);
-    });
-    return studentObj?.title;
-  };
-
   const activateRetrieve = () => {
-    if (subject !== "" && student !== "") {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const activateRetrieve2 = () => {
     if (subject !== "") {
       return true;
     } else {
       return false;
     }
   };
-
-  function groupByStudentId(result) {
-    const grouped = {};
-
-    result.forEach((item) => {
-      const { student_id } = item;
-      if (!grouped[student_id]) {
-        grouped[student_id] = [item];
-      } else {
-        grouped[student_id].push(item);
-      }
-    });
-
-    return grouped;
-  }
-
-  /////// FETCH ALL PERFORMANCE /////
-  const {
-    isLoading: allPerformanceLoading,
-    refetch: refetchAllPerformance,
-    data: allPerformance,
-  } = useQuery(
-    [
-      queryKeys.GET_ALL_PERFORMANCE,
-      user?.period,
-      user?.term,
-      user?.session,
-      subject_id,
-    ],
-    () =>
-      apiServices.getAllStudentPerformance(
-        user?.period,
-        user?.term,
-        user?.session,
-        subject_id
-      ),
-    {
-      retry: 3,
-      // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve2() && permission?.submissions,
-      select: (data) => {
-        const app = data?.data[0]?.students;
-
-        // const app2 = groupByStudentId(app);
-
-        const app2 = generateNewArray(app)?.map((ap) => {
-          return {
-            name: findStudentName(ap?.student_id),
-            scores: ap?.weekScores,
-          };
-        });
-
-        // const app4 = app3
-
-        console.log({ app, data, app2 });
-
-        return app2;
-      },
-
-      onSuccess(data) {},
-      onError(err) {
-        errorHandler(err);
-      },
-      // select: apiServices.formatData,
-    }
-  );
 
   /////// FETCH PERFORMANCE /////
   const {
@@ -152,7 +71,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
       user?.term,
       user?.session,
       subject_id,
-      student_id,
+      user?.id,
     ],
     () =>
       apiServices.getStudentPerformance(
@@ -160,12 +79,12 @@ const Performances = ({ markedQ, setMarkedQ }) => {
         user?.term,
         user?.session,
         subject_id,
-        student_id
+        user?.id
       ),
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.submissions,
+      enabled: activateRetrieve(),
       select: (data) => {
         const pp = data?.data[0]?.students;
 
@@ -188,27 +107,6 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     }
   );
 
-  const result = [
-    {
-      student_id: "17",
-      week: "2",
-      total_score: 9,
-      average_percentage_score: "0.05",
-    },
-    {
-      student_id: "17",
-      week: "5",
-      total_score: 2,
-      average_percentage_score: "0.00",
-    },
-    {
-      student_id: "17",
-      week: "6",
-      total_score: 9,
-      average_percentage_score: "0.02",
-    },
-  ];
-
   const buttonOptions = [
     {
       title: "Cancel",
@@ -224,7 +122,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     },
   ];
 
-  const allLoading = showLoading || performanceLoading || allPerformanceLoading;
+  const allLoading = showLoading || performanceLoading;
 
   const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75];
 
@@ -236,27 +134,26 @@ const Performances = ({ markedQ, setMarkedQ }) => {
   ];
 
   useEffect(() => {
-    if (subjectsByTeacher?.length > 0) {
-      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+    const sbb = subjects?.map((sb) => {
+      return {
+        value: sb.subject,
+        // value: sb.id,
+        title: sb.subject,
+      };
+    });
 
-        return {
-          value: sb?.name,
-          title: sb?.name,
-        };
-      });
-      setNewSubjects(sbb2);
+    if (sbb?.length > 0) {
+      setNewSubjects(sbb);
     } else {
       setNewSubjects([]);
     }
-  }, [subjectsByTeacher]);
+  }, [subjects]);
 
   console.log({
     subject_id,
-    student_id,
+    student_id: user?.id,
     performance,
-    allPerformance,
-    subjectsByTeacher,
+    user,
   });
 
   return (
@@ -266,7 +163,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
           <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
             <AuthSelect
               sort
-              options={newSubjects}
+              options={studentSubjects}
               value={subject}
               // defaultValue={subject && subject}
               onChange={({ target: { value } }) => {
@@ -282,31 +179,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
                 });
               }}
               placeholder='Select Subject'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
-
-            <AuthSelect
-              sort
-              options={newStudents}
-              // options={myStudents}
-              value={student}
-              // defaultValue={student && student}
-              onChange={({ target: { value } }) => {
-                //
-                const fId = () => {
-                  const ff = myStudents?.find((opt) => opt.value === value);
-                  if (ff) {
-                    return ff?.id?.toString();
-                  }
-                };
-                //
-                setMarkedQ((prev) => {
-                  return { ...prev, student: value, student_id: fId() };
-                });
-              }}
-              placeholder='Select Student'
-              wrapperClassName='w-100'
+              wrapperClassName='w-50'
               // label="Subject"
             />
           </div>
@@ -320,20 +193,14 @@ const Performances = ({ markedQ, setMarkedQ }) => {
 
         {!allLoading && (
           <div className='mt-5'>
-            {student !== "all students" && (
-              <LineChart
-                chartTitle={`${
-                  student ? "Chart for" : "No Chart Result"
-                } ${student}`}
-                data={performance}
-              />
-            )}
-            {student === "all students" && (
-              <LineChart2
-                chartTitle={`Class Chart`}
-                studentData={allPerformance}
-              />
-            )}
+            <LineChart
+              chartTitle={`${
+                performance?.length > 0
+                  ? "Chart for"
+                  : "No Chart Result"
+              } ${user?.firstname} ${user?.surname}`}
+              data={performance}
+            />
           </div>
         )}
       </div>
@@ -352,4 +219,4 @@ const Performances = ({ markedQ, setMarkedQ }) => {
   );
 };
 
-export default Performances;
+export default Performances2;

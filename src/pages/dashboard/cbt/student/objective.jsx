@@ -9,6 +9,36 @@ import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import queryKeys from "../../../../utils/queryKeys";
 import { useMediaQuery } from "react-responsive";
+import CountdownTimer from "./CountDown";
+import { useCountdown } from "react-countdown-circle-timer";
+
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { FaComputer } from "react-icons/fa6";
+import { FaPlay } from "react-icons/fa";
+
+const minuteSeconds = 60;
+const hourSeconds = 3600;
+const daySeconds = 86400;
+
+const timerProps = {
+  isPlaying: true,
+  size: 120,
+  strokeWidth: 6,
+};
+
+const renderTime = (dimension, time) => {
+  return (
+    <div className='d-flex flex-column text-center'>
+      <div className='fs-1 fw-bold'>{time}</div>
+      <div className='fs-3 fw-bold'>{dimension}</div>
+    </div>
+  );
+};
+
+const getTimeSeconds = (time) => (minuteSeconds - time) | 0;
+const getTimeMinutes = (time) => ((time % hourSeconds) / minuteSeconds) | 0;
+const getTimeHours = (time) => ((time % daySeconds) / hourSeconds) | 0;
+const getTimeDays = (time) => (time / daySeconds) | 0;
 
 const Objective = ({
   assignmentLoading,
@@ -23,6 +53,13 @@ const Objective = ({
 }) => {
   const { apiServices, permission, user, errorHandler, answerQuestion } =
     useStudentAssignments();
+
+  const stratTime = Date.now() / 1000; // use UNIX timestamp in seconds
+  const endTime = stratTime + 243248; // use UNIX timestamp in seconds
+
+  const remainingTime = endTime - stratTime;
+  const days = Math.ceil(remainingTime / daySeconds);
+  const daysDuration = days * daySeconds;
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
@@ -86,7 +123,7 @@ const Objective = ({
             dt?.week === createQ2?.week
         );
 
-        console.log({ ssk, sorted, data, student, createQ2 });
+        // console.log({ ssk, sorted, data, student, createQ2 });
 
         if (sorted?.length > 0) {
           // resetLoadObjectiveAnsFxn();
@@ -252,15 +289,7 @@ const Objective = ({
     }
   };
 
-  console.log({
-    objectiveQ,
-    answeredObjectiveQ,
-    answerQuestion,
-    createQ2,
-    subjects,
-    findSubjectId: findSubjectId(),
-    objAnsweredAssignment,
-  });
+  
 
   const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 
@@ -303,13 +332,26 @@ const Objective = ({
             // <p className={styles.assignment_submitted_text}>Submitted</p>
           )}
           <div className={`${objectiveSubmitted && "opacity-50"}`}>
-            {/* <p className='fs-3 fw-bold'>Objective Section</p> */}
-            <div className='d-flex flex-column gap-4 flex-md-row justify-content-between align-items-center'>
-              <p className='fs-3 fw-bold'>Objective Section</p>
+            {/* <p className='fs-1 fw-bold w-100 text-center my-4'>01Hr : 45Min : 00Sec</p> */}
+            <CountdownTimer />
+            {/* <CountdownTimer hour={2} minute={45} durationInMinutes={45} /> */}
+            <div className='d-flex flex-column gap-4 flex-md-row justify-content-between align-items-center mt-5'>
+              <p className='fs-3 fw-bold'>Time: 1 Hour, 45 mins</p>
 
-              <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-                <p className='fs-3 fw-bold'>Total Score(s):</p>
-                <p className='fs-3 fw-bold'>{objScore}</p>
+              <div className='d-flex justify-content-center align-items-center gap-3'>
+                <div
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  className='d-flex justify-content-center align-items-center bg-success gap-3 py-4 px-4 rounded-3'
+                >
+                  <p className='fs-3 fw-bold text-white'>Start</p>
+                  <FaPlay className='fs-3 text-white' />
+                </div>
+                <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
+                  <p className='fs-3 fw-bold'>Total Score(s):</p>
+                  <p className='fs-3 fw-bold'>{objScore}</p>
+                </div>
               </div>
             </div>
             <div className='d-flex flex-column my-5 gap-4'>

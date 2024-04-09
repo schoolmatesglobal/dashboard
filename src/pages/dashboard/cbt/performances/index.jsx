@@ -20,6 +20,7 @@ import { useSubject } from "../../../../hooks/useSubjects";
 import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
 import { generateNewArray, recreateArray, recreateArray2 } from "./constant";
+import { useCBT } from "../../../../hooks/useCBT";
 
 const Performances = ({ markedQ, setMarkedQ }) => {
   const {
@@ -32,7 +33,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     myStudents,
     updatePreviewAnswerFxn,
     subjectsByTeacher,
-  } = useAssignments();
+  } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
     markedQ;

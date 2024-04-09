@@ -42,7 +42,7 @@ const Button = ({
 
   return (
     <button
-      className={`custom-button ${block ? "is-block" : ""} ${
+      className={`custom-button fs-4 ${block ? "is-block" : ""} ${
         getVariant() || ""
       } ${className || ""}`}
       {...rest}

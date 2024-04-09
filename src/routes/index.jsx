@@ -107,6 +107,7 @@ import ElementaryFinalBroadSheet from "../pages/dashboard/broad-sheet/sheets/ele
 import InvoiceFees from "../pages/dashboard/invoices/fees";
 import PaymentDetails from "../pages/dashboard/Payment/details";
 import PaymentEdit from "../pages/dashboard/Payment/edit";
+import CBTPage from "../pages/dashboard/cbt";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -142,6 +143,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='assignments'>
               <Assignments />
+            </Guard>
+          }
+        />
+        <Route
+          path='cbt'
+          element={
+            <Guard routeName='cbt'>
+              <CBTPage />
             </Guard>
           }
         />

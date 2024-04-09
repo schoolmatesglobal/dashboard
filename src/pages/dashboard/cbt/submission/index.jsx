@@ -22,6 +22,8 @@ import Theory from "./theory";
 import { useSubject } from "../../../../hooks/useSubjects";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import ButtonGroup from "../../../../components/buttons/button-group";
+import { useCBT } from "../../../../hooks/useCBT";
+import { FaComputer } from "react-icons/fa6";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const Submission = ({
@@ -51,9 +53,7 @@ const Submission = ({
     answeredQuestion,
     myStudents,
     subjectsByTeacher,
-  } = useAssignments();
-
-  const { studentByClass2 } = useStudentAssignments();
+  } = useCBT();
 
   const {
     question_type,
@@ -166,9 +166,9 @@ const Submission = ({
             }
             return 0;
           });
-          
-          console.log({ ffk, data, sorted });
-          
+
+        console.log({ ffk, data, sorted });
+
         return sorted;
       },
 
@@ -327,9 +327,7 @@ const Submission = ({
   // const correctCount2 = analyzeQuestions(answeredObjQ);
 
   const showNoAssignment = () => {
-    if (submissionTab === "1" && answeredObjQ?.length === 0) {
-      return true;
-    } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
+    if (answeredObjQ?.length === 0) {
       return true;
     } else {
       return false;
@@ -337,22 +335,39 @@ const Submission = ({
   };
 
   const showNoAssignment2 = () => {
-    if (submissionTab === "1" && answeredObjQ?.length === 0) {
-      return true;
-    } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const showNoAssignment3 = () => {
     if (!week || !subject || !student) {
       return true;
     } else {
       return false;
     }
   };
+  // const showNoAssignment = () => {
+  //   if (submissionTab === "1" && answeredObjQ?.length === 0) {
+  //     return true;
+  //   } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
+
+  // const showNoAssignment2 = () => {
+  //   if (submissionTab === "1" && answeredObjQ?.length === 0) {
+  //     return true;
+  //   } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
+
+  // const showNoAssignment3 = () => {
+  //   if (!week || !subject || !student) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
@@ -388,13 +403,16 @@ const Submission = ({
       variant: submissionTab === "2" ? "" : "outline",
     };
 
-    if (answeredObjQ?.length >= 1 && answeredTheoQ?.length >= 1) {
-      return [objectiveTab, theoryTab];
-    } else if (answeredObjQ?.length >= 1) {
+    if (answeredObjQ?.length >= 1) {
       return [objectiveTab];
-    } else if (answeredTheoQ?.length >= 1) {
-      return [theoryTab];
     }
+    // if (answeredObjQ?.length >= 1 && answeredTheoQ?.length >= 1) {
+    //   return [objectiveTab, theoryTab];
+    // } else if (answeredObjQ?.length >= 1) {
+    //   return [objectiveTab];
+    // } else if (answeredTheoQ?.length >= 1) {
+    //   return [theoryTab];
+    // }
 
     return [];
   };
@@ -406,7 +424,7 @@ const Submission = ({
   // const allLoading = showLoading || assignmentLoading;
   const allLoading =
     submittedObjAssignmentLoading ||
-    submittedTheoAssignmentLoading ||
+    // submittedTheoAssignmentLoading ||
     markedAssignmentLoading ||
     loading1;
 
@@ -434,11 +452,14 @@ const Submission = ({
 
   useEffect(() => {
     trigger();
-    if (answeredTheoQ?.length >= 1) {
-      setSubmissionTab("2");
-    } else {
+    if (answeredObjQ?.length >= 1) {
       setSubmissionTab("1");
     }
+    // if (answeredTheoQ?.length >= 1) {
+    //   setSubmissionTab("2");
+    // } else {
+    //   setSubmissionTab("1");
+    // }
   }, [subject, week, student]);
 
   console.log({ answeredObjQ, answeredTheoQ, submissionTab });
@@ -503,28 +524,6 @@ const Submission = ({
               // label="Subject"
             />
 
-            {/* <AuthSelect
-              sort
-              options={[
-                { value: "objective", title: "Objective" },
-                { value: "theory", title: "Theory" },
-              ]}
-              value={question_type}
-              // defaultValue={question_type && question_type}
-              onChange={({ target: { value } }) => {
-                setAnswerQ((prev) => {
-                  return { ...prev, question_type: value };
-                });
-                // refetchMarkedAssignment();
-                setMarkedTheoQ([]);
-                setMarkedTheoQ2([]);
-
-              
-              }}
-              placeholder='Question Type'
-              wrapperClassName='w-100'
-            /> */}
-
             <AuthSelect
               sort
               options={myStudents}
@@ -562,15 +561,12 @@ const Submission = ({
           </div>
         )}
 
-        {!allLoading &&
-          (showNoAssignment() ||
-            showNoAssignment2() ||
-            showNoAssignment3()) && (
-            <div className={styles.placeholder_container}>
-              <MdOutlineLibraryBooks className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>No Submission</p>
-            </div>
-          )}
+        {!allLoading && (showNoAssignment() || showNoAssignment2()) && (
+          <div className={styles.placeholder_container}>
+            <FaComputer className={styles.icon} />
+            <p className='fs-1 fw-bold mt-3'>No CBT Submission</p>
+          </div>
+        )}
 
         {!allLoading && answeredObjQ?.length >= 1 && submissionTab === "1" && (
           <div className=''>
@@ -588,7 +584,7 @@ const Submission = ({
           </div>
         )}
 
-        {!allLoading && answeredTheoQ?.length >= 1 && submissionTab === "2" && (
+        {/* {!allLoading && answeredTheoQ?.length >= 1 && submissionTab === "2" && (
           <div className=''>
             <div className='d-flex justify-content-center align-items-center mt-5 '>
               <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
@@ -617,17 +613,17 @@ const Submission = ({
               setLoading1={setLoading1}
             />
           </div>
-        )}
+        )} */}
       </div>
 
-      <Prompt
+      {/* <Prompt
         isOpen={loginPrompt}
         toggle={() => setLoginPrompt(!loginPrompt)}
         hasGroupedButtons={true}
         groupedButtonProps={buttonOptions}
         singleButtonText='Preview'
         promptHeader={` CONFIRM RESULT SUBMISSION `}
-      ></Prompt>
+      ></Prompt> */}
     </div>
   );
 };

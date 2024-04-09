@@ -113,24 +113,11 @@ const SubmissionTable = ({
             total_mark: result?.total_marks,
             score: result?.percentage,
             week: data[0]?.week,
+            
           },
         ];
 
-        // const assg = data?.map((as, i) => {
-        //   return {
-        //     period: user?.period,
-        //     term: user?.term,
-        //     session: user?.session,
-        //     student_id: as?.student_id,
-        //     subject_id: as?.subject_id,
-        //     question_type: ResultTab === '1' ? 'objective' : "theory",
-        //     assignment_id: as?.assignment_id,
-        //     mark: result?.percentage,
-        //     total_mark: result?.total_marks,
-        //     score: result?.percentage,
-        //     week: as?.week,
-        //   };
-        // });
+       
 
         addAssignmentResult(assg2);
 

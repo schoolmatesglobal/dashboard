@@ -18,6 +18,8 @@ import Prompt from "../../../../components/modals/prompt";
 import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import ButtonGroup from "../../../../components/buttons/button-group";
+import { useCBT } from "../../../../hooks/useCBT";
+import { FaComputer } from "react-icons/fa6";
 
 const Results = ({
   markedQ,
@@ -39,7 +41,7 @@ const Results = ({
     myStudents,
     updatePreviewAnswerFxn,
     subjectsByTeacher,
-  } = useAssignments();
+  } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
     markedQ;
@@ -220,12 +222,7 @@ const Results = ({
   ];
 
   const showNoAssignment = () => {
-    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
-      return true;
-    } else if (
-      ResultTab === "2" &&
-      markedAssignmentResults?.questions?.length === 0
-    ) {
+    if (submittedAssignment?.questions?.length === 0) {
       return true;
     } else {
       return false;
@@ -233,19 +230,6 @@ const Results = ({
   };
 
   const showNoAssignment2 = () => {
-    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
-      return true;
-    } else if (
-      ResultTab === "2" &&
-      markedAssignmentResults?.questions?.length === 0
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const showNoAssignment3 = () => {
     if (!week || !subject || !student) {
       return true;
     } else {
@@ -310,15 +294,8 @@ const Results = ({
       variant: ResultTab === "2" ? "" : "outline",
     };
 
-    if (
-      submittedAssignment?.questions?.length >= 1 &&
-      markedAssignmentResults?.questions?.length >= 1
-    ) {
-      return [objectiveTab, theoryTab];
-    } else if (submittedAssignment?.questions?.length >= 1) {
+    if (submittedAssignment?.questions?.length >= 1) {
       return [objectiveTab];
-    } else if (markedAssignmentResults?.questions?.length >= 1) {
-      return [theoryTab];
     }
 
     return [];
@@ -341,10 +318,7 @@ const Results = ({
   }, [subjectsByTeacher]);
 
   useEffect(() => {
-   
-    if (markedAssignmentResults?.questions?.length >= 1) {
-      setResultTab("2");
-    } else {
+    if (submittedAssignment?.questions?.length >= 1) {
       setResultTab("1");
     }
   }, [week, subject, student]);
@@ -462,15 +436,12 @@ const Results = ({
           </div>
         )}
 
-        {!allLoading &&
-          (showNoAssignment() ||
-            showNoAssignment2() ||
-            showNoAssignment3()) && (
-            <div className={styles.placeholder_container}>
-              <MdOutlineLibraryBooks className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>No Result</p>
-            </div>
-          )}
+        {!allLoading && (showNoAssignment() || showNoAssignment2()) && (
+          <div className={styles.placeholder_container}>
+            <FaComputer className={styles.icon} />
+            <p className='fs-1 fw-bold mt-3'>No CBT Result</p>
+          </div>
+        )}
 
         {!allLoading &&
           submittedAssignment?.questions?.length > 0 &&
@@ -533,26 +504,23 @@ const Results = ({
             </div>
           )}
 
-        {!allLoading &&
+        {/* {!allLoading &&
           markedAssignmentResults?.questions?.length > 0 &&
           ResultTab === "2" && (
             <div className=''>
               <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
-                {/* total marks */}
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Total Marks</p>
                   <p className='fs-1 fw-bold'>
                     {markedAssignmentResults?.total_marks}
                   </p>
                 </div>
-                {/* score */}
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Score</p>
                   <p className='fs-1 fw-bold'>
                     {markedAssignmentResults?.score}
                   </p>
                 </div>
-                {/* percentage */}
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Percentage</p>
                   <p className='fs-1 fw-bold'>
@@ -594,11 +562,8 @@ const Results = ({
                 ResultTab={ResultTab}
               />
             </div>
-          )}
+          )} */}
       </div>
-      {/* <div className="d-flex justify-content-center ">
-      <ButtonGroup options={buttonOptions2} />
-    </div> */}
       <Prompt
         isOpen={loginPrompt}
         toggle={() => setLoginPrompt(!loginPrompt)}

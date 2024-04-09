@@ -18,6 +18,8 @@ import MarkCard from "./markCard";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useCBT } from "../../../hooks/useCBT";
+import { FaComputer } from "react-icons/fa6";
 
 const Create = ({
   createQ,
@@ -39,7 +41,7 @@ const Create = ({
     permission,
     user,
     subjectsByTeacher,
-  } = useAssignments();
+  } = useCBT();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
@@ -478,10 +480,10 @@ const Create = ({
       title: "Objective",
     },
 
-    {
-      value: "theory",
-      title: "Theory",
-    },
+    // {
+    //   value: "theory",
+    //   title: "Theory",
+    // },
   ];
 
   const filterArray = objectiveQ?.filter((obj) => obj.id !== editQuestionId);
@@ -751,18 +753,18 @@ const Create = ({
           </div>
         )}
 
-        {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
+        {/* {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
           <div className={styles.placeholder_container}>
             <HiOutlineDocumentPlus className={styles.icon} />
-            <p className='fs-1 fw-bold mt-3'>Create theory Assignment</p>
+            <p className='fs-1 fw-bold mt-3'>Create theory </p>
           </div>
-        )}
+        )} */}
         {!allLoading &&
           question_type === "objective" &&
           objectiveQ?.length === 0 && (
             <div className={styles.placeholder_container}>
-              <HiOutlineDocumentPlus className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>Create Objective Assignment</p>
+              <FaComputer className={styles.icon} />{" "}
+              <p className='fs-1 fw-bold mt-3'>Create CBT Objective </p>
             </div>
           )}
         {!allLoading &&
@@ -770,8 +772,8 @@ const Create = ({
           objectiveQ?.length === 0 &&
           question_type === "" && (
             <div className={styles.placeholder_container}>
-              <HiOutlineDocumentPlus className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>Create Assignment</p>
+              <FaComputer className={styles.icon} />
+              <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
             </div>
           )}
 

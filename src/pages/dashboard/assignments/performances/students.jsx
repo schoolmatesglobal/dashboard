@@ -186,7 +186,7 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
 
         {allLoading && (
           <div className={styles.spinner_container}>
-            <Spinner /> <p className=''>Loading...</p>
+            <Spinner /> <p className='fs-3'>Loading...</p>
           </div>
         )}
 
@@ -195,7 +195,7 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
             <LineChart
               chartTitle={`${
                 performance?.length > 0
-                  ? "Performance Chart for"
+                  ? "Chart for"
                   : "No Chart Result"
               } ${user?.firstname} ${user?.surname}`}
               data={performance}

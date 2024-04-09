@@ -3,23 +3,17 @@ import { MdOutlineLibraryBooks } from "react-icons/md";
 import AuthSelect from "../../../../components/inputs/auth-select";
 import styles from "../../../../assets/scss/pages/dashboard/assignment.module.scss";
 import { useAssignments } from "../../../../hooks/useAssignments";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Spinner } from "reactstrap";
 import queryKeys from "../../../../utils/queryKeys";
 import SubmissionTable from "../../../../components/tables/submission-table";
-import {
-  addQuestionMarkTotal,
-  addSumMark,
-  analyzeQuestions,
-  convertToPercentage,
-  countCorrectAnswers,
-} from "../constant";
+import { addSumMark, analyzeQuestions } from "../constant";
 import Prompt from "../../../../components/modals/prompt";
-import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import ButtonGroup from "../../../../components/buttons/button-group";
+import { FaComputer } from "react-icons/fa6";
 
-const Results = ({
+const StudentResults = ({
   markedQ,
   setMarkedQ,
   answeredObjResults,
@@ -30,15 +24,11 @@ const Results = ({
   setResultTab,
 }) => {
   const {
-    classSubjects,
     apiServices,
     errorHandler,
     permission,
     user,
-    createdQuestion,
-    myStudents,
     updatePreviewAnswerFxn,
-    subjectsByTeacher,
   } = useAssignments();
 
   const { question_type, subject, subject_id, student_id, week, student } =
@@ -54,12 +44,7 @@ const Results = ({
   const queryClient = useQueryClient();
 
   const activateRetrieve = () => {
-    if (
-      subject !== "" &&
-      // question_type !== "" &&
-      student !== "" &&
-      week !== ""
-    ) {
+    if (subject !== "" && week !== "") {
       return true;
     } else {
       return false;
@@ -77,7 +62,7 @@ const Results = ({
       user?.period,
       user?.term,
       user?.session,
-      "objective",
+      "objective2",
       week,
     ],
     () =>
@@ -91,16 +76,12 @@ const Results = ({
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.submissions,
+      enabled: activateRetrieve(),
       select: (data) => {
         const ffk = apiServices.formatData(data);
 
         const sorted = ffk
-          ?.filter(
-            (dt) => dt?.subject === subject && dt?.student === student
-            // &&
-            // dt?.week === week
-          )
+          ?.filter((dt) => dt?.subject === subject && dt?.student === student)
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
               return -1;
@@ -113,12 +94,7 @@ const Results = ({
 
         const calculatedData = analyzeQuestions(sorted);
 
-        // console.log({ ffk, data, sorted });
-        // if (question_type === "objective") {
-        //   return calculatedData ?? {};
-        // } else {
-        //   return {};
-        // }
+        console.log({ ffk, data, sorted });
         return calculatedData ?? {};
       },
 
@@ -142,7 +118,7 @@ const Results = ({
       user?.period,
       user?.term,
       user?.session,
-      "theory",
+      "theory2",
       week,
     ],
     () =>
@@ -158,7 +134,7 @@ const Results = ({
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.submissions,
+      enabled: activateRetrieve(),
 
       select: (data) => {
         const mmk = apiServices.formatData(data);
@@ -168,8 +144,6 @@ const Results = ({
             (dt) =>
               dt?.subject_id === subject_id &&
               Number(dt?.student_id) === Number(student_id)
-            // &&
-            // dt?.week === week
           )
           ?.sort((a, b) => {
             if (a.question_number < b.question_number) {
@@ -184,12 +158,6 @@ const Results = ({
         console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
-
-        // if (question_type === "theory") {
-        //   return computedTeacherMark ?? {};
-        // } else {
-        //   return {};
-        // }
 
         return computedTeacherMark ?? {};
 
@@ -246,56 +214,12 @@ const Results = ({
   };
 
   const showNoAssignment3 = () => {
-    if (!week || !subject || !student) {
+    if (!week || !subject) {
       return true;
     } else {
       return false;
     }
   };
-
-  const allLoading = showLoading || markedAssignmentResultsLoading;
-
-  /////// POST ASSIGNMENT RESULT ////
-  const {
-    mutateAsync: addAssignmentResult,
-    isLoading: addAssignmentResultLoading,
-  } = useMutation(
-    apiServices.submitAssignmentResult,
-
-    {
-      onSuccess() {
-        if (ResultTab === "1") {
-          queryClient.invalidateQueries(
-            queryKeys.GET_SUBMITTED_ASSIGNMENT,
-            user?.period,
-            user?.term,
-            user?.session,
-            "objective",
-            week
-          );
-        } else {
-          queryClient.invalidateQueries(
-            queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
-            student_id,
-            user?.period,
-            user?.term,
-            user?.session,
-            "theory",
-            week
-          );
-        }
-
-        toast.success(
-          `${
-            ResultTab === "1" ? "Objective" : "Theory"
-          } result has been submitted successfully`
-        );
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
 
   const optionTabShow = () => {
     const objectiveTab = {
@@ -324,32 +248,44 @@ const Results = ({
     return [];
   };
 
-  useEffect(() => {
-    if (subjectsByTeacher?.length > 0) {
-      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-        // const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
-
-        return {
-          value: sb?.name,
-          title: sb?.name,
-        };
-      });
-      setNewSubjects(sbb2);
-    } else {
-      setNewSubjects([]);
-    }
-  }, [subjectsByTeacher]);
+  const allLoading = showLoading || markedAssignmentResultsLoading;
 
   useEffect(() => {
-   
     if (markedAssignmentResults?.questions?.length >= 1) {
       setResultTab("2");
     } else {
       setResultTab("1");
     }
-  }, [week, subject, student]);
+  }, [week, subject]);
+
+  useEffect(() => {
+    const sbb = subjects?.map((sb) => {
+      return {
+        value: sb.subject,
+        // value: sb.id,
+        title: sb.subject,
+      };
+    });
+
+    if (sbb?.length > 0) {
+      setNewSubjects(sbb);
+    } else {
+      setNewSubjects([]);
+    }
+  }, [subjects]);
+
+  useEffect(() => {
+    setMarkedQ((prev) => {
+      return {
+        ...prev,
+        student: `${user?.surname} ${user?.firstname}`,
+        student_id: user?.id,
+      };
+    });
+  }, []);
 
   console.log({
+    user,
     markedQ,
     submittedAssignment,
     markedAssignmentResults,
@@ -383,6 +319,7 @@ const Results = ({
                 setMarkedQ((prev) => {
                   return { ...prev, week: value };
                 });
+                // setResultTab("2");
               }}
               placeholder='Select Week'
               wrapperClassName='w-100'
@@ -404,6 +341,8 @@ const Results = ({
                 setMarkedQ((prev) => {
                   return { ...prev, subject: value, subject_id: fId() };
                 });
+
+                // setResultTab("2");
               }}
               placeholder='Select Subject'
               wrapperClassName='w-100'
@@ -426,29 +365,6 @@ const Results = ({
               placeholder='Question Type'
               wrapperClassName='w-100'
             /> */}
-
-            <AuthSelect
-              sort
-              options={myStudents}
-              value={student}
-              // defaultValue={student && student}
-              onChange={({ target: { value } }) => {
-                //
-                const fId = () => {
-                  const ff = myStudents?.find((opt) => opt.value === value);
-                  if (ff) {
-                    return ff?.id?.toString();
-                  }
-                };
-                //
-                setMarkedQ((prev) => {
-                  return { ...prev, student: value, student_id: fId() };
-                });
-              }}
-              placeholder='Select Student'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
           </div>
         </div>
 
@@ -467,8 +383,8 @@ const Results = ({
             showNoAssignment2() ||
             showNoAssignment3()) && (
             <div className={styles.placeholder_container}>
-              <MdOutlineLibraryBooks className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>No Result</p>
+              <FaComputer className={styles.icon} />
+              <p className='fs-1 fw-bold mt-3'>No CBT Result</p>
             </div>
           )}
 
@@ -493,16 +409,16 @@ const Results = ({
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Percentage</p>
                   <p className='fs-1 fw-bold'>
-                    {`${submittedAssignment?.percentage}%`}
+                    {submittedAssignment?.percentage}
                   </p>
                 </div>
               </div>
               <SubmissionTable
                 centered
                 isLoading={allLoading}
-                addAssignmentResult={addAssignmentResult}
-                isStudent={false}
-                addAssignmentResultLoading={addAssignmentResultLoading}
+                isStudent={true}
+                // addAssignmentResult={addAssignmentResult}
+                // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
                 columns={[
                   // {
@@ -526,9 +442,6 @@ const Results = ({
                 markedQ={markedQ}
                 result={submittedAssignment}
                 ResultTab={ResultTab}
-                // total_mark={submittedAssignment?.total_marks}
-                // score={submittedAssignment?.score}
-                // mark={submittedAssignment?.score}
               />
             </div>
           )}
@@ -556,7 +469,7 @@ const Results = ({
                 <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                   <p className='fs-3 fw-bold'>Percentage</p>
                   <p className='fs-1 fw-bold'>
-                    {`${markedAssignmentResults?.percentage}%`}
+                    {markedAssignmentResults?.percentage}
                   </p>
                 </div>
               </div>
@@ -565,10 +478,10 @@ const Results = ({
                 // previewAnswer={previewAnswer}
                 centered
                 isLoading={allLoading}
-                addAssignmentResult={addAssignmentResult}
-                addAssignmentResultLoading={addAssignmentResultLoading}
+                isStudent={true}
+                // addAssignmentResult={addAssignmentResult}
+                // addAssignmentResultLoading={addAssignmentResultLoading}
                 rowHasView={true}
-                isStudent={false}
                 columns={[
                   // {
                   //   Header: "Question Type",
@@ -596,9 +509,6 @@ const Results = ({
             </div>
           )}
       </div>
-      {/* <div className="d-flex justify-content-center ">
-      <ButtonGroup options={buttonOptions2} />
-    </div> */}
       <Prompt
         isOpen={loginPrompt}
         toggle={() => setLoginPrompt(!loginPrompt)}
@@ -611,4 +521,4 @@ const Results = ({
   );
 };
 
-export default Results;
+export default StudentResults;
