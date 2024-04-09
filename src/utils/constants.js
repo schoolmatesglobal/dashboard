@@ -36,15 +36,15 @@ import {
 
 export const backendUrl = function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return process.env.REACT_APP_API_URL2; // Update with your development API URL
+    return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return process.env.REACT_APP_API_URL2;
+    return "https://dashboard.sapsms.com/api";
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return process.env.REACT_APP_API_URL;
+    return "https://staging.sapsms.com/api";
   } else {
-    return process.env.REACT_APP_API_URL;
+    return "https://staging.sapsms.com/api";
   }
 };
 
