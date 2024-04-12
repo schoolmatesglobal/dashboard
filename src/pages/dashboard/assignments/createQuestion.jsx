@@ -342,11 +342,6 @@ const CreateQuestion = ({
         groupedButtonProps={buttonOptions}
         singleButtonText='Preview'
         promptHeader={`${subject?.toUpperCase()} (WEEK ${createQ?.week?.toUpperCase()}) - ${createQ?.question_type?.toUpperCase()} - Q${
-          // question_type === "objective"
-          //   ? ObjectiveQ?.length + 1
-          //   : question_type === "theory"
-          //   ? TheoryQ?.length + 1
-          //   : ""
           createQ?.question_number
         }`}
       >
@@ -354,18 +349,10 @@ const CreateQuestion = ({
           <>
             {createQ?.question_type === "theory" && (
               <div>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Question
-                </p>
+                <p className='fs-3 fw-bold mb-3'>Question</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
-                    className='form-control'
+                    className='form-control fs-3 lh-base'
                     type='text'
                     value={createQ?.question}
                     placeholder='Type the assignment question'
@@ -375,39 +362,16 @@ const CreateQuestion = ({
                       })
                     }
                     style={{
-                      minHeight: "150px",
-                      fontSize: "16px",
-                      lineHeight: "22px",
+                      minHeight: "200px",
+                      // lineHeight: "22px",
                     }}
                   />
                 </div>
-                {/* <>
-                  <label className={styles.create_question_label}>Image</label>
-                  <CustomFileInput
-                    activateError={activateError}
-                    previewUrl={previewUrl}
-                    setPreviewUrl={setPreviewUrl}
-                    setImageUpload={setImageUpload}
-                    imageUpload={imageUpload}
-                    setFileUploadError={setFileUploadError}
-                    fileUploadError={fileUploadError}
-                    imageName={imageNam}
-                    setImageName={setImageNam}
-                    // data={details.personalDetails.profilePictureName}
-                  />
-                </> */}
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    margin: "10px 0px",
-                  }}
-                >
-                  Answer
-                </p>
+
+                <p className='fs-3 fw-bold my-4'>Answer</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
-                    className='form-control'
+                    className='form-control fs-3 lh-base'
                     type='text'
                     value={createQ?.answer}
                     placeholder='Type the answer to the question'
@@ -416,19 +380,12 @@ const CreateQuestion = ({
                         return { ...prev, answer: e.target.value };
                       })
                     }
-                    style={{ minHeight: "150px", fontSize: "16px" }}
+                    style={{ minHeight: "200px" }}
                   />
                 </div>
 
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    margin: "10px 0px",
-                  }}
-                >
-                  Mark Computation
-                </p>
+                <p className='fs-3 fw-bold my-4'>Mark Computation</p>
+
                 <div className='d-flex flex-column gap-3'>
                   {/*Question Mark */}
                   <div className='d-flex align-items-center gap-3'>
@@ -438,6 +395,7 @@ const CreateQuestion = ({
                         placeholder='Question Mark'
                         value={createQ.question_mark}
                         name='option'
+                        className='fs-3'
                         onChange={(e) => {
                           setCreateQ((prev) => {
                             return {
@@ -452,8 +410,8 @@ const CreateQuestion = ({
                     </div>
                     <div className='d-flex align-items-center gap-3 cursor-pointer'>
                       <p
-                        className=''
-                        style={{ lineHeight: "18px", fontSize: "14px" }}
+                        className='fs-3'
+                        // style={{ lineHeight: "18px", fontSize: "14px" }}
                       >
                         Question Mark
                       </p>
@@ -464,10 +422,10 @@ const CreateQuestion = ({
             )}
             {createQ?.question_type === "objective" && (
               <>
-                <p className='fs-3 fw-bold mb-3'>Question</p>
+                <p className='fs-3 fw-bold my-4'>Question</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
-                    className='form-control'
+                    className='form-control fs-3 lh-base'
                     type='text'
                     value={createQ?.question}
                     placeholder='Type the assignment question'
@@ -477,14 +435,12 @@ const CreateQuestion = ({
                       })
                     }
                     style={{
-                      minHeight: "150px",
-                      fontSize: "16px",
-                      lineHeight: "22px",
+                      minHeight: "200px",
                     }}
                   />
                 </div>
 
-                <p className='fs-3 fw-bold my-3'>Options</p>
+                <p className='fs-3 fw-bold my-4'>Options</p>
                 <div className='d-flex flex-column gap-3'>
                   {/* option A */}
                   <div className='d-flex align-items-center gap-3'>
@@ -492,6 +448,7 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option A'
+                        className='fs-3'
                         // hasError={!!errors.username}
                         value={createQ?.option1}
                         name='option'
@@ -537,6 +494,7 @@ const CreateQuestion = ({
                         placeholder='Option B'
                         // hasError={!!errors.username}
                         value={createQ?.option2}
+                        className='fs-3'
                         name='option'
                         onChange={(e) =>
                           setCreateQ((prev) => {
@@ -579,6 +537,7 @@ const CreateQuestion = ({
                         type='text'
                         placeholder='Option C'
                         value={createQ?.option3}
+                        className='fs-3'
                         name='option'
                         onChange={(e) =>
                           setCreateQ((prev) => {
@@ -623,6 +582,7 @@ const CreateQuestion = ({
                         placeholder='Option D'
                         // hasError={!!errors.username}
                         value={createQ?.option4}
+                        className='fs-3'
                         name='option'
                         onChange={(e) =>
                           setCreateQ((prev) => {
@@ -660,17 +620,18 @@ const CreateQuestion = ({
                   </div>
                 </div>
 
-                <p className='fs-3 fw-bold my-3'>Mark Computation</p>
+                <p className='fs-3 fw-bold my-4'>Mark Computation</p>
                 <div className='d-flex flex-column gap-3'>
                   {/*Question Mark */}
                   <div className='d-flex align-items-center gap-3'>
                     <div style={{ width: "100px" }}>
                       <AuthInput
                         type='number'
-                        placeholder='Question Mark'
+                        placeholder='Mark'
                         // hasError={!!errors.username}
                         value={objMark}
                         name='option'
+                        className='fs-3'
                         onChange={(e) => {
                           if (objectiveQ?.length > 0) return;
                           setObjMark(e.target.value);
@@ -692,16 +653,8 @@ const CreateQuestion = ({
         )}
         {activeTab === "2" && (
           <>
-            <p className='fw-bold fs-4 mb-3'>Questions</p>
-            <p
-              style={{
-                fontSize: "16px",
-                marginBottom: "20px",
-                lineHeight: "22px",
-              }}
-            >
-              {createQ?.question}
-            </p>
+            <p className='fw-bold fs-3 mb-3'>Questions</p>
+            <p className='fs-3 lh-base mb-4'>{createQ?.question}</p>
             {createQ?.image && (
               <div className='mb-4 mt-4'>
                 <img src={createQ?.image} width={150} alt='' />
@@ -709,67 +662,35 @@ const CreateQuestion = ({
             )}
             {createQ?.question_type === "objective" && (
               <>
-                <p className='fw-bold fs-4 my-4'>Options</p>
+                <p className='fw-bold fs-3 my-4'>Options</p>
                 <div className='d-flex flex-column gap-3 mb-5'>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     A. {option1}
                     {answer === option1 && " (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     B. {option2}
                     {answer === option2 && " - (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     C. {option3}
                     {answer === option3 && " - (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     D. {option4}
                     {answer === option4 && " - (Correct Answer)"}
                   </p>
                 </div>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Mark
-                </p>
-                <p className={styles.create_question_answer}>{objMark} mk(s)</p>
+                <p className='fw-bold fs-3 mb-3'>Mark</p>
+                <p className='fs-3 mb-4'>{objMark} mk(s)</p>
               </>
             )}
             {createQ?.question_type === "theory" && (
               <>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Answer
-                </p>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    lineHeight: "22px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  {createQ?.answer}
-                </p>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Mark
-                </p>
-                <p className={styles.create_question_answer}>
+                <p className='fw-bold fs-3 mb-3'>Answer</p>
+                <p className='fs-3 lh-base mb-4'>{createQ?.answer}</p>
+                <p className='fw-bold fs-3 mb-3'>Mark</p>
+                <p className='fs-3 lh-base mb-4'>
                   {createQ?.question_mark} mk(s)
                 </p>
               </>

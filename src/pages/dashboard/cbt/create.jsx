@@ -619,11 +619,6 @@ const Create = ({
     if (activateRetrieveCreated()) {
       refetchAssignmentCreated();
     }
-    // refetchAssignmentCreated();
-    // setLoading1(true);
-    // setTimeout(() => {
-    //   setLoading1(false);
-    // }, 700);
   }, [subject_id, week, question_type]);
 
   // useEffect(() => {
@@ -634,15 +629,6 @@ const Create = ({
   // }, [editObjectiveAssignment]);
 
   console.log({
-    // unPublishedAssignment,
-    // activateRetrieveCreated: activateRetrieveCreated(),
-    // assignmentCreatedFetching,
-    // assignmentCreatedRefetching,
-    // published,
-
-    // objectiveQ,
-    // theoryQ,
-
     createQ,
     subjectsByTeacher,
     // subjects,

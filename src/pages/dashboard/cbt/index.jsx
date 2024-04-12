@@ -14,6 +14,7 @@ import Submission from "./submission";
 import View from "./student/view";
 import StudentResults from "./student/studentResults";
 import Performances2 from "./performances/students";
+import { useAppContext } from "../../../hooks/useAppContext";
 // import Performances2 from "./performances/students";
 
 const CBTPage = () => {
@@ -94,9 +95,29 @@ const CBTPage = () => {
     setTheorySubmitted,
   } = useStudentCBT();
 
+  const {
+    isOpen: sideBarIsOpen,
+    toggle: toggleSideBar,
+    closeSidebar,
+    openSidebar,
+    close,
+    hideAllBars,
+    setHideAllBars,
+  } = useAppContext();
+
   const { subjects } = useSubject();
 
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showWarning, setShowWarning] = useState(true);
+  const [testEnded, setTestEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [secondleft, setSecondLeft] = useState(null);
+  const [hourLeft, setHourLeft] = useState(null);
+  const [day, setDay] = useState(0);
+  const [hour, setHour] = useState(1);
+  const [minute, setMinute] = useState(45);
 
   const getToggleButtons = () => {
     let arr = [];
@@ -176,12 +197,14 @@ const CBTPage = () => {
   return (
     <PageSheet>
       <div className={styles.home}>
-        <ButtonGroup2 options={getToggleButtons()} />
+        {!hideAllBars && <ButtonGroup2 options={getToggleButtons()} />}
 
-        <hr className={styles.home_divider} />
+        {!hideAllBars && <hr className={styles.home_divider} />}
 
         {activeTab === "5" && permission?.view && (
           <View
+            toggleNavbar={toggleSideBar}
+            closeSidebar={closeSidebar}
             objectiveQ2={objectiveQ2}
             setObjectiveQ2={setObjectiveQ2}
             theoryQ2={theoryQ2}
@@ -200,6 +223,24 @@ const CBTPage = () => {
             theorySubmitted={theorySubmitted}
             setTheorySubmitted={setTheorySubmitted}
             subjects={subjects}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            showWarning={showWarning}
+            setShowWarning={setShowWarning}
+            testEnded={testEnded}
+            setTestEnded={setTestEnded}
+            timeLeft={timeLeft}
+            setTimeLeft={setTimeLeft}
+            secondleft={secondleft}
+            setSecondLeft={setSecondLeft}
+            hourLeft={hourLeft}
+            setHourLeft={setHourLeft}
+            day={day}
+            hour={hour}
+            minute={minute}
+            setDay={setDay}
+            setHour={setHour}
+            setMinute={setMinute}
           />
         )}
 

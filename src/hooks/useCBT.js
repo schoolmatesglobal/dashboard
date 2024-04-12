@@ -76,9 +76,9 @@ export const useCBT = () => {
     ans3: false,
     ans4: false,
     answer: "",
-    // theoryAns: "",
     question_type: "",
     question: "",
+    instruction: "",
     subject: "",
     image: "",
     imageName: "",
@@ -87,6 +87,8 @@ export const useCBT = () => {
     session: "",
     subject_id: "",
     week: "",
+    hour: null,
+    minute: null,
   });
 
   const {

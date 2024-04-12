@@ -29,6 +29,7 @@ export const useAuth = (navigateOnLogin = true) => {
         navigateOnLogin && navigate(homeUrl[designation_name]);
       },
       onError(err) {
+        console.log({err})
         apiServices.errorHandler(err);
       },
     }
@@ -44,6 +45,7 @@ export const useAuth = (navigateOnLogin = true) => {
       onError(err) {
         apiServices.errorHandler(err);
       },
+      
     }
   );
 

@@ -616,6 +616,31 @@ const Create = ({
   useEffect(() => {
     if (activateRetrieveCreated()) {
       refetchAssignmentCreated();
+
+      setCreateQ((prev) => {
+        return {
+          ...prev,
+          option1: "",
+          option2: "",
+          option3: "",
+          option4: "",
+          total_mark: 0,
+          theory_total_mark: 0,
+          total_question: 0,
+          question_mark: 0,
+          question_number: 0,
+          ans1: false,
+          ans2: false,
+          ans3: false,
+          ans4: false,
+          answer: "",
+          // theoryAns: "",
+          question: "",
+          subject: "",
+          image: "",
+          imageName: "",
+        };
+      });
     }
     // refetchAssignmentCreated();
     // setLoading1(true);

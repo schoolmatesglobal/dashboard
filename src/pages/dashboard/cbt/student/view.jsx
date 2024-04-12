@@ -13,8 +13,11 @@ import Theory from "./theory";
 import Objective from "./objective";
 import { sortQuestionsByNumber } from "../constant";
 import { useLocation } from "react-router-dom";
+import { useAppContext } from "../../../../hooks/useAppContext";
 
 const View = ({
+  // closeSidebar,
+  toggleNavbar,
   objectiveQ2,
   setObjectiveQ2,
   theoryQ2,
@@ -33,6 +36,24 @@ const View = ({
   theorySubmitted,
   setTheorySubmitted,
   subjects,
+  // isPlaying,
+  // setIsPlaying,
+  showWarning,
+  setShowWarning,
+  testEnded,
+  setTestEnded,
+  timeLeft,
+  setTimeLeft,
+  secondleft,
+  hourLeft,
+  setSecondLeft,
+  setHourLeft,
+  day,
+  hour,
+  minute,
+  setDay,
+  setHour,
+  setMinute,
 }) => {
   const {
     apiServices,
@@ -45,8 +66,20 @@ const View = ({
     //
   } = useStudentAssignments();
 
+  const {
+    isOpen: sideBarIsOpen,
+    // toggle: toggleSideBar,
+    closeSidebar,
+    openSidebar,
+    close,
+    hideAllBars,
+    setHideAllBars,
+  } = useAppContext();
+
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
+
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const {
     subject,
@@ -260,111 +293,160 @@ const View = ({
 
   const location = useLocation();
 
+  const reload = () => {
+    setIsPlaying(false);
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+    }, 500);
+  };
+
+  // useEffect(() => {
+  //   setDay(0);
+  //   setHour(0);
+  //   setMinute(0.5);
+  // }, [week, subject]);
+
+  //  console.log({ answeredObjectiveQ });
+
   return (
     <div>
       <div className={styles.view}>
-        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '>
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
-            <AuthSelect
-              sort
-              options={[
-                { value: "1", title: "Week 1" },
-                { value: "2", title: "Week 2" },
-                { value: "3", title: "Week 3" },
-                { value: "4", title: "Week 4" },
-                { value: "5", title: "Week 5" },
-                { value: "6", title: "Week 6" },
-                { value: "7", title: "Week 7" },
-                { value: "8", title: "Week 8" },
-                { value: "9", title: "Week 9" },
-                { value: "10", title: "Week 10" },
-                { value: "11", title: "Week 11" },
-                { value: "12", title: "Week 12" },
-                { value: "13", title: "Week 13" },
-              ]}
-              value={week}
-              // defaultValue={week && week}
-              onChange={({ target: { value } }) => {
-                setCreateQ2((prev) => {
-                  return { ...prev, week: value };
-                });
-                setObjectiveSubmitted(false);
-                setTheorySubmitted(false);
-                setAnsweredTheoryQ([]);
-              }}
-              placeholder='Select Week'
-              wrapperClassName='w-100'
-            />
-            <AuthSelect
-              sort
-              options={studentSubjects}
-              value={subject}
-              // defaultValue={subject && subject}
-              onChange={({ target: { value } }) => {
-                setCreateQ2((prev) => {
-                  return { ...prev, subject: value };
-                });
-                setObjectiveSubmitted(false);
-                setTheorySubmitted(false);
-                setAnsweredTheoryQ([]);
-              }}
-              placeholder='Select Subject'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
-          </div>
-        </div>
-
-        <div className={styles.view__tabs}>
-          <ButtonGroup options={optionTabShow()} />
-        </div>
-
-        {assignmentLoading && (
-          <div className={styles.spinner_container}>
-            <Spinner /> <p className='fs-3'>Loading...</p>
-          </div>
-        )}
-
-        <div className=''>
-          {/* objective Answers */}
-          {assignmentTab === "1" && objectiveQ?.length >= 1 && (
-            <Objective
-              assignmentLoading={assignmentLoading}
-              buttonOptions2={buttonOptions2}
-              objectiveQ={objectiveQ}
-              answeredObjectiveQ={answeredObjectiveQ}
-              setAnsweredObjectiveQ={setAnsweredObjectiveQ}
-              objectiveSubmitted={objectiveSubmitted}
-              setObjectiveSubmitted={setObjectiveSubmitted}
-              createQ2={createQ2}
-              setCreateQ2={setCreateQ2}
-              subjects={subjects}
-            />
-          )}
-
-          {/* Theory Answers */}
-          {/* {assignmentTab === "2" && theoryQ?.length >= 1 && (
-            <Theory
-              assignmentLoading={assignmentLoading}
-              buttonOptions2={buttonOptions2}
-              theoryQ={theoryQ}
-              answeredTheoryQ={answeredTheoryQ}
-              setAnsweredTheoryQ={setAnsweredTheoryQ}
-              theorySubmitted={theorySubmitted}
-              setTheorySubmitted={setTheorySubmitted}
-              createQ2={createQ2}
-              setCreateQ2={setCreateQ2}
-              subjects={subjects}
-            />
-          )} */}
-        </div>
-
-        {!assignmentLoading && (showNoAssignment() || showNoAssignment2()) && (
-          <div className={styles.placeholder_container}>
-            <FaComputer className={styles.icon} />
-            <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
+        {!hideAllBars && (
+          <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '>
+            <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
+              <AuthSelect
+                sort
+                options={[
+                  { value: "1", title: "Week 1" },
+                  { value: "2", title: "Week 2" },
+                  { value: "3", title: "Week 3" },
+                  { value: "4", title: "Week 4" },
+                  { value: "5", title: "Week 5" },
+                  { value: "6", title: "Week 6" },
+                  { value: "7", title: "Week 7" },
+                  { value: "8", title: "Week 8" },
+                  { value: "9", title: "Week 9" },
+                  { value: "10", title: "Week 10" },
+                  { value: "11", title: "Week 11" },
+                  { value: "12", title: "Week 12" },
+                  { value: "13", title: "Week 13" },
+                ]}
+                value={week}
+                // defaultValue={week && week}
+                onChange={({ target: { value } }) => {
+                  setCreateQ2((prev) => {
+                    return { ...prev, week: value };
+                  });
+                  setObjectiveSubmitted(false);
+                  setTheorySubmitted(false);
+                  setAnsweredTheoryQ([]);
+                  setAnsweredObjectiveQ([]);
+                  reload();
+                  // setDay(0);
+                  // setHour(0);
+                  // setMinute(0.5);
+                }}
+                placeholder='Select Week'
+                wrapperClassName='w-100'
+              />
+              <AuthSelect
+                sort
+                options={studentSubjects}
+                value={subject}
+                // defaultValue={subject && subject}
+                onChange={({ target: { value } }) => {
+                  setCreateQ2((prev) => {
+                    return { ...prev, subject: value };
+                  });
+                  setObjectiveSubmitted(false);
+                  setTheorySubmitted(false);
+                  setAnsweredTheoryQ([]);
+                  setAnsweredObjectiveQ([]);
+                  reload();
+                  // setDay(0);
+                  // setHour(0);
+                  // setMinute(0.5);
+                }}
+                placeholder='Select Subject'
+                wrapperClassName='w-100'
+                // label="Subject"
+              />
+            </div>
           </div>
         )}
+
+        <div className='' >
+          <div >
+            {assignmentLoading && (
+              <div className={styles.spinner_container}>
+                <Spinner /> <p className='fs-3'>Loading...</p>
+              </div>
+            )}
+            <div className={styles.view__tabs}>
+              <ButtonGroup options={optionTabShow()} />
+            </div>
+            <div className=''>
+              {/* objective Answers */}
+              {assignmentTab === "1" && objectiveQ?.length >= 1 && (
+                <Objective
+                  closeSidebar={closeSidebar}
+                  toggleNavbar={toggleNavbar}
+                  assignmentLoading={assignmentLoading}
+                  buttonOptions2={buttonOptions2}
+                  objectiveQ={objectiveQ}
+                  answeredObjectiveQ={answeredObjectiveQ}
+                  setAnsweredObjectiveQ={setAnsweredObjectiveQ}
+                  objectiveSubmitted={objectiveSubmitted}
+                  setObjectiveSubmitted={setObjectiveSubmitted}
+                  createQ2={createQ2}
+                  setCreateQ2={setCreateQ2}
+                  subjects={subjects}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                  showWarning={showWarning}
+                  setShowWarning={setShowWarning}
+                  testEnded={testEnded}
+                  setTestEnded={setTestEnded}
+                  timeLeft={timeLeft}
+                  setTimeLeft={setTimeLeft}
+                  secondleft={secondleft}
+                  setSecondLeft={setSecondLeft}
+                  hourLeft={hourLeft}
+                  setHourLeft={setHourLeft}
+                  day={day}
+                  hour={hour}
+                  minute={minute}
+                  setDay={setDay}
+                  setHour={setHour}
+                  setMinute={setMinute}
+                />
+              )}
+              {/* Theory Answers */}
+              {/* {assignmentTab === "2" && theoryQ?.length >= 1 && (
+                <Theory
+                  assignmentLoading={assignmentLoading}
+                  buttonOptions2={buttonOptions2}
+                  theoryQ={theoryQ}
+                  answeredTheoryQ={answeredTheoryQ}
+                  setAnsweredTheoryQ={setAnsweredTheoryQ}
+                  theorySubmitted={theorySubmitted}
+                  setTheorySubmitted={setTheorySubmitted}
+                  createQ2={createQ2}
+                  setCreateQ2={setCreateQ2}
+                  subjects={subjects}
+                />
+              )} */}
+            </div>
+            {!assignmentLoading &&
+              (showNoAssignment() || showNoAssignment2()) && (
+                <div className={styles.placeholder_container}>
+                  <FaComputer className={styles.icon} />
+                  <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
+                </div>
+              )}
+          </div>
+        </div>
       </div>
       <Prompt
         isOpen={loginPrompt}

@@ -15,8 +15,12 @@ const Prompt = ({
 }) => {
   return (
     <Modal centered isOpen={isOpen} toggle={toggle}>
-      {promptHeader && <ModalHeader>{promptHeader}</ModalHeader>}
-      <ModalBody className="p-5">{children}</ModalBody>
+      {promptHeader && (
+        <ModalHeader>
+          <p className='fs-3 fw-bold text-center w-100'>{promptHeader}</p>
+        </ModalHeader>
+      )}
+      <ModalBody className='p-5'>{children}</ModalBody>
       <ModalFooter>
         {hasGroupedButtons ? (
           <ButtonGroup options={groupedButtonProps} />
