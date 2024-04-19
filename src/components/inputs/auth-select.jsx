@@ -17,7 +17,7 @@ const AuthSelect = ({
   return (
     <>
       {label && (
-        <label className="mb-2">
+        <label className='mb-3 fs-4 fw-semibold'>
           {label}{" "}
           {required && (
             <span
@@ -45,7 +45,7 @@ const AuthSelect = ({
               ...baseStyles,
               border: "0.2rem solid rgba(84, 95, 125, 0.15) !important",
               fontWeight: "400",
-              fontSize: "1.4rem",
+              fontSize: "1.5rem",
               lineHeight: "1.9rem",
               color: "#545f7d",
               padding: "0 1.25rem",
@@ -64,7 +64,7 @@ const AuthSelect = ({
         >
           <select {...rest} value={value} className={!value ? "no-value" : ""}>
             {!noPlaceholder && (
-              <option className="disabled" value="">
+              <option className='disabled' value=''>
                 {placeholder ? placeholder : sort ? "Sort By" : "Select..."}
               </option>
             )}

@@ -413,6 +413,12 @@ export const setVariant = ({ status, indexStatus }) => {
   return indexStatus !== status ? "outline" : null;
 };
 
+export function toSentenceCase(str) {
+  return str?.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, function(c) {
+    return c?.toUpperCase();
+  });
+}
+
 export const getSortButtonOptions = ({
   permission,
   setIndexStatus,

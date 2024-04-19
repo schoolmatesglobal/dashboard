@@ -86,6 +86,7 @@ export const useCBT = () => {
     period: "",
     session: "",
     subject_id: "",
+    subject: "",
     week: "",
     hour: null,
     minute: null,
@@ -123,6 +124,7 @@ export const useCBT = () => {
   const { studentByClass2 } = useStudent();
 
   const [createQuestionPrompt, setCreateQuestionPrompt] = useState(false);
+  const [createSettingsPrompt, setCreateSettingsPrompt] = useState(false);
 
   const myStudents = studentByClass2?.map((ms, index) => {
     return {
@@ -195,6 +197,9 @@ export const useCBT = () => {
 
     createQuestionPrompt,
     setCreateQuestionPrompt,
+
+    createSettingsPrompt,
+setCreateSettingsPrompt,
     //
     myStudents,
     apiServices,

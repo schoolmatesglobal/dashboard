@@ -108,6 +108,7 @@ import InvoiceFees from "../pages/dashboard/invoices/fees";
 import PaymentDetails from "../pages/dashboard/Payment/details";
 import PaymentEdit from "../pages/dashboard/Payment/edit";
 import CBTPage from "../pages/dashboard/cbt";
+import CreateCBT from "../pages/dashboard/cbt/create";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -151,6 +152,15 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='cbt'>
               <CBTPage />
+            </Guard>
+          }
+        />
+         <Route
+          exact
+          path='cbt/create'
+          element={
+            <Guard routeName='cbt' action={["compute"]}>
+              <CreateCBT  />
             </Guard>
           }
         />

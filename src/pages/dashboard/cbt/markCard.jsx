@@ -8,6 +8,7 @@ const MarkCard = ({
   objectiveQ,
   theoryQ,
   published,
+  createQ,
 }) => {
   const totalTheoryScore = theoryQ.reduce(
     (acc, quest) => acc + Number(quest?.question_mark),
@@ -25,56 +26,31 @@ const MarkCard = ({
   // );
 
   return (
-    <div className='d-flex flex-column gap-5'>
-      <div className='d-flex flex-column flex-sm-row justify-content-center align-items-center mt-5 gap-4 gap-sm-5'>
-        {question_type === "objective" && objectiveQ?.length > 0 && (
-          <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-            <p className='fs-3 fw-bold'>Each Question Mark:</p>
-            <p className='fs-3 fw-bold'>{objScore}</p>
-          </div>
-        )}
-
+    <div className='d-flex flex-column gap-5 mt-5'>
+      {!allLoading && (
         <div className=''>
-          {!allLoading &&
-            question_type === "objective" &&
-            objectiveQ?.length > 0 && (
-              <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-                <p className='fs-3 fw-bold'>Total Question(s):</p>
-                <p className='fs-3 fw-bold'>{objectiveQ?.length}</p>
-              </div>
-            )}
+          <div className='w-100 d-flex justify-content-center align-items-center gap-3 mb-4'>
+            <p className='fs-4 fw-bold'>Instructions:</p>
+            <p className='fs-4'>{createQ?.instruction}</p>
+          </div>
+
+          <div className='d-flex justify-content-between align-items-center '>
+            <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-3 px-4'>
+              <p className='fs-4 fw-bold'>Each Question Mark:</p>
+              <p className='fs-4 fw-bold'>{createQ?.question_mark}</p>
+            </div>
+            <div className='d-flex justify-content-center align-items-center  gap-3 bg-info bg-opacity-10 py-3 px-4'>
+              <p className='fs-4 fw-bold'>Duration:</p>
+              {createQ?.hour && (
+                <p className='fs-4 fw-bold'>{createQ?.hour} hr(s)</p>
+              )}
+              {createQ?.minute && (
+                <p className='fs-4 fw-bold'>{createQ?.minute} Min(s)</p>
+              )}
+            </div>
+          </div>
         </div>
-
-        {question_type === "theory" && theoryQ?.length > 0 && (
-          <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-            <p className='fs-3 fw-bold'>Total Question(s):</p>
-            <p className='fs-3 fw-bold'>
-              {theoryQ?.length}
-              {/* {theoryQ?.length} /{" "}
-              {finalTheoryArray[finalTheoryArray?.length - 1]?.total_question} */}
-            </p>
-          </div>
-        )}
-
-        {question_type === "objective" && objectiveQ?.length > 0 && (
-          <div className='d-flex justify-content-center align-items-center  gap-3 bg-info bg-opacity-10 py-4 px-4'>
-            <p className='fs-3 fw-bold'>Total Marks:</p>
-            <p className='fs-3 fw-bold'>
-              {objScore * objectiveQ?.length} mk(s)
-            </p>
-          </div>
-        )}
-        {question_type === "theory" && theoryQ?.length > 0 && (
-          <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
-            <p className='fs-3 fw-bold'>Total Mark:</p>
-            <p className='fs-3 fw-bold'>
-              {/* {finalTheoryArray[finalTheoryArray?.length - 1]?.total_mark}{" "} */}
-              {totalTheoryScore}
-              mk(s)
-            </p>
-          </div>
-        )}
-      </div>
+      )}
 
       {!allLoading &&
         ((question_type === "objective" && objectiveQ?.length !== 0) ||

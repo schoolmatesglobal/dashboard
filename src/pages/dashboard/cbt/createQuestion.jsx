@@ -11,6 +11,7 @@ import { useCBT } from "../../../hooks/useCBT";
 const CreateQuestion = ({
   createQuestionPrompt,
   setCreateQuestionPrompt,
+  state,
   createQ,
   setCreateQ,
   objectiveQ,
@@ -359,7 +360,7 @@ const CreateQuestion = ({
         hasGroupedButtons={true}
         groupedButtonProps={buttonOptions}
         singleButtonText='Preview'
-        promptHeader={`${subject?.toUpperCase()} (WEEK ${createQ?.week?.toUpperCase()}) - ${createQ?.question_type?.toUpperCase()} - Q${
+        promptHeader={`${subject?.toUpperCase()} CBT - ${state?.question_type?.toUpperCase()} - Q${
           // question_type === "objective"
           //   ? ObjectiveQ?.length + 1
           //   : question_type === "theory"
@@ -370,7 +371,7 @@ const CreateQuestion = ({
       >
         {activeTab === "1" && (
           <>
-            {createQ?.question_type === "theory" && (
+            {state?.question_type === "theory" && (
               <div>
                 <p
                   style={{
@@ -480,29 +481,10 @@ const CreateQuestion = ({
                 </div>
               </div>
             )}
-            {createQ?.question_type === "objective" && (
+            {state?.question_type === "objective" && (
               <>
-                {/* instruction */}
-                <p className='fs-3 fw-bold mb-3'>Instruction</p>
-                <div className='auth-textarea-wrapper'>
-                  <textarea
-                    className='form-control fs-3 lh-base'
-                    type='text'
-                    value={createQ?.instruction}
-                    placeholder='Type the Test instruction'
-                    onChange={(e) =>
-                      setCreateQ((prev) => {
-                        return { ...prev, instruction: e.target.value };
-                      })
-                    }
-                    style={{
-                      minHeight: "100px",
-                      // lineHeight: "22px",
-                    }}
-                  />
-                </div>
                 {/* question */}
-                <p className='fs-3 fw-bold my-4'>Question</p>
+                <p className='fs-3 fw-bold mb-4'>Question</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
                     className='form-control fs-3 lh-base'
@@ -701,94 +683,12 @@ const CreateQuestion = ({
                     </div>
                   </div>
                 </div>
-
-                <p className='fs-3 fw-bold my-4'>Duration</p>
-                <div className='d-flex align-items-center gap-3'>
-                  {/*Question Mark */}
-                  <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Hour'
-                        value={createQ?.hour}
-                        name='option'
-                        min={0}
-                        className='fs-3'
-                        onChange={(e) => {
-                          if (objectiveQ?.length > 0) return;
-                          setCreateQ((prev) => {
-                            return { ...prev, hour: e.target.value };
-                          });
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p className='fs-3'>Hours</p>
-                    </div>
-                  </div>
-                  {/*Question Mark */}
-                  <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Minute'
-                        className='fs-3'
-                        // hasError={!!errors.username}
-                        value={createQ?.minute}
-                        name='option'
-                        min={0}
-                        onChange={(e) => {
-                          if (objectiveQ?.length > 0) return;
-                          setCreateQ((prev) => {
-                            return { ...prev, minute: e.target.value };
-                          });
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p className='fs-3'>Minutes</p>
-                    </div>
-                  </div>
-                </div>
-
-                <p className='fs-3 fw-bold my-4'>Mark Computation</p>
-                <div className='d-flex flex-column gap-3'>
-                  {/*Question Mark */}
-                  <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Mark'
-                        // hasError={!!errors.username}
-                        value={objMark}
-                        name='option'
-                        min={0}
-                        className='fs-3'
-                        onChange={(e) => {
-                          if (objectiveQ?.length > 0) return;
-                          setObjMark(e.target.value);
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p className='fs-3'>Question Mark</p>
-                    </div>
-                  </div>
-                </div>
-                <p className='fs-4  mt-4 text-danger'>
-                  NB: Mark will be the same for all questions
-                </p>
               </>
             )}
           </>
         )}
         {activeTab === "2" && (
           <>
-            <p className='fw-bold fs-3 mb-3'>Instruction</p>
-            <p className='fs-3 lh-base mb-4'>{createQ?.instruction}</p>
             <p className='fw-bold fs-3 mb-3'>Questions</p>
             <p className='fs-3 lh-base mb-4'>{createQ?.question}</p>
             {createQ?.image && (
@@ -796,7 +696,7 @@ const CreateQuestion = ({
                 <img src={createQ?.image} width={150} alt='' />
               </div>
             )}
-            {createQ?.question_type === "objective" && (
+            {state?.question_type === "objective" && (
               <>
                 <p className='fw-bold fs-3 my-4'>Options</p>
                 <div className='d-flex flex-column gap-3 mb-5'>
@@ -817,15 +717,9 @@ const CreateQuestion = ({
                     {answer === option4 && " - (Correct Answer)"}
                   </p>
                 </div>
-                <p className='fw-bold fs-3 mb-3'>Duration</p>
-                <p className='fs-3 mb-4'>
-                  {createQ?.hour}hr : {createQ?.minute}min
-                </p>
-                <p className='fw-bold fs-3 mb-3'>Mark</p>
-                <p className='fs-3'>{objMark ?? 0} mk(s)</p>
               </>
             )}
-            {createQ?.question_type === "theory" && (
+            {state?.question_type === "theory" && (
               <>
                 <p
                   style={{

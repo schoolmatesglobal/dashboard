@@ -20,28 +20,48 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useCBT } from "../../../hooks/useCBT";
 import { FaComputer } from "react-icons/fa6";
+import PageSheet from "../../../components/common/page-sheet";
+import { useLocation } from "react-router-dom";
+import { toSentenceCase } from "./constant";
+import CreateSettings from "./createSettings";
 
-const Create = ({
-  createQ,
-  setCreateQ,
-  objectiveQ,
-  theoryQ,
-  setObjectiveQ,
-  setTheoryQ,
-  obj,
-  setObj,
-  objMark,
-  setObjMark,
-}) => {
+const CreateCBT = (
+  {
+    // createQ,
+    // setCreateQ,
+    // objectiveQ,
+    // theoryQ,
+    // setObjectiveQ,
+    // setTheoryQ,
+    // obj,
+    // setObj,
+    // objMark,
+    // setObjMark,
+  }
+) => {
   const {
+    createQ,
+    setCreateQ,
+    objectiveQ,
+    theoryQ,
+    setObjectiveQ,
+    setTheoryQ,
+    obj,
+    setObj,
+    objMark,
+    setObjMark,
     createQuestionPrompt,
     setCreateQuestionPrompt,
+    createSettingsPrompt,
+    setCreateSettingsPrompt,
     apiServices,
     errorHandler,
     permission,
     user,
     subjectsByTeacher,
   } = useCBT();
+
+  const { state } = useLocation();
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
@@ -615,6 +635,19 @@ const Create = ({
     }
   }, [subjectsByTeacher]);
 
+  const SettingsAdded = () => {
+    if (
+      createQ.instruction &&
+      createQ.hour &&
+      createQ.minute &&
+      createQ.question_mark
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (activateRetrieveCreated()) {
       refetchAssignmentCreated();
@@ -631,73 +664,36 @@ const Create = ({
   console.log({
     createQ,
     subjectsByTeacher,
+    state,
     // subjects,
     // newSubjects,
   });
 
   return (
-    <>
+    <PageSheet>
       <div className={styles.create}>
         {/* drop downs */}
+        <div className='d-flex align-items-center justify-content-center mb-4'>
+          <p className='fw-bold fs-4'>
+            CBT {toSentenceCase(state?.creds?.question_type)} |{" "}
+            {state?.creds?.period} | {state?.creds?.term} |{" "}
+            {state?.creds?.session}
+          </p>
+        </div>
         <div
-          className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '
+          className='d-flex flex-column gap-4 flex-md-row justify-content-center'
           // className={styles.create__options}
         >
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
-            {/* weeks */}
-            <AuthSelect
-              sort
-              options={[
-                { value: "1", title: "Week 1" },
-                { value: "2", title: "Week 2" },
-                { value: "3", title: "Week 3" },
-                { value: "4", title: "Week 4" },
-                { value: "5", title: "Week 5" },
-                { value: "6", title: "Week 6" },
-                { value: "7", title: "Week 7" },
-                { value: "8", title: "Week 8" },
-                { value: "9", title: "Week 9" },
-                { value: "10", title: "Week 10" },
-                { value: "11", title: "Week 11" },
-                { value: "12", title: "Week 12" },
-                { value: "13", title: "Week 13" },
-              ]}
-              value={week}
-              onChange={({ target: { value } }) => {
-                setCreateQ((prev) => {
-                  return { ...prev, week: value };
-                });
-              }}
-              placeholder='Select Week'
-              wrapperClassName='w-100'
-            />
-            {/* subjects */}
-            <AuthSelect
-              sort
-              options={newSubjects}
-              value={subject_id}
-              onChange={({ target: { value } }) => {
-                setCreateQ((prev) => {
-                  return { ...prev, subject_id: value };
-                });
-              }}
-              placeholder='Select Subject'
-              wrapperClassName='w-100'
-            />
-            {/* questionType */}
-            <AuthSelect
-              sort
-              options={questionType}
-              value={question_type}
-              onChange={({ target: { value } }) => {
-                setCreateQ((prev) => {
-                  return { ...prev, question_type: value, answer: "" };
-                });
-              }}
-              placeholder='Select type'
-              wrapperClassName='w-100'
-            />
-          </div>
+          <Button
+            variant=''
+            className='w-auto'
+            onClick={() => {
+              setCreateSettingsPrompt(true);
+            }}
+            // disabled={activateAddQuestion()}
+          >
+            CBT Settings
+          </Button>
 
           <Button
             variant=''
@@ -725,13 +721,32 @@ const Create = ({
               }
               setCreateQuestionPrompt(true);
             }}
-            disabled={activateAddQuestion()}
+            disabled={!SettingsAdded()}
           >
             {objectiveQ?.length === 0 && theoryQ?.length === 0
               ? "Add Question"
               : "Add Question"}
           </Button>
         </div>
+
+        {!SettingsAdded() && (
+          <div className='d-flex justify-content-center align-items-cneter'>
+            <p className='fs-4  mt-4 text-danger'>
+              NB: Setup CBT settings before adding questions{" "}
+            </p>
+          </div>
+        )}
+
+        {!allLoading && SettingsAdded() && (
+          <MarkCard
+            allLoading={allLoading}
+            question_type={question_type}
+            objectiveQ={objectiveQ}
+            theoryQ={theoryQ}
+            published={published}
+            createQ={createQ}
+          />
+        )}
 
         {allLoading && (
           <div className={styles.spinner_container}>
@@ -762,16 +777,6 @@ const Create = ({
               <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
             </div>
           )}
-
-        {!allLoading && (
-          <MarkCard
-            allLoading={allLoading}
-            question_type={question_type}
-            objectiveQ={objectiveQ}
-            theoryQ={theoryQ}
-            published={published}
-          />
-        )}
 
         {!allLoading &&
           objectiveQ?.length >= 1 &&
@@ -871,6 +876,30 @@ const Create = ({
       <CreateQuestion
         createQuestionPrompt={createQuestionPrompt}
         setCreateQuestionPrompt={setCreateQuestionPrompt}
+        state={state?.creds}
+        createQ={createQ}
+        setCreateQ={setCreateQ}
+        objectiveQ={objectiveQ}
+        setObjectiveQ={setObjectiveQ}
+        theoryQ={theoryQ}
+        setTheoryQ={setTheoryQ}
+        obj={obj}
+        setObj={setObj}
+        addObjectiveAssignments={addObjectiveAssignments}
+        addObjectAssignmentLoading={addObjectAssignmentLoading}
+        addTheoryAssignments={addTheoryAssignments}
+        addTheoryAssignmentLoading={addTheoryAssignmentLoading}
+        allowFetch={allowFetch}
+        setAllowFetch={setAllowFetch}
+        refetchAssignmentCreated={refetchAssignmentCreated}
+        objMark={objMark}
+        setObjMark={setObjMark}
+      />
+
+      <CreateSettings
+        createQuestionPrompt={createSettingsPrompt}
+        setCreateQuestionPrompt={setCreateSettingsPrompt}
+        state={state?.creds}
         createQ={createQ}
         setCreateQ={setCreateQ}
         objectiveQ={objectiveQ}
@@ -1249,8 +1278,8 @@ const Create = ({
           Are you sure you want to delete this question?
         </p>
       </Prompt>
-    </>
+    </PageSheet>
   );
 };
 
-export default Create;
+export default CreateCBT;
