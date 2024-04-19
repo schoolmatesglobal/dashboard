@@ -123,6 +123,11 @@ const CountdownTimer = ({
           size={isMobile ? 90 : 120}
           isPlaying={isPlaying}
           initialRemainingTime={remainingTime % hourSeconds}
+          onComplete={(totalElapsedTime) => {
+            return {
+              shouldRepeat: !testEnded,
+            };
+          }}
         >
           {({ elapsedTime, color }) => {
             setTimeout(() => {
@@ -172,7 +177,7 @@ const CountdownTimer = ({
         </CountdownCircleTimer>
       </div>
 
-      {timeLeft <= 1 && !testEnded && isPlaying && (
+      {timeLeft <= 1 && hourLeft === 0 && !testEnded && isPlaying && (
         <div
           className='mt-5 d-flex justify-content-center align-items-center gap-3 bg-danger bg-opacity-10 py-4 px-4'
           style={{

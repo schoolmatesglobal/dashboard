@@ -17,6 +17,8 @@ import { FaPlay } from "react-icons/fa";
 import { FaPause, FaComputer } from "react-icons/fa6";
 import { useEffect } from "react";
 import { useAppContext } from "../../../../hooks/useAppContext";
+import { calculateNumberOfPages } from "../constant";
+import Button from "../../../../components/buttons/button";
 
 const Objective = ({
   // closeSidebar,
@@ -45,6 +47,7 @@ const Objective = ({
   day,
   hour,
   minute,
+  state,
 }) => {
   const { apiServices, permission, user, errorHandler, answerQuestion } =
     useStudentAssignments();
@@ -72,6 +75,11 @@ const Objective = ({
   const [timeLeft, setTimeLeft] = useState(null);
   const [secondleft, setSecondLeft] = useState(null);
   const [hourLeft, setHourLeft] = useState(null);
+
+  const [slice1, setSlice1] = useState("0");
+  const [slice2, setSlice2] = useState("1");
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const student = `${user?.surname} ${user?.firstname}`;
 
@@ -209,9 +217,7 @@ const Objective = ({
   };
 
   const findSubjectId = () => {
-    const findObject = subjects?.find(
-      (opt) => opt.subject === createQ2?.subject
-    );
+    const findObject = subjects?.find((opt) => opt.subject === state?.subject);
     if (findObject) {
       return findObject.id;
     }
@@ -225,8 +231,9 @@ const Objective = ({
     },
     {
       title: "Yes Submit",
-      disabled: !checkEmptyQuestions(),
+      // disabled: !checkEmptyQuestions(),
       onClick: () => {
+        
         setObjectiveSubmitted(true);
         submitObjectiveAssignment(answeredObjectiveQ);
         setSubmitted(true);
@@ -250,6 +257,7 @@ const Objective = ({
       onClick: () => displayPrompt(),
       disabled: objectiveSubmitted || !isPlaying,
     },
+
     // {
     //   title: "Exit CBT Mode",
     //   onClick: () => {
@@ -283,7 +291,7 @@ const Objective = ({
           term: user?.term,
           session: user?.session,
           student_id: Number(user?.id),
-          subject_id: Number(findSubjectId()),
+          subject_id: Number(state?.subject_id),
           question: CQ.question,
           question_type: "objective",
           answer: optionValue,
@@ -302,7 +310,8 @@ const Objective = ({
           term: user?.term,
           session: user?.session,
           student_id: Number(user?.id),
-          subject_id: Number(findSubjectId()),
+          // subject_id: Number(findSubjectId()),
+          subject_id: Number(state?.subject_id),
           question: CQ.question,
           question_type: "objective",
           answer: optionValue,
@@ -380,20 +389,41 @@ const Objective = ({
     }
   }, [hourLeft, timeLeft, secondleft]);
 
+  const arrayLength = objectiveQ?.length;
+  const itemsPerPage = 1;
+  const numberOfPages = calculateNumberOfPages(arrayLength, itemsPerPage);
+
+  const t1 = Number(slice1) + 1;
+
+  const t2 =
+    currentPage === numberOfPages
+      ? objectiveQ?.length
+      : objectiveQ?.length > 1
+      ? Number(slice2)
+      : objectiveQ?.length;
+
   // const hour = 0;
   // const day = 0;
   // const minute = 0.5;
 
   console.log({
-    objectiveSubmitted,
-    testEnded,
-    hourLeft,
-    timeLeft,
-    secondleft,
-    submitted,
-    sideBarIsOpen,
-    isPlaying,
-    initialTaken,
+    // objectiveSubmitted,
+    // testEnded,
+    // hourLeft,
+    // timeLeft,
+    // secondleft,
+    // submitted,
+    // sideBarIsOpen,
+    // isPlaying,
+    // initialTaken,
+    arrayLength,
+    itemsPerPage,
+    numberOfPages,
+    slice1,
+    slice2,
+    objectiveQ,
+    answeredObjectiveQ,
+    state,
   });
   // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
 
@@ -403,12 +433,12 @@ const Objective = ({
         <div className=''>
           <div className='' style={{ position: "relative" }}>
             <div
-              className='bg-white border-bottom border-1 pb-3 '
-              style={{
-                position: `${hideAllBars ? "sticky" : ""}`,
-                top: `${hideAllBars ? "0px" : ""}`,
-                zIndex: "1",
-              }}
+              className='bg-white border-bottom border-1 pb-5 '
+              // style={{
+              //   position: `${hideAllBars ? "sticky" : ""}`,
+              //   top: `${hideAllBars ? "0px" : ""}`,
+              //   zIndex: "1",
+              // }}
             >
               {hideAllBars && (
                 <div className='d-flex justify-content-center mb-2 text-center px-5'>
@@ -441,10 +471,22 @@ const Objective = ({
                 submitted={submitted}
                 setSubmitted={setSubmitted}
               />
+
+              <div className='w-100 d-flex justify-content-center align-items-center gap-3 mt-5 mb-4'>
+                <p className='fs-3 fw-bold'>Instructions:</p>
+                <p className='fs-3'>Answer all questions carefully</p>
+              </div>
+
               {/* <CountdownTimer hour={2} minute={45} durationInMinutes={45} /> */}
               <div className='d-flex flex-column gap-5 flex-md-row justify-content-between align-items-center mt-5'>
-                <p className='fs-3 fw-bold'>
-                  Duration: {hour} Hour, {minute} mins
+                <p className='fs-3 '>
+                  <span className='fw-bold fs-3'>
+                    {hour} Hour, {minute} Mins
+                  </span>{" "}
+                  for{" "}
+                  <span className='fw-bold fs-3'>
+                    {objectiveQ?.length} Questions
+                  </span>
                 </p>
                 <div className='d-flex justify-content-center align-items-center gap-3'>
                   <div
@@ -463,7 +505,7 @@ const Objective = ({
                       isPlaying || initialTaken
                         ? "bg-opacity-50"
                         : "bg-opacity-100"
-                    } gap-3 py-4 px-4 rounded-3`}
+                    } gap-3 py-3 px-4 rounded-3`}
                   >
                     <p className='fs-3 fw-bold text-white'>
                       {isPlaying ? "Started" : "Start"}
@@ -474,7 +516,7 @@ const Objective = ({
                       <FaPlay className='fs-3 text-white' />
                     )}
                   </div>
-                  <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-4 px-4'>
+                  <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-3 px-4'>
                     <p className='fs-3 fw-bold'>Total Mark(s):</p>
                     <p className='fs-3 fw-bold'>{objScore}</p>
                   </div>
@@ -484,7 +526,7 @@ const Objective = ({
             <div className='position-relative'>
               {objectiveSubmitted && (
                 <p
-                  className='text-danger fw-bold position-absolute top-50 opacity-50'
+                  className='text-danger fw-bold position-absolute top-50 opacity-10'
                   style={{
                     rotate: "-45deg",
                     // left: "40%",
@@ -514,11 +556,20 @@ const Objective = ({
                 // <p className={styles.assignment_submitted_text}>Submitted</p>
               )}
               <div
-                className={`${
-                  (objectiveSubmitted || !isPlaying) && "opacity-50"
-                }`}
+                // className={`${
+                //   (objectiveSubmitted || !isPlaying) && "opacity-50"
+                // }`}
+                style={{
+                  opacity: `${
+                    objectiveSubmitted || !isPlaying ? "0%" : "100%"
+                  }`,
+                }}
               >
-                {/* <p className='fs-1 fw-bold w-100 text-center my-4'>01Hr : 45Min : 00Sec</p> */}
+                <div className='d-flex justify-content-center align-items-center mt-5'>
+                  <p className='fw-bold fs-3'>
+                    Question {currentPage} of {objectiveQ?.length}
+                  </p>
+                </div>
                 <div className='d-flex flex-column my-5 gap-4'>
                   {objectiveQ
                     ?.sort((a, b) => {
@@ -530,7 +581,8 @@ const Objective = ({
                       }
                       return 0;
                     })
-                    .map((CQ, index) => {
+                    ?.slice(slice1, slice2)
+                    ?.map((CQ, index) => {
                       // console.log({ CQ });
                       return (
                         <div
@@ -539,18 +591,15 @@ const Objective = ({
                         >
                           <p className='fs-3 mb-3 lh-base'>
                             <span className='fw-bold fs-3'>
-                              {index + 1}.{/* {CQ.question_number}. */}
+                              {/* {index + 1}. */}
+                              {currentPage}.{" "}
                             </span>{" "}
                             {CQ.question}{" "}
                           </p>
                           <p className='fw-bold fs-3 mb-4 lh-base'>
                             ({CQ.question_mark} mk(s) )
                           </p>
-                          {/* {CQ.image && (
-                          <div className="mb-4 ">
-                            <img src={CQ.image} width={70} height={70} alt="" />
-                          </div>
-                        )} */}
+
                           {CQ.option1 && (
                             <>
                               {/* option 1 */}
@@ -706,14 +755,56 @@ const Objective = ({
                                   </p>
                                 </label>
                               </div>
+                              <div className='w-100 d-flex justify-content-end'>
+                                <p className='fst-italic fs-4'>
+                                  Answered {answeredObjectiveQ?.length} out of{" "}
+                                  {objectiveQ?.length}
+                                </p>
+                              </div>
                             </>
                           )}
                         </div>
                       );
                     })}
                 </div>
-                <div className='d-flex flex-column w-100 align-items-center '>
-                  <ButtonGroup options={buttonOptions2} />
+                <div className='d-flex justify-content-center w-100 align-items-center gap-4'>
+                  {/* <ButtonGroup options={buttonOptions2} /> */}
+                  <Button
+                    className={` `}
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage((prev) => prev - 1);
+                        setSlice1(Number(slice1) - 1);
+                        setSlice2(Number(slice1));
+                      }
+                    }}
+                  >
+                    Prev
+                  </Button>
+                  {currentPage < numberOfPages && (
+                    <Button
+                      className={` `}
+                      onClick={() => {
+                        if (currentPage < numberOfPages) {
+                          setCurrentPage((prev) => prev + 1);
+                          setSlice1(Number(slice2));
+                          setSlice2(Number(slice2) + 1);
+                        }
+                      }}
+                    >
+                      Next
+                    </Button>
+                  )}
+                  {currentPage === numberOfPages && (
+                    <Button
+                      className={` `}
+                      onClick={() => {
+                        displayPrompt();
+                      }}
+                    >
+                      Preview
+                    </Button>
+                  )}
                 </div>
                 <Prompt
                   isOpen={loginPrompt}
@@ -721,22 +812,33 @@ const Objective = ({
                   hasGroupedButtons={true}
                   groupedButtonProps={buttonOptions}
                   // singleButtonText="Preview"
-                  promptHeader={`${
-                    checkEmptyQuestions()
-                      ? "CONFIRM ASSIGNMENT SUBMISSION"
-                      : "INCOMPLETE SUBMISSION"
-                  }`}
+                  promptHeader={`You attempted ${answeredObjectiveQ?.length} out of ${objectiveQ?.length} Questions`}
                 >
-                  {checkEmptyQuestions() ? (
-                    <p className={styles.warning_text}>
-                      Are you sure you want to submit this assignment.
-                    </p>
-                  ) : (
-                    <p className={styles.warning_text}>
-                      Please go through the questions again and ensure you
-                      answer all.
-                    </p>
-                  )}
+                  {answeredObjectiveQ?.map((ans, i) => {
+                    return (
+                      <div className='py-sm-2 px-sm-2 py-2 px-2' key={i}>
+                        <p className='fs-3 mb-3 lh-base'>
+                          <span className='fw-bold fs-3'>
+                            {ans.question_number}.
+                          </span>{" "}
+                          {ans.question}{" "}
+                        </p>
+                        {/* <p className='fw-bold fs-3 mb-4 lh-base'>
+                          ({ans.question_mark} mk(s) )
+                        </p> */}
+                        <div className='d-flex flex-column gap-3 mb-3'>
+                          <p className='fs-3'>
+                            <span className='fw-bold'>Answer picked:</span>{" "}
+                            {ans.answer}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  <p className='w-100 text-danger text-center mt-4 fs-2 fw-bold'>
+                    Ready to submit ?
+                  </p>
                 </Prompt>
               </div>
             </div>

@@ -261,7 +261,10 @@ const CBTPage = () => {
   const promptMapper = {
     view: {
       title: "Take CBT Test",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/view`, {
+          state: { creds: { ...createQ } },
+        }),
     },
     create: {
       title: "Create CBT",
@@ -469,7 +472,7 @@ const CBTPage = () => {
           type: "button",
           isLoading: false,
           disabled: activateContinue(),
-       
+
           onClick: promptMapper[promptStatus]?.onFormSubmit,
         }}
         singleButtonText='Continue'

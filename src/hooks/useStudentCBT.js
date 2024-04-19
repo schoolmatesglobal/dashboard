@@ -4,6 +4,15 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 
 export const useStudentCBT = () => {
+  const {
+    isOpen: sideBarIsOpen,
+    toggle: toggleSideBar,
+    closeSidebar,
+    openSidebar,
+    close,
+    hideAllBars,
+    setHideAllBars,
+  } = useAppContext();
 
   const [objectiveQ2, setObjectiveQ2] = useState([]);
   const [theoryQ2, setTheoryQ2] = useState([]);
@@ -54,8 +63,17 @@ export const useStudentCBT = () => {
     week: "",
   });
 
-  const { apiServices, errorHandler, permission, user } =
-    useAppContext("cbt");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showWarning, setShowWarning] = useState(true);
+  const [testEnded, setTestEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [secondleft, setSecondLeft] = useState(null);
+  const [hourLeft, setHourLeft] = useState(null);
+  const [day, setDay] = useState(0);
+  const [hour, setHour] = useState(3);
+  const [minute, setMinute] = useState(30);
+
+  const { apiServices, errorHandler, permission, user } = useAppContext("cbt");
 
   const className = user?.present_class;
 
@@ -139,6 +157,28 @@ export const useStudentCBT = () => {
     setTheorySubmitted,
 
     ResultTab,
-setResultTab,
+    setResultTab,
+
+    toggleSideBar,
+    closeSidebar,
+
+    isPlaying,
+    setIsPlaying,
+    showWarning,
+    setShowWarning,
+    testEnded,
+    setTestEnded,
+    timeLeft,
+    setTimeLeft,
+    secondleft,
+    setSecondLeft,
+    hourLeft,
+    setHourLeft,
+    day,
+    hour,
+    minute,
+    setDay,
+    setHour,
+    setMinute,
   };
 };

@@ -14,48 +14,52 @@ import Objective from "./objective";
 import { sortQuestionsByNumber } from "../constant";
 import { useLocation } from "react-router-dom";
 import { useAppContext } from "../../../../hooks/useAppContext";
+import PageSheet from "../../../../components/common/page-sheet";
+import { useStudentCBT } from "../../../../hooks/useStudentCBT";
 
-const View = ({
-  // closeSidebar,
-  toggleNavbar,
-  objectiveQ2,
-  setObjectiveQ2,
-  theoryQ2,
-  setTheoryQ2,
-  createQ2,
-  setCreateQ2,
-  studentSubjects,
-  assignmentTab,
-  setAssignmentTab,
-  answeredObjectiveQ,
-  setAnsweredObjectiveQ,
-  answeredTheoryQ,
-  setAnsweredTheoryQ,
-  objectiveSubmitted,
-  setObjectiveSubmitted,
-  theorySubmitted,
-  setTheorySubmitted,
-  subjects,
-  // isPlaying,
-  // setIsPlaying,
-  showWarning,
-  setShowWarning,
-  testEnded,
-  setTestEnded,
-  timeLeft,
-  setTimeLeft,
-  secondleft,
-  hourLeft,
-  setSecondLeft,
-  setHourLeft,
-  day,
-  hour,
-  minute,
-  setDay,
-  setHour,
-  setMinute,
-}) => {
+const ViewCBT = (
+  {
+    // closeSidebar,
+    // isPlaying,
+    // setIsPlaying,
+  }
+) => {
   const {
+    toggleNavbar,
+    objectiveQ2,
+    setObjectiveQ2,
+    theoryQ2,
+    setTheoryQ2,
+    createQ2,
+    setCreateQ2,
+    studentSubjects,
+    assignmentTab,
+    setAssignmentTab,
+    answeredObjectiveQ,
+    setAnsweredObjectiveQ,
+    answeredTheoryQ,
+    setAnsweredTheoryQ,
+    objectiveSubmitted,
+    setObjectiveSubmitted,
+    theorySubmitted,
+    setTheorySubmitted,
+    subjects,
+    showWarning,
+    setShowWarning,
+    testEnded,
+    setTestEnded,
+    timeLeft,
+    setTimeLeft,
+    secondleft,
+    hourLeft,
+    setSecondLeft,
+    setHourLeft,
+    day,
+    hour,
+    minute,
+    setDay,
+    setHour,
+    setMinute,
     apiServices,
     permission,
     user,
@@ -64,7 +68,9 @@ const View = ({
     answeredTheoryAssignmentLoading,
     refetchTheoryAnsweredAssignment,
     //
-  } = useStudentAssignments();
+  } = useStudentCBT();
+
+  const { state } = useLocation();
 
   const {
     isOpen: sideBarIsOpen,
@@ -310,7 +316,7 @@ const View = ({
   //  console.log({ answeredObjectiveQ });
 
   return (
-    <div>
+    <PageSheet>
       <div className={styles.view}>
         {!hideAllBars && (
           <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '>
@@ -376,16 +382,18 @@ const View = ({
           </div>
         )}
 
-        <div className='' >
-          <div >
+        <div className=''>
+          <div>
+            <div className={styles.view__tabs}>
+              <ButtonGroup options={optionTabShow()} />
+            </div>
+
             {assignmentLoading && (
               <div className={styles.spinner_container}>
                 <Spinner /> <p className='fs-3'>Loading...</p>
               </div>
             )}
-            <div className={styles.view__tabs}>
-              <ButtonGroup options={optionTabShow()} />
-            </div>
+
             <div className=''>
               {/* objective Answers */}
               {assignmentTab === "1" && objectiveQ?.length >= 1 && (
@@ -420,6 +428,7 @@ const View = ({
                   setDay={setDay}
                   setHour={setHour}
                   setMinute={setMinute}
+                  state={state?.creds}
                 />
               )}
               {/* Theory Answers */}
@@ -456,8 +465,8 @@ const View = ({
         singleButtonText='Preview'
         promptHeader={`CONFIRM ASSIGNMENT SUBMISSION`}
       ></Prompt>
-    </div>
+    </PageSheet>
   );
 };
 
-export default View;
+export default ViewCBT;
