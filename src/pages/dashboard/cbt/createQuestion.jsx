@@ -119,7 +119,7 @@ const CreateQuestion = ({
       case "objective":
         if (
           !subject_id ||
-          !week ||
+          // !week ||
           !question_type ||
           !question ||
           !option1 ||
@@ -127,7 +127,7 @@ const CreateQuestion = ({
           !option3 ||
           !option4 ||
           !answer ||
-          !objMark ||
+          // !objMark ||
           !instruction ||
           !hour ||
           !minute
@@ -360,7 +360,7 @@ const CreateQuestion = ({
         hasGroupedButtons={true}
         groupedButtonProps={buttonOptions}
         singleButtonText='Preview'
-        promptHeader={`${subject?.toUpperCase()} CBT - ${state?.question_type?.toUpperCase()} - Q${
+        promptHeader={`${subject?.toUpperCase()} CBT - ${createQ?.question_type?.toUpperCase()} - Q${
           // question_type === "objective"
           //   ? ObjectiveQ?.length + 1
           //   : question_type === "theory"
@@ -371,7 +371,7 @@ const CreateQuestion = ({
       >
         {activeTab === "1" && (
           <>
-            {state?.question_type === "theory" && (
+            {createQ?.question_type === "theory" && (
               <div>
                 <p
                   style={{
@@ -481,7 +481,7 @@ const CreateQuestion = ({
                 </div>
               </div>
             )}
-            {state?.question_type === "objective" && (
+            {createQ?.question_type === "objective" && (
               <>
                 {/* question */}
                 <p className='fs-3 fw-bold mb-4'>Question</p>
@@ -696,7 +696,7 @@ const CreateQuestion = ({
                 <img src={createQ?.image} width={150} alt='' />
               </div>
             )}
-            {state?.question_type === "objective" && (
+            {createQ?.question_type === "objective" && (
               <>
                 <p className='fw-bold fs-3 my-4'>Options</p>
                 <div className='d-flex flex-column gap-3 mb-5'>
@@ -719,7 +719,7 @@ const CreateQuestion = ({
                 </div>
               </>
             )}
-            {state?.question_type === "theory" && (
+            {createQ?.question_type === "theory" && (
               <>
                 <p
                   style={{

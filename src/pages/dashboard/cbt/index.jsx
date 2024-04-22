@@ -156,9 +156,9 @@ const CBTPage = () => {
     if (
       !createQ.period ||
       !createQ.term ||
-      !createQ.session ||
-      !createQ.subject_id ||
-      !createQ.question_type
+      !createQ.session 
+      // !createQ.subject_id ||
+      // !createQ.question_type
     ) {
       return true;
     } else {
@@ -530,7 +530,7 @@ const CBTPage = () => {
           />
         </div>
 
-        <div className='form-group mb-4'>
+        {/* <div className='form-group mb-4'>
           <AuthSelect
             label='Subject'
             sort
@@ -565,7 +565,7 @@ const CBTPage = () => {
             placeholder='Select type'
             wrapperClassName='w-100'
           />
-        </div>
+        </div> */}
       </Prompt>
     </div>
   );

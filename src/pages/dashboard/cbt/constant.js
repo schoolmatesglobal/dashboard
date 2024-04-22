@@ -418,7 +418,7 @@ export const setVariant = ({ status, indexStatus }) => {
 };
 
 export function toSentenceCase(str) {
-  return str?.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, function (c) {
+  return str?.replace(/(^\s*\w|[\\.\\!\\?]\s*\w)/g, function (c) {
     return c?.toUpperCase();
   });
 }

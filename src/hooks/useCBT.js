@@ -86,7 +86,6 @@ export const useCBT = () => {
     period: "",
     session: "",
     subject_id: "",
-    subject: "",
     week: "",
     hour: null,
     minute: null,

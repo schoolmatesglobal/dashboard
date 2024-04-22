@@ -24,6 +24,7 @@ import PageSheet from "../../../components/common/page-sheet";
 import { useLocation } from "react-router-dom";
 import { toSentenceCase } from "./constant";
 import CreateSettings from "./createSettings";
+import GoBack from "../../../components/common/go-back";
 
 const CreateCBT = (
   {
@@ -63,7 +64,7 @@ const CreateCBT = (
 
   const { state } = useLocation();
 
-  const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
+  const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
   const isTablet = useMediaQuery({
     query: "(min-width: 768px, max-width: 991px)",
   });
@@ -670,615 +671,632 @@ const CreateCBT = (
   });
 
   return (
-    <PageSheet>
-      <div className={styles.create}>
-        {/* drop downs */}
-        <div className='d-flex align-items-center justify-content-center mb-4'>
-          <p className='fw-bold fs-4'>
-            CBT {toSentenceCase(state?.creds?.question_type)} |{" "}
-            {state?.creds?.period} | {state?.creds?.term} |{" "}
-            {state?.creds?.session}
-          </p>
-        </div>
-        <div
-          className='d-flex flex-column gap-4 flex-md-row justify-content-center'
-          // className={styles.create__options}
-        >
-          <Button
-            variant=''
-            className='w-auto'
-            onClick={() => {
-              setCreateSettingsPrompt(true);
-            }}
-            // disabled={activateAddQuestion()}
-          >
-            CBT Settings
-          </Button>
-
-          <Button
-            variant=''
-            className='w-auto'
-            onClick={() => {
-              if (question_type === "theory") {
-                setAllowFetch(false);
-                setCreateQ((prev) => {
-                  return {
-                    ...prev,
-                    question_number: theoryQ?.length + 1,
-                  };
-                });
-              } else if (question_type === "objective") {
-                setAllowFetch(false);
-                if (!obj) {
-                  setObj([]);
-                }
-                setCreateQ((prev) => {
-                  return {
-                    ...prev,
-                    question_number: objectiveQ?.length + 1,
-                  };
-                });
-              }
-              setCreateQuestionPrompt(true);
-            }}
-            disabled={!SettingsAdded()}
-          >
-            {objectiveQ?.length === 0 && theoryQ?.length === 0
-              ? "Add Question"
-              : "Add Question"}
-          </Button>
-        </div>
-
-        {!SettingsAdded() && (
-          <div className='d-flex justify-content-center align-items-cneter'>
-            <p className='fs-4  mt-4 text-danger'>
-              NB: Setup CBT settings before adding questions{" "}
+    <div className=''>
+      <GoBack />
+      <PageSheet>
+        <div className={styles.create}>
+          {/* drop downs */}
+          <div className='d-flex align-items-center justify-content-center mb-4'>
+            <p className='fw-bold fs-4'>
+              {/* CBT {toSentenceCase(state?.creds?.question_type)} |{" "} */}
+              {state?.creds?.period} | {state?.creds?.term} |{" "}
+              {state?.creds?.session}
             </p>
           </div>
-        )}
-
-        {!allLoading && SettingsAdded() && (
-          <MarkCard
-            allLoading={allLoading}
-            question_type={question_type}
-            objectiveQ={objectiveQ}
-            theoryQ={theoryQ}
-            published={published}
-            createQ={createQ}
-          />
-        )}
-
-        {allLoading && (
-          <div className={styles.spinner_container}>
-            <Spinner /> <p className='fs-3'>Loading...</p>
-          </div>
-        )}
-
-        {/* {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
-          <div className={styles.placeholder_container}>
-            <HiOutlineDocumentPlus className={styles.icon} />
-            <p className='fs-1 fw-bold mt-3'>Create theory </p>
-          </div>
-        )} */}
-        {!allLoading &&
-          question_type === "objective" &&
-          objectiveQ?.length === 0 && (
-            <div className={styles.placeholder_container}>
-              <FaComputer className={styles.icon} />{" "}
-              <p className='fs-1 fw-bold mt-3'>Create CBT Objective </p>
+          <div className='d-flex flex-column flex-lg-row align-items-center  gap-4'>
+            <div className={`d-flex align-items-center flex-grow-1 gap-3 ${isDesktop  && "w-100"}`}>
+              <AuthSelect
+                sort
+                options={newSubjects}
+                value={subject_id}
+                onChange={({ target: { value } }) => {
+                  setCreateQ((prev) => {
+                    return { ...prev, subject_id: value };
+                  });
+                }}
+                placeholder='Select Subject'
+                wrapperClassName='w-100'
+                
+              />
+              <AuthSelect
+                sort
+                options={questionType}
+                value={question_type}
+                onChange={({ target: { value } }) => {
+                  setCreateQ((prev) => {
+                    return { ...prev, question_type: value, answer: "" };
+                  });
+                }}
+                placeholder='Select type'
+                wrapperClassName=''
+              />
             </div>
-          )}
-        {!allLoading &&
-          theoryQ?.length === 0 &&
-          objectiveQ?.length === 0 &&
-          question_type === "" && (
-            <div className={styles.placeholder_container}>
-              <FaComputer className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
-            </div>
-          )}
-
-        {!allLoading &&
-          objectiveQ?.length >= 1 &&
-          question_type === "objective" && (
-            <div className='d-flex flex-column my-5 gap-3'>
-              {objectiveQ
-                ?.sort((a, b) => {
-                  if (a.question_number < b.question_number) {
-                    return -1;
+            <div className='d-flex gap-3 justify-content-center'>
+              <Button
+                variant=''
+                className='w-auto flex-shrink-0'
+                onClick={() => {
+                  setCreateSettingsPrompt(true);
+                }}
+                // disabled={activateAddQuestion()}
+              >
+                CBT Settings
+              </Button>
+              <Button
+                variant=''
+                className='w-auto flex-shrink-0'
+                onClick={() => {
+                  if (question_type === "theory") {
+                    setAllowFetch(false);
+                    setCreateQ((prev) => {
+                      return {
+                        ...prev,
+                        question_number: theoryQ?.length + 1,
+                      };
+                    });
+                  } else if (question_type === "objective") {
+                    setAllowFetch(false);
+                    if (!obj) {
+                      setObj([]);
+                    }
+                    setCreateQ((prev) => {
+                      return {
+                        ...prev,
+                        question_number: objectiveQ?.length + 1,
+                      };
+                    });
                   }
-                  if (a.question_number > b.question_number) {
-                    return 1;
-                  }
-                  return 0;
-                })
-                ?.map((CQ, index) => {
-                  // console.log({ tk: CQ });
-                  return (
-                    <div className='w-100' key={index}>
-                      <ObjectiveViewCard
-                        CQ={CQ}
-                        setEditPrompt={setEditPrompt}
-                        setEditTotalQuestion={setEditTotalQuestion}
-                        setEditMark={setEditMark}
-                        setEditNumber={setEditNumber}
-                        setEditOption1={setEditOption1}
-                        setEditOption2={setEditOption2}
-                        setEditOption3={setEditOption3}
-                        setEditOption4={setEditOption4}
-                        setDeletePrompt={setDeletePrompt}
-                        setEditQuestion={setEditQuestion}
-                        setEditAnswer={setEditAnswer}
-                        setEditSwitchNumber={setEditSwitchNumber}
-                        setEditPublish={setEditPublish}
-                        editQuestionId={editQuestionId}
-                        setEditQuestionId={setEditQuestionId}
-                        index={index}
-                      />
-                    </div>
-                  );
-                })}
+                  setCreateQuestionPrompt(true);
+                }}
+                disabled={!SettingsAdded()}
+              >
+                {objectiveQ?.length === 0 && theoryQ?.length === 0
+                  ? "Add Question"
+                  : "Add Question"}
+              </Button>
+            </div>
+          </div>
+          {!SettingsAdded() && (
+            <div className='d-flex justify-content-center align-items-cneter'>
+              <p className='fs-4  mt-4 text-danger'>
+                NB: Setup CBT settings before adding questions{" "}
+              </p>
             </div>
           )}
-
-        {!allLoading && theoryQ?.length >= 1 && question_type === "theory" && (
-          <div className='d-flex flex-column my-5 gap-3'>
-            {theoryQ
-              ?.sort((a, b) => {
-                if (a.question_number < b.question_number) {
-                  return -1;
-                }
-                if (a.question_number > b.question_number) {
-                  return 1;
-                }
-                return 0;
-              })
-              ?.map((CQ, index) => {
-                // console.log({ CQ });
-                return (
-                  <div
-                    className='w-100'
-                    // style={{ width: "100%", }}
-                    key={index}
-                  >
-                    <TheoryViewCard
-                      CQ={CQ}
-                      setEditPrompt={setEditPrompt}
-                      setEditTotalQuestion={setEditTotalQuestion}
-                      setEditMark={setEditMark}
-                      setEditNumber={setEditNumber}
-                      setEditOption1={setEditOption1}
-                      setEditOption2={setEditOption2}
-                      setEditOption3={setEditOption3}
-                      setEditOption4={setEditOption4}
-                      setDeletePrompt={setDeletePrompt}
-                      setEditQuestion={setEditQuestion}
-                      setEditAnswer={setEditAnswer}
-                      setEditSwitchNumber={setEditSwitchNumber}
-                      setEditPublish={setEditPublish}
-                      editQuestionId={editQuestionId}
-                      setEditQuestionId={setEditQuestionId}
+          {!allLoading && SettingsAdded() && (
+            <MarkCard
+              allLoading={allLoading}
+              question_type={question_type}
+              objectiveQ={objectiveQ}
+              theoryQ={theoryQ}
+              published={published}
+              createQ={createQ}
+            />
+          )}
+          {allLoading && (
+            <div className={styles.spinner_container}>
+              <Spinner /> <p className='fs-3'>Loading...</p>
+            </div>
+          )}
+          {/* {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
+            <div className={styles.placeholder_container}>
+              <HiOutlineDocumentPlus className={styles.icon} />
+              <p className='fs-1 fw-bold mt-3'>Create theory </p>
+            </div>
+          )} */}
+          {!allLoading &&
+            question_type === "objective" &&
+            objectiveQ?.length === 0 && (
+              <div className={styles.placeholder_container}>
+                <FaComputer className={styles.icon} />{" "}
+                <p className='fs-1 fw-bold mt-3'>Create CBT Objective </p>
+              </div>
+            )}
+          {!allLoading &&
+            theoryQ?.length === 0 &&
+            objectiveQ?.length === 0 &&
+            question_type === "" && (
+              <div className={styles.placeholder_container}>
+                <FaComputer className={styles.icon} />
+                <p className='fs-1 fw-bold mt-3'>No CBT Question</p>
+              </div>
+            )}
+          {!allLoading &&
+            objectiveQ?.length >= 1 &&
+            question_type === "objective" && (
+              <div className='d-flex flex-column my-5 gap-3'>
+                {objectiveQ
+                  ?.sort((a, b) => {
+                    if (a.question_number < b.question_number) {
+                      return -1;
+                    }
+                    if (a.question_number > b.question_number) {
+                      return 1;
+                    }
+                    return 0;
+                  })
+                  ?.map((CQ, index) => {
+                    // console.log({ tk: CQ });
+                    return (
+                      <div className='w-100' key={index}>
+                        <ObjectiveViewCard
+                          CQ={CQ}
+                          setEditPrompt={setEditPrompt}
+                          setEditTotalQuestion={setEditTotalQuestion}
+                          setEditMark={setEditMark}
+                          setEditNumber={setEditNumber}
+                          setEditOption1={setEditOption1}
+                          setEditOption2={setEditOption2}
+                          setEditOption3={setEditOption3}
+                          setEditOption4={setEditOption4}
+                          setDeletePrompt={setDeletePrompt}
+                          setEditQuestion={setEditQuestion}
+                          setEditAnswer={setEditAnswer}
+                          setEditSwitchNumber={setEditSwitchNumber}
+                          setEditPublish={setEditPublish}
+                          editQuestionId={editQuestionId}
+                          setEditQuestionId={setEditQuestionId}
+                          index={index}
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          {!allLoading &&
+            theoryQ?.length >= 1 &&
+            question_type === "theory" && (
+              <div className='d-flex flex-column my-5 gap-3'>
+                {theoryQ
+                  ?.sort((a, b) => {
+                    if (a.question_number < b.question_number) {
+                      return -1;
+                    }
+                    if (a.question_number > b.question_number) {
+                      return 1;
+                    }
+                    return 0;
+                  })
+                  ?.map((CQ, index) => {
+                    // console.log({ CQ });
+                    return (
+                      <div
+                        className='w-100'
+                        // style={{ width: "100%", }}
+                        key={index}
+                      >
+                        <TheoryViewCard
+                          CQ={CQ}
+                          setEditPrompt={setEditPrompt}
+                          setEditTotalQuestion={setEditTotalQuestion}
+                          setEditMark={setEditMark}
+                          setEditNumber={setEditNumber}
+                          setEditOption1={setEditOption1}
+                          setEditOption2={setEditOption2}
+                          setEditOption3={setEditOption3}
+                          setEditOption4={setEditOption4}
+                          setDeletePrompt={setDeletePrompt}
+                          setEditQuestion={setEditQuestion}
+                          setEditAnswer={setEditAnswer}
+                          setEditSwitchNumber={setEditSwitchNumber}
+                          setEditPublish={setEditPublish}
+                          editQuestionId={editQuestionId}
+                          setEditQuestionId={setEditQuestionId}
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          {!allLoading &&
+            ((question_type === "objective" && objectiveQ?.length !== 0) ||
+              (question_type === "theory" && theoryQ?.length !== 0)) && (
+              <div className='w-100 d-flex justify-content-center justify-content-sm-end'>
+                <ButtonGroup options={buttonOptions2} />
+              </div>
+            )}
+        </div>
+        <CreateQuestion
+          createQuestionPrompt={createQuestionPrompt}
+          setCreateQuestionPrompt={setCreateQuestionPrompt}
+          state={state?.creds}
+          createQ={createQ}
+          setCreateQ={setCreateQ}
+          objectiveQ={objectiveQ}
+          setObjectiveQ={setObjectiveQ}
+          theoryQ={theoryQ}
+          setTheoryQ={setTheoryQ}
+          obj={obj}
+          setObj={setObj}
+          addObjectiveAssignments={addObjectiveAssignments}
+          addObjectAssignmentLoading={addObjectAssignmentLoading}
+          addTheoryAssignments={addTheoryAssignments}
+          addTheoryAssignmentLoading={addTheoryAssignmentLoading}
+          allowFetch={allowFetch}
+          setAllowFetch={setAllowFetch}
+          refetchAssignmentCreated={refetchAssignmentCreated}
+          objMark={objMark}
+          setObjMark={setObjMark}
+        />
+        <CreateSettings
+          createQuestionPrompt={createSettingsPrompt}
+          setCreateQuestionPrompt={setCreateSettingsPrompt}
+          state={state?.creds}
+          createQ={createQ}
+          setCreateQ={setCreateQ}
+          objectiveQ={objectiveQ}
+          setObjectiveQ={setObjectiveQ}
+          theoryQ={theoryQ}
+          setTheoryQ={setTheoryQ}
+          obj={obj}
+          setObj={setObj}
+          addObjectiveAssignments={addObjectiveAssignments}
+          addObjectAssignmentLoading={addObjectAssignmentLoading}
+          addTheoryAssignments={addTheoryAssignments}
+          addTheoryAssignmentLoading={addTheoryAssignmentLoading}
+          allowFetch={allowFetch}
+          setAllowFetch={setAllowFetch}
+          refetchAssignmentCreated={refetchAssignmentCreated}
+          objMark={objMark}
+          setObjMark={setObjMark}
+        />
+        {/* publish all prompt */}
+        <Prompt
+          promptHeader={`${published ? "PUBLISH" : "UNPUBLISH"} ALL QUESTIONS`}
+          toggle={() => setClearAllPrompt(!clearAllPrompt)}
+          isOpen={clearAllPrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={clearAllButtons}
+        >
+          <p className='fs-3 w-100 text-center fw-semibold'>Are you sure?</p>
+        </Prompt>
+        {/* Edit question prompt */}
+        <Prompt
+          promptHeader={`QUESTION EDIT`}
+          toggle={() => setEditPrompt(!editPrompt)}
+          isOpen={editPrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={editButtons}
+        >
+          {question_type === "objective" && (
+            <div>
+              <p className='fw-bold fs-3 mb-4'>Question Number</p>
+              <div className='d-flex flex-column gap-3 mb-5'>
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "100px" }}>
+                    <AuthInput
+                      type='number'
+                      placeholder='Question Number'
+                      // hasError={!!errors.username}
+                      // defaultValue={CQ.question_mark}
+                      value={editNumber}
+                      name='option'
+                      onChange={(e) => {
+                        setEditNumber(e.target.value);
+                      }}
+                      className='fs-3'
                     />
                   </div>
-                );
-              })}
-          </div>
-        )}
-
-        {!allLoading &&
-          ((question_type === "objective" && objectiveQ?.length !== 0) ||
-            (question_type === "theory" && theoryQ?.length !== 0)) && (
-            <div className='w-100 d-flex justify-content-center justify-content-sm-end'>
-              <ButtonGroup options={buttonOptions2} />
+                </div>
+              </div>
+              <p className='fw-bold fs-3 mb-3'>Questions</p>
+              <div className='auth-textarea-wrapper'>
+                <textarea
+                  className='form-control fs-3'
+                  type='text'
+                  value={editQuestion}
+                  placeholder='Type the assignment question'
+                  onChange={(e) => {
+                    setEditQuestion(e.target.value);
+                  }}
+                  style={{
+                    minHeight: "150px",
+                    lineHeight: "22px",
+                  }}
+                />
+              </div>
+              <p className='fw-bold fs-3 my-4'>Options</p>
+              <div className='d-flex flex-column gap-3'>
+                {/* option - A */}
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "250px" }}>
+                    <AuthInput
+                      type='text'
+                      placeholder='Option A'
+                      // hasError={!!errors.username}
+                      value={editOption1}
+                      name='option'
+                      onChange={(e) => {
+                        setEditOption1(e.target.value);
+                      }}
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <input
+                      type='radio'
+                      name='radio-1'
+                      checked={editOption1 === editAnswer}
+                      id='option-A'
+                      style={{ width: "20px", height: "20px" }}
+                      onChange={(e) => setEditAnswer(e.target.value)}
+                      value={editOption1}
+                    />
+                    <label htmlFor='option-A' className='fs-3'>
+                      Correct Answer
+                    </label>
+                  </div>
+                </div>
+                {/* option B */}
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "250px" }}>
+                    <AuthInput
+                      type='text'
+                      placeholder='Option B'
+                      // hasError={!!errors.username}
+                      value={editOption2}
+                      name='option'
+                      onChange={(e) => setEditOption2(e.target.value)}
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <input
+                      type='radio'
+                      name='radio-1'
+                      style={{ width: "20px", height: "20px" }} // Set the width using inline styles
+                      checked={editOption2 === editAnswer}
+                      id='option-B'
+                      onChange={(e) => setEditAnswer(e.target.value)}
+                      value={editOption2}
+                    />
+                    <label htmlFor='option-B' className='fs-3'>
+                      Correct Answer
+                    </label>
+                  </div>
+                </div>
+                {/* option C */}
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "250px" }}>
+                    <AuthInput
+                      type='text'
+                      placeholder='Option C'
+                      // hasError={!!errors.username}
+                      value={editOption3}
+                      name='option'
+                      onChange={(e) => setEditOption3(e.target.value)}
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <input
+                      type='radio'
+                      name='radio-1'
+                      style={{ width: "20px", height: "20px" }}
+                      // Set the width using inline styles
+                      checked={editOption3 === editAnswer}
+                      id='option-C'
+                      onChange={(e) => setEditAnswer(e.target.value)}
+                      value={editOption3}
+                    />
+                    <label htmlFor='option-C' className='fs-3'>
+                      Correct Answer
+                    </label>
+                  </div>
+                </div>
+                {/* option D */}
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "250px" }}>
+                    <AuthInput
+                      type='text'
+                      placeholder='Option D'
+                      // hasError={!!errors.username}
+                      value={editOption4}
+                      name='option'
+                      onChange={(e) => setEditOption4(e.target.value)}
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <input
+                      type='radio'
+                      name='radio-1'
+                      id='option-D'
+                      style={{ width: "20px", height: "20px" }} // Set the width using inline styles
+                      checked={editOption4 === editAnswer}
+                      onChange={(e) => setEditAnswer(e.target.value)}
+                      value={editOption4}
+                    />
+                    <label htmlFor='option-D' className='fs-3'>
+                      Correct Answer
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
+              <div className='d-flex flex-column gap-3'>
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "100px" }}>
+                    <AuthInput
+                      type='number'
+                      placeholder='Question Mark'
+                      // hasError={!!errors.username}
+                      // defaultValue={CQ.question_mark}
+                      value={editMark}
+                      name='option'
+                      onChange={(e) => {
+                        setEditMark(e.target.value);
+                      }}
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <p className='fs-3'>Question Mark</p>
+                  </div>
+                </div>
+              </div>
+              <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
+              <div
+                className={`d-flex align-items-center gap-3 cursor-pointer ${
+                  editPublish ? "bg-success" : "bg-danger"
+                } py-4 px-3 bg-opacity-10`}
+              >
+                <input
+                  type='checkbox'
+                  name='radio-1'
+                  className=''
+                  checked={editPublish}
+                  id='publishedStatus'
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    // color: "green",
+                    // borderRadius: "100px",
+                  }}
+                  onChange={(e) => setEditPublish((prev) => !prev)}
+                  value={editPublish}
+                />
+                <label
+                  htmlFor='publishedStatus'
+                  className={`fs-3 ${
+                    editPublish ? "text-success" : "text-danger"
+                  }`}
+                >
+                  {editPublish ? "Published" : "Unpublished"}
+                </label>
+              </div>
             </div>
           )}
-      </div>
-      <CreateQuestion
-        createQuestionPrompt={createQuestionPrompt}
-        setCreateQuestionPrompt={setCreateQuestionPrompt}
-        state={state?.creds}
-        createQ={createQ}
-        setCreateQ={setCreateQ}
-        objectiveQ={objectiveQ}
-        setObjectiveQ={setObjectiveQ}
-        theoryQ={theoryQ}
-        setTheoryQ={setTheoryQ}
-        obj={obj}
-        setObj={setObj}
-        addObjectiveAssignments={addObjectiveAssignments}
-        addObjectAssignmentLoading={addObjectAssignmentLoading}
-        addTheoryAssignments={addTheoryAssignments}
-        addTheoryAssignmentLoading={addTheoryAssignmentLoading}
-        allowFetch={allowFetch}
-        setAllowFetch={setAllowFetch}
-        refetchAssignmentCreated={refetchAssignmentCreated}
-        objMark={objMark}
-        setObjMark={setObjMark}
-      />
-
-      <CreateSettings
-        createQuestionPrompt={createSettingsPrompt}
-        setCreateQuestionPrompt={setCreateSettingsPrompt}
-        state={state?.creds}
-        createQ={createQ}
-        setCreateQ={setCreateQ}
-        objectiveQ={objectiveQ}
-        setObjectiveQ={setObjectiveQ}
-        theoryQ={theoryQ}
-        setTheoryQ={setTheoryQ}
-        obj={obj}
-        setObj={setObj}
-        addObjectiveAssignments={addObjectiveAssignments}
-        addObjectAssignmentLoading={addObjectAssignmentLoading}
-        addTheoryAssignments={addTheoryAssignments}
-        addTheoryAssignmentLoading={addTheoryAssignmentLoading}
-        allowFetch={allowFetch}
-        setAllowFetch={setAllowFetch}
-        refetchAssignmentCreated={refetchAssignmentCreated}
-        objMark={objMark}
-        setObjMark={setObjMark}
-      />
-
-      {/* publish all prompt */}
-      <Prompt
-        promptHeader={`${published ? "PUBLISH" : "UNPUBLISH"} ALL QUESTIONS`}
-        toggle={() => setClearAllPrompt(!clearAllPrompt)}
-        isOpen={clearAllPrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={clearAllButtons}
-      >
-        <p className='fs-3 w-100 text-center fw-semibold'>Are you sure?</p>
-      </Prompt>
-
-      {/* Edit question prompt */}
-      <Prompt
-        promptHeader={`QUESTION EDIT`}
-        toggle={() => setEditPrompt(!editPrompt)}
-        isOpen={editPrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={editButtons}
-      >
-        {question_type === "objective" && (
-          <div>
-            <p className='fw-bold fs-3 mb-4'>Question Number</p>
-            <div className='d-flex flex-column gap-3 mb-5'>
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Question Number'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    value={editNumber}
-                    name='option'
-                    onChange={(e) => {
-                      setEditNumber(e.target.value);
-                    }}
-                    className='fs-3'
-                  />
+          {question_type === "theory" && (
+            <div>
+              <p className='fw-bold fs-3 mb-4'>Question Number</p>
+              <div className='d-flex flex-column gap-3 mb-5'>
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "100px" }}>
+                    <AuthInput
+                      type='number'
+                      placeholder='Question Number'
+                      // hasError={!!errors.username}
+                      // defaultValue={CQ.question_mark}
+                      value={editNumber}
+                      name='option'
+                      onChange={(e) => {
+                        setEditNumber(e.target.value);
+                      }}
+                      className='fs-3'
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <p className='fw-bold fs-3 mb-3'>Questions</p>
-            <div className='auth-textarea-wrapper'>
-              <textarea
-                className='form-control fs-3'
-                type='text'
-                value={editQuestion}
-                placeholder='Type the assignment question'
-                onChange={(e) => {
-                  setEditQuestion(e.target.value);
-                }}
-                style={{
-                  minHeight: "150px",
-                  lineHeight: "22px",
-                }}
-              />
-            </div>
-            <p className='fw-bold fs-3 my-4'>Options</p>
-            <div className='d-flex flex-column gap-3'>
-              {/* option - A */}
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "250px" }}>
-                  <AuthInput
-                    type='text'
-                    placeholder='Option A'
-                    // hasError={!!errors.username}
-                    value={editOption1}
-                    name='option'
-                    onChange={(e) => {
-                      setEditOption1(e.target.value);
-                    }}
-                    className='fs-3'
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <input
-                    type='radio'
-                    name='radio-1'
-                    checked={editOption1 === editAnswer}
-                    id='option-A'
-                    style={{ width: "20px", height: "20px" }}
-                    onChange={(e) => setEditAnswer(e.target.value)}
-                    value={editOption1}
-                  />
-                  <label htmlFor='option-A' className='fs-3'>
-                    Correct Answer
-                  </label>
-                </div>
+              <p className='fw-bold fs-3 mb-4'>Question</p>
+              <div className='auth-textarea-wrapper'>
+                <textarea
+                  className='form-control fs-3'
+                  type='text'
+                  value={editQuestion}
+                  placeholder='Type the assignment question'
+                  onChange={(e) => {
+                    setEditQuestion(e.target.value);
+                  }}
+                  style={{
+                    minHeight: "150px",
+                    lineHeight: "22px",
+                  }}
+                />
               </div>
-              {/* option B */}
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "250px" }}>
-                  <AuthInput
-                    type='text'
-                    placeholder='Option B'
-                    // hasError={!!errors.username}
-                    value={editOption2}
-                    name='option'
-                    onChange={(e) => setEditOption2(e.target.value)}
-                    className='fs-3'
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <input
-                    type='radio'
-                    name='radio-1'
-                    style={{ width: "20px", height: "20px" }} // Set the width using inline styles
-                    checked={editOption2 === editAnswer}
-                    id='option-B'
-                    onChange={(e) => setEditAnswer(e.target.value)}
-                    value={editOption2}
-                  />
-                  <label htmlFor='option-B' className='fs-3'>
-                    Correct Answer
-                  </label>
-                </div>
+              <p className='fw-bold fs-3 my-4'>Answer</p>
+              <div className='auth-textarea-wrapper'>
+                <textarea
+                  className='form-control fs-3'
+                  type='text'
+                  value={editAnswer}
+                  placeholder='Type the answer to the question'
+                  onChange={(e) => {
+                    setEditAnswer(e.target.value);
+                  }}
+                  style={{
+                    minHeight: "150px",
+                    lineHeight: "22px",
+                  }}
+                />
               </div>
-              {/* option C */}
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "250px" }}>
-                  <AuthInput
-                    type='text'
-                    placeholder='Option C'
-                    // hasError={!!errors.username}
-                    value={editOption3}
-                    name='option'
-                    onChange={(e) => setEditOption3(e.target.value)}
-                    className='fs-3'
-                  />
+              <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
+              <div className='d-flex flex-column gap-3'>
+                {/*Question Mark */}
+                <div className='d-flex align-items-center gap-3'>
+                  <div style={{ width: "100px" }}>
+                    <AuthInput
+                      type='number'
+                      placeholder='Question Mark'
+                      // hasError={!!errors.username}
+                      // defaultValue={CQ.question_mark}
+                      value={editMark}
+                      name='option'
+                      onChange={(e) => {
+                        setEditMark(e.target.value);
+                      }}
+                      wrapperClassName=''
+                      className='fs-3'
+                    />
+                  </div>
+                  <div className='d-flex align-items-center gap-3 cursor-pointer'>
+                    <p
+                      className='fs-3'
+                      style={{
+                        lineHeight: "18px",
+                      }}
+                    >
+                      Question Mark
+                    </p>
+                  </div>
                 </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <input
-                    type='radio'
-                    name='radio-1'
-                    style={{ width: "20px", height: "20px" }}
-                    // Set the width using inline styles
-                    checked={editOption3 === editAnswer}
-                    id='option-C'
-                    onChange={(e) => setEditAnswer(e.target.value)}
-                    value={editOption3}
-                  />
-                  <label htmlFor='option-C' className='fs-3'>
-                    Correct Answer
-                  </label>
-                </div>
+                {/* Total Question */}
               </div>
-              {/* option D */}
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "250px" }}>
-                  <AuthInput
-                    type='text'
-                    placeholder='Option D'
-                    // hasError={!!errors.username}
-                    value={editOption4}
-                    name='option'
-                    onChange={(e) => setEditOption4(e.target.value)}
-                    className='fs-3'
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <input
-                    type='radio'
-                    name='radio-1'
-                    id='option-D'
-                    style={{ width: "20px", height: "20px" }} // Set the width using inline styles
-                    checked={editOption4 === editAnswer}
-                    onChange={(e) => setEditAnswer(e.target.value)}
-                    value={editOption4}
-                  />
-                  <label htmlFor='option-D' className='fs-3'>
-                    Correct Answer
-                  </label>
-                </div>
-              </div>
-            </div>
-            <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
-            <div className='d-flex flex-column gap-3'>
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Question Mark'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    value={editMark}
-                    name='option'
-                    onChange={(e) => {
-                      setEditMark(e.target.value);
-                    }}
-                    className='fs-3'
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p className='fs-3'>Question Mark</p>
-                </div>
-              </div>
-            </div>
-
-            <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
-            <div
-              className={`d-flex align-items-center gap-3 cursor-pointer ${
-                editPublish ? "bg-success" : "bg-danger"
-              } py-4 px-3 bg-opacity-10`}
-            >
-              <input
-                type='checkbox'
-                name='radio-1'
-                className=''
-                checked={editPublish}
-                id='publishedStatus'
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  // color: "green",
-                  // borderRadius: "100px",
-                }}
-                onChange={(e) => setEditPublish((prev) => !prev)}
-                value={editPublish}
-              />
-              <label
-                htmlFor='publishedStatus'
-                className={`fs-3 ${
-                  editPublish ? "text-success" : "text-danger"
-                }`}
+              <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
+              <div
+                className={`d-flex align-items-center gap-3 cursor-pointer ${
+                  editPublish ? "bg-success" : "bg-danger"
+                } py-4 px-3 bg-opacity-10`}
               >
-                {editPublish ? "Published" : "Unpublished"}
-              </label>
-            </div>
-          </div>
-        )}
-        {question_type === "theory" && (
-          <div>
-            <p className='fw-bold fs-3 mb-4'>Question Number</p>
-            <div className='d-flex flex-column gap-3 mb-5'>
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Question Number'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    value={editNumber}
-                    name='option'
-                    onChange={(e) => {
-                      setEditNumber(e.target.value);
-                    }}
-                    className='fs-3'
-                  />
-                </div>
+                <input
+                  type='checkbox'
+                  name='radio-1'
+                  className=''
+                  checked={editPublish}
+                  id='publishedStatus'
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                  }}
+                  onChange={(e) => setEditPublish((prev) => !prev)}
+                  value={editPublish}
+                />
+                <label
+                  htmlFor='publishedStatus'
+                  className={`fs-3 ${
+                    editPublish ? "text-success" : "text-danger"
+                  }`}
+                >
+                  {editPublish ? "Published" : "Unpublished"}
+                </label>
               </div>
             </div>
-            <p className='fw-bold fs-3 mb-4'>Question</p>
-            <div className='auth-textarea-wrapper'>
-              <textarea
-                className='form-control fs-3'
-                type='text'
-                value={editQuestion}
-                placeholder='Type the assignment question'
-                onChange={(e) => {
-                  setEditQuestion(e.target.value);
-                }}
-                style={{
-                  minHeight: "150px",
-                  lineHeight: "22px",
-                }}
-              />
-            </div>
-            <p className='fw-bold fs-3 my-4'>Answer</p>
-            <div className='auth-textarea-wrapper'>
-              <textarea
-                className='form-control fs-3'
-                type='text'
-                value={editAnswer}
-                placeholder='Type the answer to the question'
-                onChange={(e) => {
-                  setEditAnswer(e.target.value);
-                }}
-                style={{
-                  minHeight: "150px",
-                  lineHeight: "22px",
-                }}
-              />
-            </div>
-            <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
-            <div className='d-flex flex-column gap-3'>
-              {/*Question Mark */}
-              <div className='d-flex align-items-center gap-3'>
-                <div style={{ width: "100px" }}>
-                  <AuthInput
-                    type='number'
-                    placeholder='Question Mark'
-                    // hasError={!!errors.username}
-                    // defaultValue={CQ.question_mark}
-                    value={editMark}
-                    name='option'
-                    onChange={(e) => {
-                      setEditMark(e.target.value);
-                    }}
-                    wrapperClassName=''
-                    className='fs-3'
-                  />
-                </div>
-                <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                  <p
-                    className='fs-3'
-                    style={{
-                      lineHeight: "18px",
-                    }}
-                  >
-                    Question Mark
-                  </p>
-                </div>
-              </div>
-              {/* Total Question */}
-            </div>
-
-            <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
-            <div
-              className={`d-flex align-items-center gap-3 cursor-pointer ${
-                editPublish ? "bg-success" : "bg-danger"
-              } py-4 px-3 bg-opacity-10`}
-            >
-              <input
-                type='checkbox'
-                name='radio-1'
-                className=''
-                checked={editPublish}
-                id='publishedStatus'
-                style={{
-                  width: "20px",
-                  height: "20px",
-                }}
-                onChange={(e) => setEditPublish((prev) => !prev)}
-                value={editPublish}
-              />
-              <label
-                htmlFor='publishedStatus'
-                className={`fs-3 ${
-                  editPublish ? "text-success" : "text-danger"
-                }`}
-              >
-                {editPublish ? "Published" : "Unpublished"}
-              </label>
-            </div>
-          </div>
-        )}
-      </Prompt>
-      {/* Delete question prompt */}
-      <Prompt
-        promptHeader={`CONFIRM DELETE ACTION`}
-        toggle={() => setDeletePrompt(!deletePrompt)}
-        isOpen={deletePrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={deleteButtons}
-      >
-        <p className={styles.create_question_question}>
-          Are you sure you want to delete this question?
-        </p>
-      </Prompt>
-    </PageSheet>
+          )}
+        </Prompt>
+        {/* Delete question prompt */}
+        <Prompt
+          promptHeader={`CONFIRM DELETE ACTION`}
+          toggle={() => setDeletePrompt(!deletePrompt)}
+          isOpen={deletePrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={deleteButtons}
+        >
+          <p className={styles.create_question_question}>
+            Are you sure you want to delete this question?
+          </p>
+        </Prompt>
+      </PageSheet>
+    </div>
   );
 };
 
