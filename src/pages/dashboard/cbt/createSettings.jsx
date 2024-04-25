@@ -6,6 +6,8 @@ import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import { addQuestionMarks, updateQuestionNumbers } from "./constant";
 import { useCBT } from "../../../hooks/useCBT";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 // import SelectSearch from "../inputs/SelectSearch";
 
 const CreateSettings = ({
@@ -28,8 +30,17 @@ const CreateSettings = ({
   refetchAssignmentCreated,
   objMark,
   setObjMark,
+  state,
+  instructioncbt,
+  setInstructioncbt,
+  hourcbt,
+  setHourcbt,
+  minutescbt,
+  setMinutescbt,
+  markcbt,
+  setMarkcbt,
 }) => {
-  const { user, updateCreateQuestionFxn } = useCBT();
+  const { user, updateCreateQuestionFxn, apiServices } = useCBT();
 
   const {
     option1,
@@ -70,6 +81,11 @@ const CreateSettings = ({
   // const [activateError, setActivateError] = useState(false);
   // const [fileUploadError, setFileUploadError] = useState("");
   const [activeTab, setActiveTab] = useState("1");
+
+  // const [instructioncbt, setInstructioncbt] = useState(createQ?.instruction);
+  // const [hourcbt, setHourcbt] = useState(createQ?.hour);
+  // const [minutescbt, setMinutescbt] = useState(createQ?.minute);
+  // const [markcbt, setMarkcbt] = useState(createQ?.question_mark);
 
   // const [correctAns, setCorrectAns] = useState("");
 
@@ -158,12 +174,7 @@ const CreateSettings = ({
   };
 
   const activateAddSettings = () => {
-    if (
-      !createQ.instruction ||
-      !createQ.hour ||
-      !createQ.minute ||
-      !createQ.question_mark
-    ) {
+    if (!instructioncbt || !hourcbt || !minutescbt || !markcbt) {
       return true;
     } else {
       return false;
@@ -177,6 +188,22 @@ const CreateSettings = ({
     });
   };
 
+  /////// POST CBT SETUP ////
+  const { mutateAsync: addCbtSetup, isLoading: addCbtSetupLoading } =
+    useMutation(
+      apiServices.addCbtSetup,
+
+      {
+        onSuccess() {
+          // refetchAssignmentCreated();
+          toast.success("CBT question settings has been created successfully");
+        },
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
+
   const buttonOptions = [
     {
       title: "Cancel",
@@ -188,9 +215,35 @@ const CreateSettings = ({
     {
       title: "Add Settings",
       disabled: activateAddSettings(),
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+      isLoading: addCbtSetupLoading,
       onClick: async () => {
-        setCreateQuestionPrompt(false);
+        await addCbtSetup({
+          period: state?.period,
+          term: state?.term,
+          session: state?.session,
+          subject_id: createQ?.subject_id,
+          question_type: createQ?.question_type,
+          instruction: instructioncbt,
+          duration: `${hourcbt}:${minutescbt}`,
+          mark: markcbt,
+        });
+
+        setTimeout(() => {
+          setCreateQuestionPrompt(false);
+          setCreateQ((prev) => {
+            return {
+              ...prev,
+              instruction: instructioncbt,
+              hour: hourcbt,
+              minute: minutescbt,
+              question_mark: markcbt,
+            };
+          });
+          setInstructioncbt("");
+          setHourcbt("");
+          setMinutescbt("");
+          setMarkcbt("");
+        }, 1000);
       },
 
       // variant: "outline",
@@ -230,9 +283,10 @@ const CreateSettings = ({
   // console.log({ activatePreview: activatePreview() });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
-  console.log({
-    createQ,
-  });
+  // console.log({
+  //   createQ,
+  //   state,
+  // });
 
   return (
     <div className={styles.create_question}>
@@ -251,12 +305,13 @@ const CreateSettings = ({
             <textarea
               className='form-control fs-3 lh-base'
               type='text'
-              value={createQ?.instruction}
+              value={instructioncbt}
               placeholder='Type the Test instruction'
-              onChange={(e) =>
-                setCreateQ((prev) => {
-                  return { ...prev, instruction: e.target.value };
-                })
+              onChange={
+                (e) => setInstructioncbt(e.target.value)
+                // setCreateQ((prev) => {
+                //   return { ...prev, instruction: e.target.value };
+                // })
               }
               style={{
                 minHeight: "100px",
@@ -273,15 +328,16 @@ const CreateSettings = ({
                 <AuthInput
                   type='number'
                   placeholder='Hour'
-                  value={createQ?.hour}
+                  value={hourcbt}
                   name='option'
                   min={0}
                   className='fs-3'
                   onChange={(e) => {
-                    if (objectiveQ?.length > 0) return;
-                    setCreateQ((prev) => {
-                      return { ...prev, hour: e.target.value };
-                    });
+                    setHourcbt(e.target.value);
+                    // if (objectiveQ?.length > 0) return;
+                    // setCreateQ((prev) => {
+                    //   return { ...prev, hour: e.target.value };
+                    // });
                   }}
                   wrapperClassName=''
                 />
@@ -298,14 +354,15 @@ const CreateSettings = ({
                   placeholder='Minute'
                   className='fs-3'
                   // hasError={!!errors.username}
-                  value={createQ?.minute}
+                  value={minutescbt}
                   name='option'
                   min={0}
                   onChange={(e) => {
+                    setMinutescbt(e.target.value);
                     // if (objectiveQ?.length > 0) return;
-                    setCreateQ((prev) => {
-                      return { ...prev, minute: e.target.value };
-                    });
+                    // setCreateQ((prev) => {
+                    //   return { ...prev, minute: e.target.value };
+                    // });
                   }}
                   wrapperClassName=''
                 />
@@ -325,16 +382,17 @@ const CreateSettings = ({
                   type='number'
                   placeholder='Mark'
                   // hasError={!!errors.username}
-                  value={createQ?.question_mark}
+                  value={markcbt}
                   name='option'
                   min={1}
                   className='fs-3'
                   onChange={(e) => {
+                    setMarkcbt(e.target.value);
                     // if (objectiveQ?.length > 0) return;
                     // setObjMark(e.target.value);
-                    setCreateQ((prev) => {
-                      return { ...prev, question_mark: e.target.value };
-                    });
+                    // setCreateQ((prev) => {
+                    //   return { ...prev, question_mark: e.target.value };
+                    // });
                   }}
                   wrapperClassName=''
                 />

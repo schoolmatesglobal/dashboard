@@ -156,7 +156,7 @@ const CBTPage = () => {
     if (
       !createQ.period ||
       !createQ.term ||
-      !createQ.session 
+      !createQ.session
       // !createQ.subject_id ||
       // !createQ.question_type
     ) {
@@ -322,138 +322,7 @@ const CBTPage = () => {
   // }, []);
 
   return (
-    // <PageSheet>
-    //   <div className={styles.home}>
-    //     {!hideAllBars && <ButtonGroup2 options={getToggleButtons()} />}
-
-    //     {!hideAllBars && <hr className={styles.home_divider} />}
-
-    //     {activeTab === "5" && permission?.view && (
-    //       <View
-    //         toggleNavbar={toggleSideBar}
-    //         closeSidebar={closeSidebar}
-    //         objectiveQ2={objectiveQ2}
-    //         setObjectiveQ2={setObjectiveQ2}
-    //         theoryQ2={theoryQ2}
-    //         setTheoryQ2={setTheoryQ2}
-    //         createQ2={createQ2}
-    //         setCreateQ2={setCreateQ2}
-    //         studentSubjects={studentSubjects}
-    //         assignmentTab={assignmentTab}
-    //         setAssignmentTab={setAssignmentTab}
-    //         answeredObjectiveQ={answeredObjectiveQ}
-    //         setAnsweredObjectiveQ={setAnsweredObjectiveQ}
-    //         answeredTheoryQ={answeredTheoryQ}
-    //         setAnsweredTheoryQ={setAnsweredTheoryQ}
-    //         objectiveSubmitted={objectiveSubmitted}
-    //         setObjectiveSubmitted={setObjectiveSubmitted}
-    //         theorySubmitted={theorySubmitted}
-    //         setTheorySubmitted={setTheorySubmitted}
-    //         subjects={subjects}
-    //         isPlaying={isPlaying}
-    //         setIsPlaying={setIsPlaying}
-    //         showWarning={showWarning}
-    //         setShowWarning={setShowWarning}
-    //         testEnded={testEnded}
-    //         setTestEnded={setTestEnded}
-    //         timeLeft={timeLeft}
-    //         setTimeLeft={setTimeLeft}
-    //         secondleft={secondleft}
-    //         setSecondLeft={setSecondLeft}
-    //         hourLeft={hourLeft}
-    //         setHourLeft={setHourLeft}
-    //         day={day}
-    //         hour={hour}
-    //         minute={minute}
-    //         setDay={setDay}
-    //         setHour={setHour}
-    //         setMinute={setMinute}
-    //       />
-    //     )}
-
-    //     {activeTab === "1" && permission?.create && (
-    //       <Create
-    //         createQ={createQ}
-    //         setCreateQ={setCreateQ}
-    //         objectiveQ={objectiveQ}
-    //         theoryQ={theoryQ}
-    //         setObjectiveQ={setObjectiveQ}
-    //         setTheoryQ={setTheoryQ}
-    //         obj={obj}
-    //         setObj={setObj}
-    //         objMark={objMark}
-    //         setObjMark={setObjMark}
-    //       />
-    //     )}
-    //     {activeTab === "3" && permission?.submissions && (
-    //       <Submission
-    //         answerQ={answerQ}
-    //         setAnswerQ={setAnswerQ}
-    //         answeredObjQ={answeredObjQ}
-    //         setAnsweredObjQ={setAnsweredObjQ}
-    //         answeredTheoQ={answeredTheoQ}
-    //         setAnsweredTheoQ={setAnsweredTheoQ}
-    //         markedObjQ={markedObjQ}
-    //         setMarkedObjQ={setMarkedObjQ}
-    //         markedTheoQ={markedTheoQ}
-    //         setMarkedTheoQ={setMarkedTheoQ}
-    //         markedTheoQ2={markedTheoQ2}
-    //         setMarkedTheoQ2={setMarkedTheoQ2}
-    //         submissionTab={submissionTab}
-    //         setSubmissionTab={setSubmissionTab}
-    //       />
-    //     )}
-    //     {activeTab === "4" && permission?.results && (
-    //       <Results
-    //         markedQ={markedQ}
-    //         setMarkedQ={setMarkedQ}
-    //         answeredObjResults={answeredObjResults}
-    //         setAnsweredObjResults={setAnsweredObjResults}
-    //         answeredTheoryResults={answeredTheoryResults}
-    //         setAnsweredTheoryResults={setAnsweredTheoryResults}
-    //         ResultTab={ResultTab}
-    //         setResultTab={setResultTab}
-    //       />
-    //     )}
-    //     {activeTab === "6" && permission?.student_results && (
-    //       <StudentResults
-    //         markedQ={markedQ}
-    //         setMarkedQ={setMarkedQ}
-    //         answeredObjResults={answeredObjResults}
-    //         setAnsweredObjResults={setAnsweredObjResults}
-    //         answeredTheoryResults={answeredTheoryResults}
-    //         setAnsweredTheoryResults={setAnsweredTheoryResults}
-    //         ResultTab={ResultTab}
-    //         setResultTab={setResultTab}
-    //       />
-    //     )}
-    //     {activeTab === "7" && permission?.performances && (
-    //       <Performances markedQ={performanceQ} setMarkedQ={setPerformanceQ} />
-    //     )}
-    //     {activeTab === "8" && permission?.student_performances && (
-    //       <Performances2
-    //         markedQ={markedQ}
-    //         setMarkedQ={setMarkedQ}
-    //         studentSubjects={studentSubjects}
-    //       />
-    //     )}
-    //   </div>
-
-    //   <Prompt
-    //     promptHeader={`COMPLETE CREATION PROCESS`}
-    //     toggle={() => setClearAllPrompt(!clearAllPrompt)}
-    //     isOpen={clearAllPrompt}
-    //     hasGroupedButtons={true}
-    //     groupedButtonProps={clearAllButtons}
-    //   >
-    //     <p
-    //       className={styles.create_question_question}
-    //       // style={{ fontSize: "15px", lineHeight: "20px" }}
-    //     >
-    //       Please complete creation process before leaving this section.
-    //     </p>
-    //   </Prompt>
-    // </PageSheet>
+   
     <div className=''>
       <PageView
         hasSortOptions
@@ -544,9 +413,9 @@ const CBTPage = () => {
             placeholder='Select Subject'
             wrapperClassName='w-100'
           />
-        </div>
+        </div> */}
 
-        <div className='form-group mb-4'>
+        {/* <div className='form-group mb-4'>
           <AuthSelect
             label='Question Type'
             sort

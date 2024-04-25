@@ -2594,6 +2594,60 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async addCbtSetup(body) {
+    const { data } = await axios.post(`${backendAPI}/v2/cbt/setup`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async getCbtSetup(period, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/setup/${period}/${term}/${session}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async addCbtQuestion(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/cbt/add/question`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getAllCbtQuestion(period, term, session, subject_id, question_type) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/questions/${period}/${term}/${session}/${subject_id}/${question_type}/get`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 }
 
 export default APIServies;

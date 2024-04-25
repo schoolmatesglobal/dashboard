@@ -89,6 +89,7 @@ export const useCBT = () => {
     week: "",
     hour: null,
     minute: null,
+    settings_id: "",
   });
 
   const {
@@ -198,7 +199,7 @@ export const useCBT = () => {
     setCreateQuestionPrompt,
 
     createSettingsPrompt,
-setCreateSettingsPrompt,
+    setCreateSettingsPrompt,
     //
     myStudents,
     apiServices,

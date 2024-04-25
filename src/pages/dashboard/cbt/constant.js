@@ -1,3 +1,15 @@
+export function parseDuration(durationString) {
+  const [hourStr, minuteStr] = durationString.split(':');
+  const hour = parseInt(hourStr, 10);
+  const minutes = parseInt(minuteStr, 10);
+
+  return {
+      hour,
+      minutes
+  };
+}
+
+
 export function calculateNumberOfPages(arrayLength, itemsPerPage) {
   return Math.ceil(arrayLength / itemsPerPage);
 }

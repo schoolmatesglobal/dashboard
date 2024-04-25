@@ -6,6 +6,8 @@ import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import { addQuestionMarks, updateQuestionNumbers } from "./constant";
 import { useCBT } from "../../../hooks/useCBT";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 // import SelectSearch from "../inputs/SelectSearch";
 
 const CreateQuestion = ({
@@ -20,17 +22,17 @@ const CreateQuestion = ({
   setTheoryQ,
   obj,
   setObj,
-  addObjectAssignmentLoading,
-  addObjectiveAssignments,
+  addCbtQuestion,
+  addCbtQuestionLoading,
   addTheoryAssignments,
   addTheoryAssignmentLoading,
   allowFetch,
   setAllowFetch,
-  refetchAssignmentCreated,
+  refetchCbtCreated,
   objMark,
   setObjMark,
 }) => {
-  const { user, updateCreateQuestionFxn } = useCBT();
+  const { user, updateCreateQuestionFxn, apiServices } = useCBT();
 
   const {
     option1,
@@ -62,6 +64,22 @@ const CreateQuestion = ({
     minute,
     mark,
   } = createQ;
+
+  // /////// POST CBT SETUP ////
+  // const { mutateAsync: addCbtQuestion, isLoading: addCbtQuestionLoading } =
+  // useMutation(
+  //   apiServices.addCbtQuestion,
+
+  //   {
+  //     onSuccess() {
+  //       // refetchCbtCreated();
+  //       toast.success("CBT question has been created successfully");
+  //     },
+  //     onError(err) {
+  //       apiServices.errorHandler(err);
+  //     },
+  //   }
+  // );
   // const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   // const [imageUpload, setImageUpload] = useState(null);
 
@@ -203,17 +221,17 @@ const CreateQuestion = ({
     {
       title: `${activeTab === "2" ? "Add Question" : "Preview"}`,
       disabled: activatePreview(),
-      isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+      isLoading: addCbtQuestionLoading,
       onClick:
         activeTab === "2"
           ? async () => {
               setImageNam("No file selected");
 
               if (createQ?.question_type === "objective") {
-                await addObjectiveAssignments();
+                await addCbtQuestion();
                 setAllowFetch(true);
 
-                refetchAssignmentCreated();
+                refetchCbtCreated();
 
                 setCreateQ({
                   ...createQ,
@@ -229,15 +247,15 @@ const CreateQuestion = ({
                   theoryAns: "",
                   // question_type: "",
                   question: "",
-                  question_number: 0,
+                  // question_number: 0,
                   // question_mark: 0,
                   // total_mark: 0,
                   // subject: "",
                   image: "",
                   imageName: "",
-                  hour: null,
-                  minute: null,
-                  instruction: "",
+                  // hour: null,
+                  // minute: null,
+                  // instruction: "",
                   // term: "",
                   // period: "",
                   // session: "",
@@ -248,7 +266,7 @@ const CreateQuestion = ({
 
                 setAllowFetch(true);
 
-                refetchAssignmentCreated();
+                refetchCbtCreated();
 
                 setCreateQ({
                   ...createQ,
@@ -333,24 +351,24 @@ const CreateQuestion = ({
   // console.log({ activatePreview: activatePreview() });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
-  console.log({
-    createQ,
-    ap: activatePreview(),
-    subject_id,
-    week,
-    question_type,
-    question,
-    option1,
-    option2,
-    option3,
-    option4,
-    answer,
-    objMark,
-    instruction,
-    hour,
-    minute,
-    mark,
-  });
+  // console.log({
+  //   createQ,
+  //   ap: activatePreview(),
+  //   subject_id,
+  //   week,
+  //   question_type,
+  //   question,
+  //   option1,
+  //   option2,
+  //   option3,
+  //   option4,
+  //   answer,
+  //   objMark,
+  //   instruction,
+  //   hour,
+  //   minute,
+  //   mark,
+  // });
 
   return (
     <div className={styles.create_question}>

@@ -22,7 +22,7 @@ import { useCBT } from "../../../hooks/useCBT";
 import { FaComputer } from "react-icons/fa6";
 import PageSheet from "../../../components/common/page-sheet";
 import { useLocation } from "react-router-dom";
-import { toSentenceCase } from "./constant";
+import { parseDuration, toSentenceCase } from "./constant";
 import CreateSettings from "./createSettings";
 import GoBack from "../../../components/common/go-back";
 
@@ -95,6 +95,7 @@ const CreateCBT = (
     session,
     subject_id,
     week,
+    settings_id,
   } = createQ;
 
   const { subjects, isLoading: subjectLoading } = useSubject();
@@ -132,6 +133,12 @@ const CreateCBT = (
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [published, setPublished] = useState(false);
+
+  const [instructioncbt, setInstructioncbt] = useState(createQ?.instruction);
+  const [hourcbt, setHourcbt] = useState(createQ?.hour);
+  const [minutescbt, setMinutescbt] = useState(createQ?.minute);
+  const [markcbt, setMarkcbt] = useState(createQ?.question_mark);
+
   const navigate = useNavigate();
 
   const activateRetrieve = () => {
@@ -141,9 +148,24 @@ const CreateCBT = (
       return false;
     }
   };
+  const activateCbt = () => {
+    if (subject_id !== "" && question_type !== "") {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const activateRetrieveCreated = () => {
     if (subject_id !== "" && question_type !== "" && week !== "") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const activateRetrieveCbt = () => {
+    if (subject_id !== "" && question_type !== "") {
       return true;
     } else {
       return false;
@@ -163,22 +185,22 @@ const CreateCBT = (
     }, 1500);
   }
 
-  //// FETCH ASSIGNMENTS CREATED /////////
+  //// FETCH  CBT QUESTION SETTINGS /////////
   const {
-    isLoading: assignmentCreatedLoading,
-    data: assignmentCreated,
-    isFetching: assignmentCreatedFetching,
-    isRefetching: assignmentCreatedRefetching,
-    refetch: refetchAssignmentCreated,
+    isLoading: cbtSettingsLoading,
+    data: cbtSettings,
+    isFetching: cbtSettingsFetching,
+    isRefetching: cbtSettingsRefetching,
+    refetch: refetchCbtSettings,
   } = useQuery(
-    [queryKeys.GET_CREATED_ASSIGNMENT],
+    [queryKeys.GET_CBT_SETTINGS],
     () =>
-      apiServices.getAssignment(
+      apiServices.getCbtSetup(
         user?.period,
         user?.term,
-        user?.session,
-        question_type,
-        week
+        user?.session
+        // question_type,
+        // week
       ),
     {
       retry: 2,
@@ -189,7 +211,119 @@ const CreateCBT = (
       // refetchIntervalInBackground: false,
 
       // enabled: false,
-      enabled: activateRetrieveCreated() && permission?.created,
+      enabled: activateRetrieveCbt() && permission?.created,
+
+      select: (data) => {
+        // const cbt = data?.data?.attributes;
+        // const cbt = apiServices.formatData(data);
+        const cbt = {
+          ...data?.data?.attributes,
+          id: data?.data?.id,
+        };
+
+        // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
+
+        console.log({ data, cbt });
+        // if (question_type === "objective") {
+        //   return filtCbt?.map((ag, i) => {
+        //     return {
+        //       id: ag?.id,
+        //       term: user?.term,
+        //       period: user?.period,
+        //       session: user?.session,
+        //       week: ag?.week,
+        //       question_type: ag?.question_type,
+        //       question: ag?.question,
+        //       answer: ag?.answer,
+        //       subject_id: ag?.subject_id,
+        //       // subject: ag?.subject,
+        //       option1: ag?.option1,
+        //       option2: ag?.option2,
+        //       option3: ag?.option3,
+        //       option4: ag?.option4,
+        //       total_question: ag?.total_question,
+        //       total_mark: ag?.total_mark,
+        //       question_mark: ag?.question_mark,
+        //       question_number: ag?.question_number,
+        //       status: ag?.status,
+        //     };
+        //   });
+        // } else if (question_type === "theory") {
+        //   return filtCbt?.map((ag, i) => {
+        //     return {
+        //       id: ag?.id,
+        //       term: user?.term,
+        //       period: user?.period,
+        //       session: user?.session,
+        //       week: ag?.week,
+        //       question_type: ag?.question_type,
+        //       question: ag?.question,
+        //       answer: ag?.answer,
+        //       subject_id: ag?.subject_id,
+        //       image: ag?.image,
+        //       total_question: ag?.total_question,
+        //       total_mark: ag?.total_mark,
+        //       question_mark: ag?.question_mark,
+        //       question_number: ag?.question_number,
+        //       status: ag?.status,
+        //     };
+        //   });
+        // }
+        return cbt;
+      },
+      onSuccess(data) {
+        if (question_type === "objective") {
+          // setObjectiveQ(data);
+          setCreateQ((prev) => {
+            return {
+              ...prev,
+              instruction: data?.instruction,
+              hour: parseDuration(data?.duration)?.hour,
+              minute: parseDuration(data?.duration)?.minutes,
+              question_mark: data?.mark,
+              settings_id: data?.id,
+            };
+          });
+        } else if (question_type === "theory") {
+          // setTheoryQ(data);
+        }
+        trigger();
+        // setAllowFetch(false);
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  //// FETCH CBT CREATED /////////
+  const {
+    isLoading: cbtCreatedLoading,
+    data: cbtCreated,
+    isFetching: cbtCreatedFetching,
+    isRefetching: cbtCreatedRefetching,
+    refetch: refetchCbtCreated,
+  } = useQuery(
+    [queryKeys.GET_CBT_CREATED],
+    () =>
+      apiServices.getAllCbtQuestion(
+        user?.period,
+        user?.term,
+        user?.session,
+        subject_id,
+        question_type
+      ),
+    {
+      retry: 2,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+
+      // enabled: false,
+      enabled: activateRetrieveCbt() && permission?.created,
 
       select: (data) => {
         const asg = apiServices.formatData(data);
@@ -262,6 +396,43 @@ const CreateCBT = (
     }
   );
 
+  /////// POST CBT QUESTION ////
+  const { mutateAsync: addCbtQuestion, isLoading: addCbtQuestionLoading } =
+    useMutation(
+      () =>
+        apiServices.addCbtQuestion(
+          // ...objectiveQ,
+          {
+            term: user?.term,
+            period: user?.period,
+            session: user?.session,
+            question_type,
+            question,
+            cbt_setting_id: Number(settings_id),
+            answer,
+            subject_id: Number(subject_id),
+            option1,
+            option2,
+            option3,
+            option4,
+            // total_question: Number(total_question),
+            // total_mark: Number(total_mark),
+            question_mark: createQ?.question_mark,
+            // question_number: Number(question_number),
+          }
+        ),
+      // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
+      {
+        onSuccess() {
+          refetchCbtCreated();
+          toast.success("Objective assignment has been created successfully");
+        },
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
+
   /////// POST OBJECTIVE ASSIGNMENT ////
   const {
     mutateAsync: addObjectiveAssignments,
@@ -292,7 +463,7 @@ const CreateCBT = (
     // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
     {
       onSuccess() {
-        refetchAssignmentCreated();
+        refetchCbtCreated();
         toast.success("Objective assignment has been created successfully");
       },
       onError(err) {
@@ -327,7 +498,7 @@ const CreateCBT = (
       ]),
     {
       onSuccess() {
-        refetchAssignmentCreated();
+        refetchCbtCreated();
         toast.success("Theory assignment has been created successfully");
       },
       onError(err) {
@@ -343,7 +514,7 @@ const CreateCBT = (
   } = useMutation(apiServices.editObjectiveAssignment, {
     onSuccess() {
       setAllowFetch(true);
-      refetchAssignmentCreated();
+      refetchCbtCreated();
       toast.success("Objective question has been edited successfully");
     },
     onError(err) {
@@ -358,7 +529,7 @@ const CreateCBT = (
   } = useMutation(apiServices.publishAssignment, {
     onSuccess() {
       setAllowFetch(true);
-      refetchAssignmentCreated();
+      refetchCbtCreated();
       toast.success(
         `Assignment has been ${
           published ? "published" : "unpublished"
@@ -376,7 +547,7 @@ const CreateCBT = (
     isLoading: editTheoryAssignmentLoading,
   } = useMutation(apiServices.editTheoryAssignment, {
     onSuccess() {
-      refetchAssignmentCreated();
+      refetchCbtCreated();
       toast.success("theory question has been edited successfully");
     },
     onError(err) {
@@ -388,7 +559,7 @@ const CreateCBT = (
   const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
     useMutation(() => apiServices.deleteAssignment(editQuestionId), {
       onSuccess() {
-        refetchAssignmentCreated();
+        refetchCbtCreated();
         toast.success("Question has been deleted successfully");
       },
       onError(err) {
@@ -418,21 +589,21 @@ const CreateCBT = (
           is_publish: published ? 1 : 0,
         });
 
-        refetchAssignmentCreated();
+        refetchCbtCreated();
         setClearAllPrompt(false);
 
         setTimeout(() => {
-          refetchAssignmentCreated();
+          refetchCbtCreated();
         }, 2000);
         // window.reload();
 
         // navigate(1);
         // trigger();
         // setTimeout(() => {
-        //   refetchAssignmentCreated();
+        //   refetchCbtCreated();
         // }, 500);
         // setTimeout(() => {
-        //   refetchAssignmentCreated();
+        //   refetchCbtCreated();
         // }, 1000);
       },
       variant: "outline",
@@ -545,20 +716,20 @@ const CreateCBT = (
               status: editPublish ? "published" : "unpublished",
             },
           ]);
-          refetchAssignmentCreated();
+          refetchCbtCreated();
           setEditPrompt(false);
 
           setTimeout(() => {
-            refetchAssignmentCreated();
+            refetchCbtCreated();
           }, 2000);
 
           // window.location.reload();
           // trigger2();
           // setTimeout(() => {
-          //   refetchAssignmentCreated();
+          //   refetchCbtCreated();
           // }, 2000);
           // setTimeout(() => {
-          //   refetchAssignmentCreated();
+          //   refetchCbtCreated();
           // }, 1000);
         } else if (question_type === "theory") {
           editTheoryAssignment({
@@ -571,11 +742,11 @@ const CreateCBT = (
               status: editPublish ? "published" : "unpublished",
             },
           });
-          refetchAssignmentCreated();
+          refetchCbtCreated();
           setEditPrompt(false);
           // trigger();
           // setTimeout(() => {
-          //   refetchAssignmentCreated();
+          //   refetchCbtCreated();
           // }, 500);
         }
       },
@@ -598,14 +769,15 @@ const CreateCBT = (
 
   const allLoading =
     showLoading ||
-    assignmentCreatedLoading ||
-    assignmentCreatedRefetching ||
-    assignmentCreatedFetching ||
+    cbtCreatedLoading ||
+    cbtSettingsLoading ||
+    cbtCreatedRefetching ||
+    cbtCreatedFetching ||
     loading1 ||
     loading2;
 
-  const activateAddQuestion = () => {
-    if (!subject_id || !week || !question_type) {
+  const activateAddSettings = () => {
+    if (!subject_id || !question_type) {
       return true;
     } else {
       return false;
@@ -651,20 +823,24 @@ const CreateCBT = (
 
   useEffect(() => {
     if (activateRetrieveCreated()) {
-      refetchAssignmentCreated();
+      refetchCbtCreated();
     }
-  }, [subject_id, week, question_type]);
+    if (activateRetrieveCbt()) {
+      refetchCbtSettings();
+    }
+  }, [subject_id, question_type]);
 
   // useEffect(() => {
   //   if (activateRetrieveCreated()) {
-  //     refetchAssignmentCreated();
+  //     refetchCbtCreated();
   //   }
 
   // }, [editObjectiveAssignment]);
 
   console.log({
+    cbtSettings,
     createQ,
-    subjectsByTeacher,
+    // subjectsByTeacher,
     state,
     // subjects,
     // newSubjects,
@@ -684,7 +860,11 @@ const CreateCBT = (
             </p>
           </div>
           <div className='d-flex flex-column flex-lg-row align-items-center  gap-4'>
-            <div className={`d-flex align-items-center flex-grow-1 gap-3 ${isDesktop  && "w-100"}`}>
+            <div
+              className={`d-flex align-items-center flex-grow-1 gap-3 ${
+                isDesktop && "w-100"
+              }`}
+            >
               <AuthSelect
                 sort
                 options={newSubjects}
@@ -696,7 +876,6 @@ const CreateCBT = (
                 }}
                 placeholder='Select Subject'
                 wrapperClassName='w-100'
-                
               />
               <AuthSelect
                 sort
@@ -717,8 +896,12 @@ const CreateCBT = (
                 className='w-auto flex-shrink-0'
                 onClick={() => {
                   setCreateSettingsPrompt(true);
+                  setInstructioncbt(createQ?.instruction);
+                  setHourcbt(createQ?.hour);
+                  setMinutescbt(createQ?.minute);
+                  setMarkcbt(createQ?.question_mark);
                 }}
-                // disabled={activateAddQuestion()}
+                disabled={activateAddSettings()}
               >
                 CBT Settings
               </Button>
@@ -908,13 +1091,13 @@ const CreateCBT = (
           setTheoryQ={setTheoryQ}
           obj={obj}
           setObj={setObj}
-          addObjectiveAssignments={addObjectiveAssignments}
-          addObjectAssignmentLoading={addObjectAssignmentLoading}
+          addCbtQuestion={addCbtQuestion}
+          addCbtQuestionLoading={addCbtQuestionLoading}
           addTheoryAssignments={addTheoryAssignments}
           addTheoryAssignmentLoading={addTheoryAssignmentLoading}
           allowFetch={allowFetch}
           setAllowFetch={setAllowFetch}
-          refetchAssignmentCreated={refetchAssignmentCreated}
+          refetchCbtCreated={refetchCbtCreated}
           objMark={objMark}
           setObjMark={setObjMark}
         />
@@ -936,9 +1119,17 @@ const CreateCBT = (
           addTheoryAssignmentLoading={addTheoryAssignmentLoading}
           allowFetch={allowFetch}
           setAllowFetch={setAllowFetch}
-          refetchAssignmentCreated={refetchAssignmentCreated}
+          refetchCbtCreated={refetchCbtCreated}
           objMark={objMark}
           setObjMark={setObjMark}
+          instructioncbt={instructioncbt}
+          setInstructioncbt={setInstructioncbt}
+          hourcbt={hourcbt}
+          setHourcbt={setHourcbt}
+          minutescbt={minutescbt}
+          setMinutescbt={setMinutescbt}
+          markcbt={markcbt}
+          setMarkcbt={setMarkcbt}
         />
         {/* publish all prompt */}
         <Prompt
