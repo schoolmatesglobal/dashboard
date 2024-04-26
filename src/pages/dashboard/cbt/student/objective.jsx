@@ -110,62 +110,61 @@ const Objective = ({
   });
 
   /////// FETCH ANSWERED OBJECTIVE ASSIGNMENTS/////
-  const {
-    isLoading: answeredObjAssignmentLoading,
-    refetch: refetchObjAnsweredAssignment,
-    data: objAnsweredAssignment,
-    isFetching: isFetchingObjAnsweredAssignment,
-    isRefetching: isRefetchingObjAnsweredAssignment,
-  } = useQuery(
-    [
-      queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      "objective",
-      createQ2?.week,
-    ],
-    () =>
-      apiServices.getSubmittedAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        "objective",
-        createQ2?.week
-      ),
-    {
-      retry: 3,
-      enabled: permission?.view && permission?.student_results,
-      // enabled: false,
-      select: (data) => {
-        const ssk = apiServices.formatData(data);
+  // const {
+  //   isLoading: answeredObjAssignmentLoading,
+  //   refetch: refetchObjAnsweredAssignment,
+  //   data: objAnsweredAssignment,
+  //   isFetching: isFetchingObjAnsweredAssignment,
+  //   isRefetching: isRefetchingObjAnsweredAssignment,
+  // } = useQuery(
+  //   [
+  //     queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
+  //     state?.period,
+  //     state?.term,
+  //     state?.session,
+  //     createQ2?.question_type,
+  //     "1",
+  //   ],
+  //   () =>
+  //     apiServices.getSubmittedAssignment(
+  //       state?.period,
+  //       state?.term,
+  //       state?.session,
+  //       createQ2?.question_type,
+  //       "1"
+  //     ),
+  //   {
+  //     retry: 3,
+  //     // enabled: permission?.view && permission?.student_results,
+  //     enabled: false,
+  //     select: (data) => {
+  //       const ssk = apiServices.formatData(data);
 
-        const sorted = ssk?.filter(
-          (dt) =>
-            dt?.subject === createQ2?.subject &&
-            dt?.student === student &&
-            dt?.week === createQ2?.week
-        );
+  //       const sorted = ssk?.filter(
+  //         (dt) => dt?.subject === createQ2?.subject && dt?.student === student
+  //         // &&
+  //         // dt?.week === createQ2?.week
+  //       );
 
-        // console.log({ ssk, sorted, data, student, createQ2 });
+  //       // console.log({ ssk, sorted, data, student, createQ2 });
 
-        if (sorted?.length > 0) {
-          // resetLoadObjectiveAnsFxn();
-          setObjectiveSubmitted(true);
-          // loadObjectiveAnsFxn(sorted);
-        } else if (sorted?.length === 0) {
-          // resetLoadObjectiveAnsFxn();
-          // setObjectiveSubmitted(false);
-        }
-        return sorted;
-      },
-      // onSuccess(data) {},
-      onError(err) {
-        errorHandler(err);
-      },
-      // select: apiServices.formatData,
-    }
-  );
+  //       if (sorted?.length > 0) {
+  //         // resetLoadObjectiveAnsFxn();
+  //         setObjectiveSubmitted(true);
+  //         // loadObjectiveAnsFxn(sorted);
+  //       } else if (sorted?.length === 0) {
+  //         // resetLoadObjectiveAnsFxn();
+  //         // setObjectiveSubmitted(false);
+  //       }
+  //       return sorted ?? [];
+  //     },
+  //     // onSuccess(data) {},
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //     // select: apiServices.formatData,
+  //   }
+  // );
 
   const [loginPrompt, setLoginPrompt] = useState(false);
   // const [submitted, setSubmitted] = useState(false);
@@ -204,7 +203,8 @@ const Objective = ({
   };
 
   const checkedData2 = (question, CQ) => {
-    const quest = objAnsweredAssignment?.find(
+    // const quest = (objAnsweredAssignment)?.find(
+    const quest = ([])?.find(
       (ob) => ob.question === question && ob.answer === CQ
     );
     // console.log({ quest });
@@ -233,7 +233,6 @@ const Objective = ({
       title: "Yes Submit",
       // disabled: !checkEmptyQuestions(),
       onClick: () => {
-        
         setObjectiveSubmitted(true);
         submitObjectiveAssignment(answeredObjectiveQ);
         setSubmitted(true);
@@ -330,7 +329,8 @@ const Objective = ({
 
   //   }
   // }
-  const allLoading = assignmentLoading || answeredObjAssignmentLoading;
+  const allLoading = assignmentLoading
+  // const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 
   const initialTaken = isPlaying === false && objectiveSubmitted === true;
 
@@ -416,14 +416,14 @@ const Objective = ({
     // sideBarIsOpen,
     // isPlaying,
     // initialTaken,
-    arrayLength,
-    itemsPerPage,
-    numberOfPages,
-    slice1,
-    slice2,
-    objectiveQ,
-    answeredObjectiveQ,
-    state,
+    // arrayLength,
+    // itemsPerPage,
+    // numberOfPages,
+    // slice1,
+    // slice2,
+    // objectiveQ,
+    // answeredObjectiveQ,
+    // state,
   });
   // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
 
@@ -474,14 +474,14 @@ const Objective = ({
 
               <div className='w-100 d-flex justify-content-center align-items-center gap-3 mt-5 mb-4'>
                 <p className='fs-3 fw-bold'>Instructions:</p>
-                <p className='fs-3'>Answer all questions carefully</p>
+                <p className='fs-3'>{createQ2?.instruction}</p>
               </div>
 
               {/* <CountdownTimer hour={2} minute={45} durationInMinutes={45} /> */}
               <div className='d-flex flex-column gap-5 flex-md-row justify-content-between align-items-center mt-5'>
                 <p className='fs-3 '>
                   <span className='fw-bold fs-3'>
-                    {hour} Hour, {minute} Mins
+                    {createQ2?.hour} Hour, {createQ2?.minute} Mins
                   </span>{" "}
                   for{" "}
                   <span className='fw-bold fs-3'>

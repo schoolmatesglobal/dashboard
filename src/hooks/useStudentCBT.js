@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useSubject } from "./useSubjects";
 
 export const useStudentCBT = () => {
   const {
@@ -13,6 +14,8 @@ export const useStudentCBT = () => {
     hideAllBars,
     setHideAllBars,
   } = useAppContext();
+
+  const { subjects, isLoading: subjectLoading } = useSubject();
 
   const [objectiveQ2, setObjectiveQ2] = useState([]);
   const [theoryQ2, setTheoryQ2] = useState([]);
@@ -50,9 +53,9 @@ export const useStudentCBT = () => {
     ans3: false,
     ans4: false,
     answer: "",
-    // theoryAns: "",
     question_type: "",
     question: "",
+    instruction: "",
     subject: "",
     image: "",
     imageName: "",
@@ -61,6 +64,9 @@ export const useStudentCBT = () => {
     session: "",
     subject_id: "",
     week: "",
+    hour: null,
+    minute: null,
+    settings_id: "",
   });
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -101,7 +107,7 @@ export const useStudentCBT = () => {
             id: Number(sub.id),
           };
         });
-        // console.log({ ssg, data, sortSubjects });
+        console.log({ ssg, data, sortSubjects });
         return sortSubjects ?? [];
       },
       // onSuccess(data) {
@@ -126,6 +132,8 @@ export const useStudentCBT = () => {
     permission,
     user,
     errorHandler,
+
+    subjects,
 
     objectiveQ2,
     setObjectiveQ2,

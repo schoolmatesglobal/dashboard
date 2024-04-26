@@ -11,11 +11,12 @@ import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import Prompt from "../../../../components/modals/prompt";
 import Theory from "./theory";
 import Objective from "./objective";
-import { sortQuestionsByNumber } from "../constant";
+import { parseDuration, sortQuestionsByNumber } from "../constant";
 import { useLocation } from "react-router-dom";
 import { useAppContext } from "../../../../hooks/useAppContext";
 import PageSheet from "../../../../components/common/page-sheet";
 import { useStudentCBT } from "../../../../hooks/useStudentCBT";
+import { useSubject } from "../../../../hooks/useSubjects";
 
 const ViewCBT = (
   {
@@ -72,6 +73,8 @@ const ViewCBT = (
 
   const { state } = useLocation();
 
+  // const { subjects, isLoading: subjectLoading } = useSubject();
+
   const {
     isOpen: sideBarIsOpen,
     // toggle: toggleSideBar,
@@ -87,11 +90,7 @@ const ViewCBT = (
 
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const {
-    subject,
-
-    week,
-  } = createQ2;
+  const { subject, subject_id, week, question_type } = createQ2;
 
   const buttonOptions = [
     {
@@ -115,36 +114,105 @@ const ViewCBT = (
   // const queryClient = useQueryClient();
 
   const activateRetrieve = () => {
-    if (subject !== "" && week !== "") {
+    if (subject_id !== "" && question_type !== "") {
       return true;
     } else {
       return false;
     }
   };
 
-  ///// FETCH OBJECTIVE ASSIGNMENT /////
+  const reload = () => {
+    setIsPlaying(false);
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+    }, 500);
+  };
+
+  //// FETCH  CBT QUESTION SETTINGS /////////
+  const {
+    isLoading: cbtSettingsLoading,
+    data: cbtSettings,
+    isFetching: cbtSettingsFetching,
+    isRefetching: cbtSettingsRefetching,
+    refetch: refetchCbtSettings,
+  } = useQuery(
+    [queryKeys.GET_CBT_SETTINGS],
+    () =>
+      apiServices.getCbtSetup(
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        createQ2?.subject_id,
+        createQ2?.question_type
+      ),
+    {
+      retry: 2,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchInterval: false,
+      // refetchIntervalInBackground: false,
+
+      // enabled: false,
+      enabled: activateRetrieve() && permission?.view,
+
+      select: (data) => {
+        // const cbt = data?.data?.attributes;
+        // const cbt = apiServices.formatData(data);
+        const cbt = {
+          ...data?.data?.attributes,
+          id: data?.data?.id,
+        };
+
+        // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
+
+        console.log({ data, cbt });
+
+        return cbt;
+      },
+      onSuccess(data) {
+        if (question_type === "objective") {
+          // setObjectiveQ(data);
+          setCreateQ2((prev) => {
+            return {
+              ...prev,
+              instruction: data?.instruction,
+              hour: parseDuration(data?.duration)?.hour,
+              minute: parseDuration(data?.duration)?.minutes,
+              question_mark: data?.mark,
+              settings_id: data?.id,
+            };
+          });
+        } else if (question_type === "theory") {
+          // setTheoryQ(data);
+        }
+        reload();
+        // setAllowFetch(false);
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  ///// FETCH OBJECTIVE CBT /////
   const {
     isLoading: objectiveQLoading,
     refetch: refetchObjectiveQ,
     data: objectiveQ,
-    // isFetching: objectiveQIsFetching,
-    // isRefetching: objectiveQIsRefetching,
+    isFetching: objectiveQIsFetching,
+    isRefetching: objectiveQIsRefetching,
   } = useQuery(
-    [
-      queryKeys.GET_ASSIGNMENT_BY_STUDENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      "objective",
-      week,
-    ],
+    [queryKeys.GET_CBT_BY_STUDENT],
     () =>
-      apiServices.getAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        "objective",
-        week
+      apiServices.getAllCbtQuestion(
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        createQ2?.subject_id,
+        createQ2?.question_type
       ),
     {
       retry: 3,
@@ -164,8 +232,16 @@ const ViewCBT = (
             dt?.subject === subject &&
             Number(dt?.week) === Number(week)
         );
-        // console.log({ tsg, data, osortedData });
-        return osortedData;
+        console.log({ tsg, data });
+        return tsg;
+      },
+
+      onSuccess(data) {
+        if (question_type === "objective") {
+          setObjectiveQ2(data);
+        }
+        reload();
+        // setAllowFetch(false);
       },
 
       onError(err) {
@@ -207,7 +283,8 @@ const ViewCBT = (
       // refetchIntervalInBackground: false,
 
       // enabled: false,
-      enabled: activateRetrieve() && permission?.view,
+      enabled: false,
+      // enabled: activateRetrieve() && permission?.view,
 
       select: (data) => {
         const theo = apiServices.formatData(data);
@@ -229,7 +306,7 @@ const ViewCBT = (
   );
 
   const findSubjectId = (value) => {
-    const findObject = studentSubjects?.find((opt) => opt.value === value);
+    const findObject = subjects?.find((opt) => opt.subject === value);
     if (findObject) {
       return findObject.id;
     }
@@ -255,7 +332,7 @@ const ViewCBT = (
       variant: assignmentTab === "2" ? "" : "outline",
     };
 
-    if (objectiveQ?.length >= 1) {
+    if (objectiveQ2?.length >= 1) {
       return [objectiveTab];
     }
 
@@ -263,7 +340,7 @@ const ViewCBT = (
   };
 
   const showNoAssignment = () => {
-    if (objectiveQ?.length === 0) {
+    if (objectiveQ2?.length === 0) {
       return true;
     } else {
       return false;
@@ -271,24 +348,39 @@ const ViewCBT = (
   };
 
   const showNoAssignment2 = () => {
-    if (!week || !subject) {
+    if (!question_type || !subject) {
       return true;
     } else {
       return false;
     }
   };
 
+  const questionType = [
+    {
+      value: "objective",
+      title: "Objective",
+    },
+
+    // {
+    //   value: "theory",
+    //   title: "Theory",
+    // },
+  ];
+
   useEffect(() => {
-    if (objectiveQ?.length >= 1) {
+    if (objectiveQ2?.length >= 1) {
       setAssignmentTab("1");
     }
-  }, [week, subject]);
+  }, [question_type, subject]);
 
   const assignmentLoading =
     showLoading ||
     objectiveQLoading ||
+    cbtSettingsLoading ||
     // theoryQLoading ||
-    answeredObjAssignmentLoading;
+    answeredObjAssignmentLoading ||
+    objectiveQIsFetching ||
+    objectiveQIsRefetching;
   // ||
   // answeredTheoryAssignmentLoading;
   // ||
@@ -299,21 +391,31 @@ const ViewCBT = (
 
   const location = useLocation();
 
-  const reload = () => {
-    setIsPlaying(false);
-    setShowLoading(true);
-    setTimeout(() => {
-      setShowLoading(false);
-    }, 500);
-  };
+  useEffect(() => {
+    setDay(0);
+    setHour(createQ2?.hour);
+    setMinute(createQ2?.minute);
+  }, [createQ2]);
 
-  // useEffect(() => {
-  //   setDay(0);
-  //   setHour(0);
-  //   setMinute(0.5);
-  // }, [week, subject]);
+  useEffect(() => {
+    if (activateRetrieve()) {
+      reload();
+      refetchObjectiveQ();
+    }
+    if (activateRetrieve()) {
+      reload();
+      refetchCbtSettings();
+    }
+  }, [subject_id, question_type]);
 
-  //  console.log({ answeredObjectiveQ });
+  console.log({
+    studentSubjects,
+    createQ2,
+    state,
+    subjects,
+    objectiveQ2,
+    subject_id,
+  });
 
   return (
     <PageSheet>
@@ -323,47 +425,16 @@ const ViewCBT = (
             <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
               <AuthSelect
                 sort
-                options={[
-                  { value: "1", title: "Week 1" },
-                  { value: "2", title: "Week 2" },
-                  { value: "3", title: "Week 3" },
-                  { value: "4", title: "Week 4" },
-                  { value: "5", title: "Week 5" },
-                  { value: "6", title: "Week 6" },
-                  { value: "7", title: "Week 7" },
-                  { value: "8", title: "Week 8" },
-                  { value: "9", title: "Week 9" },
-                  { value: "10", title: "Week 10" },
-                  { value: "11", title: "Week 11" },
-                  { value: "12", title: "Week 12" },
-                  { value: "13", title: "Week 13" },
-                ]}
-                value={week}
-                // defaultValue={week && week}
-                onChange={({ target: { value } }) => {
-                  setCreateQ2((prev) => {
-                    return { ...prev, week: value };
-                  });
-                  setObjectiveSubmitted(false);
-                  setTheorySubmitted(false);
-                  setAnsweredTheoryQ([]);
-                  setAnsweredObjectiveQ([]);
-                  reload();
-                  // setDay(0);
-                  // setHour(0);
-                  // setMinute(0.5);
-                }}
-                placeholder='Select Week'
-                wrapperClassName='w-100'
-              />
-              <AuthSelect
-                sort
                 options={studentSubjects}
                 value={subject}
                 // defaultValue={subject && subject}
                 onChange={({ target: { value } }) => {
                   setCreateQ2((prev) => {
-                    return { ...prev, subject: value };
+                    return {
+                      ...prev,
+                      subject: value,
+                      subject_id: findSubjectId(value),
+                    };
                   });
                   setObjectiveSubmitted(false);
                   setTheorySubmitted(false);
@@ -377,6 +448,20 @@ const ViewCBT = (
                 placeholder='Select Subject'
                 wrapperClassName='w-100'
                 // label="Subject"
+              />
+              <AuthSelect
+                sort
+                options={questionType}
+                value={question_type}
+                onChange={({ target: { value } }) => {
+                  setCreateQ2((prev) => {
+                    return { ...prev, question_type: value, answer: "" };
+                  });
+
+                  reload();
+                }}
+                placeholder='Select type'
+                wrapperClassName=''
               />
             </div>
           </div>
@@ -396,13 +481,13 @@ const ViewCBT = (
 
             <div className=''>
               {/* objective Answers */}
-              {assignmentTab === "1" && objectiveQ?.length >= 1 && (
+              {assignmentTab === "1" && objectiveQ2?.length >= 1 && (
                 <Objective
                   closeSidebar={closeSidebar}
                   toggleNavbar={toggleNavbar}
                   assignmentLoading={assignmentLoading}
                   buttonOptions2={buttonOptions2}
-                  objectiveQ={objectiveQ}
+                  objectiveQ={objectiveQ2}
                   answeredObjectiveQ={answeredObjectiveQ}
                   setAnsweredObjectiveQ={setAnsweredObjectiveQ}
                   objectiveSubmitted={objectiveSubmitted}
@@ -422,9 +507,9 @@ const ViewCBT = (
                   setSecondLeft={setSecondLeft}
                   hourLeft={hourLeft}
                   setHourLeft={setHourLeft}
-                  day={day}
-                  hour={hour}
-                  minute={minute}
+                  day={0}
+                  hour={createQ2?.hour}
+                  minute={createQ2?.minute}
                   setDay={setDay}
                   setHour={setHour}
                   setMinute={setMinute}

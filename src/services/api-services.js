@@ -2606,9 +2606,9 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getCbtSetup(period, term, session) {
+  async getCbtSetup(period, term, session, subject_id, question_type) {
     const { data } = await axios.get(
-      `${backendAPI}/v2/cbt/setup/${period}/${term}/${session}`,
+      `${backendAPI}/v2/cbt/setup/${period}/${term}/${session}/${subject_id}/${question_type}`,
       {
         headers: {
           "Content-Type": "application/json",

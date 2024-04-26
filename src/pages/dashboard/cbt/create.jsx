@@ -182,7 +182,7 @@ const CreateCBT = (
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 1500);
+    }, 500);
   }
 
   //// FETCH  CBT QUESTION SETTINGS /////////
@@ -196,11 +196,11 @@ const CreateCBT = (
     [queryKeys.GET_CBT_SETTINGS],
     () =>
       apiServices.getCbtSetup(
-        user?.period,
-        user?.term,
-        user?.session
-        // question_type,
-        // week
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        subject_id,
+        question_type
       ),
     {
       retry: 2,
@@ -308,9 +308,9 @@ const CreateCBT = (
     [queryKeys.GET_CBT_CREATED],
     () =>
       apiServices.getAllCbtQuestion(
-        user?.period,
-        user?.term,
-        user?.session,
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
         subject_id,
         question_type
       ),
@@ -822,10 +822,12 @@ const CreateCBT = (
   };
 
   useEffect(() => {
-    if (activateRetrieveCreated()) {
+    if (activateRetrieveCbt()) {
+      trigger();
       refetchCbtCreated();
     }
     if (activateRetrieveCbt()) {
+      trigger();
       refetchCbtSettings();
     }
   }, [subject_id, question_type]);
@@ -840,6 +842,7 @@ const CreateCBT = (
   console.log({
     cbtSettings,
     createQ,
+    objectiveQ,
     // subjectsByTeacher,
     state,
     // subjects,
@@ -1304,7 +1307,7 @@ const CreateCBT = (
                   </div>
                 </div>
               </div>
-              <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
+              {/* <p className='fw-bold fs-3 mb-4 mt-5'>Mark Computation</p>
               <div className='d-flex flex-column gap-3'>
                 <div className='d-flex align-items-center gap-3'>
                   <div style={{ width: "100px" }}>
@@ -1325,7 +1328,7 @@ const CreateCBT = (
                     <p className='fs-3'>Question Mark</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
               <p className='fw-bold fs-3 mb-4 mt-5'>Publish Status</p>
               <div
                 className={`d-flex align-items-center gap-3 cursor-pointer ${
