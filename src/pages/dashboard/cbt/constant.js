@@ -1,14 +1,13 @@
 export function parseDuration(durationString) {
-  const [hourStr, minuteStr] = durationString.split(':');
+  const [hourStr, minuteStr] = durationString.split(":");
   const hour = parseInt(hourStr, 10);
   const minutes = parseInt(minuteStr, 10);
 
   return {
-      hour,
-      minutes
+    hour,
+    minutes,
   };
 }
-
 
 export function calculateNumberOfPages(arrayLength, itemsPerPage) {
   return Math.ceil(arrayLength / itemsPerPage);
@@ -632,11 +631,18 @@ export function analyzeQuestions(questions) {
   // Initialize variables to keep track of the correct number and the result for each question.
   let correctNumber = 0;
   const analyzedQuestions = [];
+  let totalDuration;
+  let submittedDuration;
 
   const totalMarks = questions?.reduce(
     (acc, question) => acc + Number(question.question_mark),
     0
   );
+
+  if (questions?.length > 0) {
+    totalDuration = questions[0]?.duration;
+    submittedDuration = questions[0]?.submitted_time;
+  }
 
   // Loop through each object in the 'questions' array
 
@@ -672,6 +678,8 @@ export function analyzeQuestions(questions) {
     questions: analyzedQuestions,
     total_marks: totalMarks,
     percentage: percentage.toFixed(),
+    totalDuration,
+    submittedDuration,
     // percentage: `${percentage.toFixed()}%`,
   };
 }

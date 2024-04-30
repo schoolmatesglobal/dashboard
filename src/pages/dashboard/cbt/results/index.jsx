@@ -24,6 +24,7 @@ import PageSheet from "../../../../components/common/page-sheet";
 import GoBack from "../../../../components/common/go-back";
 import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import { formatTime } from "./constant";
 
 const CbtResults = ({}) => {
   const {
@@ -45,6 +46,8 @@ const CbtResults = ({}) => {
     ResultTab,
     setResultTab,
   } = useCBT();
+
+  const [cbtObject, setCbtObject] = useState({});
 
   const { state } = useLocation();
 
@@ -100,7 +103,7 @@ const CbtResults = ({}) => {
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve() && permission?.submissions,
+      enabled: activateRetrieve(),
       select: (data) => {
         const ffk = apiServices.formatData(data);
 
@@ -125,7 +128,9 @@ const CbtResults = ({}) => {
         return calculatedData ?? {};
       },
 
-      onSuccess(data) {},
+      onSuccess(data) {
+        setCbtObject(data);
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -215,7 +220,7 @@ const CbtResults = ({}) => {
   ];
 
   const showNoAssignment = () => {
-    if (cbtAnswer?.questions?.length === 0) {
+    if (cbtObject?.questions?.length === 0) {
       return true;
     } else {
       return false;
@@ -279,12 +284,14 @@ const CbtResults = ({}) => {
       variant: ResultTab === "2" ? "" : "outline",
     };
 
-    if (cbtAnswer?.questions?.length >= 1) {
+    if (cbtObject?.questions?.length >= 1) {
       return [objectiveTab];
     }
 
     return [];
   };
+
+  let dt = formatTime(cbtObject?.totalDuration, cbtObject?.submittedDuration);
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
@@ -292,8 +299,8 @@ const CbtResults = ({}) => {
         const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
         return {
-          value: subId,
-          // value: sb?.name,
+          // value: subId,
+          value: sb?.name,
           title: sb?.name,
         };
       });
@@ -313,8 +320,6 @@ const CbtResults = ({}) => {
     // setAnsweredTheoQ(submittedTheoAssignment);
   }, [subject_id, student_id]);
 
-
-
   // useEffect(() => {
   //   if (cbtAnswer?.questions?.length >= 1) {
   //     setResultTab("1");
@@ -324,7 +329,9 @@ const CbtResults = ({}) => {
   console.log({
     markedQ,
     cbtAnswer,
+    cbtObject,
     markedAssignmentResults,
+    dt,
   });
 
   return (
@@ -349,10 +356,13 @@ const CbtResults = ({}) => {
               <AuthSelect
                 sort
                 options={newSubjects}
-                value={subject_id}
+                value={subject}
                 onChange={({ target: { value } }) => {
+                  const subId = subjects?.find(
+                    (ob) => ob.subject === value
+                  )?.id;
                   setMarkedQ((prev) => {
-                    return { ...prev, subject_id: value };
+                    return { ...prev, subject_id: subId, subject: value };
                   });
                 }}
                 placeholder='Select Subject'
@@ -410,26 +420,61 @@ const CbtResults = ({}) => {
             </div>
           )}
           {!allLoading &&
-            cbtAnswer?.questions?.length > 0 &&
+            cbtObject?.questions?.length > 0 &&
             ResultTab === "1" && (
-              <div className=''>
-                <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
-                  {/* total marks */}
-                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                    <p className='fs-3 fw-bold'>Total Marks</p>
-                    <p className='fs-1 fw-bold'>{cbtAnswer?.total_marks}</p>
+              <div className='my-5 '>
+                <div className='d-flex flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
+                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                    {/* total marks */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Total Marks</p>
+                      <p className='fs-1 fw-bold'>{cbtObject?.total_marks}</p>
+                    </div>
+                    {/* score */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Student Score</p>
+                      <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
+                    </div>
+                    {/* percentage */}
+                    {/* <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Percentage Score</p>
+                      <p className='fs-1 fw-bold'>
+                        {`${cbtAnswer?.percentage}%`}
+                      </p>
+                    </div> */}
                   </div>
-                  {/* score */}
-                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                    <p className='fs-3 fw-bold'>Score</p>
-                    <p className='fs-1 fw-bold'>{cbtAnswer?.score}</p>
-                  </div>
-                  {/* percentage */}
-                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                    <p className='fs-3 fw-bold'>Percentage</p>
-                    <p className='fs-1 fw-bold'>
-                      {`${cbtAnswer?.percentage}%`}
-                    </p>
+                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                    {/* total marks */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Total Test Duration</p>
+                      <p className='fs-1 fw-bold'>
+                        {
+                          formatTime(
+                            cbtObject?.totalDuration,
+                            cbtObject?.submittedDuration
+                          )?.totalTime
+                        }
+                      </p>
+                    </div>
+                    {/* score */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Student Duration</p>
+                      <p className='fs-1 fw-bold'>
+                        {
+                          formatTime(
+                            cbtObject?.totalDuration,
+                            cbtObject?.submittedDuration
+                          )?.difference
+                        }
+                      </p>
+                    </div>
+                    {/* percentage */}
+                    {/* <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Percentage Score</p>
+                      <p className='fs-1 fw-bold'>
+                        {`${cbtAnswer?.percentage}%`}
+                      </p>
+                    </div> */}
                   </div>
                 </div>
                 <SubmissionTable
@@ -457,9 +502,9 @@ const CbtResults = ({}) => {
                       accessor: "answer_state",
                     },
                   ]}
-                  data={cbtAnswer?.questions}
+                  data={cbtObject?.questions}
                   markedQ={markedQ}
-                  result={cbtAnswer}
+                  result={cbtObject}
                   ResultTab={ResultTab}
                   // total_mark={cbtAnswer?.total_marks}
                   // score={cbtAnswer?.score}
