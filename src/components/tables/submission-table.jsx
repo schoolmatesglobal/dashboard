@@ -14,6 +14,7 @@ import Prompt from "../modals/prompt";
 import Action from "../buttons/action";
 import { useAssignments } from "../../hooks/useAssignments";
 import ButtonGroup from "../buttons/button-group";
+import { formatTime } from "../../pages/dashboard/cbt/results/constant";
 
 const SubmissionTable = ({
   addAssignmentResult,
@@ -113,7 +114,6 @@ const SubmissionTable = ({
             total_mark: result?.total_marks,
             score: result?.percentage,
             week: data[0]?.week,
-            
           },
         ];
         const assg3 = {
@@ -142,10 +142,8 @@ const SubmissionTable = ({
             total_mark: result?.total_marks,
             percentage_score: result?.percentage,
             week: data[0]?.week,
-          }
-        }
-
-       
+          },
+        };
 
         addAssignmentResult(assg3);
 
@@ -406,8 +404,22 @@ const SubmissionTable = ({
 
               <p className='fs-3 fw-bold mb-3'>Total Score</p>
               <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
-              <p className='fs-3 fw-bold mb-3'>Percentage</p>
-              <p className='fs-3 mb-5 lh-sm'> {`${result?.percentage}%`}</p>
+              <p className='fs-3 fw-bold mb-3'>Total Test Duration</p>
+              <p className='fs-3 mb-5 lh-sm'>
+                {" "}
+                {`${
+                  formatTime(result?.totalDuration, result?.submittedDuration)
+                    ?.totalTime
+                }`}
+              </p>
+              <p className='fs-3 fw-bold mb-3'>Student Duration</p>
+              <p className='fs-3 mb-5 lh-sm'>
+                {" "}
+                {`${
+                  formatTime(result?.totalDuration, result?.submittedDuration)
+                    ?.difference
+                }`}
+              </p>
             </div>
           </Prompt>
           <Prompt
