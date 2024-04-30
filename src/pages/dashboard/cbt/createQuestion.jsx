@@ -247,7 +247,7 @@ const CreateQuestion = ({
                   theoryAns: "",
                   // question_type: "",
                   question: "",
-                  // question_number: 0,
+                  question_number: 0,
                   // question_mark: 0,
                   // total_mark: 0,
                   // subject: "",

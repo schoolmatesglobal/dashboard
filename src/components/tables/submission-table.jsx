@@ -79,7 +79,7 @@ const SubmissionTable = ({
     {
       title: `${
         ResultTab === "1"
-          ? "Submit Objective Result"
+          ? "Submit CBT Result"
           : ResultTab === "2"
           ? "Submit Theory Result"
           : ""
@@ -129,7 +129,6 @@ const SubmissionTable = ({
               total_mark: result?.total_marks,
               score: result?.percentage,
               week: data[0]?.week,
-              
             },
           ],
           performance: {

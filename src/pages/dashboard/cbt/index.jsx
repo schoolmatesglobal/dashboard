@@ -275,23 +275,38 @@ const CBTPage = () => {
     },
     submission: {
       title: "View CBT Submissions",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/submission`, {
+          state: { creds: { ...createQ } },
+        }),
     },
     results: {
       title: "View CBT Results",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/results`, {
+          state: { creds: { ...createQ } },
+        }),
     },
     studentResult: {
       title: "View CBT Results",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/student/results`, {
+          state: { creds: { ...createQ } },
+        }),
     },
     performance: {
       title: "View CBT Performance",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/performances`, {
+          state: { creds: { ...createQ } },
+        }),
     },
     studentPerformance: {
       title: "View CBT Performance",
-      onFormSubmit: () => {},
+      onFormSubmit: () =>
+        navigate(`/app/cbt/performances/students`, {
+          state: { creds: { ...createQ } },
+        }),
     },
   };
 
@@ -322,7 +337,6 @@ const CBTPage = () => {
   // }, []);
 
   return (
-   
     <div className=''>
       <PageView
         hasSortOptions

@@ -187,7 +187,7 @@ const ViewCBT = (
         } else if (question_type === "theory") {
           // setTheoryQ(data);
         }
-        reload();
+        // reload();
         // setAllowFetch(false);
       },
       onError(err) {
@@ -216,11 +216,11 @@ const ViewCBT = (
       ),
     {
       retry: 3,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
       // enabled: false,
       enabled: activateRetrieve() && permission?.view,
 
@@ -240,7 +240,7 @@ const ViewCBT = (
         if (question_type === "objective") {
           setObjectiveQ2(data);
         }
-        reload();
+        // reload();
         // setAllowFetch(false);
       },
 
@@ -399,11 +399,11 @@ const ViewCBT = (
 
   useEffect(() => {
     if (activateRetrieve()) {
-      reload();
+      // reload();
       refetchObjectiveQ();
     }
     if (activateRetrieve()) {
-      reload();
+      // reload();
       refetchCbtSettings();
     }
   }, [subject_id, question_type]);
@@ -416,10 +416,19 @@ const ViewCBT = (
     objectiveQ2,
     subject_id,
   });
-
+  
+  
   return (
     <PageSheet>
       <div className={styles.view}>
+        <div className='d-flex align-items-center justify-content-center mb-4'>
+          <p className='fw-bold fs-4'>
+            {/* CBT {toSentenceCase(state?.creds?.question_type)} |{" "} */}
+            {state?.creds?.period} | {state?.creds?.term} |{" "}
+            {state?.creds?.session}
+          </p>
+        </div>
+
         {!hideAllBars && (
           <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '>
             <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
@@ -457,7 +466,7 @@ const ViewCBT = (
                   setCreateQ2((prev) => {
                     return { ...prev, question_type: value, answer: "" };
                   });
-
+                  setObjectiveSubmitted(false);
                   reload();
                 }}
                 placeholder='Select type'
@@ -469,9 +478,9 @@ const ViewCBT = (
 
         <div className=''>
           <div>
-            <div className={styles.view__tabs}>
+            {/* <div className={styles.view__tabs}>
               <ButtonGroup options={optionTabShow()} />
-            </div>
+            </div> */}
 
             {assignmentLoading && (
               <div className={styles.spinner_container}>
@@ -514,6 +523,7 @@ const ViewCBT = (
                   setHour={setHour}
                   setMinute={setMinute}
                   state={state?.creds}
+                  reload={reload}
                 />
               )}
               {/* Theory Answers */}

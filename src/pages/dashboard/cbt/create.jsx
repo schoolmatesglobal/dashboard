@@ -418,7 +418,7 @@ const CreateCBT = (
             // total_question: Number(total_question),
             // total_mark: Number(total_mark),
             question_mark: createQ?.question_mark,
-            // question_number: Number(question_number),
+            question_number: Number(question_number),
           }
         ),
       // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
@@ -508,38 +508,36 @@ const CreateCBT = (
   );
 
   //// EDIT OBJECTIVE ASSIGNMENT ////
-  const {
-    mutateAsync: editObjectiveAssignment,
-    isLoading: editObjectiveAssignmentLoading,
-  } = useMutation(apiServices.editObjectiveAssignment, {
-    onSuccess() {
-      setAllowFetch(true);
-      refetchCbtCreated();
-      toast.success("Objective question has been edited successfully");
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+  const { mutateAsync: editCbtQuestion, isLoading: editCbtQuestionLoading } =
+    useMutation(apiServices.editCbtQuestion, {
+      onSuccess() {
+        setAllowFetch(true);
+        refetchCbtCreated();
+        toast.success("CBT question has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    });
 
   //// PUBLISH ASSIGNMENT ////
-  const {
-    mutateAsync: publishAssignment,
-    isLoading: publishAssignmentLoading,
-  } = useMutation(apiServices.publishAssignment, {
-    onSuccess() {
-      setAllowFetch(true);
-      refetchCbtCreated();
-      toast.success(
-        `Assignment has been ${
-          published ? "published" : "unpublished"
-        } successfully`
-      );
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+  const { mutateAsync: publishCbt, isLoading: publishCbtLoading } = useMutation(
+    apiServices.publishCbt,
+    {
+      onSuccess() {
+        setAllowFetch(true);
+        refetchCbtCreated();
+        toast.success(
+          `Assignment has been ${
+            published ? "published" : "unpublished"
+          } successfully`
+        );
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
   //// EDIT THEORY ASSIGNMENT ////
   const {
@@ -555,17 +553,19 @@ const CreateCBT = (
     },
   });
 
-  //// DELETE ASSIGNMENT ////
-  const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
-    useMutation(() => apiServices.deleteAssignment(editQuestionId), {
-      onSuccess() {
-        refetchCbtCreated();
-        toast.success("Question has been deleted successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    });
+  //// DELETE CBT QUESTION ////
+  const {
+    mutateAsync: deleteCbtQuestion,
+    isLoading: deleteCbtQuestionLoading,
+  } = useMutation(() => apiServices.deleteCbtQuestion(editQuestionId), {
+    onSuccess() {
+      refetchCbtCreated();
+      toast.success("Question has been deleted successfully");
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   const clearAllButtons = [
     {
@@ -580,12 +580,12 @@ const CreateCBT = (
     {
       title: "Yes",
       onClick: () => {
-        publishAssignment({
+        publishCbt({
           term: user?.term,
           period: user?.period,
           session: user?.session,
           question_type,
-          week,
+          subject_id: subject_id,
           is_publish: published ? 1 : 0,
         });
 
@@ -607,7 +607,7 @@ const CreateCBT = (
         // }, 1000);
       },
       variant: "outline",
-      isLoading: publishAssignmentLoading,
+      isLoading: publishCbtLoading,
     },
   ];
 
@@ -618,7 +618,7 @@ const CreateCBT = (
         setPublished(true);
         setClearAllPrompt(true);
       },
-      isLoading: publishAssignmentLoading,
+      isLoading: publishCbtLoading,
       variant: "success",
     },
     {
@@ -627,7 +627,7 @@ const CreateCBT = (
         setPublished(false);
         setClearAllPrompt(true);
       },
-      isLoading: publishAssignmentLoading,
+      isLoading: publishCbtLoading,
       variant: "danger",
     },
   ];
@@ -648,13 +648,13 @@ const CreateCBT = (
       onClick: () => {
         //
         if (question_type === "objective") {
-          deleteAssignment();
+          deleteCbtQuestion();
 
           setTimeout(() => {
             setDeletePrompt(false);
           }, 1000);
         } else if (question_type === "theory") {
-          deleteAssignment();
+          deleteCbtQuestion();
 
           setTimeout(() => {
             setDeletePrompt(false);
@@ -662,7 +662,7 @@ const CreateCBT = (
         }
       },
       variant: "outline-danger",
-      isLoading: deleteAssignmentLoading,
+      isLoading: deleteCbtQuestionLoading,
     },
   ];
 
@@ -701,21 +701,35 @@ const CreateCBT = (
       title: "Yes",
       onClick: () => {
         if (question_type === "objective") {
-          editObjectiveAssignment([
-            ...newArray,
-            {
-              id: editQuestionId,
+          editCbtQuestion({
+            id: editQuestionId,
+            body: {
               question: editQuestion,
-              answer: editAnswer,
-              question_number: editNumber,
-              question_mark: editMark,
               option1: editOption1,
               option2: editOption2,
               option3: editOption3,
               option4: editOption4,
+              answer: editAnswer,
+              question_mark: editMark,
+              question_number: editNumber,
               status: editPublish ? "published" : "unpublished",
             },
-          ]);
+          });
+          //   editCbtQuestion(
+          //     {
+          //     id: editQuestionId,
+          //     body: {
+          //       question: "",
+          //       option1: "",
+          //       option2: "",
+          //       option3: "",
+          //       option4: "",
+          //       answer: "",
+          //       question_mark: "",
+          //       question_number: ""
+          //     },
+          //   }
+          // );
           refetchCbtCreated();
           setEditPrompt(false);
 
@@ -732,16 +746,17 @@ const CreateCBT = (
           //   refetchCbtCreated();
           // }, 1000);
         } else if (question_type === "theory") {
-          editTheoryAssignment({
-            id: editQuestionId,
-            body: {
-              question: editQuestion,
-              answer: editAnswer,
-              question_number: editNumber,
-              question_mark: editMark,
-              status: editPublish ? "published" : "unpublished",
-            },
-          });
+          editTheoryAssignment();
+          //   {
+          //   id: editQuestionId,
+          //   body: {
+          //     question: editQuestion,
+          //     answer: editAnswer,
+          //     question_number: editNumber,
+          //     question_mark: editMark,
+          //     status: editPublish ? "published" : "unpublished",
+          //   },
+          // }
           refetchCbtCreated();
           setEditPrompt(false);
           // trigger();
@@ -751,7 +766,7 @@ const CreateCBT = (
         }
       },
       variant: "outline",
-      isLoading: editObjectiveAssignmentLoading || editTheoryAssignmentLoading,
+      isLoading: editCbtQuestionLoading || editTheoryAssignmentLoading,
       disabled:
         question_type === "objective"
           ? !editQuestion ||
@@ -823,26 +838,22 @@ const CreateCBT = (
 
   useEffect(() => {
     if (activateRetrieveCbt()) {
-      trigger();
       refetchCbtCreated();
+      trigger();
     }
     if (activateRetrieveCbt()) {
-      trigger();
       refetchCbtSettings();
+      trigger();
     }
   }, [subject_id, question_type]);
 
-  // useEffect(() => {
-  //   if (activateRetrieveCreated()) {
-  //     refetchCbtCreated();
-  //   }
-
-  // }, [editObjectiveAssignment]);
+ 
 
   console.log({
     cbtSettings,
     createQ,
     objectiveQ,
+    subject_id,
     // subjectsByTeacher,
     state,
     // subjects,

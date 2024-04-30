@@ -34,6 +34,7 @@ const Objective = ({
   subjects,
   isPlaying,
   setIsPlaying,
+  reload,
   // showWarning,
   // setShowWarning,
   // testEnded,
@@ -83,11 +84,11 @@ const Objective = ({
 
   const student = `${user?.surname} ${user?.firstname}`;
 
-  //// SUBMIT OBJECTIVE ASSIGNMENT ////
+  //// SUBMIT CBT OBJECTIVE ASSIGNMENT ////
   const {
-    mutateAsync: submitObjectiveAssignment,
-    isLoading: submitObjectiveAssignmentLoading,
-  } = useMutation(apiServices.submitObjectiveAssignment, {
+    mutateAsync: submitCbtQuestion,
+    isLoading: submitCbtQuestionLoading,
+  } = useMutation(apiServices.submitCbtQuestion, {
     onSuccess() {
       toast.success("CBT test has been submitted");
     },
@@ -96,11 +97,11 @@ const Objective = ({
     },
   });
 
-  //// SUBMIT OBJECTIVE ASSIGNMENT after test////
+  //// SUBMIT OBJECTIVE ASSIGNMENT AFTER TEST////
   const {
-    mutateAsync: submitObjectiveAssignment2,
-    isLoading: submitObjectiveAssignmentLoading2,
-  } = useMutation(apiServices.submitObjectiveAssignment, {
+    mutateAsync: submitCbtQuestion2,
+    isLoading: submitCbtQuestionLoading2,
+  } = useMutation(apiServices.submitCbtQuestion, {
     onSuccess() {
       toast.success("CBT test has ended and has been submitted");
     },
@@ -109,62 +110,69 @@ const Objective = ({
     },
   });
 
-  /////// FETCH ANSWERED OBJECTIVE ASSIGNMENTS/////
-  // const {
-  //   isLoading: answeredObjAssignmentLoading,
-  //   refetch: refetchObjAnsweredAssignment,
-  //   data: objAnsweredAssignment,
-  //   isFetching: isFetchingObjAnsweredAssignment,
-  //   isRefetching: isRefetchingObjAnsweredAssignment,
-  // } = useQuery(
-  //   [
-  //     queryKeys.GET_SUBMITTED_ASSIGNMENT_STUDENT,
-  //     state?.period,
-  //     state?.term,
-  //     state?.session,
-  //     createQ2?.question_type,
-  //     "1",
-  //   ],
-  //   () =>
-  //     apiServices.getSubmittedAssignment(
-  //       state?.period,
-  //       state?.term,
-  //       state?.session,
-  //       createQ2?.question_type,
-  //       "1"
-  //     ),
-  //   {
-  //     retry: 3,
-  //     // enabled: permission?.view && permission?.student_results,
-  //     enabled: false,
-  //     select: (data) => {
-  //       const ssk = apiServices.formatData(data);
+  ///// FETCH ANSWERED CBT /////
+  const {
+    isLoading: answeredCbtLoading,
+    refetch: refetchAnsweredCbt,
+    data: answeredCbt,
+    isFetching: isFetchingAnsweredCbt,
+    isRefetching: isRefetchingAnsweredCbt,
+  } = useQuery(
+    [queryKeys.GET_SUBMITTED_CBT_STUDENT],
+    () =>
+      apiServices.getCbtAnswerByStudentId(
+        user?.id,
+        state?.period,
+        state?.term,
+        state?.session,
+        createQ2?.question_type,
+        createQ2?.subject_id
+      ),
+    {
+      retry: 3,
+      enabled: permission?.view && permission?.student_results,
+      // refetchIntervalInBackground: false,
+      // refetchOnWindowFocus: false,
+      // refetchOnReconnect: false,
+      // refetchOnMount: false,
+      // enabled: false,
+      select: (data) => {
+        const ssk = apiServices.formatData(data);
 
-  //       const sorted = ssk?.filter(
-  //         (dt) => dt?.subject === createQ2?.subject && dt?.student === student
-  //         // &&
-  //         // dt?.week === createQ2?.week
-  //       );
+        // const sorted = ssk?.filter(
+        //   (dt) => dt?.subject === createQ2?.subject && dt?.student === student
+        //   // &&
+        //   // dt?.week === createQ2?.week
+        // );
 
-  //       // console.log({ ssk, sorted, data, student, createQ2 });
+        console.log({ ssk, data, student, createQ2, user });
 
-  //       if (sorted?.length > 0) {
-  //         // resetLoadObjectiveAnsFxn();
-  //         setObjectiveSubmitted(true);
-  //         // loadObjectiveAnsFxn(sorted);
-  //       } else if (sorted?.length === 0) {
-  //         // resetLoadObjectiveAnsFxn();
-  //         // setObjectiveSubmitted(false);
-  //       }
-  //       return sorted ?? [];
-  //     },
-  //     // onSuccess(data) {},
-  //     onError(err) {
-  //       errorHandler(err);
-  //     },
-  //     // select: apiServices.formatData,
-  //   }
-  // );
+        // if (ssk?.length > 0) {
+        //   // resetLoadObjectiveAnsFxn();
+        //   setObjectiveSubmitted(true);
+        //   // loadObjectiveAnsFxn(sorted);
+        // } else if (ssk?.length === 0) {
+        //   // resetLoadObjectiveAnsFxn();
+        //   setObjectiveSubmitted(false);
+        // }
+        return ssk;
+      },
+      onSuccess(data) {
+        if (data?.length > 0) {
+          // resetLoadObjectiveAnsFxn();
+          setObjectiveSubmitted(true);
+          // loadObjectiveAnsFxn(sorted);
+        } else if (data?.length === 0 || !data) {
+          // resetLoadObjectiveAnsFxn();
+          // setObjectiveSubmitted(false);
+        }
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   const [loginPrompt, setLoginPrompt] = useState(false);
   // const [submitted, setSubmitted] = useState(false);
@@ -203,8 +211,7 @@ const Objective = ({
   };
 
   const checkedData2 = (question, CQ) => {
-    // const quest = (objAnsweredAssignment)?.find(
-    const quest = ([])?.find(
+    const quest = answeredCbt?.find(
       (ob) => ob.question === question && ob.answer === CQ
     );
     // console.log({ quest });
@@ -217,7 +224,9 @@ const Objective = ({
   };
 
   const findSubjectId = () => {
-    const findObject = subjects?.find((opt) => opt.subject === state?.subject);
+    const findObject = subjects?.find(
+      (opt) => opt.subject === createQ2?.subject
+    );
     if (findObject) {
       return findObject.id;
     }
@@ -233,17 +242,28 @@ const Objective = ({
       title: "Yes Submit",
       // disabled: !checkEmptyQuestions(),
       onClick: () => {
+        const newAnswers = answeredObjectiveQ?.map((aq, i) => {
+          return {
+            ...aq,
+            submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+          };
+        });
+
         setObjectiveSubmitted(true);
-        submitObjectiveAssignment(answeredObjectiveQ);
+
+        submitCbtQuestion(newAnswers);
+
+        refetchAnsweredCbt();
         setSubmitted(true);
 
         setIsPlaying(false);
 
         setHideAllBars(false);
+        reload();
 
         setLoginPrompt(false);
       },
-      isLoading: submitObjectiveAssignmentLoading,
+      isLoading: submitCbtQuestionLoading || submitCbtQuestionLoading2,
       // || submitMarkedObjectiveAssignmentLoading,
       //
       // variant: "outline",
@@ -289,16 +309,17 @@ const Objective = ({
           period: user?.period,
           term: user?.term,
           session: user?.session,
-          student_id: Number(user?.id),
-          subject_id: Number(state?.subject_id),
+          cbt_question_id: CQ.id,
+          student_id: user?.id,
+          subject_id: createQ2?.subject_id,
           question: CQ.question,
-          question_type: "objective",
+          question_number: CQ.question_number,
+          question_type: CQ.question_type,
           answer: optionValue,
           correct_answer: CQ.answer,
-          assignment_id: Number(CQ.id),
-          submitted: "true",
-          question_number: Number(CQ.question_number),
-          week: CQ.week,
+          submitted: 1,
+          submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+          duration: `${hour}:${minute}`,
         },
       ]);
     } else {
@@ -308,17 +329,17 @@ const Objective = ({
           period: user?.period,
           term: user?.term,
           session: user?.session,
-          student_id: Number(user?.id),
-          // subject_id: Number(findSubjectId()),
-          subject_id: Number(state?.subject_id),
+          cbt_question_id: CQ.id,
+          student_id: user?.id,
+          subject_id: createQ2?.subject_id,
           question: CQ.question,
-          question_type: "objective",
+          question_number: CQ.question_number,
+          question_type: CQ.question_type,
           answer: optionValue,
           correct_answer: CQ.answer,
-          assignment_id: Number(CQ.id),
-          submitted: "true",
-          question_number: Number(CQ.question_number),
-          week: CQ.week,
+          submitted: 1,
+          submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+          duration: `${hour}:${minute}`,
         },
       ]);
     }
@@ -329,7 +350,7 @@ const Objective = ({
 
   //   }
   // }
-  const allLoading = assignmentLoading
+  const allLoading = assignmentLoading;
   // const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 
   const initialTaken = isPlaying === false && objectiveSubmitted === true;
@@ -343,6 +364,7 @@ const Objective = ({
       setHideAllBars(false);
       setIsPlaying(false);
       setSubmitted(true);
+      setObjectiveSubmitted(true);
       let newArray = [];
 
       if (newArray?.length !== objectiveQ?.length) {
@@ -361,33 +383,50 @@ const Objective = ({
               period: user?.period,
               term: user?.term,
               session: user?.session,
-              student_id: Number(user?.id),
-              subject_id: Number(qs.subject_id),
+              cbt_question_id: qs.id,
+              student_id: user?.id,
+              subject_id: qs.subject_id,
               question: qs.question,
+              question_number: qs.question_number,
               question_type: qs.question_type,
               answer: "No option was selected",
               correct_answer: qs.answer,
-              assignment_id: Number(qs.id),
-              submitted: "true",
-              question_number: qs.question_number,
-              week: qs.week,
+              submitted: 1,
+              submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+              duration: `${hour}:${minute}`,
             };
           });
 
         newArray.push(...filterAns);
 
-        setObjectiveSubmitted(true);
+        submitCbtQuestion2(newArray);
+        setSubmitted(true);
+        refetchAnsweredCbt();
 
-        submitObjectiveAssignment2(newArray);
+        reload();
 
         // console.log({ questionsAnsweredId, filterAns, newArray });
       } else {
         if (!submitted) {
-          submitObjectiveAssignment(answeredObjectiveQ);
+          const newAnswers = answeredObjectiveQ?.map((aq, i) => {
+            return {
+              ...aq,
+              submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+            };
+          });
+          submitCbtQuestion(newAnswers);
+          setSubmitted(true);
+          refetchAnsweredCbt();
+
+          reload();
         }
       }
     }
   }, [hourLeft, timeLeft, secondleft]);
+
+  useEffect(() => {
+    refetchAnsweredCbt();
+  }, [createQ2?.subject_id, createQ2?.question_type]);
 
   const arrayLength = objectiveQ?.length;
   const itemsPerPage = 1;
@@ -422,13 +461,19 @@ const Objective = ({
     // slice1,
     // slice2,
     // objectiveQ,
-    // answeredObjectiveQ,
+    answeredObjectiveQ,
+    createQ2,
+    objectiveSubmitted,
+    isPlaying,
+    answeredCbt,
+    objectiveQ,
+    // subject_id,
     // state,
   });
   // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
 
   return (
-    <div>
+    <div className='mt-5'>
       {!allLoading && objectiveQ?.length >= 1 && (
         <div className=''>
           <div className='' style={{ position: "relative" }}>
@@ -460,7 +505,7 @@ const Objective = ({
                 setTimeLeft={setTimeLeft}
                 objectiveSubmitted={objectiveSubmitted}
                 setObjectiveSubmitted={setObjectiveSubmitted}
-                submitObjectiveAssignment={submitObjectiveAssignment}
+                submitCbtQuestion={submitCbtQuestion}
                 secondleft={secondleft}
                 setSecondLeft={setSecondLeft}
                 hourLeft={hourLeft}
@@ -492,7 +537,9 @@ const Objective = ({
                   <div
                     style={{
                       cursor:
-                        isPlaying || initialTaken ? "not-allowed" : "pointer",
+                        isPlaying || initialTaken || objectiveSubmitted
+                          ? "not-allowed"
+                          : "pointer",
                     }}
                     onClick={() => {
                       if (!disableButton) {
@@ -502,7 +549,7 @@ const Objective = ({
                       // setIsPlaying((prev) => !prev);
                     }}
                     className={`d-flex justify-content-center align-items-center bg-success ${
-                      isPlaying || initialTaken
+                      isPlaying || initialTaken || objectiveSubmitted
                         ? "bg-opacity-50"
                         : "bg-opacity-100"
                     } gap-3 py-3 px-4 rounded-3`}
@@ -561,7 +608,9 @@ const Objective = ({
                 // }`}
                 style={{
                   opacity: `${
-                    objectiveSubmitted || !isPlaying ? "0%" : "100%"
+                    isPlaying || initialTaken || objectiveSubmitted
+                      ? "100%"
+                      : "0%"
                   }`,
                 }}
               >
@@ -755,12 +804,14 @@ const Objective = ({
                                   </p>
                                 </label>
                               </div>
-                              <div className='w-100 d-flex justify-content-end'>
-                                <p className='fst-italic fs-4'>
-                                  Answered {answeredObjectiveQ?.length} out of{" "}
-                                  {objectiveQ?.length}
-                                </p>
-                              </div>
+                              {answeredCbt?.length === 0 && (
+                                <div className='w-100 d-flex justify-content-end'>
+                                  <p className='fst-italic fs-4'>
+                                    Answered {answeredObjectiveQ?.length} out of{" "}
+                                    {objectiveQ?.length}
+                                  </p>
+                                </div>
+                              )}
                             </>
                           )}
                         </div>
@@ -801,6 +852,7 @@ const Objective = ({
                       onClick={() => {
                         displayPrompt();
                       }}
+                      disabled={answeredCbt?.length > 0}
                     >
                       Preview
                     </Button>
@@ -814,27 +866,37 @@ const Objective = ({
                   // singleButtonText="Preview"
                   promptHeader={`You attempted ${answeredObjectiveQ?.length} out of ${objectiveQ?.length} Questions`}
                 >
-                  {answeredObjectiveQ?.map((ans, i) => {
-                    return (
-                      <div className='py-sm-2 px-sm-2 py-2 px-2' key={i}>
-                        <p className='fs-3 mb-3 lh-base'>
-                          <span className='fw-bold fs-3'>
-                            {ans.question_number}.
-                          </span>{" "}
-                          {ans.question}{" "}
-                        </p>
-                        {/* <p className='fw-bold fs-3 mb-4 lh-base'>
+                  {answeredObjectiveQ
+                    ?.sort((a, b) => {
+                      if (a.question_number < b.question_number) {
+                        return -1;
+                      }
+                      if (a.question_number > b.question_number) {
+                        return 1;
+                      }
+                      return 0;
+                    })
+                    ?.map((ans, i) => {
+                      return (
+                        <div className='py-sm-2 px-sm-2 py-2 px-2' key={i}>
+                          <p className='fs-3 mb-3 lh-base'>
+                            <span className='fw-bold fs-3'>
+                              {ans.question_number}.
+                            </span>{" "}
+                            {ans.question}{" "}
+                          </p>
+                          {/* <p className='fw-bold fs-3 mb-4 lh-base'>
                           ({ans.question_mark} mk(s) )
                         </p> */}
-                        <div className='d-flex flex-column gap-3 mb-3'>
-                          <p className='fs-3'>
-                            <span className='fw-bold'>Answer picked:</span>{" "}
-                            {ans.answer}
-                          </p>
+                          <div className='d-flex flex-column gap-3 mb-3'>
+                            <p className='fs-3'>
+                              <span className='fw-bold'>Answer picked:</span>{" "}
+                              {ans.answer}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
 
                   <p className='w-100 text-danger text-center mt-4 fs-2 fw-bold'>
                     Ready to submit ?

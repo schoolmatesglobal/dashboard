@@ -110,6 +110,10 @@ import PaymentEdit from "../pages/dashboard/Payment/edit";
 import CBTPage from "../pages/dashboard/cbt";
 import CreateCBT from "../pages/dashboard/cbt/create";
 import ViewCBT from "../pages/dashboard/cbt/student/view";
+import Submission from "../pages/dashboard/cbt/submission";
+import CbtSubmission from "../pages/dashboard/cbt/submission";
+import CbtResults from "../pages/dashboard/cbt/results";
+import CbtPerformances from "../pages/dashboard/cbt/performances";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -156,21 +160,48 @@ const CustomRoutes = () => {
             </Guard>
           }
         />
-         <Route
+        <Route
           exact
           path='cbt/create'
           element={
             <Guard routeName='cbt' action={["compute"]}>
-              <CreateCBT  />
+              <CreateCBT />
             </Guard>
           }
         />
-         <Route
+        <Route
+          exact
+          path='cbt/submission'
+          element={
+            <Guard routeName='cbt' action={["compute"]}>
+              <CbtSubmission />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='cbt/results'
+          element={
+            <Guard routeName='cbt' action={["compute"]}>
+              <CbtResults />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='cbt/performances'
+          element={
+            <Guard routeName='cbt' action={["compute"]}>
+              <CbtPerformances />
+            </Guard>
+          }
+        />
+        <Route
           exact
           path='cbt/view'
           element={
-            <Guard routeName='cbt' >
-              <ViewCBT  />
+            <Guard routeName='cbt'>
+              <ViewCBT />
             </Guard>
           }
         />

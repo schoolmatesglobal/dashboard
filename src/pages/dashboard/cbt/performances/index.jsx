@@ -21,8 +21,12 @@ import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
 import { generateNewArray, recreateArray, recreateArray2 } from "./constant";
 import { useCBT } from "../../../../hooks/useCBT";
+import { useLocation } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
+import PageSheet from "../../../../components/common/page-sheet";
+import GoBack from "../../../../components/common/go-back";
 
-const Performances = ({ markedQ, setMarkedQ }) => {
+const CbtPerformances = ({}) => {
   const {
     classSubjects,
     apiServices,
@@ -33,10 +37,20 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     myStudents,
     updatePreviewAnswerFxn,
     subjectsByTeacher,
+    markedQ,
+    setMarkedQ,
   } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
     markedQ;
+
+  const { state } = useLocation();
+
+  const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
+  const isTablet = useMediaQuery({
+    query: "(min-width: 768px, max-width: 991px)",
+  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   const [newSubjects, setNewSubjects] = useState([]);
   const { subjects, isLoading: subjectLoading } = useSubject();
@@ -46,6 +60,13 @@ const Performances = ({ markedQ, setMarkedQ }) => {
   const [loginPrompt, setLoginPrompt] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const trigger = () => {
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+    }, 1000);
+  };
 
   const newStudents = [
     { value: "all students", title: "All Students", id: 999 },
@@ -60,7 +81,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
   };
 
   const activateRetrieve = () => {
-    if (subject !== "" && student !== "") {
+    if (question_type !== "" && student_id !== "" && subject_id !== "") {
       return true;
     } else {
       return false;
@@ -189,6 +210,18 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     }
   );
 
+  const questionType = [
+    {
+      value: "objective",
+      title: "Objective",
+    },
+
+    // {
+    //   value: "theory",
+    //   title: "Theory",
+    // },
+  ];
+
   const result = [
     {
       student_id: "17",
@@ -242,7 +275,8 @@ const Performances = ({ markedQ, setMarkedQ }) => {
         const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
         return {
-          value: sb?.name,
+          value: subId,
+          // value: sb?.name,
           title: sb?.name,
         };
       });
@@ -251,6 +285,16 @@ const Performances = ({ markedQ, setMarkedQ }) => {
       setNewSubjects([]);
     }
   }, [subjectsByTeacher]);
+
+  useEffect(() => {
+    trigger();
+
+    if (activateRetrieve()) {
+      // refetchCbtAnswer();
+    }
+
+    // setAnsweredTheoQ(submittedTheoAssignment);
+  }, [subject_id, student_id]);
 
   console.log({
     subject_id,
@@ -262,95 +306,109 @@ const Performances = ({ markedQ, setMarkedQ }) => {
 
   return (
     <div>
-      <div className={styles.created}>
-        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between'>
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
-            <AuthSelect
-              sort
-              options={newSubjects}
-              value={subject}
-              // defaultValue={subject && subject}
-              onChange={({ target: { value } }) => {
-                const fId = () => {
-                  const ff = subjects?.find((opt) => opt.subject === value);
-                  if (ff) {
-                    return ff?.id?.toString();
-                  }
-                };
-
-                setMarkedQ((prev) => {
-                  return { ...prev, subject: value, subject_id: fId() };
-                });
-              }}
-              placeholder='Select Subject'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
-
-            <AuthSelect
-              sort
-              options={newStudents}
-              // options={myStudents}
-              value={student}
-              // defaultValue={student && student}
-              onChange={({ target: { value } }) => {
-                //
-                const fId = () => {
-                  const ff = myStudents?.find((opt) => opt.value === value);
-                  if (ff) {
-                    return ff?.id?.toString();
-                  }
-                };
-                //
-                setMarkedQ((prev) => {
-                  return { ...prev, student: value, student_id: fId() };
-                });
-              }}
-              placeholder='Select Student'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
+      <GoBack />
+      <PageSheet>
+        <div className={styles.created}>
+          <div className='d-flex align-items-center justify-content-center mb-4'>
+            <p className='fw-bold fs-4'>
+              {/* CBT {toSentenceCase(state?.creds?.question_type)} |{" "} */}
+              {state?.creds?.period} | {state?.creds?.term} |{" "}
+              {state?.creds?.session}
+            </p>
           </div>
+
+          <div className='d-flex flex-column flex-lg-row align-items-center  gap-4'>
+            <div
+              className={`d-flex align-items-center flex-grow-1 gap-3 ${
+                isDesktop && "w-100"
+              }`}
+            >
+              <AuthSelect
+                sort
+                options={newSubjects}
+                value={subject_id}
+                onChange={({ target: { value } }) => {
+                  setMarkedQ((prev) => {
+                    return { ...prev, subject_id: value };
+                  });
+                }}
+                placeholder='Select Subject'
+                wrapperClassName='w-100'
+              />
+              <AuthSelect
+                sort
+                options={questionType}
+                value={question_type}
+                onChange={({ target: { value } }) => {
+                  setMarkedQ((prev) => {
+                    return { ...prev, question_type: value, answer: "" };
+                  });
+                }}
+                placeholder='Select type'
+                wrapperClassName=''
+              />
+              <AuthSelect
+                sort
+                options={myStudents}
+                value={student}
+                onChange={({ target: { value } }) => {
+                  setMarkedQ((prev) => {
+                    const fId = () => {
+                      const ff = myStudents?.find((opt) => opt.value === value);
+                      if (ff) {
+                        return ff?.id?.toString();
+                      }
+                    };
+                    return { ...prev, student: value, student_id: fId() };
+                  });
+
+                  // refetchMarkedAssignment();
+                  // setMarkedTheoQ([]);
+                  // setMarkedTheoQ2([]);
+                }}
+                placeholder='Select Student'
+                wrapperClassName=''
+              />
+            </div>
+          </div>
+          {allLoading && (
+            <div className={styles.spinner_container}>
+              <Spinner /> <p className='fs-3'>Loading...</p>
+            </div>
+          )}
+          {!allLoading && (
+            <div className='mt-5'>
+              {student !== "all students" && (
+                <LineChart
+                  chartTitle={`${
+                    student ? "Chart for" : "No Chart Result"
+                  } ${student}`}
+                  data={performance}
+                />
+              )}
+              {student === "all students" && (
+                <LineChart2
+                  chartTitle={`Class Chart`}
+                  studentData={allPerformance}
+                />
+              )}
+            </div>
+          )}
         </div>
-
-        {allLoading && (
-          <div className={styles.spinner_container}>
-            <Spinner /> <p className='fs-3'>Loading...</p>
-          </div>
-        )}
-
-        {!allLoading && (
-          <div className='mt-5'>
-            {student !== "all students" && (
-              <LineChart
-                chartTitle={`${
-                  student ? "Chart for" : "No Chart Result"
-                } ${student}`}
-                data={performance}
-              />
-            )}
-            {student === "all students" && (
-              <LineChart2
-                chartTitle={`Class Chart`}
-                studentData={allPerformance}
-              />
-            )}
-          </div>
-        )}
-      </div>
-      {/* <div className="d-flex justify-content-center ">
-      <ButtonGroup options={buttonOptions2} />
-    </div> */}
-      <Prompt
-        isOpen={loginPrompt}
-        toggle={() => setLoginPrompt(!loginPrompt)}
-        hasGroupedButtons={true}
-        groupedButtonProps={buttonOptions}
-        singleButtonText='Preview'
-        promptHeader={` CONFIRM RESULT SUBMISSION `}
-      ></Prompt>
+        {/* <div className="d-flex justify-content-center ">
+        <ButtonGroup options={buttonOptions2} />
+            </div> */}
+        <Prompt
+          isOpen={loginPrompt}
+          toggle={() => setLoginPrompt(!loginPrompt)}
+          hasGroupedButtons={true}
+          groupedButtonProps={buttonOptions}
+          singleButtonText='Preview'
+          promptHeader={` CONFIRM RESULT SUBMISSION `}
+        ></Prompt>
+      </PageSheet>
     </div>
   );
 };
 
-export default Performances;
+export default CbtPerformances;
