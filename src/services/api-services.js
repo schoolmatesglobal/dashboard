@@ -2664,7 +2664,23 @@ class APIServies extends Helpers {
   }
 
   async deleteCbtQuestion(id) {
-    const { data } = await axios.delete(`${backendAPI}/v2/cbt/delete/question/${id}`, {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/cbt/delete/question/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async submitCbtQuestion(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(`${backendAPI}/v2/cbt/answer/add`, body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${super.getToken()}`,
@@ -2674,34 +2690,13 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async submitCbtQuestion(body) {
-    // const backendAPI =
-    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
-    const { data } = await axios.post(
-      `${backendAPI}/v2/cbt/answer/add`,
-      body,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${super.getToken()}`,
-        },
-      }
-    );
-
-    return data;
-  }
-
   async publishCbt(body) {
-    const { data } = await axios.patch(
-      `${backendAPI}/v2/cbt/publish`,
-      body,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${super.getToken()}`,
-        },
-      }
-    );
+    const { data } = await axios.patch(`${backendAPI}/v2/cbt/publish`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
 
     return data;
   }
@@ -2718,7 +2713,7 @@ class APIServies extends Helpers {
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
       `${backendAPI}/v2/cbt/${period}/${term}/${session}/${question_type}/${subject_id}/${student_id}/student`,
-      
+
       {
         headers: {
           "Content-Type": "application/json",
@@ -2731,9 +2726,63 @@ class APIServies extends Helpers {
   }
 
   async addCbtResult(body) {
-    const { data } = await axios.post(
-      `${backendAPI}/v2/cbt/result/add`,
-      body,
+    const { data } = await axios.post(`${backendAPI}/v2/cbt/result/add`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async getCbtResultByStudentId(
+    student_id,
+    period,
+    term,
+    session,
+    question_type,
+    subject_id
+  ) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/result/${student_id}/${period}/${term}/${session}/${question_type}/${subject_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getCbtPerformance(period, term, session, student_id, subject_id) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/performance?period=${period}&term=${term}&session=${session}&student_id=${student_id}&subject_id=${subject_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getAllCbtPerformance(period, term, session, subject_id) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/performance?period=${period}&term=${term}&session=${session}&subject_id=${subject_id}`,
+
       {
         headers: {
           "Content-Type": "application/json",

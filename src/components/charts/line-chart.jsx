@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
 
-
-const LineChart = ({ chartTitle, data }) => {
+const LineChart = ({ chartTitle, data, studentNames }) => {
   // Dummy data for percentage score from week 1 to week 10
- // Example scores, you can replace it with actual data
+  // Example scores, you can replace it with actual data
 
   // Labels for x-axis (weeks)
   const labels = Array.from({ length: 13 }, (_, i) => `Week ${i + 1}`);
 
+  // console.log({labels, studentNames})
   // Memoized state to prevent unnecessary re-renders
   const state = useMemo(() => {
     return {
@@ -33,6 +33,7 @@ const LineChart = ({ chartTitle, data }) => {
           curve: "smooth",
         },
         xaxis: {
+          // categories: studentNames,
           categories: labels,
         },
         title: {

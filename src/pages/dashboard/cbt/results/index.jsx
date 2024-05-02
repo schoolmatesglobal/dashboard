@@ -48,6 +48,7 @@ const CbtResults = ({}) => {
   } = useCBT();
 
   const [cbtObject, setCbtObject] = useState({});
+  const [cbtResult, setCbtResult] = useState([]);
 
   const { state } = useLocation();
 
@@ -130,6 +131,44 @@ const CbtResults = ({}) => {
 
       onSuccess(data) {
         setCbtObject(data);
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  /////// FETCH ANSWERED CBT /////
+  const {
+    isLoading: cbtSubmmittedAnswerLoading,
+    refetch: refetchSubmittedCbtAnswer,
+    data: cbtSubmmittedAnswer,
+  } = useQuery(
+    [queryKeys.GET_SUBMITTED_CBT_ANSWER],
+    () =>
+      apiServices.getCbtResultByStudentId(
+        student_id,
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        question_type,
+        subject_id
+      ),
+    {
+      retry: 3,
+      // enabled: permission?.read || permission?.readClass,
+      enabled: activateRetrieve(),
+      select: (data) => {
+        const bbk = apiServices.formatData(data);
+
+        console.log({ bbk, data });
+
+        return bbk ?? [];
+      },
+
+      onSuccess(data) {
+        setCbtResult(data);
       },
       onError(err) {
         errorHandler(err);
@@ -251,25 +290,23 @@ const CbtResults = ({}) => {
   ];
 
   /////// POST CBT RESULT ////
-  const {
-    mutateAsync: addCbtResult,
-    isLoading: addCbtResultLoading,
-  } = useMutation(
-    apiServices.addCbtResult,
+  const { mutateAsync: addCbtResult, isLoading: addCbtResultLoading } =
+    useMutation(
+      apiServices.addCbtResult,
 
-    {
-      onSuccess() {
-        queryClient.invalidateQueries(queryKeys.GET_SUBMITTED_CBT_STUDENT);
+      {
+        onSuccess() {
+          queryClient.invalidateQueries(queryKeys.GET_SUBMITTED_CBT_STUDENT);
 
-        toast.success(
-          `CBT ${question_type} result has been submitted successfully`
-        );
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
+          toast.success(
+            `CBT ${question_type} result has been submitted successfully`
+          );
+        },
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
 
   const optionTabShow = () => {
     const objectiveTab = {
@@ -315,6 +352,7 @@ const CbtResults = ({}) => {
 
     if (activateRetrieve()) {
       refetchCbtAnswer();
+      refetchSubmittedCbtAnswer();
     }
 
     // setAnsweredTheoQ(submittedTheoAssignment);
@@ -326,13 +364,14 @@ const CbtResults = ({}) => {
   //   }
   // }, [week, subject, student]);
 
-  console.log({
-    markedQ,
-    cbtAnswer,
-    cbtObject,
-    markedAssignmentResults,
-    dt,
-  });
+  // console.log({
+  //   markedQ,
+  //   cbtAnswer,
+  //   cbtObject,
+  //   markedAssignmentResults,
+  //   dt,
+  //   cbtResult,
+  // });
 
   return (
     <div>
@@ -405,9 +444,9 @@ const CbtResults = ({}) => {
             </div>
           </div>
 
-          <div className='w-100 d-flex justify-content-center mt-4'>
+          {/* <div className='w-100 d-flex justify-content-center mt-4'>
             <ButtonGroup options={optionTabShow()} />
-          </div>
+          </div> */}
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>
@@ -423,10 +462,10 @@ const CbtResults = ({}) => {
             cbtObject?.questions?.length > 0 &&
             ResultTab === "1" && (
               <div className='my-5 '>
-                <div className='d-flex flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
-                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                <div className='d-flex mb-5 flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
+                  <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
-                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-4'>
                       <p className='fs-3 fw-bold'>Total Marks</p>
                       <p className='fs-1 fw-bold'>{cbtObject?.total_marks}</p>
                     </div>
@@ -435,11 +474,10 @@ const CbtResults = ({}) => {
                       <p className='fs-3 fw-bold'>Student Score</p>
                       <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
                     </div>
-                   
                   </div>
-                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                  <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
-                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Total Test Duration</p>
                       <p className='fs-1 fw-bold'>
                         {
@@ -451,7 +489,7 @@ const CbtResults = ({}) => {
                       </p>
                     </div>
                     {/* score */}
-                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Student Duration</p>
                       <p className='fs-1 fw-bold'>
                         {
@@ -500,6 +538,7 @@ const CbtResults = ({}) => {
                   markedQ={markedQ}
                   result={cbtObject}
                   ResultTab={ResultTab}
+                  cbtResult={cbtResult}
                   // total_mark={cbtAnswer?.total_marks}
                   // score={cbtAnswer?.score}
                   // mark={cbtAnswer?.score}

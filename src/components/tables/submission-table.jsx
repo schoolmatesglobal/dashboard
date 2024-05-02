@@ -18,6 +18,7 @@ import { formatTime } from "../../pages/dashboard/cbt/results/constant";
 
 const SubmissionTable = ({
   addCbtResult,
+  cbtResult,
   addCbtResultLoading,
   columns,
   data,
@@ -79,15 +80,12 @@ const SubmissionTable = ({
   const buttonOptions2 = [
     {
       title: `${
-        ResultTab === "1"
-          ? "Submit CBT Result"
-          : ResultTab === "2"
-          ? "Submit Theory Result"
-          : ""
+        cbtResult?.length > 0 ? "ReSubmit CBT Result" : "Submit CBT Result"
       }`,
       onClick: () => {
         setLoginPrompt2(true);
       },
+      // variant: "warning",
       // disabled: objectiveSubmitted,
     },
   ];

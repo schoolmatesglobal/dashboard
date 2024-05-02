@@ -425,9 +425,9 @@ const StudentCBTResults = (
               /> */}
             </div>
           </div>
-          <div className='w-100 d-flex justify-content-center mt-4'>
+          {/* <div className='w-100 d-flex justify-content-center mt-4'>
             <ButtonGroup options={optionTabShow()} />
-          </div>
+          </div> */}
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>
@@ -446,8 +446,8 @@ const StudentCBTResults = (
             cbtObject?.questions?.length > 0 &&
             ResultTab === "1" && (
               <div className='my-5'>
-                 <div className='d-flex flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
-                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                 <div className='d-flex mb-5 flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
+                  <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
                     <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Total Marks</p>
@@ -460,9 +460,9 @@ const StudentCBTResults = (
                     </div>
                    
                   </div>
-                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                  <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
-                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Total Test Duration</p>
                       <p className='fs-1 fw-bold'>
                         {
@@ -474,7 +474,7 @@ const StudentCBTResults = (
                       </p>
                     </div>
                     {/* score */}
-                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Student Duration</p>
                       <p className='fs-1 fw-bold'>
                         {

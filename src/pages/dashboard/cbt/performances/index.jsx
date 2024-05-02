@@ -25,6 +25,10 @@ import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import PageSheet from "../../../../components/common/page-sheet";
 import GoBack from "../../../../components/common/go-back";
+import BarChart from "../../../../components/charts/bar-chart";
+import BarCharts from "../../../../components/charts/bar-chart";
+import PieChart from "../../../../components/charts/pie-chart";
+import PieCharts from "../../../../components/charts/pie-chart";
 
 const CbtPerformances = ({}) => {
   const {
@@ -69,7 +73,7 @@ const CbtPerformances = ({}) => {
   };
 
   const newStudents = [
-    { value: "all students", title: "All Students", id: 999 },
+    { value: "all students", title: "All Students", id: 999999 },
     ...myStudents,
   ];
 
@@ -89,7 +93,7 @@ const CbtPerformances = ({}) => {
   };
 
   const activateRetrieve2 = () => {
-    if (subject !== "") {
+    if (subject_id !== "") {
       return true;
     } else {
       return false;
@@ -113,22 +117,16 @@ const CbtPerformances = ({}) => {
 
   /////// FETCH ALL PERFORMANCE /////
   const {
-    isLoading: allPerformanceLoading,
-    refetch: refetchAllPerformance,
-    data: allPerformance,
+    isLoading: allCbtPerformanceLoading,
+    refetch: refetchAllCbtPerformance,
+    data: allCbtPerformance,
   } = useQuery(
-    [
-      queryKeys.GET_ALL_PERFORMANCE,
-      user?.period,
-      user?.term,
-      user?.session,
-      subject_id,
-    ],
+    [queryKeys.GET_ALL_CBT_PERFORMANCE],
     () =>
-      apiServices.getAllStudentPerformance(
-        user?.period,
-        user?.term,
-        user?.session,
+      apiServices.getAllCbtPerformance(
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
         subject_id
       ),
     {
@@ -162,27 +160,20 @@ const CbtPerformances = ({}) => {
     }
   );
 
-  /////// FETCH PERFORMANCE /////
+  /////// FETCH CBT PERFORMANCE /////
   const {
-    isLoading: performanceLoading,
-    refetch: refetchPerformance,
-    data: performance,
+    isLoading: cbtPerformanceLoading,
+    refetch: refetchCbtPerformance,
+    data: cbtPerformance,
   } = useQuery(
-    [
-      queryKeys.GET_PERFORMANCE,
-      user?.period,
-      user?.term,
-      user?.session,
-      subject_id,
-      student_id,
-    ],
+    [queryKeys.GET_CBT_PERFORMANCE],
     () =>
-      apiServices.getStudentPerformance(
-        user?.period,
-        user?.term,
-        user?.session,
-        subject_id,
-        student_id
+      apiServices.getCbtPerformance(
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        student_id,
+        subject_id
       ),
     {
       retry: 3,
@@ -258,16 +249,25 @@ const CbtPerformances = ({}) => {
     },
   ];
 
-  const allLoading = showLoading || performanceLoading || allPerformanceLoading;
+  const allLoading =
+    showLoading || cbtPerformanceLoading || allCbtPerformanceLoading;
 
   const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75];
 
   const studentData = [
-    { name: "Lukaku Romelu", scores: [65, 70, 68, 72, 75, 80, 85, 82, 78, 75] },
-    { name: "Adammu Adam", scores: [70, 72, 75, 78, 80, 82, 85, 88, 90, 92] },
-    { name: "Jobs Steven", scores: [60, 65, 68, 70, 72, 75, 78, 80, 82, 85] },
-    { name: "Alex Job", scores: [30, 44, 32, 64, 81, 65, 58, 70, 62, 75] },
+    { name: "Lukaku Romelu", scores: [65] },
+    { name: "Jobs Steven", scores: [60] },
+    { name: "Alex Job", scores: [30] },
+    { name: "Alex Job", scores: [30] },
+    { name: "Alex Job", scores: [50] },
+    { name: "Alex Job3", scores: [30] },
+    { name: "Alex Job", scores: [30] },
+    { name: "Alex Job", scores: [30] },
   ];
+
+  const studentNames = myStudents?.map((ms, i) => {
+    return ms.value;
+  });
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
@@ -290,18 +290,22 @@ const CbtPerformances = ({}) => {
     trigger();
 
     if (activateRetrieve()) {
-      // refetchCbtAnswer();
+      refetchCbtPerformance();
+      refetchAllCbtPerformance();
     }
 
     // setAnsweredTheoQ(submittedTheoAssignment);
-  }, [subject_id, student_id]);
+  }, [subject_id, student_id, question_type]);
 
   console.log({
     subject_id,
     student_id,
-    performance,
-    allPerformance,
+    cbtPerformance,
+    allCbtPerformance,
     subjectsByTeacher,
+    myStudents,
+    state,
+    studentNames,
   });
 
   return (
@@ -349,12 +353,14 @@ const CbtPerformances = ({}) => {
               />
               <AuthSelect
                 sort
-                options={myStudents}
+                options={newStudents}
                 value={student}
                 onChange={({ target: { value } }) => {
                   setMarkedQ((prev) => {
                     const fId = () => {
-                      const ff = myStudents?.find((opt) => opt.value === value);
+                      const ff = newStudents?.find(
+                        (opt) => opt.value === value
+                      );
                       if (ff) {
                         return ff?.id?.toString();
                       }
@@ -379,18 +385,54 @@ const CbtPerformances = ({}) => {
           {!allLoading && (
             <div className='mt-5'>
               {student !== "all students" && (
-                <LineChart
-                  chartTitle={`${
-                    student ? "Chart for" : "No Chart Result"
-                  } ${student}`}
-                  data={performance}
-                />
+                <div className='mt-5'>
+                  <p className='fs-3 fw-bold'>{`Score Analysis (%) for ${student}`}</p>
+                  <PieCharts
+                    chartTitle={`${
+                      student ? "Chart for" : "No Chart Result"
+                    } ${student}`}
+                    // data={cbtPerformance}
+                    data={data}
+                    value='Score'
+                    colour='#11355c'
+                    unit=''
+                  />
+                  <p className='fs-3 fw-bold mt-5'>{`Time Analysis (%) for ${student}`}</p>
+                  <PieCharts
+                    chartTitle={`${
+                      student ? "Chart for" : "No Chart Result"
+                    } ${student}`}
+                    // data={cbtPerformance}
+                    data={data}
+                    value='Time'
+                    colour='#82ca9d'
+                    unit='mins'
+                  />
+                </div>
               )}
               {student === "all students" && (
-                <LineChart2
-                  chartTitle={`Class Chart`}
-                  studentData={allPerformance}
-                />
+                <div className='mt-5'>
+                  <p className='fs-3 fw-bold'>Score Analysis (%) for all students</p>
+                  <BarCharts
+                    chartTitle={`Class Chart`}
+                    studentData={studentData}
+                    studentNames={studentNames}
+                    value='Score'
+                    colour='#11355c'
+                    unit='%'
+                    // studentData={allCbtPerformance}
+                  />
+                  <p className='fs-3 fw-bold mt-5'>Time Analysis (mins) for all students</p>
+                  <BarCharts
+                    chartTitle={`Class Chart`}
+                    studentData={studentData}
+                    studentNames={studentNames}
+                    value='Time'
+                    colour='#82ca9d'
+                    unit='mins'
+                    // studentData={allCbtPerformance}
+                  />
+                </div>
               )}
             </div>
           )}
