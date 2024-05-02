@@ -12,24 +12,50 @@ import Prompt from "../../../../components/modals/prompt";
 import { useSubject } from "../../../../hooks/useSubjects";
 import ButtonGroup from "../../../../components/buttons/button-group";
 import { FaComputer } from "react-icons/fa6";
+import { useCBT } from "../../../../hooks/useCBT";
+import { useLocation } from "react-router-dom";
+import useMyMediaQuery from "../../../../hooks/useMyMediaQuery";
+import { formatTime } from "../results/constant";
+import PageSheet from "../../../../components/common/page-sheet";
+import GoBack from "../../../../components/common/go-back";
+import { useMediaQuery } from "react-responsive";
+import { useStudentCBT } from "../../../../hooks/useStudentCBT";
 
-const StudentResults = ({
-  markedQ,
-  setMarkedQ,
-  answeredObjResults,
-  setAnsweredObjResults,
-  answeredTheoryResults,
-  setAnsweredTheoryResults,
-  ResultTab,
-  setResultTab,
-}) => {
+const StudentCBTResults = (
+  {
+    // markedQ,
+    // setMarkedQ,
+    // answeredObjResults,
+    // setAnsweredObjResults,
+    // answeredTheoryResults,
+    // setAnsweredTheoryResults,
+    // ResultTab,
+    // setResultTab,
+  }
+) => {
   const {
     apiServices,
     errorHandler,
     permission,
     user,
     updatePreviewAnswerFxn,
-  } = useAssignments();
+    markedQ,
+    setMarkedQ,
+    answeredObjResults,
+    setAnsweredObjResults,
+    answeredTheoryResults,
+    setAnsweredTheoryResults,
+    ResultTab,
+    setResultTab,
+  } = useCBT();
+
+  const {studentSubjects} = useStudentCBT()
+
+  const [cbtObject, setCbtObject] = useState({});
+
+  const { state } = useLocation();
+
+  const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery();
 
   const { question_type, subject, subject_id, student_id, week, student } =
     markedQ;
@@ -43,35 +69,38 @@ const StudentResults = ({
 
   const queryClient = useQueryClient();
 
+  const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
+
+  const trigger = () => {
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+    }, 1000);
+  };
+
   const activateRetrieve = () => {
-    if (subject !== "" && week !== "") {
+    if (question_type !== "" && subject_id !== "") {
       return true;
     } else {
       return false;
     }
   };
 
-  /////// FETCH ANSWERED ASSIGNMENTS /////
+  /////// FETCH ANSWERED CBT /////
   const {
-    isLoading: submittedAssignmentLoading,
-    refetch: refetchSubmittedAssignment,
-    data: submittedAssignment,
+    isLoading: cbtAnswerLoading,
+    refetch: refetchCbtAnswer,
+    data: cbtAnswer,
   } = useQuery(
-    [
-      queryKeys.GET_SUBMITTED_ASSIGNMENT,
-      user?.period,
-      user?.term,
-      user?.session,
-      "objective2",
-      week,
-    ],
+    [queryKeys.GET_SUBMITTED_CBT_STUDENT, "3"],
     () =>
-      apiServices.getSubmittedAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        "objective",
-        week
+      apiServices.getCbtAnswerByStudentId(
+        user?.id,
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        question_type,
+        subject_id
       ),
     {
       retry: 3,
@@ -80,25 +109,30 @@ const StudentResults = ({
       select: (data) => {
         const ffk = apiServices.formatData(data);
 
-        const sorted = ffk
-          ?.filter((dt) => dt?.subject === subject && dt?.student === student)
-          ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
-              return -1;
-            }
-            if (a.question_number > b.question_number) {
-              return 1;
-            }
-            return 0;
-          });
+        const sorted = ffk?.sort((a, b) => {
+          if (a.question_number < b.question_number) {
+            return -1;
+          }
+          if (a.question_number > b.question_number) {
+            return 1;
+          }
+          return 0;
+        });
 
         const calculatedData = analyzeQuestions(sorted);
 
         console.log({ ffk, data, sorted });
+        // if (question_type === "objective") {
+        //   return calculatedData ?? {};
+        // } else {
+        //   return {};
+        // }
         return calculatedData ?? {};
       },
 
-      onSuccess(data) {},
+      onSuccess(data) {
+        setCbtObject(data);
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -134,7 +168,8 @@ const StudentResults = ({
     {
       retry: 3,
       // enabled: permission?.read || permission?.readClass,
-      enabled: activateRetrieve(),
+      // enabled: activateRetrieve(),
+      enabled: false,
 
       select: (data) => {
         const mmk = apiServices.formatData(data);
@@ -188,10 +223,10 @@ const StudentResults = ({
   ];
 
   const showNoAssignment = () => {
-    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
+    if (cbtObject?.questions?.length === 0) {
       return true;
     } else if (
-      ResultTab === "2" &&
+      // ResultTab === "2" &&
       markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
@@ -201,10 +236,10 @@ const StudentResults = ({
   };
 
   const showNoAssignment2 = () => {
-    if (ResultTab === "1" && submittedAssignment?.questions?.length === 0) {
+    if (cbtObject?.questions?.length === 0) {
       return true;
     } else if (
-      ResultTab === "2" &&
+      // ResultTab === "2" &&
       markedAssignmentResults?.questions?.length === 0
     ) {
       return true;
@@ -214,7 +249,7 @@ const StudentResults = ({
   };
 
   const showNoAssignment3 = () => {
-    if (!week || !subject) {
+    if (!question_type || !subject_id) {
       return true;
     } else {
       return false;
@@ -235,11 +270,11 @@ const StudentResults = ({
     };
 
     if (
-      submittedAssignment?.questions?.length >= 1 &&
+      cbtObject?.questions?.length >= 1 &&
       markedAssignmentResults?.questions?.length >= 1
     ) {
       return [objectiveTab, theoryTab];
-    } else if (submittedAssignment?.questions?.length >= 1) {
+    } else if (cbtObject?.questions?.length >= 1) {
       return [objectiveTab];
     } else if (markedAssignmentResults?.questions?.length >= 1) {
       return [theoryTab];
@@ -248,15 +283,30 @@ const StudentResults = ({
     return [];
   };
 
-  const allLoading = showLoading || markedAssignmentResultsLoading;
+  const allLoading =
+    showLoading || markedAssignmentResultsLoading || cbtAnswerLoading;
 
-  useEffect(() => {
-    if (markedAssignmentResults?.questions?.length >= 1) {
-      setResultTab("2");
-    } else {
-      setResultTab("1");
-    }
-  }, [week, subject]);
+  const questionType = [
+    {
+      value: "objective",
+      title: "Objective",
+    },
+
+    // {
+    //   value: "theory",
+    //   title: "Theory",
+    // },
+  ];
+
+  let dt = formatTime(cbtObject?.totalDuration, cbtObject?.submittedDuration);
+
+  // useEffect(() => {
+  //   if (markedAssignmentResults?.questions?.length >= 1) {
+  //     setResultTab("2");
+  //   } else {
+  //     setResultTab("1");
+  //   }
+  // }, [week, subject]);
 
   useEffect(() => {
     const sbb = subjects?.map((sb) => {
@@ -284,241 +334,271 @@ const StudentResults = ({
     });
   }, []);
 
+  useEffect(() => {
+    trigger();
+
+    if (activateRetrieve()) {
+      refetchCbtAnswer();
+    }
+
+    // setAnsweredTheoQ(submittedTheoAssignment);
+  }, [subject, student_id]);
+
   console.log({
     user,
     markedQ,
-    submittedAssignment,
+    cbtAnswer,
+    cbtObject,
     markedAssignmentResults,
   });
 
   return (
     <div>
-      <div className={styles.created}>
-        <div className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between'>
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1'>
-            <AuthSelect
-              sort
-              options={[
-                { value: "1", title: "Week 1" },
-                { value: "2", title: "Week 2" },
-                { value: "3", title: "Week 3" },
-                { value: "4", title: "Week 4" },
-                { value: "5", title: "Week 5" },
-                { value: "6", title: "Week 6" },
-                { value: "7", title: "Week 7" },
-                { value: "8", title: "Week 8" },
-                { value: "9", title: "Week 9" },
-                { value: "10", title: "Week 10" },
-                { value: "11", title: "Week 11" },
-                { value: "12", title: "Week 12" },
-                { value: "13", title: "Week 13" },
-              ]}
-              value={week}
-              // defaultValue={week && week}
-              onChange={({ target: { value } }) => {
-                setMarkedQ((prev) => {
-                  return { ...prev, week: value };
-                });
-                // setResultTab("2");
-              }}
-              placeholder='Select Week'
-              wrapperClassName='w-100'
-            />
-
-            <AuthSelect
-              sort
-              options={newSubjects}
-              value={subject}
-              // defaultValue={subject && subject}
-              onChange={({ target: { value } }) => {
-                const fId = () => {
-                  const ff = subjects?.find((opt) => opt.subject === value);
-                  if (ff) {
-                    return ff?.id?.toString();
-                  }
-                };
-
-                setMarkedQ((prev) => {
-                  return { ...prev, subject: value, subject_id: fId() };
-                });
-
-                // setResultTab("2");
-              }}
-              placeholder='Select Subject'
-              wrapperClassName='w-100'
-              // label="Subject"
-            />
-
-            {/* <AuthSelect
-              sort
-              options={[
-                { value: "objective", title: "Objective" },
-                { value: "theory", title: "Theory" },
-              ]}
-              value={question_type}
-              // defaultValue={question_type && question_type}
-              onChange={({ target: { value } }) => {
-                setMarkedQ((prev) => {
-                  return { ...prev, question_type: value };
-                });
-              }}
-              placeholder='Question Type'
-              wrapperClassName='w-100'
-            /> */}
+      <GoBack />
+      <PageSheet>
+        <div className={styles.created}>
+          <div className='d-flex align-items-center justify-content-center mb-4'>
+            <p className='fw-bold fs-4'>
+              {/* CBT {toSentenceCase(state?.creds?.question_type)} |{" "} */}
+              {state?.creds?.period} | {state?.creds?.term} |{" "}
+              {state?.creds?.session}
+            </p>
           </div>
-        </div>
 
-        <div className='w-100 d-flex justify-content-center mt-4'>
-          <ButtonGroup options={optionTabShow()} />
-        </div>
+          <div className='d-flex flex-column flex-lg-row align-items-center  gap-4'>
+            <div
+              className={`d-flex align-items-center flex-grow-1 gap-3 ${
+                isDesktop && "w-100"
+              }`}
+            >
+              <AuthSelect
+                sort
+                options={studentSubjects}
+                value={subject}
+                // defaultValue={subject && subject}
+                onChange={({ target: { value } }) => {
+                  const fId = () => {
+                    const ff = subjects?.find((opt) => opt.subject === value);
+                    if (ff) {
+                      return ff?.id?.toString();
+                    }
+                  };
+                  setMarkedQ((prev) => {
+                    return { ...prev, subject: value, subject_id: fId() };
+                  });
+                  // setResultTab("2");
+                }}
+                placeholder='Select Subject'
+                wrapperClassName='w-100'
+                // label="Subject"
+              />
+               <AuthSelect
+                sort
+                options={questionType}
+                value={question_type}
+                onChange={({ target: { value } }) => {
+                  setMarkedQ((prev) => {
+                    return { ...prev, question_type: value, answer: "" };
+                  });
+                  // setObjectiveSubmitted(false);
+                  // reload();
+                }}
+                placeholder='Select type'
+                wrapperClassName=''
+              />
 
-        {allLoading && (
-          <div className={styles.spinner_container}>
-            <Spinner /> <p className='fs-3'>Loading...</p>
+              {/* <AuthSelect
+                sort
+                options={[
+                  { value: "objective", title: "Objective" },
+                  { value: "theory", title: "Theory" },
+                ]}
+                value={question_type}
+                // defaultValue={question_type && question_type}
+                onChange={({ target: { value } }) => {
+                  setMarkedQ((prev) => {
+                    return { ...prev, question_type: value };
+                  });
+                }}
+                placeholder='Question Type'
+                wrapperClassName='w-100'
+              /> */}
+            </div>
           </div>
-        )}
-
-        {!allLoading &&
-          (showNoAssignment() ||
-            showNoAssignment2() ||
-            showNoAssignment3()) && (
-            <div className={styles.placeholder_container}>
-              <FaComputer className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>No CBT Result</p>
+          <div className='w-100 d-flex justify-content-center mt-4'>
+            <ButtonGroup options={optionTabShow()} />
+          </div>
+          {allLoading && (
+            <div className={styles.spinner_container}>
+              <Spinner /> <p className='fs-3'>Loading...</p>
             </div>
           )}
-
-        {!allLoading &&
-          submittedAssignment?.questions?.length > 0 &&
-          ResultTab === "1" && (
-            <div className=''>
-              <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
-                {/* total marks */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Total Marks</p>
-                  <p className='fs-1 fw-bold'>
-                    {submittedAssignment?.total_marks}
-                  </p>
-                </div>
-                {/* score */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Score</p>
-                  <p className='fs-1 fw-bold'>{submittedAssignment?.score}</p>
-                </div>
-                {/* percentage */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Percentage</p>
-                  <p className='fs-1 fw-bold'>
-                    {submittedAssignment?.percentage}
-                  </p>
-                </div>
+          {!allLoading &&
+            (showNoAssignment() ||
+              showNoAssignment2() ||
+              showNoAssignment3()) && (
+              <div className={styles.placeholder_container}>
+                <FaComputer className={styles.icon} />
+                <p className='fs-1 fw-bold mt-3'>No CBT Result</p>
               </div>
-              <SubmissionTable
-                centered
-                isLoading={allLoading}
-                isStudent={true}
-                // addAssignmentResult={addAssignmentResult}
-                // addAssignmentResultLoading={addAssignmentResultLoading}
-                rowHasView={true}
-                columns={[
-                  // {
-                  //   Header: "Question Type",
-                  //   accessor: "question_type",
-                  // },
-                  {
-                    Header: "Question Number",
-                    accessor: "question_number",
-                  },
-                  {
-                    Header: "Question Mark",
-                    accessor: "question_mark",
-                  },
-                  {
-                    Header: "Student Score",
-                    accessor: "answer_state",
-                  },
-                ]}
-                data={submittedAssignment?.questions}
-                markedQ={markedQ}
-                result={submittedAssignment}
-                ResultTab={ResultTab}
-              />
-            </div>
-          )}
-
-        {!allLoading &&
-          markedAssignmentResults?.questions?.length > 0 &&
-          ResultTab === "2" && (
-            <div className=''>
-              <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
-                {/* total marks */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Total Marks</p>
-                  <p className='fs-1 fw-bold'>
-                    {markedAssignmentResults?.total_marks}
-                  </p>
+            )}
+          {!allLoading &&
+            cbtObject?.questions?.length > 0 &&
+            ResultTab === "1" && (
+              <div className='my-5'>
+                 <div className='d-flex flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
+                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                    {/* total marks */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Total Marks</p>
+                      <p className='fs-1 fw-bold'>{cbtObject?.total_marks}</p>
+                    </div>
+                    {/* score */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Student Score</p>
+                      <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
+                    </div>
+                   
+                  </div>
+                  <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
+                    {/* total marks */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Total Test Duration</p>
+                      <p className='fs-1 fw-bold'>
+                        {
+                          formatTime(
+                            cbtObject?.totalDuration,
+                            cbtObject?.submittedDuration
+                          )?.totalTime
+                        }
+                      </p>
+                    </div>
+                    {/* score */}
+                    <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Student Duration</p>
+                      <p className='fs-1 fw-bold'>
+                        {
+                          formatTime(
+                            cbtObject?.totalDuration,
+                            cbtObject?.submittedDuration
+                          )?.difference
+                        }
+                      </p>
+                    </div>
+                    {/* percentage */}
+                    {/* <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                      <p className='fs-3 fw-bold'>Percentage Score</p>
+                      <p className='fs-1 fw-bold'>
+                        {`${cbtAnswer?.percentage}%`}
+                      </p>
+                    </div> */}
+                  </div>
                 </div>
-                {/* score */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Score</p>
-                  <p className='fs-1 fw-bold'>
-                    {markedAssignmentResults?.score}
-                  </p>
-                </div>
-                {/* percentage */}
-                <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                  <p className='fs-3 fw-bold'>Percentage</p>
-                  <p className='fs-1 fw-bold'>
-                    {markedAssignmentResults?.percentage}
-                  </p>
-                </div>
+                <SubmissionTable
+                  centered
+                  isLoading={allLoading}
+                  isStudent={true}
+                  // addAssignmentResult={addAssignmentResult}
+                  // addAssignmentResultLoading={addAssignmentResultLoading}
+                  rowHasView={true}
+                  columns={[
+                    // {
+                    //   Header: "Question Type",
+                    //   accessor: "question_type",
+                    // },
+                    {
+                      Header: "Question Number",
+                      accessor: "question_number",
+                    },
+                    {
+                      Header: "Question Mark",
+                      accessor: "question_mark",
+                    },
+                    {
+                      Header: "Student Score",
+                      accessor: "answer_state",
+                    },
+                  ]}
+                  data={cbtObject?.questions}
+                  markedQ={markedQ}
+                  result={cbtObject}
+                  ResultTab={ResultTab}
+                />
               </div>
-              <SubmissionTable
-                updatePreviewAnswerFxn={updatePreviewAnswerFxn}
-                // previewAnswer={previewAnswer}
-                centered
-                isLoading={allLoading}
-                isStudent={true}
-                // addAssignmentResult={addAssignmentResult}
-                // addAssignmentResultLoading={addAssignmentResultLoading}
-                rowHasView={true}
-                columns={[
-                  // {
-                  //   Header: "Question Type",
-                  //   accessor: "question_type",
-                  // },
-                  {
-                    Header: "Question Number",
-                    accessor: "question_number",
-                  },
-                  {
-                    Header: "Question Mark",
-                    accessor: "question_mark",
-                  },
-
-                  {
-                    Header: "Student Score",
-                    accessor: "teacher_mark",
-                  },
-                ]}
-                data={markedAssignmentResults?.questions}
-                markedQ={markedQ}
-                result={markedAssignmentResults}
-                ResultTab={ResultTab}
-              />
-            </div>
-          )}
-      </div>
-      <Prompt
-        isOpen={loginPrompt}
-        toggle={() => setLoginPrompt(!loginPrompt)}
-        hasGroupedButtons={true}
-        groupedButtonProps={buttonOptions}
-        singleButtonText='Preview'
-        promptHeader={` CONFIRM RESULT SUBMISSION `}
-      ></Prompt>
+            )}
+          {!allLoading &&
+            markedAssignmentResults?.questions?.length > 0 &&
+            ResultTab === "2" && (
+              <div className=''>
+                <div className='d-flex justify-content-center align-items-center gap-4 w-100 my-5'>
+                  {/* total marks */}
+                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <p className='fs-3 fw-bold'>Total Marks</p>
+                    <p className='fs-1 fw-bold'>
+                      {markedAssignmentResults?.total_marks}
+                    </p>
+                  </div>
+                  {/* score */}
+                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <p className='fs-3 fw-bold'>Score</p>
+                    <p className='fs-1 fw-bold'>
+                      {markedAssignmentResults?.score}
+                    </p>
+                  </div>
+                  {/* percentage */}
+                  <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
+                    <p className='fs-3 fw-bold'>Percentage</p>
+                    <p className='fs-1 fw-bold'>
+                      {markedAssignmentResults?.percentage}
+                    </p>
+                  </div>
+                </div>
+                <SubmissionTable
+                  updatePreviewAnswerFxn={updatePreviewAnswerFxn}
+                  // previewAnswer={previewAnswer}
+                  centered
+                  isLoading={allLoading}
+                  isStudent={true}
+                  // addAssignmentResult={addAssignmentResult}
+                  // addAssignmentResultLoading={addAssignmentResultLoading}
+                  rowHasView={true}
+                  columns={[
+                    // {
+                    //   Header: "Question Type",
+                    //   accessor: "question_type",
+                    // },
+                    {
+                      Header: "Question Number",
+                      accessor: "question_number",
+                    },
+                    {
+                      Header: "Question Mark",
+                      accessor: "question_mark",
+                    },
+                    {
+                      Header: "Student Score",
+                      accessor: "teacher_mark",
+                    },
+                  ]}
+                  data={markedAssignmentResults?.questions}
+                  markedQ={markedQ}
+                  result={markedAssignmentResults}
+                  ResultTab={ResultTab}
+                />
+              </div>
+            )}
+        </div>
+        <Prompt
+          isOpen={loginPrompt}
+          toggle={() => setLoginPrompt(!loginPrompt)}
+          hasGroupedButtons={true}
+          groupedButtonProps={buttonOptions}
+          singleButtonText='Preview'
+          promptHeader={` CONFIRM RESULT SUBMISSION `}
+        ></Prompt>
+      </PageSheet>
     </div>
   );
 };
 
-export default StudentResults;
+export default StudentCBTResults;

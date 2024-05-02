@@ -114,6 +114,7 @@ import Submission from "../pages/dashboard/cbt/submission";
 import CbtSubmission from "../pages/dashboard/cbt/submission";
 import CbtResults from "../pages/dashboard/cbt/results";
 import CbtPerformances from "../pages/dashboard/cbt/performances";
+import StudentCBTResults from "../pages/dashboard/cbt/student/results";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -202,6 +203,15 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='cbt'>
               <ViewCBT />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='cbt/student/results'
+          element={
+            <Guard routeName='cbt'>
+              <StudentCBTResults />
             </Guard>
           }
         />

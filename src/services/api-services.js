@@ -2729,6 +2729,21 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async addCbtResult(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/cbt/result/add`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 }
 
 export default APIServies;

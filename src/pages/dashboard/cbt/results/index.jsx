@@ -250,12 +250,12 @@ const CbtResults = ({}) => {
     // },
   ];
 
-  /////// POST ASSIGNMENT RESULT ////
+  /////// POST CBT RESULT ////
   const {
-    mutateAsync: addAssignmentResult,
-    isLoading: addAssignmentResultLoading,
+    mutateAsync: addCbtResult,
+    isLoading: addCbtResultLoading,
   } = useMutation(
-    apiServices.submitAssignmentResult,
+    apiServices.addCbtResult,
 
     {
       onSuccess() {
@@ -435,13 +435,7 @@ const CbtResults = ({}) => {
                       <p className='fs-3 fw-bold'>Student Score</p>
                       <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
                     </div>
-                    {/* percentage */}
-                    {/* <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
-                      <p className='fs-3 fw-bold'>Percentage Score</p>
-                      <p className='fs-1 fw-bold'>
-                        {`${cbtAnswer?.percentage}%`}
-                      </p>
-                    </div> */}
+                   
                   </div>
                   <div className='d-flex justify-content-center align-items-center gap-2 w-100 '>
                     {/* total marks */}
@@ -480,9 +474,9 @@ const CbtResults = ({}) => {
                 <SubmissionTable
                   centered
                   isLoading={allLoading}
-                  addAssignmentResult={addAssignmentResult}
+                  addCbtResult={addCbtResult}
                   isStudent={false}
-                  addAssignmentResultLoading={addAssignmentResultLoading}
+                  addCbtResultLoading={addCbtResultLoading}
                   rowHasView={true}
                   columns={[
                     // {
@@ -541,8 +535,8 @@ const CbtResults = ({}) => {
                   // previewAnswer={previewAnswer}
                   centered
                   isLoading={allLoading}
-                  addAssignmentResult={addAssignmentResult}
-                  addAssignmentResultLoading={addAssignmentResultLoading}
+                  addCbtResult={addCbtResult}
+                  addCbtResultLoading={addCbtResultLoading}
                   rowHasView={true}
                   isStudent={false}
                   columns={[

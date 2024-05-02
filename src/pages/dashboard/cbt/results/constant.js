@@ -14,12 +14,12 @@ export function formatTime(totalTime, submittedTime) {
     // Format total time
     let totalFormatted = `${totalHours} hr${
       totalHours !== 1 ? "s" : ""
-    }, ${totalMinutes} min${totalMinutes !== 1 ? "s" : ""}`;
+    } : ${totalMinutes} min${totalMinutes !== 1 ? "s" : ""}`;
 
     // Format submitted time
     let submittedFormatted = `${subHours} hr${
       subHours !== 1 ? "s" : ""
-    }, ${subMinutes} min${subMinutes !== 1 ? "s" : ""}, ${subSeconds} sec${
+    } : ${subMinutes} min${subMinutes !== 1 ? "s" : ""} : ${subSeconds} sec${
       subSeconds !== 1 ? "s" : ""
     }`;
 
@@ -32,7 +32,7 @@ export function formatTime(totalTime, submittedTime) {
         differenceHours !== 1 ? "s" : ""
       }`;
       if (remainingMinutes > 0) {
-        differenceFormatted += `, ${remainingMinutes} min${
+        differenceFormatted += `, : ${remainingMinutes} min${
           remainingMinutes !== 1 ? "s" : ""
         }`;
       }
