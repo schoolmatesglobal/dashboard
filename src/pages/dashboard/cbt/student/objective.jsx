@@ -71,11 +71,13 @@ const Objective = ({
 
   // const [isPlaying, setIsPlaying] = useState(false);
   const [showWarning, setShowWarning] = useState(true);
+  const [inCompleteError, setInCompleteError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [testEnded, setTestEnded] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [secondleft, setSecondLeft] = useState(null);
   const [hourLeft, setHourLeft] = useState(null);
+  const [submittedTime, setSubmittedTime] = useState("");
 
   const [slice1, setSlice1] = useState("0");
   const [slice2, setSlice2] = useState("1");
@@ -294,6 +296,7 @@ const Objective = ({
   );
 
   const handleChange = (optionValue, CQ) => {
+    setInCompleteError(false);
     const indexToUpdate = answeredObjectiveQ?.findIndex(
       (item) => item.question === CQ.question
     );
@@ -359,6 +362,7 @@ const Objective = ({
     (submitted && !testEnded) || (initialTaken && !submitted);
 
   useEffect(() => {
+    setSubmittedTime(`${hourLeft}:${timeLeft}:${secondleft}`);
     if (hourLeft === 0 && timeLeft === 0 && secondleft === 0) {
       setTestEnded(true);
       setHideAllBars(false);
@@ -392,7 +396,7 @@ const Objective = ({
               answer: "No option was selected",
               correct_answer: qs.answer,
               submitted: 1,
-              submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+              submitted_time: submittedTime,
               duration: `${hour}:${minute}`,
             };
           });
@@ -411,7 +415,7 @@ const Objective = ({
           const newAnswers = answeredObjectiveQ?.map((aq, i) => {
             return {
               ...aq,
-              submitted_time: `${hourLeft}:${timeLeft}:${secondleft}`,
+              submitted_time: submittedTime,
             };
           });
           submitCbtQuestion(newAnswers);
@@ -493,29 +497,31 @@ const Objective = ({
                   </p>
                 </div>
               )}
-              <CountdownTimer
-                hour={hour}
-                day={day}
-                minute={minute}
-                isPlaying={isPlaying}
-                setIsPlaying={setIsPlaying}
-                showWarning={showWarning}
-                setShowWarning={setShowWarning}
-                timeLeft={timeLeft}
-                setTimeLeft={setTimeLeft}
-                objectiveSubmitted={objectiveSubmitted}
-                setObjectiveSubmitted={setObjectiveSubmitted}
-                submitCbtQuestion={submitCbtQuestion}
-                secondleft={secondleft}
-                setSecondLeft={setSecondLeft}
-                hourLeft={hourLeft}
-                setHourLeft={setHourLeft}
-                testEnded={testEnded}
-                setTestEnded={setTestEnded}
-                initialTaken={initialTaken}
-                submitted={submitted}
-                setSubmitted={setSubmitted}
-              />
+              {
+                <CountdownTimer
+                  hour={createQ2?.hour}
+                  day={0}
+                  minute={createQ2?.minute}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                  showWarning={showWarning}
+                  setShowWarning={setShowWarning}
+                  timeLeft={timeLeft}
+                  setTimeLeft={setTimeLeft}
+                  objectiveSubmitted={objectiveSubmitted}
+                  setObjectiveSubmitted={setObjectiveSubmitted}
+                  submitCbtQuestion={submitCbtQuestion}
+                  secondleft={secondleft}
+                  setSecondLeft={setSecondLeft}
+                  hourLeft={hourLeft}
+                  setHourLeft={setHourLeft}
+                  testEnded={testEnded}
+                  setTestEnded={setTestEnded}
+                  initialTaken={initialTaken}
+                  submitted={submitted}
+                  setSubmitted={setSubmitted}
+                />
+              }
 
               <div className='w-100 d-flex justify-content-center align-items-center gap-3 mt-5 mb-4'>
                 <p className='fs-3 fw-bold'>Instructions:</p>
@@ -565,7 +571,9 @@ const Objective = ({
                   </div>
                   <div className='d-flex justify-content-center align-items-center gap-3 bg-info bg-opacity-10 py-3 px-4'>
                     <p className='fs-3 fw-bold'>Total Mark(s):</p>
-                    <p className='fs-3 fw-bold'>{objScore}</p>
+                    <p className='fs-3 fw-bold'>
+                      {objectiveQ?.length * Number(createQ2?.question_mark)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -646,7 +654,7 @@ const Objective = ({
                             {CQ.question}{" "}
                           </p>
                           <p className='fw-bold fs-3 mb-4 lh-base'>
-                            ({CQ.question_mark} mk(s) )
+                            ({createQ2?.question_mark} mk(s) )
                           </p>
 
                           {CQ.option1 && (
@@ -850,7 +858,11 @@ const Objective = ({
                     <Button
                       className={` `}
                       onClick={() => {
-                        displayPrompt();
+                        if (answeredObjectiveQ?.length != objectiveQ?.length) {
+                          setInCompleteError(true);
+                        } else {
+                          displayPrompt();
+                        }
                       }}
                       disabled={answeredCbt?.length > 0}
                     >
@@ -858,6 +870,14 @@ const Objective = ({
                     </Button>
                   )}
                 </div>
+                {inCompleteError && (
+                  <div className='w-100 d-flex justify-content-center fs-3 mt-3 bg-danger bg-opacity-10 py-3'>
+                    <p className='text-danger fw-semibold'>
+                      You answered only {answeredObjectiveQ?.length} out of{" "}
+                      {objectiveQ?.length} questions. Please answer all
+                    </p>
+                  </div>
+                )}
                 <Prompt
                   isOpen={loginPrompt}
                   toggle={() => setLoginPrompt(!loginPrompt)}

@@ -174,7 +174,7 @@ const CreateSettings = ({
   };
 
   const activateAddSettings = () => {
-    if (!instructioncbt || !hourcbt || !minutescbt || !markcbt) {
+    if (!instructioncbt || isNaN(hourcbt) || !minutescbt || !markcbt) {
       return true;
     } else {
       return false;
@@ -280,7 +280,7 @@ const CreateSettings = ({
     setObjMark(objScore);
   }, [objectiveQ]);
 
-  // console.log({ activatePreview: activatePreview() });
+  console.log({ hourcbt });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({
@@ -333,7 +333,9 @@ const CreateSettings = ({
                   min={0}
                   className='fs-3'
                   onChange={(e) => {
-                    setHourcbt(e.target.value);
+                    const val = Math.abs(parseFloat(e.target.value));
+
+                    setHourcbt(val);
                     // if (objectiveQ?.length > 0) return;
                     // setCreateQ((prev) => {
                     //   return { ...prev, hour: e.target.value };

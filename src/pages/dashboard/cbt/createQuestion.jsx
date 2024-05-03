@@ -147,7 +147,7 @@ const CreateQuestion = ({
           !answer ||
           // !objMark ||
           !instruction ||
-          !hour ||
+          // hour  ||
           !minute
           // !mark
         ) {

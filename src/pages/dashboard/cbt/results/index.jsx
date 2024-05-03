@@ -467,19 +467,19 @@ const CbtResults = ({}) => {
                     {/* total marks */}
                     <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-4'>
                       <p className='fs-3 fw-bold'>Total Marks</p>
-                      <p className='fs-1 fw-bold'>{cbtObject?.total_marks}</p>
+                      <p className='fs-2 fw-bold'>{cbtObject?.total_marks}</p>
                     </div>
                     {/* score */}
                     <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Student Score</p>
-                      <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
+                      <p className='fs-2 fw-bold'>{cbtObject?.score}</p>
                     </div>
                   </div>
                   <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
                     <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Total Test Duration</p>
-                      <p className='fs-1 fw-bold'>
+                      <p className='fs-2 fw-bold'>
                         {
                           formatTime(
                             cbtObject?.totalDuration,
@@ -491,7 +491,7 @@ const CbtResults = ({}) => {
                     {/* score */}
                     <div className=' bg-danger bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
                       <p className='fs-3 fw-bold'>Student Duration</p>
-                      <p className='fs-1 fw-bold'>
+                      <p className='fs-2 fw-bold'>
                         {
                           formatTime(
                             cbtObject?.totalDuration,

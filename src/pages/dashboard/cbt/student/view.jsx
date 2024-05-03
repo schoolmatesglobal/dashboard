@@ -73,6 +73,8 @@ const ViewCBT = (
 
   const { state } = useLocation();
 
+  const [key, setKey] = useState(0);
+
   // const { subjects, isLoading: subjectLoading } = useSubject();
 
   const {
@@ -406,6 +408,7 @@ const ViewCBT = (
       // reload();
       refetchCbtSettings();
     }
+    setKey((prevKey) => prevKey + 1);
   }, [subject_id, question_type]);
 
   console.log({
@@ -416,11 +419,10 @@ const ViewCBT = (
     objectiveQ2,
     subject_id,
   });
-  
-  
+
   return (
     <PageSheet>
-      <div className={styles.view}>
+      <div key={key} className={styles.view}>
         <div className='d-flex align-items-center justify-content-center mb-4'>
           <p className='fw-bold fs-4'>
             {/* CBT {toSentenceCase(state?.creds?.question_type)} |{" "} */}

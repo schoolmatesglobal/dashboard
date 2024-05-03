@@ -2,6 +2,7 @@ import { faTruckFieldUn } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { useMediaQuery } from "react-responsive";
+import { useStudentCBT } from "../../../../hooks/useStudentCBT";
 
 const minuteSeconds = 60;
 const hourSeconds = 3600;
@@ -51,46 +52,47 @@ const CountdownTimer = ({
   submitted,
   setSubmitted,
 }) => {
+  const { createQ2, setCreateQ2 } = useStudentCBT();
+
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    // Increment the key whenever hour or minute changes
+    setKey(prevKey => prevKey + 1);
+  }, [hour, minute]);
+
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
     query: "(min-width: 768px, max-width: 991px)",
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
-  const showWarn = (val) => {
-    switch (val) {
-      case 2:
-        setShowWarning(true);
-        break;
-      case 0:
-        setShowWarning(false);
-        break;
+ 
 
-      default:
-        break;
-    }
-  };
-  // Define the duration components
-  // const day = 0;
-  // const hour = 0;
-  // const minute = 5;
+  const startTime = Math.floor(Date.now() / 1000);
+
+
+
+
 
   // Convert the duration components to seconds
-  const totalSeconds = day * 24 * 60 * 60 + hour * 60 * 60 + minute * 60;
+  const totalSeconds = 24 * 60 * 60 + hour * 60 * 60 + minute * 60;
 
-  const startTime = Math.floor(Date.now() / 1000); // use UNIX timestamp in seconds
+  // use UNIX timestamp in seconds
   const endTime = startTime + totalSeconds; // use UNIX timestamp in seconds
 
   const remainingTime = endTime - startTime;
   const days = Math.ceil(remainingTime / daySeconds);
   const daysDuration = days * daySeconds;
 
-  // const testEnded = timeLeft === 0 && secondleft === 0 && hourLeft === 0;
+ 
 
-  // console.log({ hourLeft, timeLeft, secondleft });
+  console.log({ createQ2, day, hour, minute });
 
   return (
-    <div className='flex flex-col align-items-center'>
+    <div key = {
+      key
+    } className='flex flex-col align-items-center'>
       <div
         className='d-flex justify-content-center gap-3 px-5'
         // style={{ width: "60px", height: "60px" }}
@@ -102,10 +104,6 @@ const CountdownTimer = ({
           size={isMobile ? 90 : 120}
           isPlaying={isPlaying}
           initialRemainingTime={remainingTime % daySeconds}
-
-          // onUpdate={(remainingTime) => {
-          //   return {};
-          // }}
         >
           {({ elapsedTime, color }) => {
             setHourLeft(getTimeHours(daySeconds - elapsedTime));
@@ -133,11 +131,6 @@ const CountdownTimer = ({
             setTimeout(() => {
               setTimeLeft(getTimeMinutes(hourSeconds - elapsedTime));
             }, 1000);
-
-            // console.log({ timeLeft });
-            // if (getTimeMinutes(hourSeconds - elapsedTime) === 1) {
-            //   setShowWarning(true);
-            // }
             return (
               <span style={{ color }}>
                 {renderTime(
@@ -187,16 +180,12 @@ const CountdownTimer = ({
           <p className='fs-3 fw-bold text-danger rounded-3'>
             Time is remaining {timeLeft} min : {secondleft} sec
           </p>
-          {/* <p className='fs-3 fw-bold'>{objScore}</p> */}
         </div>
       )}
 
       {submitted && !testEnded && (
         <div
           className='mt-5 d-flex justify-content-center align-items-center gap-3 bg-danger bg-opacity-10 py-4 px-4'
-          // style={{
-          //   animation: "blinking 2s infinite",
-          // }}
         >
           <p className='fs-3 fw-bold text-danger rounded-3'>Test has ended.</p>
         </div>

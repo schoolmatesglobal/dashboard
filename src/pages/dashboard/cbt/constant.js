@@ -668,6 +668,7 @@ export function analyzeQuestions(questions) {
   }
 
   const score = correctNumber * (totalMarks / analyzedQuestions?.length);
+  const IncorrectNumber = analyzedQuestions?.length - correctNumber;
 
   const percentage = (score / totalMarks) * 100;
 
@@ -676,6 +677,8 @@ export function analyzeQuestions(questions) {
     correct_number: correctNumber,
     score,
     questions: analyzedQuestions,
+    correctNumber,
+    IncorrectNumber,
     total_marks: totalMarks,
     percentage: percentage.toFixed(),
     totalDuration,

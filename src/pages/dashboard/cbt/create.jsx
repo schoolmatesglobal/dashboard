@@ -139,6 +139,8 @@ const CreateCBT = (
   const [minutescbt, setMinutescbt] = useState(createQ?.minute);
   const [markcbt, setMarkcbt] = useState(createQ?.question_mark);
 
+  const [key, setKey] = useState(0);
+
   const navigate = useNavigate();
 
   const activateRetrieve = () => {
@@ -211,7 +213,10 @@ const CreateCBT = (
       // refetchIntervalInBackground: false,
 
       // enabled: false,
-      enabled: activateRetrieveCbt() && permission?.created,
+      enabled:
+        activateRetrieveCbt() &&
+        createQ?.instruction != "" &&
+        permission?.created,
 
       select: (data) => {
         // const cbt = data?.data?.attributes;
@@ -224,52 +229,8 @@ const CreateCBT = (
         // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
 
         console.log({ data, cbt });
-        // if (question_type === "objective") {
-        //   return filtCbt?.map((ag, i) => {
-        //     return {
-        //       id: ag?.id,
-        //       term: user?.term,
-        //       period: user?.period,
-        //       session: user?.session,
-        //       week: ag?.week,
-        //       question_type: ag?.question_type,
-        //       question: ag?.question,
-        //       answer: ag?.answer,
-        //       subject_id: ag?.subject_id,
-        //       // subject: ag?.subject,
-        //       option1: ag?.option1,
-        //       option2: ag?.option2,
-        //       option3: ag?.option3,
-        //       option4: ag?.option4,
-        //       total_question: ag?.total_question,
-        //       total_mark: ag?.total_mark,
-        //       question_mark: ag?.question_mark,
-        //       question_number: ag?.question_number,
-        //       status: ag?.status,
-        //     };
-        //   });
-        // } else if (question_type === "theory") {
-        //   return filtCbt?.map((ag, i) => {
-        //     return {
-        //       id: ag?.id,
-        //       term: user?.term,
-        //       period: user?.period,
-        //       session: user?.session,
-        //       week: ag?.week,
-        //       question_type: ag?.question_type,
-        //       question: ag?.question,
-        //       answer: ag?.answer,
-        //       subject_id: ag?.subject_id,
-        //       image: ag?.image,
-        //       total_question: ag?.total_question,
-        //       total_mark: ag?.total_mark,
-        //       question_mark: ag?.question_mark,
-        //       question_number: ag?.question_number,
-        //       status: ag?.status,
-        //     };
-        //   });
-        // }
-        return cbt;
+
+        return cbt ?? {};
       },
       onSuccess(data) {
         if (question_type === "objective") {
@@ -710,7 +671,8 @@ const CreateCBT = (
               option3: editOption3,
               option4: editOption4,
               answer: editAnswer,
-              question_mark: editMark,
+              question_mark: createQ?.question_mark,
+              // question_mark: editMark,
               question_number: editNumber,
               status: editPublish ? "published" : "unpublished",
             },
@@ -826,7 +788,7 @@ const CreateCBT = (
   const SettingsAdded = () => {
     if (
       createQ.instruction &&
-      createQ.hour &&
+      createQ.hour >= 0 &&
       createQ.minute &&
       createQ.question_mark
     ) {
@@ -847,13 +809,16 @@ const CreateCBT = (
     }
   }, [subject_id, question_type]);
 
- 
+  useEffect(() => {
+    setKey((prevKey) => prevKey + 1);
+  }, [published]);
 
   console.log({
     cbtSettings,
     createQ,
     objectiveQ,
     subject_id,
+    SettingsAdded: SettingsAdded(),
     // subjectsByTeacher,
     state,
     // subjects,
@@ -864,7 +829,7 @@ const CreateCBT = (
     <div className=''>
       <GoBack />
       <PageSheet>
-        <div className={styles.create}>
+        <div key={key} className={styles.create}>
           {/* drop downs */}
           <div className='d-flex align-items-center justify-content-center mb-4'>
             <p className='fw-bold fs-4'>

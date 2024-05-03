@@ -41,7 +41,7 @@ const MarkCard = ({
             </div>
             <div className='d-flex justify-content-center align-items-center  gap-3 bg-info bg-opacity-10 py-3 px-4'>
               <p className='fs-4 fw-bold'>Duration:</p>
-              {createQ?.hour && (
+              {createQ?.hour >= 0 && (
                 <p className='fs-4 fw-bold'>{createQ?.hour} hr(s)</p>
               )}
               {createQ?.minute && (
