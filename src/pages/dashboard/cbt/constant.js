@@ -674,11 +674,12 @@ export function analyzeQuestions(questions) {
 
   // Return the result object with the correct_number and analyzed questions.
   return {
-    correct_number: correctNumber,
+    // correct_number: correctNumber,
     score,
     questions: analyzedQuestions,
     correctNumber,
     IncorrectNumber,
+    totalNumber: questions?.length,
     total_marks: totalMarks,
     percentage: percentage.toFixed(),
     totalDuration,

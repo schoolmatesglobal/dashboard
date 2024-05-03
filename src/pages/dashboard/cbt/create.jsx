@@ -785,7 +785,7 @@ const CreateCBT = (
     }
   }, [subjectsByTeacher]);
 
-  const SettingsAdded = () => {
+  const settingsAdded = () => {
     if (
       createQ.instruction &&
       createQ.hour >= 0 &&
@@ -817,8 +817,8 @@ const CreateCBT = (
     cbtSettings,
     createQ,
     objectiveQ,
+    ab: settingsAdded(),
     subject_id,
-    SettingsAdded: SettingsAdded(),
     // subjectsByTeacher,
     state,
     // subjects,
@@ -910,7 +910,7 @@ const CreateCBT = (
                   }
                   setCreateQuestionPrompt(true);
                 }}
-                disabled={!SettingsAdded()}
+                disabled={!settingsAdded()}
               >
                 {objectiveQ?.length === 0 && theoryQ?.length === 0
                   ? "Add Question"
@@ -918,14 +918,14 @@ const CreateCBT = (
               </Button>
             </div>
           </div>
-          {!SettingsAdded() && (
+          {!settingsAdded() && (
             <div className='d-flex justify-content-center align-items-cneter'>
               <p className='fs-4  mt-4 text-danger'>
                 NB: Setup CBT settings before adding questions{" "}
               </p>
             </div>
           )}
-          {!allLoading && SettingsAdded() && (
+          {!allLoading && settingsAdded() && (
             <MarkCard
               allLoading={allLoading}
               question_type={question_type}

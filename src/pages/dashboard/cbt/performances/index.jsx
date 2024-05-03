@@ -19,7 +19,12 @@ import { toast } from "react-toastify";
 import { useSubject } from "../../../../hooks/useSubjects";
 import LineChart from "../../../../components/charts/line-chart";
 import LineChart2 from "../../../../components/charts/line-chart2";
-import { generateNewArray, recreateArray, recreateArray2 } from "./constant";
+import {
+  formatTime2,
+  generateNewArray,
+  recreateArray,
+  recreateArray2,
+} from "./constant";
 import { useCBT } from "../../../../hooks/useCBT";
 import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
@@ -29,6 +34,8 @@ import BarChart from "../../../../components/charts/bar-chart";
 import BarCharts from "../../../../components/charts/bar-chart";
 import PieChart from "../../../../components/charts/pie-chart";
 import PieCharts from "../../../../components/charts/pie-chart";
+import { formatTime } from "../results/constant";
+import { FaComputer } from "react-icons/fa6";
 
 const CbtPerformances = ({}) => {
   const {
@@ -57,11 +64,18 @@ const CbtPerformances = ({}) => {
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   const [newSubjects, setNewSubjects] = useState([]);
+
+  const [dataSingle, setDataSingle] = useState([]);
+  const [dataSingle2, setDataSingle2] = useState([]);
+  const [dataAll, setDataAll] = useState([]);
+
   const { subjects, isLoading: subjectLoading } = useSubject();
 
   const [showLoading, setShowLoading] = useState(false);
 
   const [loginPrompt, setLoginPrompt] = useState(false);
+  const [showChart, setShowChart] = useState(false);
+  const [showChart2, setShowChart2] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -119,6 +133,7 @@ const CbtPerformances = ({}) => {
   const {
     isLoading: allCbtPerformanceLoading,
     refetch: refetchAllCbtPerformance,
+    isFetching: allCbtPerformanceIsFetching,
     data: allCbtPerformance,
   } = useQuery(
     [queryKeys.GET_ALL_CBT_PERFORMANCE],
@@ -138,21 +153,40 @@ const CbtPerformances = ({}) => {
 
         // const app2 = groupByStudentId(app);
 
-        const app2 = generateNewArray(app)?.map((ap) => {
-          return {
-            name: findStudentName(ap?.student_id),
-            scores: ap?.weekScores,
-          };
-        });
+        // const app2 = generateNewArray(app)?.map((ap) => {
+        //   return {
+        //     name: findStudentName(ap?.student_id),
+        //     scores: ap?.weekScores,
+        //   };
+        // });
 
         // const app4 = app3
 
-        console.log({ app, data, app2 });
+        console.log({ app, data });
 
-        return app2;
+        return app;
       },
 
-      onSuccess(data) {},
+      onSuccess(data) {
+        if (data?.length > 0) {
+          setShowChart(true);
+          const newData = data?.map((dt, i) => {
+            return {
+              Name: findStudentName(dt?.student_id),
+              Score: Number(
+                (dt?.student_total_mark / dt?.test_total_mark) * 100
+              ),
+              ActualScore: `${dt?.student_total_mark}/${dt?.test_total_mark}`,
+              Time: formatTime2(dt?.test_duration, dt?.student_duration)
+                ?.difference,
+            };
+          });
+
+          setDataAll(newData);
+        } else {
+          setShowChart(false);
+        }
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -164,6 +198,7 @@ const CbtPerformances = ({}) => {
   const {
     isLoading: cbtPerformanceLoading,
     refetch: refetchCbtPerformance,
+    isFetching: cbtPerformanceIsFetching,
     data: cbtPerformance,
   } = useQuery(
     [queryKeys.GET_CBT_PERFORMANCE],
@@ -182,18 +217,77 @@ const CbtPerformances = ({}) => {
       select: (data) => {
         const pp = data?.data[0]?.students;
 
-        const pp2 = recreateArray(pp);
+        // const pp2 = recreateArray(pp);
 
-        const newP = pp2?.map((p) => {
-          return Number(p.total_score);
-        });
+        // const newP = pp2?.map((p) => {
+        //   return Number(p.total_score);
+        // });
+        console.log({ pp, data });
 
-        console.log({ pp, pp2, data, newP });
-
-        return newP;
+        return pp;
       },
 
-      onSuccess(data) {},
+      onSuccess(data) {
+        if (data?.length > 0) {
+          setShowChart2(true);
+          const correct_answer = Number(data[0]?.correct_answer);
+          const incorrect_answer = Number(data[0]?.incorrect_answer);
+          const total_answer = Number(data[0]?.total_answer);
+          const student_duration = data[0]?.student_duration;
+          const test_duration = data[0]?.test_duration;
+
+          const sampleData = [
+            { name: "Correct Answers", Score: 5, total: 8 },
+            { name: "Incorrect Answers", Score: 2, total: 8 },
+            { name: "Unattempted Questions", Score: 1, total: 8 },
+            // { name: "Group D", Score: 200 },
+          ];
+          const sampleData2 = [
+            { name: "Student Test Time", Score: 30, total: "1hr : 30mins" },
+            { name: "Un-used Time", Score: 60, total: "1hr : 30mins" },
+          ];
+
+          const newData = sampleData?.map((dt, i) => {
+            return {
+              name: dt?.name,
+              Score:
+                dt?.name === "Correct Answers"
+                  ? correct_answer
+                  : dt?.name === "Incorrect Answers"
+                  ? incorrect_answer
+                  : incorrect_answer,
+              total: total_answer,
+            };
+          });
+          const newData2 = sampleData2?.map((dt, i) => {
+            return {
+              name: dt?.name,
+              Score:
+                dt?.name === "Student Test Time"
+                  ? formatTime2(test_duration, student_duration)?.difference
+                  : formatTime2(test_duration, student_duration)
+                      ?.totalTimeInMinutes -
+                    formatTime2(test_duration, student_duration)?.difference,
+              total: formatTime2(test_duration, student_duration)?.totalTime,
+            };
+          });
+
+          setDataSingle(newData);
+          setDataSingle2(newData2);
+        } else {
+          setShowChart2(false);
+        }
+
+        // const newData = data?.map((dt, i)=>{
+        //   return {
+        //     Name: findStudentName(dt?.student_id),
+        //     Score: Number((dt?.student_total_mark / dt?.test_total_mark) * 100),
+        //     ActualScore: `${dt?.student_total_mark}/${dt?.test_total_mark}`,
+        //     Time: formatTime2(dt?.test_duration, dt?.student_duration)
+        //       ?.difference,
+        //   };
+        // })
+      },
       onError(err) {
         errorHandler(err);
       },
@@ -250,7 +344,7 @@ const CbtPerformances = ({}) => {
   ];
 
   const allLoading =
-    showLoading || cbtPerformanceLoading || allCbtPerformanceLoading;
+    showLoading || cbtPerformanceLoading || allCbtPerformanceLoading || allCbtPerformanceIsFetching || cbtPerformanceIsFetching
 
   const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75];
 
@@ -297,6 +391,22 @@ const CbtPerformances = ({}) => {
     // setAnsweredTheoQ(submittedTheoAssignment);
   }, [subject_id, student_id, question_type]);
 
+  const showCharts = () => {
+    if (!student_id || !question_type || !subject_id) {
+      return true;
+    } else {
+      if (showChart && showChart2) {
+        return false;
+      } else if (student !== "all students" && !showChart2) {
+        return true;
+      } else if (student === "all students" && !showChart) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
   console.log({
     subject_id,
     student_id,
@@ -306,6 +416,12 @@ const CbtPerformances = ({}) => {
     myStudents,
     state,
     studentNames,
+    dataAll,
+    dataSingle,
+    dataSingle2,
+    showChart,
+    showChart2,
+    showCharts: showCharts(),
   });
 
   return (
@@ -382,9 +498,15 @@ const CbtPerformances = ({}) => {
               <Spinner /> <p className='fs-3'>Loading...</p>
             </div>
           )}
+          {!allLoading && showCharts() && (
+            <div className={styles.placeholder_container}>
+              <FaComputer className={styles.icon} />{" "}
+              <p className='fs-1 fw-bold mt-3'>No CBT Performance</p>
+            </div>
+          )}
           {!allLoading && (
             <div className='mt-5'>
-              {student !== "all students" && (
+              {student !== "all students" && showChart2 && (
                 <div className='mt-5'>
                   <p className='fs-3 fw-bold'>{`Score Analysis (%) for ${student}`}</p>
                   <PieCharts
@@ -392,10 +514,12 @@ const CbtPerformances = ({}) => {
                       student ? "Chart for" : "No Chart Result"
                     } ${student}`}
                     // data={cbtPerformance}
-                    data={data}
+                    // data={data}
                     value='Score'
                     colour='#11355c'
                     unit=''
+                    data={dataSingle}
+                    // data2={dataSingle2}
                   />
                   <p className='fs-3 fw-bold mt-5'>{`Time Analysis (%) for ${student}`}</p>
                   <PieCharts
@@ -403,16 +527,20 @@ const CbtPerformances = ({}) => {
                       student ? "Chart for" : "No Chart Result"
                     } ${student}`}
                     // data={cbtPerformance}
-                    data={data}
+                    // data={data}
                     value='Time'
                     colour='#82ca9d'
                     unit='mins'
+                    data={dataSingle2}
+                    // data2={dataSingle2}
                   />
                 </div>
               )}
-              {student === "all students" && (
+              {student === "all students" && showChart && (
                 <div className='mt-5'>
-                  <p className='fs-3 fw-bold'>Score Analysis (%) for all students</p>
+                  <p className='fs-3 fw-bold'>
+                    Score Analysis (%) for all students
+                  </p>
                   <BarCharts
                     chartTitle={`Class Chart`}
                     studentData={studentData}
@@ -420,9 +548,12 @@ const CbtPerformances = ({}) => {
                     value='Score'
                     colour='#11355c'
                     unit='%'
+                    data={dataAll}
                     // studentData={allCbtPerformance}
                   />
-                  <p className='fs-3 fw-bold mt-5'>Time Analysis (mins) for all students</p>
+                  <p className='fs-3 fw-bold mt-5'>
+                    Time Analysis (mins) for all students
+                  </p>
                   <BarCharts
                     chartTitle={`Class Chart`}
                     studentData={studentData}
@@ -430,6 +561,7 @@ const CbtPerformances = ({}) => {
                     value='Time'
                     colour='#82ca9d'
                     unit='mins'
+                    data={dataAll}
                     // studentData={allCbtPerformance}
                   />
                 </div>

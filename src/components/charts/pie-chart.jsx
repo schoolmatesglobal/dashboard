@@ -10,19 +10,20 @@ import {
   Legend,
 } from "recharts";
 
-const PieCharts = ({ value, colour, unit }) => {
-  const data = [
-    { name: "Correct Answers", Score: 5, total: 8 },
-    { name: "Incorrect Answers", Score: 2, total: 8 },
-    { name: "Unattempted Questions", Score: 1, total: 8 },
-    // { name: "Group D", Score: 200 },
-  ];
-  const data2 = [
-    { name: "Student Test Time", Score: 30, total: "1hr : 30mins" },
-    { name: "Un-used Time", Score: 60, total: "1hr : 30mins" },
-    // { name: "Unattempted Questions", Score: 1 },
-    // { name: "Group D", Score: 200 },
-  ];
+const PieCharts = ({ value, colour, unit, data, data2 }) => {
+  // const data = [
+  //   { name: "Correct Answers", Score: 5, total: 8 },
+  //   { name: "Incorrect Answers", Score: 2, total: 8 },
+  //   { name: "Unattempted Questions", Score: 1, total: 8 },
+  //   // { name: "Group D", Score: 200 },
+  // ];
+
+  // const data2 = [
+  //   { name: "Student Test Time", Score: 30, total: "1hr : 30mins" },
+  //   { name: "Un-used Time", Score: 60, total: "1hr : 30mins" },
+  //   // { name: "Unattempted Questions", Score: 1 },
+  //   // { name: "Group D", Score: 200 },
+  // ];
 
   const COLORS = ["#008707", "#b00000", "#FFBB28"];
   const COLORS2 = ["#008707", "#ffbb28"];
@@ -30,7 +31,7 @@ const PieCharts = ({ value, colour, unit }) => {
   const color = value === "Score" ? COLORS : COLORS2;
 
   function CustomTooltip({ payload, label, active }) {
-    console.log({ payload });
+    // console.log({ payload });
     if (active) {
       return (
         <div style={{ background: "white", padding: "10px" }}>
@@ -86,7 +87,8 @@ const PieCharts = ({ value, colour, unit }) => {
         // className='d-flex justify-content-center align-items-center w-100'
       >
         <Pie
-          data={value === "Score" ? data : data2}
+          data={data}
+          // data={value === "Score" ? data : data2}
           cx='50%'
           cy='50%'
           labelLine={false}

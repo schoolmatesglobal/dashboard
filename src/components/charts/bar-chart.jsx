@@ -13,50 +13,50 @@ import {
   Bar,
 } from "recharts";
 
-const data = [
-  {
-    Name: "Ajayi Kike",
-    Score: 50,
-    ActualScore: "4/8",
-    Time: 20,
-  },
-  {
-    Name: "Njoku Alex",
-    Score: 75,
-    ActualScore: "5/8",
-    Time: 10,
-  },
-  {
-    Name: "Lucky Daniel",
-    Score: 77,
-    ActualScore: "4.2/8",
-    Time: 35,
-  },
-  {
-    Name: "Mike Josh",
-    Score: 90,
-    ActualScore: "7/8",
-    Time: 15,
-  },
-  {
-    Name: "Lukaku Romelu",
-    Score: 23,
-    ActualScore: "2/8",
-    Time: 45,
-  },
-  {
-    Name: "Adamma Adam",
-    Score: 47,
-    ActualScore: "3/8",
-    Time: 30,
-  },
-  {
-    Name: "Jobs Steven",
-    Score: 68,
-    ActualScore: "5/8",
-    Time: 34,
-  },
-];
+// const data = [
+//   {
+//     Name: "Ajayi Kike",
+//     Score: 50,
+//     ActualScore: "4/8",
+//     Time: 20,
+//   },
+//   {
+//     Name: "Njoku Alex",
+//     Score: 75,
+//     ActualScore: "5/8",
+//     Time: 10,
+//   },
+//   {
+//     Name: "Lucky Daniel",
+//     Score: 77,
+//     ActualScore: "4.2/8",
+//     Time: 35,
+//   },
+//   {
+//     Name: "Mike Josh",
+//     Score: 90,
+//     ActualScore: "7/8",
+//     Time: 15,
+//   },
+//   {
+//     Name: "Lukaku Romelu",
+//     Score: 23,
+//     ActualScore: "2/8",
+//     Time: 45,
+//   },
+//   {
+//     Name: "Adamma Adam",
+//     Score: 47,
+//     ActualScore: "3/8",
+//     Time: 30,
+//   },
+//   {
+//     Name: "Jobs Steven",
+//     Score: 68,
+//     ActualScore: "5/8",
+//     Time: 34,
+//   },
+// ];
 
 const BarCharts = ({
   chartTitle,
@@ -65,6 +65,7 @@ const BarCharts = ({
   value,
   colour,
   unit,
+  data
 }) => {
   // Dummy data for percentage score from week 1 to week 10
   // const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75]; // Example scores, you can replace it with actual data
@@ -94,7 +95,7 @@ const BarCharts = ({
   }
 
   function CustomTooltip({ payload, label, active }) {
-    console.log({ payload });
+    // console.log({ payload });
     if (active) {
       return (
         <div style={{ background: "white", padding: "10px" }}>
@@ -165,7 +166,7 @@ const BarCharts = ({
     };
   }, [studentData, labels]);
 
-  console.log({ value, colour });
+  // console.log({ value, colour });
 
   return (
     // <div className='chart-wrapper'>

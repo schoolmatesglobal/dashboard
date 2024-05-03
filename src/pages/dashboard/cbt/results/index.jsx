@@ -364,14 +364,14 @@ const CbtResults = ({}) => {
   //   }
   // }, [week, subject, student]);
 
-  // console.log({
-  //   markedQ,
-  //   cbtAnswer,
-  //   cbtObject,
-  //   markedAssignmentResults,
-  //   dt,
-  //   cbtResult,
-  // });
+  console.log({
+    // markedQ,
+    // cbtAnswer,
+    cbtObject,
+    // markedAssignmentResults,
+    // dt,
+    // cbtResult,
+  });
 
   return (
     <div>
