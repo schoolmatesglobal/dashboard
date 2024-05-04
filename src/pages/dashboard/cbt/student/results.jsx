@@ -149,18 +149,18 @@ const StudentCBTResults = (
     [
       queryKeys.GET_MARKED_ASSIGNMENT_FOR_RESULTS,
       student_id,
-      user?.period,
-      user?.term,
-      user?.session,
+      state?.creds?.period,
+      state?.creds?.term,
+      state?.creds?.session,
       "theory2",
       week,
     ],
     () =>
       apiServices.getMarkedAssignmentByStudentId(
         student_id,
-        user?.period,
-        user?.term,
-        user?.session,
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
         "theory",
         week
       ),

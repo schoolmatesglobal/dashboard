@@ -193,6 +193,8 @@ const ViewCBT = (
         // setAllowFetch(false);
       },
       onError(err) {
+        // if
+        if (err.response.data.message === "Not found!") return;
         errorHandler(err);
       },
       // select: apiServices.formatData,

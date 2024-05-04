@@ -309,9 +309,9 @@ const Objective = ({
       setAnsweredObjectiveQ([
         ...filteredArray,
         {
-          period: user?.period,
-          term: user?.term,
-          session: user?.session,
+          period: state?.period,
+          term: state?.term,
+          session: state?.session,
           cbt_question_id: CQ.id,
           student_id: user?.id,
           subject_id: createQ2?.subject_id,
@@ -329,9 +329,9 @@ const Objective = ({
       setAnsweredObjectiveQ([
         ...answeredObjectiveQ,
         {
-          period: user?.period,
-          term: user?.term,
-          session: user?.session,
+          period: state?.period,
+          term: state?.term,
+          session: state?.session,
           cbt_question_id: CQ.id,
           student_id: user?.id,
           subject_id: createQ2?.subject_id,
@@ -384,9 +384,9 @@ const Objective = ({
           ?.filter((ans) => questionsAnsweredId.includes(ans.id) === false)
           ?.map((qs, i) => {
             return {
-              period: user?.period,
-              term: user?.term,
-              session: user?.session,
+              period: state?.period,
+              term: state?.term,
+              session: state?.session,
               cbt_question_id: qs.id,
               student_id: user?.id,
               subject_id: qs.subject_id,

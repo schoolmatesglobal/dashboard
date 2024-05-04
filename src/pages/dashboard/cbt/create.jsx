@@ -252,6 +252,8 @@ const CreateCBT = (
         // setAllowFetch(false);
       },
       onError(err) {
+        if (err.response.data.message === "Not found!") return;
+
         errorHandler(err);
       },
       // select: apiServices.formatData,
@@ -297,9 +299,9 @@ const CreateCBT = (
           return filtAsg?.map((ag, i) => {
             return {
               id: ag?.id,
-              term: user?.term,
-              period: user?.period,
-              session: user?.session,
+              term: state?.creds?.term,
+              period: state?.creds?.period,
+              session: state?.creds?.session,
               week: ag?.week,
               question_type: ag?.question_type,
               question: ag?.question,
@@ -321,9 +323,9 @@ const CreateCBT = (
           return filtAsg?.map((ag, i) => {
             return {
               id: ag?.id,
-              term: user?.term,
-              period: user?.period,
-              session: user?.session,
+              term: state?.creds?.term,
+              period: state?.creds?.period,
+              session: state?.creds?.session,
               week: ag?.week,
               question_type: ag?.question_type,
               question: ag?.question,
@@ -364,9 +366,9 @@ const CreateCBT = (
         apiServices.addCbtQuestion(
           // ...objectiveQ,
           {
-            term: user?.term,
-            period: user?.period,
-            session: user?.session,
+            term: state?.creds?.term,
+            period: state?.creds?.period,
+            session: state?.creds?.session,
             question_type,
             question,
             cbt_setting_id: Number(settings_id),
@@ -403,9 +405,9 @@ const CreateCBT = (
       apiServices.addObjectiveAssignment([
         // ...objectiveQ,
         {
-          term: user?.term,
-          period: user?.period,
-          session: user?.session,
+          term: state?.creds?.term,
+          period: state?.creds?.period,
+          session: state?.creds?.session,
           week,
           question_type,
           question,
@@ -442,9 +444,9 @@ const CreateCBT = (
       apiServices.addTheoryAssignment([
         // ...theoryQ,
         {
-          term: user?.term,
-          period: user?.period,
-          session: user?.session,
+          term: state?.creds?.term,
+          period: state?.creds?.period,
+          session: state?.creds?.session,
           week,
           question_type,
           question,
@@ -542,9 +544,9 @@ const CreateCBT = (
       title: "Yes",
       onClick: () => {
         publishCbt({
-          term: user?.term,
-          period: user?.period,
-          session: user?.session,
+          term: state?.creds?.term,
+          period: state?.creds?.period,
+          session: state?.creds?.session,
           question_type,
           subject_id: subject_id,
           is_publish: published ? 1 : 0,
