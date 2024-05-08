@@ -65,7 +65,7 @@ const BarCharts = ({
   value,
   colour,
   unit,
-  data
+  data,
 }) => {
   // Dummy data for percentage score from week 1 to week 10
   // const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75]; // Example scores, you can replace it with actual data
@@ -178,12 +178,13 @@ const BarCharts = ({
         height={350}
         data={data}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-        style={{ width: "100%", padding: "0 10px" }}
+        style={{ width: "fit" }}
+        // style={{ width: "100%", padding: "0 10px" }}
       >
         <CartesianGrid strokeDasharray='3 3' />
         <XAxis dataKey='Name' />
         <YAxis />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip  content={<CustomTooltip />} />
         <Legend
           width={100}
           wrapperStyle={{
