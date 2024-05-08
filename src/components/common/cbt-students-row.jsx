@@ -1,13 +1,12 @@
 import React from "react";
 import ProfileImage from "./profile-image";
 
-const StudentsResults2 = ({
+const CbtStudentsRow = ({
   studentByClassAndSession,
   isLoading,
-  studentData,
   onProfileSelect,
-  onProfileSelect2,
   idWithComputedResult,
+  answerQ,
 }) => {
   return (
     <div className='students-wrapper'>
@@ -15,24 +14,27 @@ const StudentsResults2 = ({
         <div
           key={x?.id}
           onClick={() => {
-            onProfileSelect(x?.id);
-            onProfileSelect2()
+            onProfileSelect(x);
           }}
           className='student'
         >
           <div
             className={`loader ${isLoading ? "is-loading" : ""} ${
-              Number(studentData?.id) === Number(x?.id) ? "active" : ""
+              answerQ?.student_id === x?.id ? "active" : ""
             }`}
           >
-            <ProfileImage src={x?.image} alt={x.firstname} gender={x?.gender}/>
+            <ProfileImage src={x?.image} alt={x.firstname} gender={x?.gender} />
             {idWithComputedResult?.includes(x?.id) && (
               <div className='computed' />
             )}
           </div>
           <div>
-            <p>{x.firstname}</p>
-            <p>{x.surname}</p>
+            <p
+              className={`${x?.id === "999" && "fw-bold"}`}
+            >
+              {x.firstname}
+            </p>
+            <p className={`${x?.id === "999" && "fw-bold"}`}>{x.surname}</p>
           </div>
         </div>
       ))}
@@ -40,4 +42,4 @@ const StudentsResults2 = ({
   );
 };
 
-export default StudentsResults2;
+export default CbtStudentsRow;

@@ -15,6 +15,8 @@ import queryKeys from "../../../../utils/queryKeys";
 import { countCorrectAnswers } from "../constant";
 import Objective from "./objective";
 import Button from "../../../../components/buttons/button";
+import StudentsResults from "../../../../components/common/students-results";
+import CbtStudentsRow from "../../../../components/common/cbt-students-row";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const CbtSubmission = (
@@ -61,6 +63,9 @@ const CbtSubmission = (
     answeredQuestion,
     myStudents,
     subjectsByTeacher,
+
+    studentByClass,
+    studentByClassLoading,
   } = useCBT();
 
   const { state } = useLocation();
@@ -91,6 +96,8 @@ const CbtSubmission = (
   const [newSubjects, setNewSubjects] = useState([]);
 
   const [loading1, setLoading1] = useState(false);
+
+  const [idWithComputedResult, setIdWithComputedResult] = useState([]);
 
   const { subjects, isLoading: subjectLoading } = useSubject();
 
@@ -125,6 +132,34 @@ const CbtSubmission = (
       return true;
     }
   };
+
+  // ///// GET STUDENT BY CLASS
+  // const { data: studentByClass, isLoading: studentByClassLoading } = useQuery(
+  //   [queryKeys.GET_ALL_STUDENTS_BY_CLASS_CBT],
+  //   () => apiServices.getStudentByClass2(user?.class_assigned),
+
+  //   {
+  //     enabled: true,
+  //     // enabled: permission?.myStudents || user?.designation_name === "Principal",
+  //     // select: apiServices.formatData,
+  //     select: (data) => {
+  //       console.log({ pdata: data, state });
+  //       return apiServices.formatData(data)?.map((obj, index) => {
+  //         const newObj = { ...obj };
+  //         newObj.new_id = index + 1;
+  //         return newObj;
+  //       });
+
+  //       // return { ...data, options: f };
+  //     },
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //   }
+  // );
+
+  // const ids = data?.map((x) => x.student_id);
+  // setIdWithComputedResult(ids);
 
   /////// FETCH ANSWERED CBT /////
   const {
@@ -171,6 +206,10 @@ const CbtSubmission = (
 
       onSuccess(data) {
         setAnsweredObjQ(data);
+        const ids = data?.map((idx, i) => {
+          return idx?.student_id;
+        });
+        setIdWithComputedResult(ids);
         // trigger();
       },
       onError(err) {
@@ -225,33 +264,6 @@ const CbtSubmission = (
       return false;
     }
   };
-  // const showNoAssignment = () => {
-  //   if (submissionTab === "1" && answeredObjQ?.length === 0) {
-  //     return true;
-  //   } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
-
-  // const showNoAssignment2 = () => {
-  //   if (submissionTab === "1" && answeredObjQ?.length === 0) {
-  //     return true;
-  //   } else if (submissionTab === "2" && answeredTheoQ?.length === 0) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
-
-  // const showNoAssignment3 = () => {
-  //   if (!week || !subject || !student) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
 
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
@@ -306,7 +318,8 @@ const CbtSubmission = (
     cbtAnswerLoading ||
     // submittedTheoAssignmentLoading ||
     // markedAssignmentLoading ||
-    loading1;
+    loading1 ||
+    studentByClassLoading;
 
   const allLoadingObj = cbtAnswerLoading;
 
@@ -319,6 +332,14 @@ const CbtSubmission = (
     (acc, quest) => acc + Number(quest?.question_mark),
     0
   );
+
+  const showWarning = () => {
+    if (!question_type || !subject_id) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const trigger = () => {
     setLoading1(true);
@@ -349,20 +370,24 @@ const CbtSubmission = (
   //   // }
   // }, [subject, week, student]);
 
-  console.log({
-    answeredObjQ,
-    answeredTheoQ,
-    submissionTab,
-    activateRetrieve: activateRetrieve(),
-    student_id,
-    state,
-    question_type,
-    subject_id,
-  });
+  // console.log({
+  //   answeredObjQ,
+  //   answeredTheoQ,
+  //   submissionTab,
+  //   activateRetrieve: activateRetrieve(),
+  //   student_id,
+  //   state,
+  //   question_type,
+  //   subject_id,
+  //   myStudents,
+  //   studentByClass,
+  // });
+  console.log({ studentByClass, user, answerQ });
 
   return (
-    <div>
+    <div className='results-sheet'>
       <GoBack />
+
       <PageSheet>
         <div className={styles.created}>
           <div className='d-flex align-items-center justify-content-center mb-4'>
@@ -403,7 +428,7 @@ const CbtSubmission = (
                 placeholder='Select type'
                 wrapperClassName=''
               />
-              <AuthSelect
+              {/* <AuthSelect
                 sort
                 options={myStudents}
                 value={student}
@@ -424,8 +449,35 @@ const CbtSubmission = (
                 }}
                 placeholder='Select Student'
                 wrapperClassName=''
-              />
+              /> */}
             </div>
+          </div>
+
+          {showWarning() && (
+            <div className='w-100 d-flex justify-content-center align-items-center  gap-3 bg-danger bg-opacity-10 py-3 px-4 mt-3'>
+              <p className='fs-4 text-danger'>
+                Please select Subject and Question type
+              </p>
+            </div>
+          )}
+
+          <div className='w-100 mt-4 border border-2 pt-4  px-3 rounded-3'>
+            <CbtStudentsRow
+              studentByClassAndSession={studentByClass}
+              onProfileSelect={(x) => {
+                setAnswerQ((prev) => {
+                  return {
+                    ...prev,
+                    student: `${x.surname} ${x.firstname}`,
+                    student_id: x.id,
+                  };
+                });
+              }}
+              isLoading={allLoading}
+              answerQ={answerQ}
+              answeredObjQ={answeredObjQ}
+              idWithComputedResult={idWithComputedResult}
+            />
           </div>
 
           {/* <div className='w-100 d-flex justify-content-center mt-4'>
@@ -456,6 +508,7 @@ const CbtSubmission = (
                   assignmentLoading={allLoading}
                   data={answeredObjQ}
                   refetchMarkedAssignment={refetchCbtAnswer}
+                  answerQ={answerQ}
                 />
               </div>
             )}

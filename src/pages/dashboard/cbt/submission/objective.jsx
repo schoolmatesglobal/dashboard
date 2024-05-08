@@ -2,7 +2,12 @@ import React from "react";
 import { useAssignments } from "../../../../hooks/useAssignments";
 import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
-const Objective = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
+const Objective = ({
+  assignmentLoading,
+  data,
+  refetchMarkedAssignment,
+  answerQ,
+}) => {
   // console.log({ markedObjectiveQ, markedObjectiveQ2 });
 
   return (
@@ -10,7 +15,10 @@ const Objective = ({ assignmentLoading, data, refetchMarkedAssignment }) => {
       {!assignmentLoading && data.length >= 1 && (
         <div className={styles.objective}>
           <div className=''>
-            <p className='fw-bold fs-2 mt-5'>Objective Section</p>
+            <div className='w-100 d-flex flex-column flex-md-row justify-content-md-between'>
+              <p className='fw-bold fs-2 mt-5'>CBT SUBMISSION</p>
+              <p className='fw-bold fs-2 mt-5 '>{answerQ?.student}</p>
+            </div>
             <div className='d-flex flex-column my-5 gap-3'>
               {data
                 ?.sort((a, b) => {

@@ -326,6 +326,11 @@ const CBTPage = () => {
     }
   }, [subjectsByTeacher]);
 
+  const periods = [
+    { value: "First Half", title: "First Half / Mid Term" },
+    { value: "Second Half", title: "Second Half / End of Term" },
+  ];
+
   console.log({ sessions, activeTab, inputs, createQ, ct: activateContinue() });
 
   // useEffect(() => {
@@ -371,10 +376,8 @@ const CBTPage = () => {
                 return { ...prev, period: value };
               });
             }}
-            options={[
-              { value: "First Half", title: "First Half / Mid Term" },
-              { value: "Second Half", title: "Second Half / End of Term" },
-            ]}
+            options={periods}
+            // defaultValue={periods[0]}
           />
         </div>
 

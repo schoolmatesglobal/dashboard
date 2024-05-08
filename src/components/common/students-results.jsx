@@ -27,7 +27,7 @@ const StudentsResults = ({
               studentData?.id === x?.id ? "active" : ""
             }`}
           >
-            <ProfileImage src={x?.image} alt={x.firstname} />
+            <ProfileImage src={x?.image} alt={x.firstname} gender={x?.gender}/>
             {idWithComputedResult?.includes(x?.id) && (
               <div className="computed" />
             )}

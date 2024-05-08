@@ -36,6 +36,7 @@ import PieChart from "../../../../components/charts/pie-chart";
 import PieCharts from "../../../../components/charts/pie-chart";
 import { formatTime } from "../results/constant";
 import { FaComputer } from "react-icons/fa6";
+import CbtStudentsRow from "../../../../components/common/cbt-students-row";
 
 const CbtPerformances = ({}) => {
   const {
@@ -50,6 +51,8 @@ const CbtPerformances = ({}) => {
     subjectsByTeacher,
     markedQ,
     setMarkedQ,
+    studentByClass,
+    studentByClassLoading,
   } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
@@ -76,6 +79,8 @@ const CbtPerformances = ({}) => {
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [showChart, setShowChart] = useState(false);
   const [showChart2, setShowChart2] = useState(false);
+
+  const [idWithComputedResult, setIdWithComputedResult] = useState([]);
 
   const queryClient = useQueryClient();
 
@@ -274,6 +279,12 @@ const CbtPerformances = ({}) => {
 
           setDataSingle(newData);
           setDataSingle2(newData2);
+
+          const ids = data?.map((idx, i) => {
+            return idx?.student_id;
+          });
+
+          setIdWithComputedResult(ids);
         } else {
           setShowChart2(false);
         }
@@ -344,7 +355,11 @@ const CbtPerformances = ({}) => {
   ];
 
   const allLoading =
-    showLoading || cbtPerformanceLoading || allCbtPerformanceLoading || allCbtPerformanceIsFetching || cbtPerformanceIsFetching
+    showLoading ||
+    cbtPerformanceLoading ||
+    allCbtPerformanceLoading ||
+    allCbtPerformanceIsFetching ||
+    cbtPerformanceIsFetching;
 
   const data = [65, 70, 68, 72, 75, 80, 85, 82, 78, 75];
 
@@ -381,6 +396,8 @@ const CbtPerformances = ({}) => {
   }, [subjectsByTeacher]);
 
   useEffect(() => {
+    setIdWithComputedResult([]);
+
     trigger();
 
     if (activateRetrieve()) {
@@ -397,9 +414,9 @@ const CbtPerformances = ({}) => {
     } else {
       if (showChart && showChart2) {
         return false;
-      } else if (student !== "all students" && !showChart2) {
+      } else if (student !== "Students All" && !showChart2) {
         return true;
-      } else if (student === "all students" && !showChart) {
+      } else if (student === "Students All" && !showChart) {
         return true;
       } else {
         return false;
@@ -407,25 +424,74 @@ const CbtPerformances = ({}) => {
     }
   };
 
+  const showWarning = () => {
+    if (!question_type || !subject_id) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // const newStudentByClass = studentByClass?.map((sc, i) => {
+  //   return {};
+  // });
+
+  const newStudentByClass = [
+    {
+      admission_number: "",
+      age: 1,
+      blood_group: "A+",
+      campus: "Corona Elementary",
+      campus_type: "Elementary",
+      class: "BASICS 1",
+      class_sub_class: "",
+      dob: "2023-02-08",
+      email_address: "kike@coronaschools.com",
+      firstname: "All",
+      gender: "all",
+      genotype: "AA",
+      home_address: "2801 Island Avenue",
+      id: "999",
+      image: "",
+      middlename: "Mary",
+      nationality: "Nigeria",
+      new_id: 1,
+      phone_number: "+23481345685686",
+      present_class: "BASICS 1",
+      session_admitted: "2024",
+      state: "Lagos",
+      status: "active",
+      sub_class: "",
+      surname: "Students",
+      username: "COROS001",
+    },
+    ...studentByClass,
+  ];
+
   console.log({
-    subject_id,
-    student_id,
-    cbtPerformance,
-    allCbtPerformance,
-    subjectsByTeacher,
-    myStudents,
-    state,
-    studentNames,
-    dataAll,
-    dataSingle,
-    dataSingle2,
-    showChart,
-    showChart2,
-    showCharts: showCharts(),
+    studentByClass,
+    newStudentByClass,
+    student,
+    idWithComputedResult,
+    markedQ,
+    // subject_id,
+    // student_id,
+    // cbtPerformance,
+    // allCbtPerformance,
+    // subjectsByTeacher,
+    // myStudents,
+    // state,
+    // studentNames,
+    // dataAll,
+    // dataSingle,
+    // dataSingle2,
+    // showChart,
+    // showChart2,
+    // showCharts: showCharts(),
   });
 
   return (
-    <div>
+    <div className='results-sheet'>
       <GoBack />
       <PageSheet>
         <div className={styles.created}>
@@ -467,7 +533,7 @@ const CbtPerformances = ({}) => {
                 placeholder='Select type'
                 wrapperClassName=''
               />
-              <AuthSelect
+              {/* <AuthSelect
                 sort
                 options={newStudents}
                 value={student}
@@ -490,8 +556,35 @@ const CbtPerformances = ({}) => {
                 }}
                 placeholder='Select Student'
                 wrapperClassName=''
-              />
+              /> */}
             </div>
+          </div>
+
+          {showWarning() && (
+            <div className='w-100 d-flex justify-content-center align-items-center  gap-3 bg-danger bg-opacity-10 py-3 px-4 mt-3'>
+              <p className='fs-4 text-danger'>
+                Please select Subject and Question type
+              </p>
+            </div>
+          )}
+
+          <div className='w-100 mt-4 border border-2 pt-4  px-3 rounded-3'>
+            <CbtStudentsRow
+              studentByClassAndSession={newStudentByClass}
+              onProfileSelect={(x) => {
+                setMarkedQ((prev) => {
+                  return {
+                    ...prev,
+                    student: `${x.surname} ${x.firstname}`,
+                    student_id: x.id,
+                  };
+                });
+              }}
+              isLoading={allLoading}
+              answerQ={markedQ}
+              answeredObjQ={dataSingle || dataSingle2}
+              idWithComputedResult={idWithComputedResult}
+            />
           </div>
           {allLoading && (
             <div className={styles.spinner_container}>
@@ -506,7 +599,7 @@ const CbtPerformances = ({}) => {
           )}
           {!allLoading && (
             <div className='mt-5'>
-              {student !== "all students" && showChart2 && (
+              {student !== "Students All" && !!question_type && showChart2 && (
                 <div className='mt-5'>
                   <p className='fs-3 fw-bold'>{`Score Analysis (%) for ${student}`}</p>
                   <PieCharts
@@ -536,7 +629,7 @@ const CbtPerformances = ({}) => {
                   />
                 </div>
               )}
-              {student === "all students" && showChart && (
+              {student === "Students All" && !!question_type && showChart && (
                 <div className='mt-5'>
                   <p className='fs-3 fw-bold'>
                     Score Analysis (%) for all students

@@ -25,6 +25,7 @@ import GoBack from "../../../../components/common/go-back";
 import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import { formatTime } from "./constant";
+import CbtStudentsRow from "../../../../components/common/cbt-students-row";
 
 const CbtResults = ({}) => {
   const {
@@ -45,6 +46,8 @@ const CbtResults = ({}) => {
     setAnsweredTheoryResults,
     ResultTab,
     setResultTab,
+    studentByClass,
+    studentByClassLoading,
   } = useCBT();
 
   const [cbtObject, setCbtObject] = useState({});
@@ -65,6 +68,8 @@ const CbtResults = ({}) => {
   const { subjects, isLoading: subjectLoading } = useSubject();
 
   const [showLoading, setShowLoading] = useState(false);
+
+  const [idWithComputedResult, setIdWithComputedResult] = useState([]);
 
   const [loginPrompt, setLoginPrompt] = useState(false);
 
@@ -131,6 +136,10 @@ const CbtResults = ({}) => {
 
       onSuccess(data) {
         setCbtObject(data);
+        const ids = data?.questions?.map((idx, i) => {
+          return idx?.student_id;
+        });
+        setIdWithComputedResult(ids);
       },
       onError(err) {
         errorHandler(err);
@@ -275,7 +284,10 @@ const CbtResults = ({}) => {
   };
 
   const allLoading =
-    showLoading || markedAssignmentResultsLoading || cbtAnswerLoading;
+    showLoading ||
+    markedAssignmentResultsLoading ||
+    cbtAnswerLoading ||
+    studentByClassLoading;
 
   const questionType = [
     {
@@ -328,6 +340,14 @@ const CbtResults = ({}) => {
     return [];
   };
 
+  const showWarning = () => {
+    if (!question_type || !subject_id) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   let dt = formatTime(cbtObject?.totalDuration, cbtObject?.submittedDuration);
 
   useEffect(() => {
@@ -374,7 +394,7 @@ const CbtResults = ({}) => {
   });
 
   return (
-    <div>
+    <div className='results-sheet'>
       <GoBack />
       <PageSheet>
         <div className={styles.created}>
@@ -419,7 +439,7 @@ const CbtResults = ({}) => {
                 placeholder='Select type'
                 wrapperClassName=''
               />
-              <AuthSelect
+              {/* <AuthSelect
                 sort
                 options={myStudents}
                 value={student}
@@ -440,8 +460,34 @@ const CbtResults = ({}) => {
                 }}
                 placeholder='Select Student'
                 wrapperClassName=''
-              />
+              /> */}
             </div>
+          </div>
+
+          {showWarning() && (
+            <div className='w-100 d-flex justify-content-center align-items-center  gap-3 bg-danger bg-opacity-10 py-3 px-4 mt-3'>
+              <p className='fs-4 text-danger'>
+                Please select Subject and Question type
+              </p>
+            </div>
+          )}
+
+          <div className='w-100 mt-4 border border-2 pt-4  px-3 rounded-3'>
+            <CbtStudentsRow
+              studentByClassAndSession={studentByClass}
+              onProfileSelect={(x) => {
+                setMarkedQ((prev) => {
+                  return {
+                    ...prev,
+                    student: `${x.surname} ${x.firstname}`,
+                    student_id: x.id,
+                  };
+                });
+              }}
+              isLoading={allLoading}
+              answerQ={markedQ}
+              idWithComputedResult={idWithComputedResult}
+            />
           </div>
 
           {/* <div className='w-100 d-flex justify-content-center mt-4'>
