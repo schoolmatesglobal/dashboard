@@ -1,3 +1,40 @@
+export function formatTime2(totalTime, submittedTime) {
+  if (totalTime && submittedTime) {
+    // Parse total time and submitted time
+    let [totalHours, totalMinutes] = totalTime?.split(":")?.map(Number);
+    let [subHours, subMinutes, subSeconds] = submittedTime
+      ?.split(":")
+      ?.map(Number);
+
+    // Calculate difference in minutes
+    let totalMinutesCount = totalHours * 60 + totalMinutes;
+    let subMinutesCount = subHours * 60 + subMinutes;
+    let differenceMinutes = totalMinutesCount - subMinutesCount;
+
+    // Format total time
+    let totalFormatted = `${totalHours} hour${
+      totalHours !== 1 ? "s" : ""
+    }, ${totalMinutes} minute${totalMinutes !== 1 ? "s" : ""}`;
+
+    // Format submitted time
+    let submittedFormatted = `${subHours} hour${
+      subHours !== 1 ? "s" : ""
+    }, ${subMinutes} minute${
+      subMinutes !== 1 ? "s" : ""
+    }, ${subSeconds} second${subSeconds !== 1 ? "s" : ""}`;
+
+    console.log({ totalMinutesCount, subMinutesCount, differenceMinutes });
+
+    // Return formatted times as an object
+    return {
+      totalTime: totalFormatted,
+      submittedTime: submittedFormatted,
+      difference: differenceMinutes,
+      totalTimeInMinutes: totalMinutesCount,
+    };
+  }
+}
+
 export function recreateArray(result) {
   // Find the highest week value
   let highestWeek = 0;

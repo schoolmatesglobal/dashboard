@@ -14,8 +14,11 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GoBack from "../common/go-back";
 import { Spinner } from "reactstrap";
+import ButtonGroup2 from "../buttons/button-group2";
+import { useMediaQuery } from "react-responsive";
 
 const PageView = ({
+  useBtn2,
   onStatusToggle,
   onDelete,
   groupedButtonOptions = [],
@@ -51,6 +54,12 @@ const PageView = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
+  const isTablet = useMediaQuery({
+    query: "(min-width: 768px, max-width: 991px)",
+  });
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
   return (
     <div className=''>
       {hasGoBack && <GoBack />}
@@ -75,11 +84,18 @@ const PageView = ({
             {hasSortOptions && (
               <div className='mb-5 d-md-flex'>
                 {groupedButtonOptions.length ? (
-                  <div className={`me-3`}>
-                    <ButtonGroup
-                      className='mb-3'
-                      options={groupedButtonOptions}
-                    />
+                  <div className={`w-100`}>
+                    {useBtn2 ? (
+                      <ButtonGroup2
+                        className='mb-3'
+                        options={groupedButtonOptions}
+                      />
+                    ) : (
+                      <ButtonGroup
+                        className='mb-3'
+                        options={groupedButtonOptions}
+                      />
+                    )}
                   </div>
                 ) : null}
                 {hasSelect && (
@@ -107,11 +123,14 @@ const PageView = ({
             )}
             {showIllustration ? (
               SvgIllustrationBanner ? (
-                <div className='svg-banner w-25 mx-auto my-5'>
+                <div
+                  style={{ width: `${isDesktop ? "30%" : "50%"}` }}
+                  className='svg-banner mx-auto my-5 h-100 d-flex align-items-center justify-content-center'
+                >
                   <SvgIllustrationBanner className='w-100 h-100' />
                 </div>
               ) : (
-                <div className='w-50 mx-auto'>
+                <div className='w-50 mx-auto h-100'>
                   <img
                     src={illustrationBanner || illustrationImage}
                     alt=''

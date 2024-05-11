@@ -14,10 +14,12 @@ import Prompt from "../modals/prompt";
 import Action from "../buttons/action";
 import { useAssignments } from "../../hooks/useAssignments";
 import ButtonGroup from "../buttons/button-group";
+import { formatTime } from "../../pages/dashboard/cbt/results/constant";
 
 const SubmissionTable = ({
-  addAssignmentResult,
-  addAssignmentResultLoading,
+  addCbtResult,
+  cbtResult,
+  addCbtResultLoading,
   columns,
   data,
   onCellClick = () => null,
@@ -78,15 +80,12 @@ const SubmissionTable = ({
   const buttonOptions2 = [
     {
       title: `${
-        ResultTab === "1"
-          ? "Submit Objective Result"
-          : ResultTab === "2"
-          ? "Submit Theory Result"
-          : ""
+        cbtResult?.length > 0 ? "ReSubmit CBT Result" : "Submit CBT Result"
       }`,
       onClick: () => {
         setLoginPrompt2(true);
       },
+      // variant: "warning",
       // disabled: objectiveSubmitted,
     },
   ];
@@ -100,6 +99,14 @@ const SubmissionTable = ({
     {
       title: "Yes Submit",
       onClick: () => {
+        const ansScore = data?.map((as, i) => {
+          return {
+            question_number: as.question_number,
+            question: as.question,
+            question_mark: as.question_mark,
+            student_score: as.answer_state,
+          };
+        });
         const assg2 = [
           {
             period: user?.period,
@@ -113,49 +120,52 @@ const SubmissionTable = ({
             total_mark: result?.total_marks,
             score: result?.percentage,
             week: data[0]?.week,
-            
           },
         ];
         const assg3 = {
-          result: [
-            {
-              period: user?.period,
-              term: user?.term,
-              session: user?.session,
-              assignment_id: data[0]?.assignment_id,
-              student_id: data[0]?.student_id,
-              subject_id: data[0]?.subject_id,
-              question_type: ResultTab === "1" ? "objective" : "theory",
-              total_mark: result?.total_marks,
-              score: result?.percentage,
-              week: data[0]?.week,
-              
-            },
-          ],
+          result: {
+            period: user?.period,
+            term: user?.term,
+            session: user?.session,
+            cbt_answer_id: data[0]?.cbt_question_id,
+            student_id: data[0]?.student_id,
+            subject_id: data[0]?.subject_id,
+            question_type: question_type,
+            answer_score: ansScore,
+            correct_answer: String(result?.correctNumber),
+            incorrect_answer: String(result?.IncorrectNumber),
+            total_answer: String(result?.totalNumber),
+            student_total_mark: result?.score,
+            test_total_mark: result?.total_marks,
+            student_duration: data[0]?.submitted_time,
+            test_duration: data[0]?.duration,
+          },
           performance: {
             period: user?.period,
             term: user?.term,
             session: user?.session,
-            assignment_id: data[0]?.assignment_id,
+            cbt_result_id: data[0]?.cbt_question_id,
             student_id: data[0]?.student_id,
             subject_id: data[0]?.subject_id,
-            question_type: ResultTab === "1" ? "objective" : "theory",
-            total_mark: result?.total_marks,
-            percentage_score: result?.percentage,
-            week: data[0]?.week,
-          }
-        }
+            question_type: question_type,
+            student_total_mark: result?.score,
+            correct_answer: String(result?.correctNumber),
+            incorrect_answer: String(result?.IncorrectNumber),
+            total_answer: String(result?.totalNumber),
+            test_total_mark: result?.total_marks,
+            student_duration: data[0]?.submitted_time,
+            test_duration: data[0]?.duration,
+          },
+        };
 
-       
-
-        addAssignmentResult(assg3);
+        addCbtResult(assg3);
 
         setTimeout(() => {
           setLoginPrompt2(false);
         }, 1000);
       },
       //   disabled: activatePreview(),
-      isLoading: addAssignmentResultLoading,
+      isLoading: addCbtResultLoading,
       //
       // variant: "outline",
     },
@@ -243,7 +253,7 @@ const SubmissionTable = ({
     }
   };
 
-  // console.log({ previewAns, answerHighlight, markedQ, result });
+  console.log({ data, markedQ });
 
   return (
     <div className='custom-table-wrapper'>
@@ -407,8 +417,22 @@ const SubmissionTable = ({
 
               <p className='fs-3 fw-bold mb-3'>Total Score</p>
               <p className='fs-3 mb-5 lh-sm'> {result?.total_marks}</p>
-              <p className='fs-3 fw-bold mb-3'>Percentage</p>
-              <p className='fs-3 mb-5 lh-sm'> {`${result?.percentage}%`}</p>
+              <p className='fs-3 fw-bold mb-3'>Total Test Duration</p>
+              <p className='fs-3 mb-5 lh-sm'>
+                {" "}
+                {`${
+                  formatTime(result?.totalDuration, result?.submittedDuration)
+                    ?.totalTime
+                }`}
+              </p>
+              <p className='fs-3 fw-bold mb-3'>Student Duration</p>
+              <p className='fs-3 mb-5 lh-sm'>
+                {" "}
+                {`${
+                  formatTime(result?.totalDuration, result?.submittedDuration)
+                    ?.difference
+                }`}
+              </p>
             </div>
           </Prompt>
           <Prompt

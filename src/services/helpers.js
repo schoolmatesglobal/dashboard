@@ -71,6 +71,8 @@ class Helpers {
       res = error.message;
     }
 
+    // if(res === "")
+
     return toast.error(res);
   }
 

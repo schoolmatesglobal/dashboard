@@ -2,8 +2,20 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useSubject } from "./useSubjects";
 
 export const useStudentCBT = () => {
+  const {
+    isOpen: sideBarIsOpen,
+    toggle: toggleSideBar,
+    closeSidebar,
+    openSidebar,
+    close,
+    hideAllBars,
+    setHideAllBars,
+  } = useAppContext();
+
+  const { subjects, isLoading: subjectLoading } = useSubject();
 
   const [objectiveQ2, setObjectiveQ2] = useState([]);
   const [theoryQ2, setTheoryQ2] = useState([]);
@@ -41,9 +53,9 @@ export const useStudentCBT = () => {
     ans3: false,
     ans4: false,
     answer: "",
-    // theoryAns: "",
     question_type: "",
     question: "",
+    instruction: "",
     subject: "",
     image: "",
     imageName: "",
@@ -52,10 +64,22 @@ export const useStudentCBT = () => {
     session: "",
     subject_id: "",
     week: "",
+    hour: null,
+    minute: null,
+    settings_id: "",
   });
 
-  const { apiServices, errorHandler, permission, user } =
-    useAppContext("cbt");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showWarning, setShowWarning] = useState(true);
+  const [testEnded, setTestEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [secondleft, setSecondLeft] = useState(null);
+  const [hourLeft, setHourLeft] = useState(null);
+  const [day, setDay] = useState(0);
+  const [hour, setHour] = useState(3);
+  const [minute, setMinute] = useState(30);
+
+  const { apiServices, errorHandler, permission, user } = useAppContext("cbt");
 
   const className = user?.present_class;
 
@@ -83,7 +107,7 @@ export const useStudentCBT = () => {
             id: Number(sub.id),
           };
         });
-        // console.log({ ssg, data, sortSubjects });
+        console.log({ ssg, data, sortSubjects });
         return sortSubjects ?? [];
       },
       // onSuccess(data) {
@@ -108,6 +132,8 @@ export const useStudentCBT = () => {
     permission,
     user,
     errorHandler,
+
+    subjects,
 
     objectiveQ2,
     setObjectiveQ2,
@@ -139,6 +165,28 @@ export const useStudentCBT = () => {
     setTheorySubmitted,
 
     ResultTab,
-setResultTab,
+    setResultTab,
+
+    toggleSideBar,
+    closeSidebar,
+
+    isPlaying,
+    setIsPlaying,
+    showWarning,
+    setShowWarning,
+    testEnded,
+    setTestEnded,
+    timeLeft,
+    setTimeLeft,
+    secondleft,
+    setSecondLeft,
+    hourLeft,
+    setHourLeft,
+    day,
+    hour,
+    minute,
+    setDay,
+    setHour,
+    setMinute,
   };
 };

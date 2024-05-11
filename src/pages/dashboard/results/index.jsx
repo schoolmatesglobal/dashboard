@@ -113,23 +113,6 @@ const Results = () => {
         ),
     },
 
-    // onFormSubmit: () => {
-    //   if (user?.is_preschool === "false") {
-    //     navigate(
-    //       `/app/results/${
-    //         inputs.period === "First Half" ? "first" : "second"
-    //       }`,
-    //       { state: { creds: inputs } }
-    //     );
-    //   } else if (is_preschool === "true") {
-    //     navigate(
-    //       `/app/results/${
-    //         inputs.period === "First Half" ? "preschool" : "preschool"
-    //       }`,
-    //       { state: { creds: inputs } }
-    //     );
-    //   }
-    // },
   };
 
   const displayPrompt = (status) => {

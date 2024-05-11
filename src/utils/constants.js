@@ -34,7 +34,7 @@ import {
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
 
-export const backendUrl = function () {
+const backendUrl = function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
     return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (

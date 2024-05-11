@@ -6,11 +6,14 @@ import { useAssignments } from "../../../hooks/useAssignments";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
 import { addQuestionMarks, updateQuestionNumbers } from "./constant";
 import { useCBT } from "../../../hooks/useCBT";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 // import SelectSearch from "../inputs/SelectSearch";
 
 const CreateQuestion = ({
   createQuestionPrompt,
   setCreateQuestionPrompt,
+  state,
   createQ,
   setCreateQ,
   objectiveQ,
@@ -19,20 +22,17 @@ const CreateQuestion = ({
   setTheoryQ,
   obj,
   setObj,
-  addObjectAssignmentLoading,
-  addObjectiveAssignments,
+  addCbtQuestion,
+  addCbtQuestionLoading,
   addTheoryAssignments,
   addTheoryAssignmentLoading,
   allowFetch,
   setAllowFetch,
-  refetchAssignmentCreated,
+  refetchCbtCreated,
   objMark,
   setObjMark,
 }) => {
-  const {
-    user,
-    updateCreateQuestionFxn,
-  } = useCBT();
+  const { user, updateCreateQuestionFxn, apiServices } = useCBT();
 
   const {
     option1,
@@ -59,7 +59,27 @@ const CreateQuestion = ({
     session,
     subject_id,
     week,
+    instruction,
+    hour,
+    minute,
+    mark,
   } = createQ;
+
+  // /////// POST CBT SETUP ////
+  // const { mutateAsync: addCbtQuestion, isLoading: addCbtQuestionLoading } =
+  // useMutation(
+  //   apiServices.addCbtQuestion,
+
+  //   {
+  //     onSuccess() {
+  //       // refetchCbtCreated();
+  //       toast.success("CBT question has been created successfully");
+  //     },
+  //     onError(err) {
+  //       apiServices.errorHandler(err);
+  //     },
+  //   }
+  // );
   // const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   // const [imageUpload, setImageUpload] = useState(null);
 
@@ -117,7 +137,7 @@ const CreateQuestion = ({
       case "objective":
         if (
           !subject_id ||
-          !week ||
+          // !week ||
           !question_type ||
           !question ||
           !option1 ||
@@ -125,14 +145,11 @@ const CreateQuestion = ({
           !option3 ||
           !option4 ||
           !answer ||
-          !objMark
-          // total_mark === 0 ||
-          // total_question === 0 ||
-          // question_mark === 0 ||
-          // total_mark === "" ||
-          // total_question === "" ||
-
-          // question_mark === 0
+          // !objMark ||
+          !instruction ||
+          // hour  ||
+          !minute
+          // !mark
         ) {
           return true;
         }
@@ -204,17 +221,17 @@ const CreateQuestion = ({
     {
       title: `${activeTab === "2" ? "Add Question" : "Preview"}`,
       disabled: activatePreview(),
-      isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+      isLoading: addCbtQuestionLoading,
       onClick:
         activeTab === "2"
           ? async () => {
               setImageNam("No file selected");
 
               if (createQ?.question_type === "objective") {
-                await addObjectiveAssignments();
+                await addCbtQuestion();
                 setAllowFetch(true);
 
-                refetchAssignmentCreated();
+                refetchCbtCreated();
 
                 setCreateQ({
                   ...createQ,
@@ -236,6 +253,9 @@ const CreateQuestion = ({
                   // subject: "",
                   image: "",
                   imageName: "",
+                  // hour: null,
+                  // minute: null,
+                  // instruction: "",
                   // term: "",
                   // period: "",
                   // session: "",
@@ -246,7 +266,7 @@ const CreateQuestion = ({
 
                 setAllowFetch(true);
 
-                refetchAssignmentCreated();
+                refetchCbtCreated();
 
                 setCreateQ({
                   ...createQ,
@@ -331,7 +351,24 @@ const CreateQuestion = ({
   // console.log({ activatePreview: activatePreview() });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
-  // console.log({ tl: TheoryQ?.length });
+  // console.log({
+  //   createQ,
+  //   ap: activatePreview(),
+  //   subject_id,
+  //   week,
+  //   question_type,
+  //   question,
+  //   option1,
+  //   option2,
+  //   option3,
+  //   option4,
+  //   answer,
+  //   objMark,
+  //   instruction,
+  //   hour,
+  //   minute,
+  //   mark,
+  // });
 
   return (
     <div className={styles.create_question}>
@@ -341,7 +378,7 @@ const CreateQuestion = ({
         hasGroupedButtons={true}
         groupedButtonProps={buttonOptions}
         singleButtonText='Preview'
-        promptHeader={`${subject?.toUpperCase()} (WEEK ${createQ?.week?.toUpperCase()}) - ${createQ?.question_type?.toUpperCase()} - Q${
+        promptHeader={`${subject?.toUpperCase()} CBT - ${createQ?.question_type?.toUpperCase()} - Q${
           // question_type === "objective"
           //   ? ObjectiveQ?.length + 1
           //   : question_type === "theory"
@@ -464,27 +501,27 @@ const CreateQuestion = ({
             )}
             {createQ?.question_type === "objective" && (
               <>
-                <p className='fs-3 fw-bold mb-3'>Question</p>
+                {/* question */}
+                <p className='fs-3 fw-bold mb-4'>Question</p>
                 <div className='auth-textarea-wrapper'>
                   <textarea
-                    className='form-control'
+                    className='form-control fs-3 lh-base'
                     type='text'
                     value={createQ?.question}
-                    placeholder='Type the assignment question'
+                    placeholder='Type the CBT question'
                     onChange={(e) =>
                       setCreateQ((prev) => {
                         return { ...prev, question: e.target.value };
                       })
                     }
                     style={{
-                      minHeight: "150px",
-                      fontSize: "16px",
-                      lineHeight: "22px",
+                      minHeight: "200px",
+                      // lineHeight: "22px",
                     }}
                   />
                 </div>
 
-                <p className='fs-3 fw-bold my-3'>Options</p>
+                <p className='fs-3 fw-bold my-4'>Options</p>
                 <div className='d-flex flex-column gap-3'>
                   {/* option A */}
                   <div className='d-flex align-items-center gap-3'>
@@ -492,6 +529,7 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option A'
+                        className='fs-3'
                         // hasError={!!errors.username}
                         value={createQ?.option1}
                         name='option'
@@ -535,6 +573,7 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option B'
+                        className='fs-3'
                         // hasError={!!errors.username}
                         value={createQ?.option2}
                         name='option'
@@ -550,6 +589,7 @@ const CreateQuestion = ({
                       <input
                         type='radio'
                         name='radio-1'
+                        className='fs-3'
                         style={{ width: "20px", height: "20px" }} // Set the width using inline styles
                         checked={createQ?.ans2 && !!createQ?.option2}
                         id='option-B'
@@ -578,6 +618,7 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option C'
+                        className='fs-3'
                         value={createQ?.option3}
                         name='option'
                         onChange={(e) =>
@@ -621,6 +662,7 @@ const CreateQuestion = ({
                       <AuthInput
                         type='text'
                         placeholder='Option D'
+                        className='fs-3'
                         // hasError={!!errors.username}
                         value={createQ?.option4}
                         name='option'
@@ -659,49 +701,14 @@ const CreateQuestion = ({
                     </div>
                   </div>
                 </div>
-
-                <p className='fs-3 fw-bold my-3'>Mark Computation</p>
-                <div className='d-flex flex-column gap-3'>
-                  {/*Question Mark */}
-                  <div className='d-flex align-items-center gap-3'>
-                    <div style={{ width: "100px" }}>
-                      <AuthInput
-                        type='number'
-                        placeholder='Question Mark'
-                        // hasError={!!errors.username}
-                        value={objMark}
-                        name='option'
-                        onChange={(e) => {
-                          if (objectiveQ?.length > 0) return;
-                          setObjMark(e.target.value);
-                        }}
-                        wrapperClassName=''
-                      />
-                    </div>
-                    <div className='d-flex align-items-center gap-3 cursor-pointer'>
-                      <p className='fs-3'>Question Mark</p>
-                    </div>
-                  </div>
-                </div>
-                <p className='fs-4  mt-4 text-danger'>
-                  NB: Mark will be the same for all questions
-                </p>
               </>
             )}
           </>
         )}
         {activeTab === "2" && (
           <>
-            <p className='fw-bold fs-4 mb-3'>Questions</p>
-            <p
-              style={{
-                fontSize: "16px",
-                marginBottom: "20px",
-                lineHeight: "22px",
-              }}
-            >
-              {createQ?.question}
-            </p>
+            <p className='fw-bold fs-3 mb-3'>Questions</p>
+            <p className='fs-3 lh-base mb-4'>{createQ?.question}</p>
             {createQ?.image && (
               <div className='mb-4 mt-4'>
                 <img src={createQ?.image} width={150} alt='' />
@@ -709,35 +716,25 @@ const CreateQuestion = ({
             )}
             {createQ?.question_type === "objective" && (
               <>
-                <p className='fw-bold fs-4 my-4'>Options</p>
+                <p className='fw-bold fs-3 my-4'>Options</p>
                 <div className='d-flex flex-column gap-3 mb-5'>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     A. {option1}
                     {answer === option1 && " (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     B. {option2}
                     {answer === option2 && " - (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     C. {option3}
                     {answer === option3 && " - (Correct Answer)"}
                   </p>
-                  <p style={{ fontSize: "16px" }}>
+                  <p className='fs-3'>
                     D. {option4}
                     {answer === option4 && " - (Correct Answer)"}
                   </p>
                 </div>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Mark
-                </p>
-                <p className={styles.create_question_answer}>{objMark} mk(s)</p>
               </>
             )}
             {createQ?.question_type === "theory" && (

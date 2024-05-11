@@ -34,6 +34,7 @@
     "react-to-print": "^2.14.11",
     "react-toastify": "^9.1.1",
     "reactstrap": "^9.1.5",
+    "recharts": "^2.12.6",
     "sass": "^1.57.1",
     "use-local-storage": "^3.0.0",
     "validator": "^13.7.0",

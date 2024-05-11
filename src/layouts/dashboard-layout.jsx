@@ -17,12 +17,16 @@ import { dashboardSideBarLinks } from "../utils/constants";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
+
   const {
     isOpen: navbarIsOpen,
     toggle: toggleNavbar,
     closeSidebar,
     user,
     logout,
+    cbtPlaying,
+    hideAllBars,
+    setHideAllBars,
   } = useAppContext();
   const sidebarRef = useRef(null);
 
@@ -61,7 +65,7 @@ const DashboardLayout = () => {
       case "PREMIUM PLAN":
         return dashboardSideBarLinks[user?.designation_name];
         break;
-        
+
       case "ENTERPRISE PLAN":
         return dashboardSideBarLinks[user?.designation_name];
         break;
@@ -94,6 +98,9 @@ const DashboardLayout = () => {
       <div
         ref={sidebarRef}
         className={`sidebar-wrapper ${navbarIsOpen ? "toggle-navbar" : ""}`}
+        style={{
+          display: `${hideAllBars ? "none" : ""}`,
+        }}
       >
         <div className='d-flex justify-content-end p-3 close-nav-button-wrapper'>
           <button
@@ -125,38 +132,46 @@ const DashboardLayout = () => {
         </div>
       </div>
       <div className='content-wrapper'>
-        <Navbar color='light' expand='md' className='px-4 py-3' light>
-          <Nav className='align-items-center'>
-            <Hamburger onClick={toggleNavbar} />
-            <p className='ms-3'>Welcome {user?.firstname}</p>
-          </Nav>
-          <Nav className='ms-auto' navbar>
-            <Dropdown isOpen={dropdown} toggle={() => setDropdown(!dropdown)}>
-              <DropdownToggle tag='div'>
-                <ProfileImage src={user.image} />
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem>
-                  <Link
-                    className='py-3 nav-dropdown-link'
-                    to='/app/change-password'
-                  >
-                    Change Password
-                  </Link>
-                </DropdownItem>
-                <DropdownItem>
-                  <Link className='py-3 nav-dropdown-link' to='/app/profile'>
-                    My Profile
-                  </Link>
-                </DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem className='py-3' onClick={logout}>
-                  Logout
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </Nav>
-        </Navbar>
+        {!hideAllBars && (
+          <Navbar
+            style={{ zIndex: "999" }}
+            color='light'
+            expand='md'
+            className='px-4 py-3 shadow'
+            light
+          >
+            <Nav className='align-items-center'>
+              <Hamburger onClick={toggleNavbar} />
+              <p className='ms-3'>Welcome {user?.firstname}</p>
+            </Nav>
+            <Nav className='ms-auto' navbar>
+              <Dropdown isOpen={dropdown} toggle={() => setDropdown(!dropdown)}>
+                <DropdownToggle tag='div'>
+                  <ProfileImage src={user.image} />
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem>
+                    <Link
+                      className='py-3 nav-dropdown-link'
+                      to='/app/change-password'
+                    >
+                      Change Password
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <Link className='py-3 nav-dropdown-link' to='/app/profile'>
+                      My Profile
+                    </Link>
+                  </DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem className='py-3' onClick={logout}>
+                    Logout
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </Nav>
+          </Navbar>
+        )}
         <div className='content-inner-wrapper'>
           <Outlet />
         </div>

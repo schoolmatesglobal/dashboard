@@ -29,7 +29,7 @@ const ObjectiveViewCard = ({
         <span className='fw-bold fs-3'>Q{CQ.question_number}.</span>{" "}
         {CQ.question}
       </p>
-      <p className='fw-bold fs-3 mb-3 lh-base'>({CQ.question_mark} mk(s) )</p>
+      {/* <p className='fw-bold fs-3 mb-3 lh-base'>({CQ.question_mark} mk(s) )</p> */}
       {CQ.image && (
         <div className='mb-4 '>
           <img src={CQ.image} width={70} height={70} alt='' />

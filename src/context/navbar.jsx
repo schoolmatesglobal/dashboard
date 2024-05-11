@@ -4,6 +4,7 @@ export const NavbarContext = createContext({});
 
 const NavbarProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hideAllBars, setHideAllBars] = useState(false);
 
   return (
     <NavbarContext.Provider
@@ -12,6 +13,9 @@ const NavbarProvider = ({ children }) => {
         toggle: () => setIsOpen(!isOpen),
         openSidebar: () => setIsOpen(true),
         closeSidebar: () => setIsOpen(false),
+        close: setIsOpen,
+        hideAllBars,
+        setHideAllBars,
       }}
     >
       {children}

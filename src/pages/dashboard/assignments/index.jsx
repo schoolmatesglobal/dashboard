@@ -15,6 +15,16 @@ import Prompt from "../../../components/modals/prompt";
 import { useSubject } from "../../../hooks/useSubjects";
 import Performances from "./performances";
 import Performances2 from "./performances/students";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChartSimple,
+  faDownload,
+  faEye,
+  faFileArrowDown,
+  faPen,
+  faPlus,
+  faScroll,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Assignments = () => {
   const {
@@ -103,7 +113,11 @@ const Assignments = () => {
 
     if (permission?.view) {
       arr.push({
-        title: "View",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faEye} /> View
+          </>
+        ),
         onClick: () => setActiveTab("5"),
         variant: `${activeTab === "5" ? "" : "outline"}`,
       });
@@ -111,42 +125,66 @@ const Assignments = () => {
 
     if (permission?.create) {
       arr.push({
-        title: "Create",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faPen} /> Create
+          </>
+        ),
         onClick: () => setActiveTab("1"),
         variant: `${activeTab === "1" ? "" : "outline"}`,
       });
     }
     if (permission?.submissions) {
       arr.push({
-        title: "Submissions",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faDownload} /> Submissions
+          </>
+        ),
         onClick: () => setActiveTab("3"),
         variant: `${activeTab === "3" ? "" : "outline"}`,
       });
     }
     if (permission?.results) {
       arr.push({
-        title: "Results",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faScroll} /> Results
+          </>
+        ),
         onClick: () => setActiveTab("4"),
         variant: `${activeTab === "4" ? "" : "outline"}`,
       });
     }
     if (permission?.student_results) {
       arr.push({
-        title: "Results",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faScroll} /> Results
+          </>
+        ),
         onClick: () => setActiveTab("6"),
         variant: `${activeTab === "6" ? "" : "outline"}`,
       });
     }
     if (permission?.performances) {
       arr.push({
-        title: "Performance",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faChartSimple} /> Performance
+          </>
+        ),
         onClick: () => setActiveTab("7"),
         variant: `${activeTab === "7" ? "" : "outline"}`,
       });
     }
     if (permission?.student_performances) {
       arr.push({
-        title: "Performance",
+        title: (
+          <>
+            <FontAwesomeIcon icon={faChartSimple} /> Performance
+          </>
+        ),
         onClick: () => setActiveTab("8"),
         variant: `${activeTab === "8" ? "" : "outline"}`,
       });
