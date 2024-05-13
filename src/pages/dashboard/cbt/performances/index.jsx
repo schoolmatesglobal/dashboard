@@ -237,6 +237,7 @@ const CbtPerformances = ({}) => {
           setShowChart2(true);
           const correct_answer = Number(data[0]?.correct_answer);
           const incorrect_answer = Number(data[0]?.incorrect_answer);
+          const unattempted_answer = Number(data[0]?.unattempted_question);
           const total_answer = Number(data[0]?.total_answer);
           const student_duration = data[0]?.student_duration;
           const test_duration = data[0]?.test_duration;
@@ -260,7 +261,7 @@ const CbtPerformances = ({}) => {
                   ? correct_answer
                   : dt?.name === "Incorrect Answers"
                   ? incorrect_answer
-                  : incorrect_answer,
+                  : unattempted_answer,
               total: total_answer,
             };
           });
@@ -404,7 +405,6 @@ const CbtPerformances = ({}) => {
       refetchCbtPerformance();
       refetchAllCbtPerformance();
     }
-
     // setAnsweredTheoQ(submittedTheoAssignment);
   }, [subject_id, student_id, question_type]);
 
@@ -474,6 +474,7 @@ const CbtPerformances = ({}) => {
     student,
     idWithComputedResult,
     markedQ,
+    cbtPerformance,
     // subject_id,
     // student_id,
     // cbtPerformance,

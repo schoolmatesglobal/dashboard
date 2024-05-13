@@ -140,6 +140,7 @@ const StudentCbtPerformances = ({}) => {
           setShowChart2(true);
           const correct_answer = Number(data[0]?.correct_answer);
           const incorrect_answer = Number(data[0]?.incorrect_answer);
+          const unattempted_answer = Number(data[0]?.unattempted_question);
           const total_answer = Number(data[0]?.total_answer);
           const student_duration = data[0]?.student_duration;
           const test_duration = data[0]?.test_duration;
@@ -163,7 +164,7 @@ const StudentCbtPerformances = ({}) => {
                   ? correct_answer
                   : dt?.name === "Incorrect Answers"
                   ? incorrect_answer
-                  : incorrect_answer,
+                  : unattempted_answer,
               total: total_answer,
             };
           });
@@ -341,6 +342,8 @@ const StudentCbtPerformances = ({}) => {
               />
             </div>
           </div>
+
+          
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>
@@ -355,7 +358,7 @@ const StudentCbtPerformances = ({}) => {
           )}
           {!allLoading && (
             <div className='mt-5'>
-              {showChart2 && (
+              {!!subject_id && !!question_type && showChart2 && (
                 <div className='mt-5'>
                   <p className='fs-3 fw-bold'>{`Score Analysis (%) for ${student}`}</p>
                   <PieCharts
