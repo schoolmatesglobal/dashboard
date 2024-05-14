@@ -633,6 +633,11 @@ export function analyzeQuestions(questions) {
   const analyzedQuestions = [];
   let totalDuration;
   let submittedDuration;
+  // let unAttemptedQuestions;
+
+  const unAtp = questions?.filter(
+    (qf) => qf.answer === "No option was selected"
+  ) ?? []
 
   const totalMarks = questions?.reduce(
     (acc, question) => acc + Number(question.question_mark),
@@ -668,7 +673,8 @@ export function analyzeQuestions(questions) {
   }
 
   const score = correctNumber * (totalMarks / analyzedQuestions?.length);
-  const IncorrectNumber = analyzedQuestions?.length - correctNumber;
+  const IncorrectNumber =
+    analyzedQuestions?.length - correctNumber - unAtp?.length;
 
   const percentage = (score / totalMarks) * 100;
 
@@ -678,6 +684,7 @@ export function analyzeQuestions(questions) {
     score,
     questions: analyzedQuestions,
     correctNumber,
+    unAttemptedNumber: unAtp?.length,
     IncorrectNumber,
     totalNumber: questions?.length,
     total_marks: totalMarks,

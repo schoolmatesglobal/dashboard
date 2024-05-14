@@ -77,6 +77,7 @@ const Objective = ({
   const [timeLeft, setTimeLeft] = useState(null);
   const [secondleft, setSecondLeft] = useState(null);
   const [hourLeft, setHourLeft] = useState(null);
+  const [dayLeft, setDayLeft] = useState(null);
   const [submittedTime, setSubmittedTime] = useState("");
 
   const [slice1, setSlice1] = useState("0");
@@ -147,7 +148,7 @@ const Objective = ({
         //   // dt?.week === createQ2?.week
         // );
 
-        console.log({ ssk, data, student, createQ2, user });
+        // console.log({ ssk, data, student, createQ2, user });
 
         // if (ssk?.length > 0) {
         //   // resetLoadObjectiveAnsFxn();
@@ -252,6 +253,8 @@ const Objective = ({
         });
 
         setObjectiveSubmitted(true);
+
+        // console.log({ CBT: newAnswers });
 
         submitCbtQuestion(newAnswers);
 
@@ -363,7 +366,7 @@ const Objective = ({
 
   useEffect(() => {
     setSubmittedTime(`${hourLeft}:${timeLeft}:${secondleft}`);
-    if (hourLeft === 0 && timeLeft === 0 && secondleft === 0) {
+    if (dayLeft === 0 && hourLeft === 0 && timeLeft === 0 && secondleft === 0) {
       setTestEnded(true);
       setHideAllBars(false);
       setIsPlaying(false);
@@ -371,17 +374,15 @@ const Objective = ({
       setObjectiveSubmitted(true);
       let newArray = [];
 
-      if (newArray?.length !== objectiveQ?.length) {
+      if (answeredObjectiveQ?.length !== objectiveQ?.length) {
         const questionsAnsweredId = answeredObjectiveQ?.map((aq, i) => {
-          return String(aq.assignment_id);
+          return String(aq.cbt_question_id);
         });
 
-        newArray.push(...answeredObjectiveQ);
-
-        // console.log({ questionsAnsweredId });
+        // newArray = [...answeredObjectiveQ]; // console.log({ questionsAnsweredId });
 
         const filterAns = objectiveQ
-          ?.filter((ans) => questionsAnsweredId.includes(ans.id) === false)
+          ?.filter((ans) => questionsAnsweredId?.includes(ans.id) === false)
           ?.map((qs, i) => {
             return {
               period: state?.period,
@@ -401,7 +402,24 @@ const Objective = ({
             };
           });
 
-        newArray.push(...filterAns);
+        // const filterAns2 = answeredObjectiveQ?.filter(
+        //   (ans) => questionsAnsweredId.includes(ans.id) === true
+        // );
+
+        newArray = [...answeredObjectiveQ, ...filterAns]?.map((aq, i) => {
+          return {
+            ...aq,
+            submitted_time: "0:0:0",
+          };
+        });
+
+        // console.log({
+        //   CBT: newArray,
+        //   answeredObjectiveQ,
+        //   filterAns,
+        //   objectiveQ,
+        //   questionsAnsweredId,
+        // });
 
         submitCbtQuestion2(newArray);
         setSubmitted(true);
@@ -418,6 +436,9 @@ const Objective = ({
               submitted_time: submittedTime,
             };
           });
+
+          // console.log({ CBT: newAnswers, answeredObjectiveQ, objectiveQ });
+
           submitCbtQuestion(newAnswers);
           setSubmitted(true);
           refetchAnsweredCbt();
@@ -449,32 +470,33 @@ const Objective = ({
   // const day = 0;
   // const minute = 0.5;
 
-  console.log({
-    // objectiveSubmitted,
-    // testEnded,
-    // hourLeft,
-    // timeLeft,
-    // secondleft,
-    // submitted,
-    // sideBarIsOpen,
-    // isPlaying,
-    // initialTaken,
-    // arrayLength,
-    // itemsPerPage,
-    // numberOfPages,
-    // slice1,
-    // slice2,
-    // objectiveQ,
-    answeredObjectiveQ,
-    createQ2,
-    objectiveSubmitted,
-    isPlaying,
-    answeredCbt,
-    objectiveQ,
-    // subject_id,
-    // state,
-  });
-  // console.log({ checkedData2: checkedData2(), checkedData: checkedData() });
+  // console.log({
+  //   // objectiveSubmitted,
+  //   // testEnded,
+  //   // hourLeft,
+  //   // timeLeft,
+  //   // secondleft,
+  //   // submitted,
+  //   // sideBarIsOpen,
+  //   // isPlaying,
+  //   // initialTaken,
+  //   // arrayLength,
+  //   // itemsPerPage,
+  //   // numberOfPages,
+  //   // slice1,
+  //   // slice2,
+  //   // objectiveQ,
+  //   answeredObjectiveQ,
+  //   createQ2,
+  //   objectiveSubmitted,
+  //   isPlaying,
+  //   answeredCbt,
+  //   objectiveQ,
+  //   // subject_id,
+  //   // state,
+  // });
+
+  console.log({ dayLeft, hourLeft, timeLeft, secondleft });
 
   return (
     <div className='mt-5'>
@@ -520,6 +542,8 @@ const Objective = ({
                   initialTaken={initialTaken}
                   submitted={submitted}
                   setSubmitted={setSubmitted}
+                  dayLeft={dayLeft}
+                  setDayLeft={setDayLeft}
                 />
               }
 

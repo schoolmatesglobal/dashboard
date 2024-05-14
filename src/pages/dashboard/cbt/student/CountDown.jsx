@@ -8,12 +8,6 @@ const minuteSeconds = 60;
 const hourSeconds = 3600;
 const daySeconds = 86400;
 
-const timerProps = {
-  isPlaying: true,
-  size: 120,
-  strokeWidth: 6,
-};
-
 const renderTime = (dimension, time) => {
   return (
     <div className='d-flex flex-column text-center'>
@@ -51,6 +45,8 @@ const CountdownTimer = ({
   initialTaken,
   submitted,
   setSubmitted,
+  dayLeft,
+  setDayLeft,
 }) => {
   const { createQ2, setCreateQ2 } = useStudentCBT();
 
@@ -58,7 +54,7 @@ const CountdownTimer = ({
 
   useEffect(() => {
     // Increment the key whenever hour or minute changes
-    setKey(prevKey => prevKey + 1);
+    setKey((prevKey) => prevKey + 1);
   }, [hour, minute]);
 
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
@@ -67,16 +63,17 @@ const CountdownTimer = ({
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
- 
+  const timerProps = {
+    // isPlaying: true,
+    isPlaying: isPlaying,
+    size: isMobile ? 90 : 120,
+    strokeWidth: 6,
+  };
 
   const startTime = Math.floor(Date.now() / 1000);
 
-
-
-
-
   // Convert the duration components to seconds
-  const totalSeconds = 24 * 60 * 60 + hour * 60 * 60 + minute * 60;
+  const totalSeconds = day * 24 * 60 * 60 + hour * 60 * 60 + minute * 60;
 
   // use UNIX timestamp in seconds
   const endTime = startTime + totalSeconds; // use UNIX timestamp in seconds
@@ -85,28 +82,49 @@ const CountdownTimer = ({
   const days = Math.ceil(remainingTime / daySeconds);
   const daysDuration = days * daySeconds;
 
- 
-
-  console.log({ createQ2, day, hour, minute });
+  // console.log({ createQ2, day, hour, minute });
 
   return (
-    <div key = {
-      key
-    } className='flex flex-col align-items-center'>
+    <div key={key} className='flex flex-col align-items-center'>
       <div
         className='d-flex justify-content-center gap-3 px-5'
         // style={{ width: "60px", height: "60px" }}
       >
+        <div className='d-none'>
+          <CountdownCircleTimer
+            {...timerProps}
+            colors='#7E2E84'
+            duration={daysDuration}
+            initialRemainingTime={remainingTime}
+          >
+            {({ elapsedTime, color }) => {
+              setTimeout(() => {
+                setDayLeft(getTimeDays(daysDuration - elapsedTime));
+              }, 1000);
+              return (
+                <span style={{ color }}>
+                  {renderTime("days", getTimeDays(daysDuration - elapsedTime))}
+                </span>
+              );
+            }}
+          </CountdownCircleTimer>
+        </div>
         <CountdownCircleTimer
           {...timerProps}
           colors='#11355c'
           duration={daySeconds}
-          size={isMobile ? 90 : 120}
-          isPlaying={isPlaying}
           initialRemainingTime={remainingTime % daySeconds}
+          onComplete={(totalElapsedTime) => {
+            return {
+              shouldRepeat: remainingTime - totalElapsedTime > hourSeconds,
+              // shouldRepeat: !testEnded,
+            };
+          }}
         >
           {({ elapsedTime, color }) => {
-            setHourLeft(getTimeHours(daySeconds - elapsedTime));
+            setTimeout(() => {
+              setHourLeft(getTimeHours(daySeconds - elapsedTime));
+            }, 1000);
             return (
               <span style={{ color }}>
                 {renderTime("hours", getTimeHours(daySeconds - elapsedTime))}
@@ -118,12 +136,10 @@ const CountdownTimer = ({
           {...timerProps}
           colors='#367fa9'
           duration={hourSeconds}
-          size={isMobile ? 90 : 120}
-          isPlaying={isPlaying}
           initialRemainingTime={remainingTime % hourSeconds}
           onComplete={(totalElapsedTime) => {
             return {
-              shouldRepeat: !testEnded,
+              shouldRepeat: remainingTime - totalElapsedTime > minuteSeconds,
             };
           }}
         >
@@ -145,12 +161,10 @@ const CountdownTimer = ({
           {...timerProps}
           colors='#f53a01'
           duration={minuteSeconds}
-          size={isMobile ? 90 : 120}
-          isPlaying={isPlaying}
           initialRemainingTime={remainingTime % minuteSeconds}
           onComplete={(totalElapsedTime) => {
             return {
-              shouldRepeat: !testEnded,
+              shouldRepeat: remainingTime - totalElapsedTime > 0,
             };
           }}
         >
@@ -184,9 +198,7 @@ const CountdownTimer = ({
       )}
 
       {submitted && !testEnded && (
-        <div
-          className='mt-5 d-flex justify-content-center align-items-center gap-3 bg-danger bg-opacity-10 py-4 px-4'
-        >
+        <div className='mt-5 d-flex justify-content-center align-items-center gap-3 bg-danger bg-opacity-10 py-4 px-4'>
           <p className='fs-3 fw-bold text-danger rounded-3'>Test has ended.</p>
         </div>
       )}

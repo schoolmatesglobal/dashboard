@@ -107,7 +107,7 @@ export const useStudentCBT = () => {
             id: Number(sub.id),
           };
         });
-        console.log({ ssg, data, sortSubjects });
+        // console.log({ ssg, data, sortSubjects });
         return sortSubjects ?? [];
       },
       // onSuccess(data) {

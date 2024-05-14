@@ -169,7 +169,7 @@ const ViewCBT = (
 
         // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ data, cbt });
+        // console.log({ data, cbt });
 
         return cbt;
       },
@@ -236,7 +236,7 @@ const ViewCBT = (
             dt?.subject === subject &&
             Number(dt?.week) === Number(week)
         );
-        console.log({ tsg, data });
+        // console.log({ tsg, data });
         return tsg;
       },
 
@@ -413,14 +413,14 @@ const ViewCBT = (
     setKey((prevKey) => prevKey + 1);
   }, [subject_id, question_type]);
 
-  console.log({
-    studentSubjects,
-    createQ2,
-    state,
-    subjects,
-    objectiveQ2,
-    subject_id,
-  });
+  // console.log({
+  //   studentSubjects,
+  //   createQ2,
+  //   state,
+  //   subjects,
+  //   objectiveQ2,
+  //   subject_id,
+  // });
 
   return (
     <PageSheet>
