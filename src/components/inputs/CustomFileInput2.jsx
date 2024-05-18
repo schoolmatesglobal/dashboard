@@ -18,7 +18,7 @@ const CustomFileInput2 = ({
     fileInputRef.current.click();
   };
 
-  const wordCt = xs ? 12 : sm ? 20 : md ? 23 : lg ? 23 : 23;
+  const wordCt = xs ? 12 : sm ? 13 : md ? 18 : lg ? 23 : 23;
 
   function trimString(str) {
     // Check if the string is longer than 5 characters
