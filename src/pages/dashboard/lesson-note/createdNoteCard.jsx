@@ -37,16 +37,16 @@ const CreateNoteCard = ({
         }`}
       >
         <p
-          className={`fw-bold fs-3 lh-base border-2 border p-3 ${
-            xs ? "w-100" : sm ? "w-100" : "w-25"
-          } `}
+          className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
         >
           Status:
         </p>
         <div
-          className={`fs-3 fw-bold d-flex align-items-center  lh-base px-3 border-2 border  ${
-            xs ? "w-100 py-3" : sm ? "w-100 py-3" : "w-75"
+          className={`fs-3 fw-bold d-flex align-items-center  lh-base px-4 border-2 border  ${
+            xs ? " py-3" : sm ? " py-3" : ""
           }`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           <p
             style={{ whiteSpace: "nowrap" }}
@@ -66,16 +66,14 @@ const CreateNoteCard = ({
         }`}
       >
         <p
-          className={`fw-bold fs-3 lh-base border-2 border p-3 ${
-            xs ? "w-100" : sm ? "w-100" : "w-25"
-          } `}
+          className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
         >
           Topic:
         </p>
         <p
-          className={`fs-3 lh-base p-3 border-2 border ${
-            xs ? "w-100" : sm ? "w-100" : "w-75"
-          }`}
+          className={`fs-3 lh-base py-3 px-4 border-2 border `}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           {notes?.topic}
         </p>
@@ -86,16 +84,14 @@ const CreateNoteCard = ({
         }`}
       >
         <p
-          className={`fw-bold fs-3 lh-base border-2 border p-3 ${
-            xs ? "w-100" : sm ? "w-100" : "w-25"
-          } `}
+          className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
         >
           Description:
         </p>
         <p
-          className={`fs-3 lh-base p-3 border-2 border ${
-            xs ? "w-100" : sm ? "w-100" : "w-75"
-          }`}
+          className={`fs-3 lh-base py-3 px-4 border-2 border `}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           {notes?.description}
         </p>
@@ -106,9 +102,8 @@ const CreateNoteCard = ({
         }`}
       >
         <p
-          className={`fw-bold fs-3 lh-base border-2 border p-3 ${
-            xs ? "w-100" : sm ? "w-100" : "w-25"
-          } `}
+          className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
         >
           File Name:
         </p>
@@ -119,7 +114,8 @@ const CreateNoteCard = ({
               : sm
               ? "flex-column"
               : "flex-row align-items-center"
-          } p-3 border-2 border ${xs ? "w-100" : sm ? "w-100" : "w-75"}`}
+          } py-3 px-4 border-2 border`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           <p className='fs-3 lh-base'>{notes?.file_name}</p>
           {/* <Button
@@ -139,16 +135,14 @@ const CreateNoteCard = ({
         }`}
       >
         <p
-          className={`fw-bold fs-3 lh-base border-2 border p-3 ${
-            xs ? "w-100" : sm ? "w-100" : "w-25"
-          } `}
+          className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
         >
           Submitted By:
         </p>
         <p
-          className={`fs-3 lh-base p-3 border-2 border ${
-            xs ? "w-100" : sm ? "w-100" : "w-75"
-          }`}
+          className={`fs-3 lh-base py-3 px-4 border-2 border`}
+          style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           {notes?.submitted_by}
         </p>
@@ -161,9 +155,9 @@ const CreateNoteCard = ({
             : sm
             ? "flex-row justify-content-between"
             : "flex-row justify-content-between"
-        } border-2 border p-3`}
+        } border-2 border py-3 px-4`}
       >
-        <div className='d-flex align-content-center gap-3'>
+        <div className='d-flex align-content-center gap-4'>
           <Button
             variant=''
             className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
