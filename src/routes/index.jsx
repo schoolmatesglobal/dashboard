@@ -116,6 +116,7 @@ import CbtResults from "../pages/dashboard/cbt/results";
 import CbtPerformances from "../pages/dashboard/cbt/performances";
 import StudentCBTResults from "../pages/dashboard/cbt/student/results";
 import StudentCbtPerformances from "../pages/dashboard/cbt/performances/students";
+import LessonNote from "../pages/dashboard/lesson-note";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -827,6 +828,15 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='broadsheet'>
               <BroadSheet />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='lesson-note'
+          element={
+            <Guard routeName='lesson-note'>
+              <LessonNote />
             </Guard>
           }
         />

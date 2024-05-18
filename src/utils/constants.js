@@ -30,6 +30,7 @@ import {
   faPersonSwimming,
   faSquarePollHorizontal,
   faSquarePollVertical,
+  faBookBookmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
@@ -116,6 +117,11 @@ export const dashboardSideBarLinks = {
       to: "/app/staffs",
       title: "Staffs",
       icon: faClipboardUser,
+    },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
     },
     {
       to: "/app/students",
@@ -220,6 +226,11 @@ export const dashboardSideBarLinks = {
       title: "Broad Sheet",
       icon: faSquarePollHorizontal,
     },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
+    },
 
     {
       to: "/app/students",
@@ -257,6 +268,11 @@ export const dashboardSideBarLinks = {
       to: "/app/broadsheet",
       title: "Broad Sheet",
       icon: faSquarePollHorizontal,
+    },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
     },
     {
       to: "/app/staffs",

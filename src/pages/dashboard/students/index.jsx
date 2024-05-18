@@ -99,7 +99,7 @@ const Student = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.status]);
 
-  // console.log({ state });
+  console.log({ dt: data[indexStatus] });
 
   return (
     <PageView

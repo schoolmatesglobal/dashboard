@@ -112,7 +112,7 @@ const CustomTable = ({
     if (checkedRows.length === data.length) {
       setCheckedRows([]);
     } else {
-      const dataIds = data.map((x) => x.id);
+      const dataIds = data?.map((x) => x.id);
       setCheckedRows(dataIds);
     }
   };
@@ -147,7 +147,7 @@ const CustomTable = ({
             className={`custom-table ${centered ? "centered" : ""}`}
           >
             <thead>
-              {headerGroups.map((headerGroup) => (
+              {headerGroups?.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {hasCheckBox && (
                     <th>
@@ -158,7 +158,7 @@ const CustomTable = ({
                       />
                     </th>
                   )}
-                  {headerGroup.headers.map((column) => (
+                  {headerGroup?.headers?.map((column) => (
                     <th {...column.getHeaderProps()}>
                       {column.render("Header")}
                     </th>
@@ -171,7 +171,7 @@ const CustomTable = ({
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-              {rows.map((row) => {
+              {rows?.map((row) => {
                 prepareRow(row);
                 return (
                   <tr {...row.getRowProps()}>
@@ -184,7 +184,7 @@ const CustomTable = ({
                         />
                       </td>
                     )}
-                    {row.cells.map((cell) => {
+                    {row?.cells?.map((cell) => {
                       return (
                         <td
                           {...cell.getCellProps()}

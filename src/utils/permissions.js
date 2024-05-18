@@ -108,6 +108,11 @@ export const permissions = {
       view: true,
       preSchool: true,
     },
+    "lesson-note": {
+      create: true,
+      view: true,
+      approve: false,
+    },
     assignments: {
       view: false,
       create: true,
@@ -202,6 +207,11 @@ export const permissions = {
       compute: true,
       view: true,
       preSchool: true,
+    },
+    "lesson-note": {
+      create: false,
+      view: true,
+      approve: false,
     },
     skills: {
       create: false,
@@ -373,6 +383,11 @@ export const permissions = {
       read: true,
       update: true,
       delete: true,
+    },
+    "lesson-note": {
+      create: false,
+      view: true,
+      approve: true,
     },
     "pre-school": {
       create: true,
