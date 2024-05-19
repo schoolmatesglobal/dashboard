@@ -210,7 +210,7 @@ const CreateNoteCard = ({
             handleDownload();
           }}
         >
-          Download File
+          Download Note
         </Button>
       </div>
     </div>

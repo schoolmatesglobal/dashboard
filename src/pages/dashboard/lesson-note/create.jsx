@@ -611,7 +611,7 @@ const Create = ({
     } else {
       setNewSubjects([]);
     }
-  }, [subjectsByTeacher]);
+  }, [subjectsByTeacher, subjects]);
 
   // useEffect(() => {
   //   if (activateRetrieveCreated()) {
