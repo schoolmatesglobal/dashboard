@@ -33,6 +33,8 @@ const CreateNote = ({
   setFile,
   fileName,
   setFileName,
+  addLessonNote,
+  addLessonNoteLoading,
 }) => {
   const fileInputRef = useRef(null);
 
@@ -133,6 +135,7 @@ const CreateNote = ({
           ...prev,
           { ...createQ, file_name: fileName, file, date_submitted: date },
         ]);
+        // addLessonNote()
         setCreateQuestionPrompt(false);
       },
       // variant: "outline",

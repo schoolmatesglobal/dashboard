@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
 import CreateQuestion from "./createNote";
 import AuthSelect from "../../../components/inputs/auth-select";
@@ -30,6 +30,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
+// import WebViewer from "@pdftron/webviewer";
+// import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+// import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
 const Create = ({
   createN,
@@ -55,12 +58,26 @@ const Create = ({
   handleViewFile,
   iframeUrl,
   setIframeUrl,
+  selectedDocs,
+  setSelectedDocs,
 }) => {
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
     query: "(min-width: 768px, max-width: 991px)",
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
+  const docs = [
+    {
+      uri: "https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf",
+    },
+    // {
+    //   uri: "https://royalelectronicsgroup.com/wp-content/uploads/2024/05/aaa.docx",
+    // },
+  ];
+
+  const viewer = useRef(null);
+  const beenInitialised = useRef(false);
 
   const {
     term,
@@ -78,6 +95,8 @@ const Create = ({
   } = createN;
 
   const { subjects, isLoading: subjectLoading } = useSubject();
+
+  const [vw, setVW] = useState();
 
   const {
     classes,
@@ -215,43 +234,48 @@ const Create = ({
   );
 
   /////// POST OBJECTIVE ASSIGNMENT ////
-  const {
-    mutateAsync: addObjectiveAssignments,
-    isLoading: addObjectAssignmentLoading,
-  } = useMutation(
-    () =>
-      apiServices.addObjectiveAssignment([
-        // ...objectiveQ,
-        {
-          term: user?.term,
-          period: user?.period,
-          session: user?.session,
-          week,
-          question_type,
-          question: "",
-          answer: "",
-          subject_id: Number(subject_id),
-          option1: "",
-          option2: "",
-          option3: "",
-          option4: "",
-          total_question: "",
-          total_mark: "",
-          question_mark: "",
-          question_number: "",
+  const { mutateAsync: addLessonNote, isLoading: addLessonNoteLoading } =
+    useMutation(
+      () =>
+        apiServices.addLessonNote(
+          // ...objectiveQ,
+          {
+            // term: user?.term,
+            // period: user?.period,
+            // session: user?.session,
+            // week,
+            // question_type,
+            // question: "",
+            // answer: "",
+            // subject_id: Number(subject_id),
+            // option1: "",
+            // option2: "",
+            // option3: "",
+            // option4: "",
+            // total_question: "",
+            // total_mark: "",
+            // question_mark: "",
+            // question_number: "",
+            staff_id: Number(user?.id),
+            week: Number(week),
+            subject_id: Number(subject_id),
+            class_id: Number(user?.class_id),
+            topic,
+            description,
+            file,
+          }
+        ),
+      // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
+      {
+        onSuccess() {
+          // refetchAssignmentCreated();
+          toast.success("Lesson note has been submitted successfully");
         },
-      ]),
-    // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
-    {
-      onSuccess() {
-        refetchAssignmentCreated();
-        toast.success("Objective assignment has been created successfully");
-      },
-      onError(err) {
-        apiServices.errorHandler(err);
-      },
-    }
-  );
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
 
   /////// POST THEORY ASSIGNMENT //////
   const {
@@ -633,6 +657,24 @@ const Create = ({
   }, []);
 
   // useEffect(() => {
+  //   if (!beenInitialised.current) {
+  //     beenInitialised.current = true;
+  //     WebViewer(
+  //       {
+  //         path: "/webviewer/lib",
+  //         licenseKey:
+  //           "demo:1716458991404:7fdd6d520300000000af47b2350f17b959fd37fbcd16ad6215ba24606b",
+  //         initialDoc:
+  //           "https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf",
+  //       },
+  //       viewer.current
+  //     ).then((instance) => {
+  //       // setVW(instance);
+  //     });
+  //   }
+  // }, []);
+
+  // useEffect(() => {
   //   if (activateRetrieveCreated()) {
   //     refetchAssignmentCreated();
 
@@ -682,325 +724,333 @@ const Create = ({
     permission,
     subjects,
     activateWarning: activateWarning(),
+    file,
   });
 
   return (
     <>
-      <div className={styles.create}>
-        {/* drop downs */}
-        <div className='d-flex flex-column gap-4 flex-md-row flex-grow-1 mb-4'>
-          <AuthSelect
-            // label='Period'
-            sort
-            value={createN.period}
-            name='period'
-            onChange={({ target: { value } }) => {
-              setCreateN((prev) => {
-                return { ...prev, period: value };
-              });
-            }}
-            options={periods}
-            placeholder='Select Period'
-            wrapperClassName='w-100'
-          />
-          <AuthSelect
-            // label='Period'
-            sort
-            value={createN.term}
-            name='term'
-            onChange={({ target: { value } }) => {
-              setCreateN((prev) => {
-                return { ...prev, term: value };
-              });
-            }}
-            options={[
-              { value: "First Term", title: "First Term" },
-              { value: "Second Term", title: "Second Term" },
-              { value: "Third Term", title: "Third Term" },
-            ]}
-            placeholder='Select Term'
-            wrapperClassName='w-100'
-          />
-          <AuthSelect
-            // label='Period'
-            sort
-            value={createN.session}
-            name='session'
-            onChange={({ target: { value } }) => {
-              setCreateN((prev) => {
-                return { ...prev, session: value };
-              });
-            }}
-            options={(sessions || [])?.map((session) => ({
-              value: session?.academic_session,
-              title: session?.academic_session,
-            }))}
-            placeholder='Select Session'
-            wrapperClassName='w-100'
-          />
-        </div>
-        <div
-          className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '
-          // className={styles.create__options}
-        >
-          <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
-            {/* weeks */}
+      <div className=''>
+        <div className={styles.create}>
+          {/* drop downs */}
+          <div className='d-flex flex-column gap-4 flex-md-row flex-grow-1 mb-4'>
             <AuthSelect
+              // label='Period'
               sort
+              value={createN.period}
+              name='period'
+              onChange={({ target: { value } }) => {
+                setCreateN((prev) => {
+                  return { ...prev, period: value };
+                });
+              }}
+              options={periods}
+              placeholder='Select Period'
+              wrapperClassName='w-100'
+            />
+            <AuthSelect
+              // label='Period'
+              sort
+              value={createN.term}
+              name='term'
+              onChange={({ target: { value } }) => {
+                setCreateN((prev) => {
+                  return { ...prev, term: value };
+                });
+              }}
               options={[
-                { value: "1", title: "Week 1" },
-                { value: "2", title: "Week 2" },
-                { value: "3", title: "Week 3" },
-                { value: "4", title: "Week 4" },
-                { value: "5", title: "Week 5" },
-                { value: "6", title: "Week 6" },
-                { value: "7", title: "Week 7" },
-                { value: "8", title: "Week 8" },
-                { value: "9", title: "Week 9" },
-                { value: "10", title: "Week 10" },
-                { value: "11", title: "Week 11" },
-                { value: "12", title: "Week 12" },
-                { value: "13", title: "Week 13" },
-                { value: "14", title: "Week 14" },
+                { value: "First Term", title: "First Term" },
+                { value: "Second Term", title: "Second Term" },
+                { value: "Third Term", title: "Third Term" },
               ]}
-              value={week}
-              onChange={({ target: { value } }) => {
-                setCreateN((prev) => {
-                  return { ...prev, week: value };
-                });
-              }}
-              placeholder='Select Week'
+              placeholder='Select Term'
               wrapperClassName='w-100'
             />
-            {/* subjects */}
             <AuthSelect
+              // label='Period'
               sort
-              options={
-                permission.create
-                  ? newSubjects
-                  : subjects?.map((x) => ({
-                      value: x?.id,
-                      title: x?.subject,
-                    }))
-              }
-              value={subject_id}
+              value={createN.session}
+              name='session'
               onChange={({ target: { value } }) => {
                 setCreateN((prev) => {
-                  return { ...prev, subject_id: value };
+                  return { ...prev, session: value };
                 });
               }}
-              placeholder='Select Subject'
+              options={(sessions || [])?.map((session) => ({
+                value: session?.academic_session,
+                title: session?.academic_session,
+              }))}
+              placeholder='Select Session'
               wrapperClassName='w-100'
             />
-            {/* class name */}
-            {permission?.approve && (
+          </div>
+          <div
+            className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '
+            // className={styles.create__options}
+          >
+            <div className='d-flex flex-column gap-4 flex-sm-row flex-grow-1 '>
+              {/* weeks */}
               <AuthSelect
                 sort
-                value={class_name}
+                options={[
+                  { value: "1", title: "Week 1" },
+                  { value: "2", title: "Week 2" },
+                  { value: "3", title: "Week 3" },
+                  { value: "4", title: "Week 4" },
+                  { value: "5", title: "Week 5" },
+                  { value: "6", title: "Week 6" },
+                  { value: "7", title: "Week 7" },
+                  { value: "8", title: "Week 8" },
+                  { value: "9", title: "Week 9" },
+                  { value: "10", title: "Week 10" },
+                  { value: "11", title: "Week 11" },
+                  { value: "12", title: "Week 12" },
+                  { value: "13", title: "Week 13" },
+                  { value: "14", title: "Week 14" },
+                ]}
+                value={week}
                 onChange={({ target: { value } }) => {
                   setCreateN((prev) => {
-                    return { ...prev, class_name: value };
+                    return { ...prev, week: value };
                   });
                 }}
-                options={(classes || []).map((x) => ({
-                  value: x?.class_name,
-                  title: x?.class_name,
-                }))}
-                placeholder='Select Class'
+                placeholder='Select Week'
                 wrapperClassName='w-100'
               />
+              {/* subjects */}
+              <AuthSelect
+                sort
+                options={
+                  permission.create
+                    ? newSubjects
+                    : subjects?.map((x) => ({
+                        value: x?.id,
+                        title: x?.subject,
+                      }))
+                }
+                value={subject_id}
+                onChange={({ target: { value } }) => {
+                  setCreateN((prev) => {
+                    return { ...prev, subject_id: value };
+                  });
+                }}
+                placeholder='Select Subject'
+                wrapperClassName='w-100'
+              />
+              {/* class name */}
+              {permission?.approve && (
+                <AuthSelect
+                  sort
+                  value={class_name}
+                  onChange={({ target: { value } }) => {
+                    setCreateN((prev) => {
+                      return { ...prev, class_name: value };
+                    });
+                  }}
+                  options={(classes || []).map((x) => ({
+                    value: x?.class_name,
+                    title: x?.class_name,
+                  }))}
+                  placeholder='Select Class'
+                  wrapperClassName='w-100'
+                />
+              )}
+            </div>
+            {permission?.create && (
+              <Button
+                variant=''
+                className='w-auto'
+                onClick={() => {
+                  setCreateN((prev) => {
+                    return { ...prev, topic: "", description: "" };
+                  });
+                  setFile(null);
+                  setFileName("");
+                  setCreateQuestionPrompt(true);
+                }}
+                disabled={activateAddQuestion()}
+              >
+                Add Note
+              </Button>
             )}
           </div>
-
-          {permission?.create && (
-            <Button
-              variant=''
-              className='w-auto'
-              onClick={() => {
-                setCreateN((prev) => {
-                  return { ...prev, topic: "", description: "" };
-                });
-                setFile(null);
-                setFileName("");
-                setCreateQuestionPrompt(true);
-              }}
-              disabled={activateAddQuestion()}
-            >
-              Add Note
-            </Button>
-          )}
-        </div>
-
-        {allLoading && (
-          <div className={styles.spinner_container}>
-            <Spinner /> <p className='fs-3'>Loading...</p>
-          </div>
-        )}
-
-        {/* {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
-          <div className={styles.placeholder_container}>
-            <HiOutlineDocumentPlus className={styles.icon} />
-            <p className='fs-1 fw-bold mt-3'>Create theory Assignment</p>
-          </div>
-        )}
-        {!allLoading &&
-          question_type === "objective" &&
-          objectiveQ?.length === 0 && (
-            <div className={styles.placeholder_container}>
-              <HiOutlineDocumentPlus className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>Create Objective Assignment</p>
-            </div>
-          )} */}
-
-        {!allLoading &&
-          // theoryQ?.length === 0 &&
-          // objectiveQ?.length === 0 &&
-          activateWarning() &&
-          lessonNotes?.length === 0 && (
-            <div className={styles.placeholder_container}>
-              <HiOutlineDocumentPlus className={styles.icon} />
-              <p className='fs-1 fw-bold mt-3'>Create Lesson Note</p>
+          {allLoading && (
+            <div className={styles.spinner_container}>
+              <Spinner /> <p className='fs-3'>Loading...</p>
             </div>
           )}
-
-        {!allLoading && !activateWarning() && (
-          <NoteCard
-            allLoading={allLoading}
-            // question_type={question_type}
-            // objectiveQ={objectiveQ}
-            // theoryQ={theoryQ}
-            published={published}
-            createQ={createN}
-            subjects={subjects}
-          />
-        )}
-
-        {!allLoading &&
-          !activateWarning() &&
-          newNote?.map((nn, i) => {
-            return (
-              <div className='mb-5' key={i}>
-                <CreateNoteCard
-                  setCreateN={setCreateN}
-                  permission={permission}
-                  setEditPrompt={setEditPrompt}
-                  setClearAllPrompt={setClearAllPrompt}
-                  setDeletePrompt={setDeletePrompt}
-                  setEditTopic={setEditTopic}
-                  setEditDescription={setEditDescription}
-                  setEditFile={setFile}
-                  setEditFileName={setFileName}
-                  setEditSubmittedBy={setEditSubmittedBy}
-                  setEditStatus={setEditStatus}
-                  notes={nn}
-                  handleDownload={handleDownload}
-                  setPublished={setPublished}
-                  handleViewFile={handleViewFile}
-                  iframeUrl={iframeUrl}
-                  setIframeUrl={setIframeUrl}
-                />
+          {/* {!allLoading && question_type === "theory" && theoryQ?.length === 0 && (
+            <div className={styles.placeholder_container}>
+              <HiOutlineDocumentPlus className={styles.icon} />
+              <p className='fs-1 fw-bold mt-3'>Create theory Assignment</p>
+            </div>
+          )}
+          {!allLoading &&
+            question_type === "objective" &&
+            objectiveQ?.length === 0 && (
+              <div className={styles.placeholder_container}>
+                <HiOutlineDocumentPlus className={styles.icon} />
+                <p className='fs-1 fw-bold mt-3'>Create Objective Assignment</p>
               </div>
-            );
-          })}
+            )} */}
+          {!allLoading &&
+            // theoryQ?.length === 0 &&
+            // objectiveQ?.length === 0 &&
+            activateWarning() &&
+            lessonNotes?.length === 0 && (
+              <div className={styles.placeholder_container}>
+                <HiOutlineDocumentPlus className={styles.icon} />
+                <p className='fs-1 fw-bold mt-3'>Create Lesson Note</p>
+              </div>
+            )}
+          {!allLoading && !activateWarning() && (
+            <NoteCard
+              allLoading={allLoading}
+              // question_type={question_type}
+              // objectiveQ={objectiveQ}
+              // theoryQ={theoryQ}
+              published={published}
+              createQ={createN}
+              subjects={subjects}
+            />
+          )}
+          {!allLoading &&
+            !activateWarning() &&
+            newNote?.map((nn, i) => {
+              return (
+                <div className='mb-5' key={i}>
+                  <CreateNoteCard
+                    setCreateN={setCreateN}
+                    permission={permission}
+                    setEditPrompt={setEditPrompt}
+                    setClearAllPrompt={setClearAllPrompt}
+                    setDeletePrompt={setDeletePrompt}
+                    setEditTopic={setEditTopic}
+                    setEditDescription={setEditDescription}
+                    setEditFile={setFile}
+                    setEditFileName={setFileName}
+                    setEditSubmittedBy={setEditSubmittedBy}
+                    setEditStatus={setEditStatus}
+                    notes={nn}
+                    handleDownload={handleDownload}
+                    setPublished={setPublished}
+                    handleViewFile={handleViewFile}
+                    iframeUrl={iframeUrl}
+                    setIframeUrl={setIframeUrl}
+                    selectedDocs={selectedDocs}
+                    setSelectedDocs={setSelectedDocs}
+                  />
+                </div>
+              );
+            })}
 
-        {/* {!allLoading &&
-          ((question_type === "objective" && objectiveQ?.length !== 0) ||
-            (question_type === "theory" && theoryQ?.length !== 0)) && (
-            <div className='w-100 d-flex justify-content-center justify-content-sm-end'>
-              <ButtonGroup options={buttonOptions2} />
+          {/* <div className=''>
+            <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />
+          </div> */}
+          {/* {!allLoading &&
+            ((question_type === "objective" && objectiveQ?.length !== 0) ||
+              (question_type === "theory" && theoryQ?.length !== 0)) && (
+              <div className='w-100 d-flex justify-content-center justify-content-sm-end'>
+                <ButtonGroup options={buttonOptions2} />
+              </div>
+            )} */}
+        </div>
+        <CreateNote
+          createQ={createN}
+          setCreateQ={setCreateN}
+          createQuestionPrompt={createQuestionPrompt}
+          setCreateQuestionPrompt={setCreateQuestionPrompt}
+          apiServices={apiServices}
+          errorHandler={errorHandler}
+          permission={permission}
+          user={user}
+          subjectsByTeacher={subjectsByTeacher}
+          lessonNotes={lessonNotes}
+          setLessonNotes={setLessonNotes}
+          subjects={subjects}
+          error={error}
+          setError={setError}
+          handleFileChange={handleFileChange}
+          handleReset={handleReset}
+          file={file}
+          setFile={setFile}
+          fileName={fileName}
+          setFileName={setFileName}
+          addLessonNote={addLessonNote}
+          addLessonNoteLoading={addLessonNoteLoading}
+        />
+        {/* publish all prompt */}
+        <Prompt
+          promptHeader={`${published ? "APPROVE" : "UNAPPROVE"} LESSON NOTE`}
+          toggle={() => setClearAllPrompt(!clearAllPrompt)}
+          isOpen={clearAllPrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={clearAllButtons}
+        >
+          <p className='fs-3 w-100 text-center fw-semibold'>Are you sure?</p>
+        </Prompt>
+        {/* Edit question prompt */}
+        <Prompt
+          promptHeader={`LESSON NOTE EDIT`}
+          toggle={() => setEditPrompt(!editPrompt)}
+          isOpen={editPrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={editButtons}
+        >
+          <>
+            <p className='fs-3 fw-bold mb-4'>Topic</p>
+            <div className='auth-textarea-wrapper'>
+              <textarea
+                className='form-control fs-3 lh-base'
+                type='text'
+                value={editTopic}
+                placeholder='Type the title of the lesson note'
+                onChange={(e) => setEditTopic(e.target.value)}
+                style={{
+                  minHeight: "100px",
+                }}
+              />
             </div>
-          )} */}
+            <p className='fs-3 fw-bold my-4'>Description</p>
+            <div className='auth-textarea-wrapper'>
+              <textarea
+                className='form-control fs-3 lh-base'
+                type='text'
+                value={editDescription}
+                placeholder='Type the description of the lesson note'
+                onChange={(e) => setEditDescription(e.target.value)}
+                style={{
+                  minHeight: "200px",
+                }}
+              />
+            </div>
+            <p className='fs-3 fw-bold my-4'>File Upload</p>
+            <CustomFileInput2
+              handleFileChange={handleFileChange}
+              fileName={fileName}
+              handleReset={handleReset}
+              error={error}
+            />
+          </>
+        </Prompt>
+        {/* Delete question prompt */}
+        <Prompt
+          promptHeader={`CONFIRM DELETE ACTION`}
+          toggle={() => setDeletePrompt(!deletePrompt)}
+          isOpen={deletePrompt}
+          hasGroupedButtons={true}
+          groupedButtonProps={deleteButtons}
+        >
+          <p className={styles.create_question_question}>
+            Are you sure you want to delete this Note?
+          </p>
+        </Prompt>
       </div>
-      <CreateNote
-        createQ={createN}
-        setCreateQ={setCreateN}
-        createQuestionPrompt={createQuestionPrompt}
-        setCreateQuestionPrompt={setCreateQuestionPrompt}
-        apiServices={apiServices}
-        errorHandler={errorHandler}
-        permission={permission}
-        user={user}
-        subjectsByTeacher={subjectsByTeacher}
-        lessonNotes={lessonNotes}
-        setLessonNotes={setLessonNotes}
-        subjects={subjects}
-        error={error}
-        setError={setError}
-        handleFileChange={handleFileChange}
-        handleReset={handleReset}
-        file={file}
-        setFile={setFile}
-        fileName={fileName}
-        setFileName={setFileName}
-      />
 
-      {/* publish all prompt */}
-      <Prompt
-        promptHeader={`${published ? "APPROVE" : "UNAPPROVE"} LESSON NOTE`}
-        toggle={() => setClearAllPrompt(!clearAllPrompt)}
-        isOpen={clearAllPrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={clearAllButtons}
-      >
-        <p className='fs-3 w-100 text-center fw-semibold'>Are you sure?</p>
-      </Prompt>
-
-      {/* Edit question prompt */}
-      <Prompt
-        promptHeader={`LESSON NOTE EDIT`}
-        toggle={() => setEditPrompt(!editPrompt)}
-        isOpen={editPrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={editButtons}
-      >
-        <>
-          <p className='fs-3 fw-bold mb-4'>Topic</p>
-          <div className='auth-textarea-wrapper'>
-            <textarea
-              className='form-control fs-3 lh-base'
-              type='text'
-              value={editTopic}
-              placeholder='Type the title of the lesson note'
-              onChange={(e) => setEditTopic(e.target.value)}
-              style={{
-                minHeight: "100px",
-              }}
-            />
-          </div>
-          <p className='fs-3 fw-bold my-4'>Description</p>
-          <div className='auth-textarea-wrapper'>
-            <textarea
-              className='form-control fs-3 lh-base'
-              type='text'
-              value={editDescription}
-              placeholder='Type the description of the lesson note'
-              onChange={(e) => setEditDescription(e.target.value)}
-              style={{
-                minHeight: "200px",
-              }}
-            />
-          </div>
-          <p className='fs-3 fw-bold my-4'>File Upload</p>
-          <CustomFileInput2
-            handleFileChange={handleFileChange}
-            fileName={fileName}
-            handleReset={handleReset}
-            error={error}
-          />
-        </>
-      </Prompt>
-      {/* Delete question prompt */}
-      <Prompt
-        promptHeader={`CONFIRM DELETE ACTION`}
-        toggle={() => setDeletePrompt(!deletePrompt)}
-        isOpen={deletePrompt}
-        hasGroupedButtons={true}
-        groupedButtonProps={deleteButtons}
-      >
-        <p className={styles.create_question_question}>
-          Are you sure you want to delete this Note?
-        </p>
-      </Prompt>
+      {/* <div
+        // className='webviewer'
+        ref={viewer}
+        style={{ height: "100vh" }}
+      ></div> */}
     </>
   );
 };

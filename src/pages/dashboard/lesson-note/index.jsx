@@ -34,6 +34,8 @@ const LessonNote = () => {
     handleViewFile,
     iframeUrl,
     setIframeUrl,
+    selectedDocs,
+    setSelectedDocs,
   } = useLessonNote();
 
   const { subjects } = useSubject();
@@ -119,6 +121,8 @@ const LessonNote = () => {
           handleViewFile={handleViewFile}
           iframeUrl={iframeUrl}
           setIframeUrl={setIframeUrl}
+          selectedDocs={selectedDocs}
+          setSelectedDocs={setSelectedDocs}
         />
       </div>
 

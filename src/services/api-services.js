@@ -2793,6 +2793,17 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async addLessonNote(body) {
+    const { data } = await axios.post(`${backendAPI}/lessonnote/add`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
 }
 
 export default APIServies;

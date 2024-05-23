@@ -23,6 +23,8 @@ const CreateNoteCard = ({
   handleViewFile,
   iframeUrl,
   setIframeUrl,
+  selectedDocs,
+  setSelectedDocs,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -99,7 +101,7 @@ const CreateNoteCard = ({
           {notes?.description}
         </p>
       </div>
-      <div
+      {/* <div
         className={`d-flex  ${
           xs ? "flex-column" : sm ? "flex-column" : "flex-row"
         }`}
@@ -121,17 +123,8 @@ const CreateNoteCard = ({
           style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
           <p className='fs-3 lh-base'>{notes?.file_name}</p>
-          {/* <Button
-            variant=''
-            className='w-auto'
-            onClick={() => {
-              // setCreateQuestionPrompt(true);
-            }}
-          >
-            Download
-          </Button> */}
         </div>
-      </div>
+      </div> */}
       <div
         className={`d-flex  ${
           xs ? "flex-column" : sm ? "flex-column" : "flex-row"

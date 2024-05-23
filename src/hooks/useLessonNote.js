@@ -34,6 +34,7 @@ export const useLessonNote = () => {
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
   const [iframeUrl, setIframeUrl] = useState(null);
+  const [selectedDocs, setSelectedDocs] = useState([]);
 
   const [createN, setCreateN] = useState({
     term: "",
@@ -80,34 +81,84 @@ export const useLessonNote = () => {
     }
   };
 
-  // const handleViewFile = (file) => {
-  //   if (file) {
-  //     const url = URL.createObjectURL(file);
-  //     const fileExtension = fileName.split(".").pop().toLowerCase();
-  //     console.log({ fileExtension });
+  const handleViewFile2 = (file) => {
+    if (file) {
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      const url = URL.createObjectURL(file);
+      console.log({ fileExtension });
 
-  //     if (fileExtension === "pdf") {
-  //       window.open(url, "_blank");
-  //       URL.revokeObjectURL(url);
-  //     } else if (fileExtension === "doc" || fileExtension === "docx") {
-  //       const viewerUrl = `https://docs.google.com/viewerng/viewer?url=${url}&embedded=true`;
-  //       window.open(viewerUrl, "_blank");
-  //     } else {
-  //       alert("Unsupported file type for viewing");
-  //     }
-  //   }
+      if (fileExtension === "pdf") {
+        window.open(url, "_blank");
+        // Delay the revocation to ensure the URL is fully opened in the new tab
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 1000);
+      } else if (fileExtension === "doc" || fileExtension === "docx") {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Data = reader.result.split(",")[1];
+          const blob = new Blob(
+            [
+              new Uint8Array(
+                atob(base64Data)
+                  .split("")
+                  .map((char) => char.charCodeAt(0))
+              ),
+            ],
+            { type: "application/octet-stream" }
+          );
+          const docUrl = URL.createObjectURL(blob);
+          const viewerUrl = `https://docs.google.com/viewerng/viewer?url=${encodeURIComponent(
+            docUrl
+          )}&embedded=true`;
+          window.open(viewerUrl, "_blank");
+          // Delay the revocation to ensure the URL is fully opened in the new tab
+          setTimeout(() => {
+            URL.revokeObjectURL(docUrl);
+          }, 1000);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Unsupported file type for viewing");
+      }
+    }
+  };
+
+  // const viewDocFile = (file) => {
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     const base64Data = reader.result.split(",")[1];
+  //     const bytes = new TextDecoder("utf-8").decode(
+  //       new Uint8Array(base64Data, 0, base64Data.length)
+  //     );
+  //     const blob = new Blob([bytes], { type: "application/octet-stream" });
+  //     const docUrl = URL.createObjectURL(blob);
+  //     const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(
+  //       docUrl
+  //     )}&embedded=true`;
+  //     window.open(viewerUrl, "_blank");
+  //     setTimeout(() => {
+  //       URL.revokeObjectURL(docUrl);
+  //     }, 1000);
+  //   };
+  //   reader.readAsDataURL(file);
   // };
 
-  // const handleViewFile = async (file) => {
+  // const handleViewFile = (file) => {
   //   if (file) {
-  //     const fileExtension = fileName.split('.').pop().toLowerCase();
+  //     const fileExtension = file.name.split(".").pop().toLowerCase();
+  //     const url = URL.createObjectURL(file);
 
-  //     if (fileExtension === 'pdf' || fileExtension === 'doc' || fileExtension === 'docx') {
-  //       const url = await uploadFileToGoogleDrive(file);
-  //       setFileUrl(url);
-  //       window.open(url, '_blank');
+  //     const fileViewerMap = {
+  //       pdf: () => window.open(url, "_blank"),
+  //       doc: () => viewDocFile(file),
+  //       docx: () => viewDocFile(file),
+  //     };
+
+  //     if (fileViewerMap[fileExtension]) {
+  //       fileViewerMap[fileExtension]();
   //     } else {
-  //       alert('Unsupported file type for viewing');
+  //       alert("Unsupported file type for viewing");
   //     }
   //   }
   // };
@@ -140,6 +191,7 @@ export const useLessonNote = () => {
       // setCreateN((prev) => {
       //   return { ...prev, file: selectedFile, file_name: selectedFile.name };
       // });
+      // setSelectedDocs(Array.from(e.target.files));
       setFile(selectedFile);
       setFileName(selectedFile.name);
 
@@ -228,5 +280,7 @@ export const useLessonNote = () => {
     setLessonNotes,
     handleDownload,
     handleViewFile,
+    selectedDocs,
+setSelectedDocs,
   };
 };
