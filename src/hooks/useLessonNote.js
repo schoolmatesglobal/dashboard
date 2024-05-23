@@ -72,31 +72,31 @@ export const useLessonNote = () => {
     }
   };
 
-  // const handleViewFile = (file) => {
-  //   if (file) {
-  //     const url = URL.createObjectURL(file);
-  //     window.open(url, "_blank");
-  //     URL.revokeObjectURL(url);
-  //   }
-  // };
-
   const handleViewFile = (file) => {
     if (file) {
       const url = URL.createObjectURL(file);
-      const fileExtension = fileName.split(".").pop().toLowerCase();
-      console.log({ fileExtension });
-
-      if (fileExtension === "pdf") {
-        window.open(url, "_blank");
-        URL.revokeObjectURL(url);
-      } else if (fileExtension === "doc" || fileExtension === "docx") {
-        const viewerUrl = `https://docs.google.com/viewerng/viewer?url=${url}&embedded=true`;
-        window.open(viewerUrl, "_blank");
-      } else {
-        alert("Unsupported file type for viewing");
-      }
+      window.open(url, "_blank");
+      URL.revokeObjectURL(url);
     }
   };
+
+  // const handleViewFile = (file) => {
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     const fileExtension = fileName.split(".").pop().toLowerCase();
+  //     console.log({ fileExtension });
+
+  //     if (fileExtension === "pdf") {
+  //       window.open(url, "_blank");
+  //       URL.revokeObjectURL(url);
+  //     } else if (fileExtension === "doc" || fileExtension === "docx") {
+  //       const viewerUrl = `https://docs.google.com/viewerng/viewer?url=${url}&embedded=true`;
+  //       window.open(viewerUrl, "_blank");
+  //     } else {
+  //       alert("Unsupported file type for viewing");
+  //     }
+  //   }
+  // };
 
   // const handleViewFile = async (file) => {
   //   if (file) {
