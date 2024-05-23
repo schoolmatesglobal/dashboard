@@ -20,6 +20,9 @@ const CreateNoteCard = ({
   handleDownload,
   setClearAllPrompt,
   setPublished,
+  handleViewFile,
+  iframeUrl,
+  setIframeUrl,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -144,7 +147,7 @@ const CreateNoteCard = ({
           className={`fs-3 lh-base py-3 px-4 border-2 border`}
           style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
-          {notes?.submitted_by}
+          {notes?.submitted_by} --- {notes?.date_submitted}
         </p>
       </div>
 
@@ -207,11 +210,18 @@ const CreateNoteCard = ({
           variant=''
           className='w-auto'
           onClick={() => {
-            handleDownload();
+            handleViewFile(notes?.file);
           }}
         >
-          Download Note
+          View Note
         </Button>
+        {iframeUrl && (
+          <iframe
+            src={iframeUrl}
+            title='file viewer'
+            style={{ width: "100%", height: "500px", border: "none" }}
+          ></iframe>
+        )}
       </div>
     </div>
   );

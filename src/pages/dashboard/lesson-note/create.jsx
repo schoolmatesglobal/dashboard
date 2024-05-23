@@ -29,6 +29,7 @@ import { useLessonNote } from "../../../hooks/useLessonNote";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
+import { useAcademicSession } from "../../../hooks/useAcademicSession";
 
 const Create = ({
   createN,
@@ -51,6 +52,9 @@ const Create = ({
   fileName,
   setFileName,
   handleDownload,
+  handleViewFile,
+  iframeUrl,
+  setIframeUrl,
 }) => {
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
@@ -125,6 +129,8 @@ const Create = ({
   const [loading2, setLoading2] = useState(false);
   const [published, setPublished] = useState(false);
   const navigate = useNavigate();
+
+  const { data: sessions } = useAcademicSession();
 
   const question_type = "objective";
 
@@ -363,14 +369,11 @@ const Create = ({
         //   week,
         //   is_publish: published ? 1 : 0,
         // });
-
         // refetchAssignmentCreated();
         // setClearAllPrompt(false);
-
         // setTimeout(() => {
         //   refetchAssignmentCreated();
         // }, 2000);
-       
       },
       variant: "outline",
       isLoading: publishAssignmentLoading,
@@ -597,6 +600,11 @@ const Create = ({
     { value: "Art and Craft", title: "Art and Craft", id: "5" },
   ];
 
+  const periods = [
+    { value: "First Half", title: "First Half / Mid Term" },
+    { value: "Second Half", title: "Second Half / End of Term" },
+  ];
+
   useEffect(() => {
     if (subjectsByTeacher?.length > 0) {
       const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
@@ -612,6 +620,17 @@ const Create = ({
       setNewSubjects([]);
     }
   }, [subjectsByTeacher, subjects]);
+
+  useEffect(() => {
+    setCreateN((prev) => {
+      return {
+        ...prev,
+        period: user?.period,
+        term: user?.term,
+        session: user?.session,
+      };
+    });
+  }, []);
 
   // useEffect(() => {
   //   if (activateRetrieveCreated()) {
@@ -655,7 +674,7 @@ const Create = ({
 
     // objectiveQ,
     // theoryQ,
-
+    user,
     createN,
     subjectsByTeacher,
     // subjects,
@@ -669,6 +688,57 @@ const Create = ({
     <>
       <div className={styles.create}>
         {/* drop downs */}
+        <div className='d-flex flex-column gap-4 flex-md-row flex-grow-1 mb-4'>
+          <AuthSelect
+            // label='Period'
+            sort
+            value={createN.period}
+            name='period'
+            onChange={({ target: { value } }) => {
+              setCreateN((prev) => {
+                return { ...prev, period: value };
+              });
+            }}
+            options={periods}
+            placeholder='Select Period'
+            wrapperClassName='w-100'
+          />
+          <AuthSelect
+            // label='Period'
+            sort
+            value={createN.term}
+            name='term'
+            onChange={({ target: { value } }) => {
+              setCreateN((prev) => {
+                return { ...prev, term: value };
+              });
+            }}
+            options={[
+              { value: "First Term", title: "First Term" },
+              { value: "Second Term", title: "Second Term" },
+              { value: "Third Term", title: "Third Term" },
+            ]}
+            placeholder='Select Term'
+            wrapperClassName='w-100'
+          />
+          <AuthSelect
+            // label='Period'
+            sort
+            value={createN.session}
+            name='session'
+            onChange={({ target: { value } }) => {
+              setCreateN((prev) => {
+                return { ...prev, session: value };
+              });
+            }}
+            options={(sessions || [])?.map((session) => ({
+              value: session?.academic_session,
+              title: session?.academic_session,
+            }))}
+            placeholder='Select Session'
+            wrapperClassName='w-100'
+          />
+        </div>
         <div
           className='d-flex flex-column gap-4 flex-lg-row justify-content-lg-between '
           // className={styles.create__options}
@@ -825,6 +895,9 @@ const Create = ({
                   notes={nn}
                   handleDownload={handleDownload}
                   setPublished={setPublished}
+                  handleViewFile={handleViewFile}
+                  iframeUrl={iframeUrl}
+                  setIframeUrl={setIframeUrl}
                 />
               </div>
             );

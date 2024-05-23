@@ -331,6 +331,17 @@ const CBTPage = () => {
     { value: "Second Half", title: "Second Half / End of Term" },
   ];
 
+  useEffect(() => {
+    setCreateQ((prev) => {
+      return {
+        ...prev,
+        period: user?.period,
+        term: user?.term,
+        session: user?.session,
+      };
+    });
+  }, []);
+
   console.log({ sessions, activeTab, inputs, createQ, ct: activateContinue() });
 
   // useEffect(() => {

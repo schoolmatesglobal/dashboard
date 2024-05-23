@@ -9,6 +9,7 @@ import { addQuestionMarks } from "./constant";
 import Button from "../../../components/buttons/button";
 import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
 import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
+import dayjs from "dayjs";
 // import SelectSearch from "../inputs/SelectSearch";
 
 const CreateNote = ({
@@ -34,6 +35,8 @@ const CreateNote = ({
   setFileName,
 }) => {
   const fileInputRef = useRef(null);
+
+  const date = dayjs(new Date()).format("MMM D, YYYY h:mm A");
 
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -128,7 +131,7 @@ const CreateNote = ({
       onClick: () => {
         setLessonNotes((prev) => [
           ...prev,
-          { ...createQ, file_name: fileName, file },
+          { ...createQ, file_name: fileName, file, date_submitted: date },
         ]);
         setCreateQuestionPrompt(false);
       },
@@ -136,11 +139,22 @@ const CreateNote = ({
     },
   ];
 
+  // const date = new Date().toLocaleDateString();
+
   const subName = subjects?.find(
     (ob) => Number(ob.id) === Number(createQ.subject_id)
   )?.subject;
 
-  console.log({ createQ, subjects, subName, lessonNotes, file, fileName });
+  console.log({
+    createQ,
+    subjects,
+    subName,
+    lessonNotes,
+    file,
+    fileName,
+    // date,
+    // dt,
+  });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({ tl: TheoryQ?.length });

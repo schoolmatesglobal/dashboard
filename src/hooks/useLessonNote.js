@@ -33,11 +33,12 @@ export const useLessonNote = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
+  const [iframeUrl, setIframeUrl] = useState(null);
 
   const [createN, setCreateN] = useState({
-    term: user?.term,
-    period: user?.period,
-    session: user?.session,
+    term: "",
+    period: "",
+    session: "",
     week: "",
     class_name: `${permission?.approve ? "" : user?.class_assigned}`,
     submitted_by: `${user?.firstname} ${user?.surname}`,
@@ -47,6 +48,8 @@ export const useLessonNote = () => {
     description: "",
     file: "",
     file_name: "",
+    date_submitted: "",
+    date_approved: "",
   });
 
   const handleReset = () => {
@@ -68,6 +71,46 @@ export const useLessonNote = () => {
       URL.revokeObjectURL(url);
     }
   };
+
+  // const handleViewFile = (file) => {
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     window.open(url, "_blank");
+  //     URL.revokeObjectURL(url);
+  //   }
+  // };
+
+  const handleViewFile = (file) => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      const fileExtension = fileName.split(".").pop().toLowerCase();
+      console.log({ fileExtension });
+
+      if (fileExtension === "pdf") {
+        window.open(url, "_blank");
+        URL.revokeObjectURL(url);
+      } else if (fileExtension === "doc" || fileExtension === "docx") {
+        const viewerUrl = `https://docs.google.com/viewerng/viewer?url=${url}&embedded=true`;
+        window.open(viewerUrl, "_blank");
+      } else {
+        alert("Unsupported file type for viewing");
+      }
+    }
+  };
+
+  // const handleViewFile = async (file) => {
+  //   if (file) {
+  //     const fileExtension = fileName.split('.').pop().toLowerCase();
+
+  //     if (fileExtension === 'pdf' || fileExtension === 'doc' || fileExtension === 'docx') {
+  //       const url = await uploadFileToGoogleDrive(file);
+  //       setFileUrl(url);
+  //       window.open(url, '_blank');
+  //     } else {
+  //       alert('Unsupported file type for viewing');
+  //     }
+  //   }
+  // };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -184,5 +227,6 @@ export const useLessonNote = () => {
     lessonNotes,
     setLessonNotes,
     handleDownload,
+    handleViewFile,
   };
 };

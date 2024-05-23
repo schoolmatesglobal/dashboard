@@ -31,6 +31,9 @@ const LessonNote = () => {
     fileName,
     setFileName,
     handleDownload,
+    handleViewFile,
+    iframeUrl,
+    setIframeUrl,
   } = useLessonNote();
 
   const { subjects } = useSubject();
@@ -113,6 +116,9 @@ const LessonNote = () => {
           fileName={fileName}
           setFileName={setFileName}
           handleDownload={handleDownload}
+          handleViewFile={handleViewFile}
+          iframeUrl={iframeUrl}
+          setIframeUrl={setIframeUrl}
         />
       </div>
 
