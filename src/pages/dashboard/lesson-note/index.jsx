@@ -92,10 +92,10 @@ const LessonNote = () => {
   //     }
   //   }, []);
 
-  console.log({
-    window,
-    href: window.location.href,
-  });
+  // console.log({
+  //   window,
+  //   href: window.location.href,
+  // });
   return (
     <PageSheet>
       <div className={styles.home}>

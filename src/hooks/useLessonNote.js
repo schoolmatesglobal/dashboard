@@ -43,6 +43,7 @@ export const useLessonNote = () => {
     session: "",
     week: "",
     class_name: `${permission?.approve ? "" : user?.class_assigned}`,
+    class_id: "",
     subject_id: "",
     status: "UnApproved",
     topic: "",
@@ -75,19 +76,26 @@ export const useLessonNote = () => {
     }
   };
 
-  const handleViewFile = (file) => {
-    if (file) {
-      const url = URL.createObjectURL(file);
+  const handleViewFile = (url) => {
+    if (url) {
+      // const url = URL.createObjectURL(file);
       window.open(url, "_blank");
-      URL.revokeObjectURL(url);
+      // URL.revokeObjectURL(url);
     }
   };
+  // const handleViewFile = (file) => {
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     window.open(url, "_blank");
+  //     URL.revokeObjectURL(url);
+  //   }
+  // };
 
   const handleViewFile2 = (file) => {
     if (file) {
       const fileExtension = file.name.split(".").pop().toLowerCase();
       const url = URL.createObjectURL(file);
-      console.log({ fileExtension });
+      // console.log({ fileExtension });
 
       if (fileExtension === "pdf") {
         window.open(url, "_blank");
@@ -159,6 +167,30 @@ export const useLessonNote = () => {
     }
   };
 
+  const handleFileUpdate = async (url) => {
+    try {
+      // Fetch the file from the URL
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Convert the response to a Blob
+      const blob = await response.blob();
+
+      // Convert the Blob to a Base64 string
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result.split(',')[1]; // Remove the prefix "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,"
+        setBase64String(base64);
+      };
+      reader.readAsDataURL(blob); // This will trigger the onloadend event
+
+    } catch (error) {
+      console.error('Error fetching or converting the file:', error);
+    }
+  };
+
   const { studentByClass2 } = useStudent();
 
   const [createQuestionPrompt, setCreateQuestionPrompt] = useState(false);
@@ -208,7 +240,7 @@ export const useLessonNote = () => {
     }
   );
 
-  console.log({ user });
+  // console.log({ user });
 
   // console.log({ studentByClass2, studentByClassAndSession });
 
@@ -244,6 +276,6 @@ export const useLessonNote = () => {
     setSelectedDocs,
 
     base64String,
-setBase64String,
+    setBase64String,
   };
 };

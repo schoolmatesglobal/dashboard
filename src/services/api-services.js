@@ -2805,8 +2805,6 @@ class APIServies extends Helpers {
   }
 
   async getLessonNoteByClass(class_id, subject_id, week, term, session) {
-    // const tempBackend =
-    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.get(
       `${backendAPI}/v2/lessonnote/${class_id}/${subject_id}/${week}/${term}/${session}`,
 
@@ -2818,6 +2816,60 @@ class APIServies extends Helpers {
       }
     );
 
+    return data;
+  }
+
+  async deleteLessonNote(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/lessonnote/remove/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editLessonNote({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async approveLessonNote({ id,  }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/approve/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async unApproveLessonNote({ id,  }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/unapprove/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
     return data;
   }
 }

@@ -7,6 +7,7 @@ import Button from "../buttons/button";
 const CustomFileInput2 = ({
   handleFileChange,
   fileName,
+  setFileName,
   handleReset,
   error,
 }) => {
@@ -25,46 +26,51 @@ const CustomFileInput2 = ({
 
   return (
     <div>
-      <div className="d-flex flex-column gap-3">
-        <div className="d-flex align-items-center gap-3">
+      <div className='d-flex flex-column gap-3'>
+        <div className='d-flex align-items-center gap-3'>
           <div
-            className="d-flex align-items-center gap-3"
+            className='d-flex align-items-center gap-3'
             style={{
-              padding: '10px 10px',
-              border: '2px solid #11355c',
-              borderRadius: '5px',
-              backgroundColor: '#f8f9fa',
-              color: '#495057',
-              fontSize: '16px',
-              cursor: 'pointer',
-              width: '100%',
-              boxSizing: 'border-box',
+              padding: "10px 10px",
+              border: "2px solid #11355c",
+              borderRadius: "5px",
+              backgroundColor: "#f8f9fa",
+              color: "#495057",
+              fontSize: "16px",
+              cursor: "pointer",
+              width: "100%",
+              boxSizing: "border-box",
             }}
           >
-            <Button variant="" onClick={handleButtonClick}>
-              {fileName ? 'Update' : 'Choose'}
+            <Button variant='' onClick={handleButtonClick}>
+              {fileName ? "Update" : "Choose"}
             </Button>
-            <p className="" style={{ whiteSpace: 'nowrap' }}>
-              {fileName ? trimString(fileName) : 'No file selected'}
+            <p className='' style={{ whiteSpace: "nowrap" }}>
+              {fileName ? trimString(fileName) : "No file selected"}
             </p>
             <input
               ref={fileInputRef}
-              id="fileInput"
-              type="file"
-              accept=".doc,.docx,.pdf"
+              id='fileInput'
+              type='file'
+              accept='.doc,.docx,.pdf'
               onChange={handleFileChange}
-              className="d-none"
+              className='d-none'
             />
           </div>
           <FontAwesomeIcon
-            onClick={handleReset}
+            onClick={() => {
+              handleReset();
+              if(setFileName){
+                setFileName("");
+              }
+            }}
             icon={faXmark}
-            style={{ width: '30px', height: '30px', cursor: 'pointer' }}
+            style={{ width: "30px", height: "30px", cursor: "pointer" }}
           />
         </div>
       </div>
-      <p className={`fs-4 mt-4 ${error ? 'text-danger' : 'text-black'}`}>
-        {error ? error : 'NB: Doc or PDF file with max size of 1MB'}
+      <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
+        {error ? error : "NB: Doc or PDF file with max size of 1MB"}
       </p>
     </div>
   );

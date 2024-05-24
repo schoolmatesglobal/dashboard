@@ -29,7 +29,7 @@ const NoteCard = ({
   //   (acc, question) => acc + Number(question.teacher_mark),
   //   0
   // );
-  console.log({ createQ, subjects });
+  // console.log({ createQ, subjects });
 
   return (
     <div className='d-flex flex-column'>

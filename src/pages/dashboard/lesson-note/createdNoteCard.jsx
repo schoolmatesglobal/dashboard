@@ -16,6 +16,7 @@ const CreateNoteCard = ({
   setEditSubmittedBy,
   setEditStatus,
   setEditFile,
+  setEditLessonNoteId,
   permission,
   handleDownload,
   setClearAllPrompt,
@@ -26,11 +27,13 @@ const CreateNoteCard = ({
   selectedDocs,
   setSelectedDocs,
   base64String,
-setBase64String,
+  setBase64String,
+  setFile,
+  setFileName,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
-  console.log({ notes });
+  // console.log({ notes });
 
   return (
     <div
@@ -161,23 +164,28 @@ setBase64String,
             className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
             onClick={() => {
               if (permission?.approve) {
+                setEditLessonNoteId(notes?.id);
                 setPublished(true);
                 setClearAllPrompt(true);
               } else {
+                const base64 = notes?.file;
                 setEditTopic(notes?.topic);
                 setEditDescription(notes?.description);
                 setEditFileName(notes?.file_name);
                 setEditSubmittedBy(notes?.submitted_by);
                 setEditStatus(notes?.status);
                 setEditFile(notes?.file);
+                setEditLessonNoteId(notes?.id);
                 setEditPrompt(true);
-                setCreateN((prev) => {
-                  return {
-                    ...prev,
-                    file: notes?.file,
-                    file_name: notes?.file_name,
-                  };
-                });
+                setFile(null);
+                setFileName("");
+                // setCreateN((prev) => {
+                //   return {
+                //     ...prev,
+                //     file: notes?.file,
+                //     file_name: notes?.file_name,
+                //   };
+                // });
               }
               // setCreateQuestionPrompt(true);
             }}
@@ -189,9 +197,11 @@ setBase64String,
             className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
             onClick={() => {
               if (permission?.approve) {
+                setEditLessonNoteId(notes?.id);
                 setPublished(false);
                 setClearAllPrompt(true);
               } else {
+                setEditLessonNoteId(notes?.id);
                 setDeletePrompt(true);
               }
               // setCreateQuestionPrompt(true);
@@ -210,13 +220,6 @@ setBase64String,
         >
           View Note
         </Button>
-        {iframeUrl && (
-          <iframe
-            src={iframeUrl}
-            title='file viewer'
-            style={{ width: "100%", height: "500px", border: "none" }}
-          ></iframe>
-        )}
       </div>
     </div>
   );

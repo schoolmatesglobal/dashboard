@@ -87,6 +87,7 @@ const Create = ({
     session,
     week,
     class_name,
+    class_id,
     submitted_by,
     subject_id,
     status,
@@ -123,17 +124,9 @@ const Create = ({
   const [clearAllPrompt, setClearAllPrompt] = useState(false);
   const [deletePrompt, setDeletePrompt] = useState(false);
   const [editPrompt, setEditPrompt] = useState(false);
-  const [editQuestion, setEditQuestion] = useState("");
-  const [editAnswer, setEditAnswer] = useState("");
-  const [editTotalQuestion, setEditTotalQuestion] = useState(0);
-  const [editOption1, setEditOption1] = useState("");
-  const [editOption2, setEditOption2] = useState("");
-  const [editOption3, setEditOption3] = useState("");
-  const [editOption4, setEditOption4] = useState("");
-  const [editMark, setEditMark] = useState(0);
   const [editNumber, setEditNumber] = useState(0);
   const [editSwitchNumber, setEditSwitchNumber] = useState(editNumber ?? 0);
-  const [editQuestionId, setEditQuestionId] = useState("");
+  const [editLessonNoteId, setEditLessonNoteId] = useState("");
   const [editPublish, setEditPublish] = useState(false);
   const [editTopic, setEditTopic] = useState("");
   const [editDescription, setEditDescription] = useState("");
@@ -164,10 +157,24 @@ const Create = ({
   };
 
   const activateRetrieveCreated = () => {
-    if (subject_id !== "" && week !== "" && term !== "" && session !== "") {
-      return true;
+    if (permission?.create) {
+      if (subject_id !== "" && week !== "" && term !== "" && session !== "") {
+        return true;
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      if (
+        subject_id !== "" &&
+        week !== "" &&
+        term !== "" &&
+        session !== "" &&
+        class_id !== ""
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
   };
 
@@ -181,7 +188,7 @@ const Create = ({
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 1500);
+    }, 1000);
   }
 
   //// FETCH LESSON NOTE CREATED /////////
@@ -195,7 +202,7 @@ const Create = ({
     [queryKeys.GET_SUBMITTED_LESSON_NOTE],
     () =>
       apiServices.getLessonNoteByClass(
-        user?.class_id,
+        permission?.create ? user?.class_id : class_id,
         subject_id,
         week,
         term,
@@ -206,18 +213,15 @@ const Create = ({
       enabled: activateRetrieveCreated() && permission?.view,
 
       select: (data) => {
-        // const asg = apiServices.formatData(data);
-        // const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
-        console.log({ lnData: data });
+        const lsg = apiServices.formatData(data);
+
+        console.log({ data, lsg });
+
+        return lsg;
       },
       onSuccess(data) {
-        // if (question_type === "objective") {
-        //   // setObjectiveQ(data);
-        // } else if (question_type === "theory") {
-        //   // setTheoryQ(data);
-        // }
-        // // trigger();
-        // setAllowFetch(false);
+        setLessonNotes(data);
+        trigger();
       },
       onError(err) {
         errorHandler(err);
@@ -226,7 +230,7 @@ const Create = ({
     }
   );
 
-  /////// POST OBJECTIVE ASSIGNMENT ////
+  /////// POST LESSON NOTE ////
   const { mutateAsync: addLessonNote, isLoading: addLessonNoteLoading } =
     useMutation(
       () =>
@@ -250,6 +254,8 @@ const Create = ({
             // question_mark: "",
             // question_number: "",
             staff_id: Number(user?.id),
+            term,
+            session,
             week: Number(week),
             subject_id: Number(subject_id),
             class_id: Number(user?.class_id),
@@ -271,75 +277,40 @@ const Create = ({
       }
     );
 
-  /////// POST THEORY ASSIGNMENT //////
+  //// EDIT LESSON NOTE ////
+  const { mutateAsync: editLessonNote, isLoading: editLessonNoteLoading } =
+    useMutation(apiServices.editLessonNote, {
+      onSuccess() {
+        // setAllowFetch(true);
+        refetchLessonNoteCreated();
+        toast.success("Lesson Note has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    });
+
+  //// APPROVE LESSON NOTE ////
   const {
-    mutateAsync: addTheoryAssignments,
-    isLoading: addTheoryAssignmentLoading,
+    mutateAsync: approveLessonNote,
+    isLoading: approveLessonNoteLoading,
   } = useMutation(
-    () =>
-      apiServices.addTheoryAssignment([
-        // ...theoryQ,
-        {
-          term: user?.term,
-          period: user?.period,
-          session: user?.session,
-          week,
-          question_type,
-          question: "",
-          answer: "",
-          subject_id: Number(subject_id),
-          image: "",
-          total_question: "",
-          total_mark: "",
-          question_mark: "",
-          question_number: "",
-        },
-        //
-      ]),
+    published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote,
     {
       onSuccess() {
-        // refetchAssignmentCreated();
-        toast.success("Theory assignment has been created successfully");
+        // setAllowFetch(true);
+        refetchLessonNoteCreated();
+        toast.success(
+          `Lesson Note has been ${
+            published ? "approve" : "unapproved"
+          } successfully`
+        );
       },
       onError(err) {
         apiServices.errorHandler(err);
       },
     }
   );
-
-  //// EDIT OBJECTIVE ASSIGNMENT ////
-  const {
-    mutateAsync: editObjectiveAssignment,
-    isLoading: editObjectiveAssignmentLoading,
-  } = useMutation(apiServices.editObjectiveAssignment, {
-    onSuccess() {
-      setAllowFetch(true);
-      // refetchAssignmentCreated();
-      toast.success("Objective question has been edited successfully");
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
-
-  //// PUBLISH ASSIGNMENT ////
-  const {
-    mutateAsync: publishAssignment,
-    isLoading: publishAssignmentLoading,
-  } = useMutation(apiServices.publishAssignment, {
-    onSuccess() {
-      setAllowFetch(true);
-      // refetchAssignmentCreated();
-      toast.success(
-        `Assignment has been ${
-          published ? "published" : "unpublished"
-        } successfully`
-      );
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
 
   //// EDIT THEORY ASSIGNMENT ////
   const {
@@ -356,11 +327,11 @@ const Create = ({
   });
 
   //// DELETE ASSIGNMENT ////
-  const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
-    useMutation(() => apiServices.deleteAssignment(editQuestionId), {
+  const { mutateAsync: deleteLessonNote, isLoading: deleteLessonNoteLoading } =
+    useMutation(() => apiServices.deleteLessonNote(editLessonNoteId), {
       onSuccess() {
-        // refetchAssignmentCreated();
-        toast.success("Question has been deleted successfully");
+        refetchLessonNoteCreated();
+        toast.success("Lesson Note has been deleted successfully");
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -380,45 +351,37 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        // publishAssignment({
-        //   term: user?.term,
-        //   period: user?.period,
-        //   session: user?.session,
-        //   question_type,
-        //   week,
-        //   is_publish: published ? 1 : 0,
-        // });
-        // refetchAssignmentCreated();
-        // setClearAllPrompt(false);
-        // setTimeout(() => {
-        //   refetchAssignmentCreated();
-        // }, 2000);
+        approveLessonNote({ id: editLessonNoteId });
+
+        setTimeout(() => {
+          setClearAllPrompt(false);
+        }, 1000);
       },
       variant: "outline",
-      isLoading: publishAssignmentLoading,
+      isLoading: approveLessonNoteLoading,
     },
   ];
 
-  const buttonOptions2 = [
-    {
-      title: `Save`,
-      onClick: () => {
-        setPublished(true);
-        setClearAllPrompt(true);
-      },
-      isLoading: publishAssignmentLoading,
-      variant: "success",
-    },
-    {
-      title: `Submit`,
-      onClick: () => {
-        setPublished(false);
-        setClearAllPrompt(true);
-      },
-      isLoading: publishAssignmentLoading,
-      variant: "danger",
-    },
-  ];
+  // const buttonOptions2 = [
+  //   {
+  //     title: `Save`,
+  //     onClick: () => {
+  //       setPublished(true);
+  //       setClearAllPrompt(true);
+  //     },
+  //     isLoading: publishAssignmentLoading,
+  //     variant: "success",
+  //   },
+  //   {
+  //     title: `Submit`,
+  //     onClick: () => {
+  //       setPublished(false);
+  //       setClearAllPrompt(true);
+  //     },
+  //     isLoading: publishAssignmentLoading,
+  //     variant: "danger",
+  //   },
+  // ];
 
   const deleteButtons = [
     {
@@ -434,23 +397,14 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        //
-        if (question_type === "objective") {
-          deleteAssignment();
+        deleteLessonNote();
 
-          setTimeout(() => {
-            setDeletePrompt(false);
-          }, 1000);
-        } else if (question_type === "theory") {
-          deleteAssignment();
-
-          setTimeout(() => {
-            setDeletePrompt(false);
-          }, 1000);
-        }
+        setTimeout(() => {
+          setDeletePrompt(false);
+        }, 1000);
       },
       variant: "outline-danger",
-      isLoading: deleteAssignmentLoading,
+      isLoading: deleteLessonNoteLoading,
     },
   ];
 
@@ -466,7 +420,7 @@ const Create = ({
     },
   ];
 
-  // const filterArray = objectiveQ?.filter((obj) => obj.id !== editQuestionId);
+  // const filterArray = objectiveQ?.filter((obj) => obj.id !== editLessonNoteId);
   //
   // const newArray = filterArray?.map((obj) => {
   //   return {
@@ -478,7 +432,7 @@ const Create = ({
   const editButtons = [
     {
       title: "No",
-      // isLoading: editObjectiveAssignmentLoading,
+      // isLoading: editLessonNoteLoading,
       onClick: () => {
         // console.log({ editMark });
         setEditPrompt(false);
@@ -488,14 +442,29 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        // setLessonNotes((prev) => [
-        //   ...prev,
-        //   { ...createN, file_name: fileName, file },
-        // ]);
-        setEditPrompt(false);
+        const newBody = file
+          ? {
+              topic: editTopic,
+              description: editDescription,
+              file: base64String,
+              file_name: fileName,
+            }
+          : { topic: editTopic, description: editDescription };
+
+        editLessonNote({
+          id: editLessonNoteId,
+          body: newBody,
+        });
+        refetchLessonNoteCreated();
+
+        setTimeout(() => {
+          setEditPrompt(false);
+        }, 1000);
+
+        // console.log({ newBody, editLessonNoteId });
       },
       variant: "outline",
-      isLoading: editObjectiveAssignmentLoading || editTheoryAssignmentLoading,
+      isLoading: editLessonNoteLoading,
       // disabled:
       //   question_type === "objective"
       //     ? !editQuestion ||
@@ -567,7 +536,7 @@ const Create = ({
 
   const allLoading =
     showLoading ||
-    // assignmentCreatedLoading ||
+    lessonNoteCreatedLoading ||
     // assignmentCreatedRefetching ||
     // assignmentCreatedFetching ||
     loading1 ||
@@ -581,21 +550,27 @@ const Create = ({
     }
   };
 
-  const activateWarning = () => {
+  const activateWarning2 = () => {
     if (permission.approve) {
-      if (!subject_id || !week || !class_name) {
+      if (!subject_id || !week || !class_name || !term || !session) {
         return true;
       } else {
         return false;
       }
     } else if (permission.create && lessonNotes?.length > 0) {
-      if (!subject_id || !week || lessonNotes?.length === 0) {
+      if (
+        !subject_id ||
+        !week ||
+        lessonNotes?.length === 0 ||
+        !term ||
+        !session
+      ) {
         return true;
       } else {
         return false;
       }
     } else {
-      if (!subject_id || !week || !class_name) {
+      if (!subject_id || !week || !class_name || !term || !session) {
         return true;
       } else {
         return false;
@@ -603,8 +578,8 @@ const Create = ({
     }
   };
 
-  const activateWarning2 = () => {
-    if (!subject_id || !week || !class_name) {
+  const activateWarning = () => {
+    if (!subject_id || !week || !term || !session) {
       return true;
     } else {
       return false;
@@ -641,14 +616,16 @@ const Create = ({
   }, [subjectsByTeacher, subjects]);
 
   useEffect(() => {
-    setCreateN((prev) => {
-      return {
-        ...prev,
-        period: user?.period,
-        term: user?.term,
-        session: user?.session,
-      };
-    });
+    if (permission?.create) {
+      setCreateN((prev) => {
+        return {
+          ...prev,
+          period: user?.period,
+          term: user?.term,
+          session: user?.session,
+        };
+      });
+    }
   }, []);
 
   // useEffect(() => {
@@ -669,29 +646,26 @@ const Create = ({
   //   }
   // }, []);
 
-  // useEffect(() => {
-  //   if (activateRetrieveCreated()) {
-  //     refetchAssignmentCreated();
+  useEffect(() => {
+    if (activateRetrieveCreated()) {
+      refetchLessonNoteCreated();
 
-  //     // setCreateN((prev) => {
-  //     //   return {
-  //     //     ...prev,
-  //     //     week: "",
-  //     //     subject_id: "",
-  //     //     status: "UnApproved",
-  //     //     topic: "",
-  //     //     description: "",
-  //     //     file: "",
-  //     //     file_name: "",
-  //     //   };
-  //     // });
-  //   }
-  //   // refetchAssignmentCreated();
-  //   // setLoading1(true);
-  //   // setTimeout(() => {
-  //   //   setLoading1(false);
-  //   // }, 700);
-  // }, [subject_id, week, class_name]);
+      // setCreateN((prev) => {
+      //   return {
+      //     ...prev,
+      //     week: "",
+      //     subject_id: "",
+      //     status: "UnApproved",
+      //     topic: "",
+      //     description: "",
+      //     file: "",
+      //     file_name: "",
+      //   };
+      // });
+    }
+    // refetchLessonNoteCreated();
+    trigger();
+  }, [subject_id, week, term, session]);
 
   const newNote = permission?.create ? lessonNotes : notes2;
 
@@ -700,17 +674,10 @@ const Create = ({
   //     refetchAssignmentCreated();
   //   }
 
-  // }, [editObjectiveAssignment]);
+  // }, [editLessonNote]);
 
   console.log({
-    // unPublishedAssignment,
-    // activateRetrieveCreated: activateRetrieveCreated(),
-    // assignmentCreatedFetching,
-    // assignmentCreatedRefetching,
-    // published,
-
-    // objectiveQ,
-    // theoryQ,
+    lessonNotes,
     user,
     createN,
     subjectsByTeacher,
@@ -720,6 +687,8 @@ const Create = ({
     subjects,
     activateWarning: activateWarning(),
     file,
+    fileName,
+    classes,
   });
 
   return (
@@ -832,17 +801,17 @@ const Create = ({
                 wrapperClassName='w-100'
               />
               {/* class name */}
-              {permission?.approve && (
+              {!permission?.create && (
                 <AuthSelect
                   sort
-                  value={class_name}
+                  value={class_id}
                   onChange={({ target: { value } }) => {
                     setCreateN((prev) => {
-                      return { ...prev, class_name: value };
+                      return { ...prev, class_id: value };
                     });
                   }}
                   options={(classes || []).map((x) => ({
-                    value: x?.class_name,
+                    value: x?.id,
                     title: x?.class_name,
                   }))}
                   placeholder='Select Class'
@@ -890,15 +859,14 @@ const Create = ({
           {!allLoading &&
             // theoryQ?.length === 0 &&
             // objectiveQ?.length === 0 &&
-            activateWarning() &&
-            lessonNotes?.length === 0 && (
+            (activateWarning() || lessonNotes?.length === 0) && (
               <div className={styles.placeholder_container}>
                 <HiOutlineDocumentPlus className={styles.icon} />
                 <p className='fs-1 fw-bold mt-3'>Create Lesson Note</p>
               </div>
             )}
 
-          {!allLoading && !activateWarning() && (
+          {!allLoading && !activateWarning() && lessonNotes?.length !== 0 && (
             <NoteCard
               allLoading={allLoading}
               // question_type={question_type}
@@ -912,7 +880,7 @@ const Create = ({
 
           {!allLoading &&
             !activateWarning() &&
-            newNote?.map((nn, i) => {
+            lessonNotes?.map((nn, i) => {
               return (
                 <div className='mb-5' key={i}>
                   <CreateNoteCard
@@ -923,10 +891,13 @@ const Create = ({
                     setDeletePrompt={setDeletePrompt}
                     setEditTopic={setEditTopic}
                     setEditDescription={setEditDescription}
-                    setEditFile={setFile}
-                    setEditFileName={setFileName}
+                    setEditFile={setEditFile}
+                    setFile={setFile}
+                    setEditFileName={setEditFileName}
+                    setFileName={setFileName}
                     setEditSubmittedBy={setEditSubmittedBy}
                     setEditStatus={setEditStatus}
+                    setEditLessonNoteId={setEditLessonNoteId}
                     notes={nn}
                     handleDownload={handleDownload}
                     setPublished={setPublished}
@@ -1027,7 +998,8 @@ const Create = ({
             <p className='fs-3 fw-bold my-4'>File Upload</p>
             <CustomFileInput2
               handleFileChange={handleFileChange}
-              fileName={fileName}
+              fileName={fileName ? fileName : editFileName}
+              setFileName={setEditFileName}
               handleReset={handleReset}
               error={error}
             />
