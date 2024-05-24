@@ -25,6 +25,8 @@ const CreateNoteCard = ({
   setIframeUrl,
   selectedDocs,
   setSelectedDocs,
+  base64String,
+setBase64String,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 

@@ -35,6 +35,8 @@ const CreateNote = ({
   setFileName,
   addLessonNote,
   addLessonNoteLoading,
+  base64String,
+  setBase64String,
 }) => {
   const fileInputRef = useRef(null);
 
@@ -131,11 +133,24 @@ const CreateNote = ({
       disabled: activatePreview(),
       // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
       onClick: () => {
-        setLessonNotes((prev) => [
-          ...prev,
-          { ...createQ, file_name: fileName, file, date_submitted: date },
-        ]);
-        // addLessonNote()
+        
+        // setLessonNotes((prev) => [
+        //   ...prev,
+        //   { ...createQ, file_name: fileName, file, date_submitted: date },
+        // ]);
+
+        addLessonNote()
+
+        // console.log({
+        //   staff_id: Number(user?.id),
+        //   week: Number(week),
+        //   subject_id: Number(subject_id),
+        //   class_id: Number(user?.class_id),
+        //   topic,
+        //   description,
+        //   file: base64String,
+        // });
+
         setCreateQuestionPrompt(false);
       },
       // variant: "outline",
@@ -148,16 +163,16 @@ const CreateNote = ({
     (ob) => Number(ob.id) === Number(createQ.subject_id)
   )?.subject;
 
-  console.log({
-    createQ,
-    subjects,
-    subName,
-    lessonNotes,
-    file,
-    fileName,
-    // date,
-    // dt,
-  });
+  // console.log({
+  //   createQ,
+  //   subjects,
+  //   subName,
+  //   lessonNotes,
+  //   file,
+  //   fileName,
+  //   // date,
+  //   // dt,
+  // });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({ tl: TheoryQ?.length });

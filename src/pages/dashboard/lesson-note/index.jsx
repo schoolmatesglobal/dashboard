@@ -36,6 +36,8 @@ const LessonNote = () => {
     setIframeUrl,
     selectedDocs,
     setSelectedDocs,
+    base64String,
+    setBase64String,
   } = useLessonNote();
 
   const { subjects } = useSubject();
@@ -123,6 +125,8 @@ const LessonNote = () => {
           setIframeUrl={setIframeUrl}
           selectedDocs={selectedDocs}
           setSelectedDocs={setSelectedDocs}
+          base64String={base64String}
+          setBase64String={setBase64String}
         />
       </div>
 

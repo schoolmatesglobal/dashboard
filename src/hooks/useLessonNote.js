@@ -35,6 +35,7 @@ export const useLessonNote = () => {
   const [error, setError] = useState("");
   const [iframeUrl, setIframeUrl] = useState(null);
   const [selectedDocs, setSelectedDocs] = useState([]);
+  const [base64String, setBase64String] = useState("");
 
   const [createN, setCreateN] = useState({
     term: "",
@@ -42,13 +43,13 @@ export const useLessonNote = () => {
     session: "",
     week: "",
     class_name: `${permission?.approve ? "" : user?.class_assigned}`,
-    submitted_by: `${user?.firstname} ${user?.surname}`,
     subject_id: "",
     status: "UnApproved",
     topic: "",
     description: "",
     file: "",
     file_name: "",
+    submitted_by: `${user?.firstname} ${user?.surname}`,
     date_submitted: "",
     date_approved: "",
   });
@@ -58,6 +59,7 @@ export const useLessonNote = () => {
     setFileName("");
     setError("");
     document.getElementById("fileInput").value = null;
+    setBase64String("");
   };
 
   const handleDownload = () => {
@@ -124,46 +126,7 @@ export const useLessonNote = () => {
     }
   };
 
-  // const viewDocFile = (file) => {
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     const base64Data = reader.result.split(",")[1];
-  //     const bytes = new TextDecoder("utf-8").decode(
-  //       new Uint8Array(base64Data, 0, base64Data.length)
-  //     );
-  //     const blob = new Blob([bytes], { type: "application/octet-stream" });
-  //     const docUrl = URL.createObjectURL(blob);
-  //     const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(
-  //       docUrl
-  //     )}&embedded=true`;
-  //     window.open(viewerUrl, "_blank");
-  //     setTimeout(() => {
-  //       URL.revokeObjectURL(docUrl);
-  //     }, 1000);
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
-
-  // const handleViewFile = (file) => {
-  //   if (file) {
-  //     const fileExtension = file.name.split(".").pop().toLowerCase();
-  //     const url = URL.createObjectURL(file);
-
-  //     const fileViewerMap = {
-  //       pdf: () => window.open(url, "_blank"),
-  //       doc: () => viewDocFile(file),
-  //       docx: () => viewDocFile(file),
-  //     };
-
-  //     if (fileViewerMap[fileExtension]) {
-  //       fileViewerMap[fileExtension]();
-  //     } else {
-  //       alert("Unsupported file type for viewing");
-  //     }
-  //   }
-  // };
-
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     const validTypes = [
       "application/pdf",
@@ -188,13 +151,10 @@ export const useLessonNote = () => {
         return;
       }
 
-      // setCreateN((prev) => {
-      //   return { ...prev, file: selectedFile, file_name: selectedFile.name };
-      // });
-      // setSelectedDocs(Array.from(e.target.files));
       setFile(selectedFile);
       setFileName(selectedFile.name);
-
+      const docData = await apiServices?.convertBase64(selectedFile);
+      setBase64String(docData);
       setError("");
     }
   };
@@ -281,6 +241,9 @@ export const useLessonNote = () => {
     handleDownload,
     handleViewFile,
     selectedDocs,
-setSelectedDocs,
+    setSelectedDocs,
+
+    base64String,
+setBase64String,
   };
 };

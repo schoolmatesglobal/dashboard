@@ -60,6 +60,8 @@ const Create = ({
   setIframeUrl,
   selectedDocs,
   setSelectedDocs,
+  base64String,
+  setBase64String,
 }) => {
   const isDesktop = useMediaQuery({ query: "(min-width: 992px)" });
   const isTablet = useMediaQuery({
@@ -162,7 +164,7 @@ const Create = ({
   };
 
   const activateRetrieveCreated = () => {
-    if (subject_id !== "" && week !== "") {
+    if (subject_id !== "" && week !== "" && term !== "" && session !== "") {
       return true;
     } else {
       return false;
@@ -182,49 +184,40 @@ const Create = ({
     }, 1500);
   }
 
-  //// FETCH ASSIGNMENTS CREATED /////////
+  //// FETCH LESSON NOTE CREATED /////////
   const {
-    isLoading: assignmentCreatedLoading,
-    data: assignmentCreated,
-    isFetching: assignmentCreatedFetching,
-    isRefetching: assignmentCreatedRefetching,
-    refetch: refetchAssignmentCreated,
+    isLoading: lessonNoteCreatedLoading,
+    data: lessonNoteCreated,
+    isFetching: lessonNoteCreatedFetching,
+    isRefetching: lessonNoteCreatedRefetching,
+    refetch: refetchLessonNoteCreated,
   } = useQuery(
-    [queryKeys.GET_CREATED_ASSIGNMENT],
+    [queryKeys.GET_SUBMITTED_LESSON_NOTE],
     () =>
-      apiServices.getAssignment(
-        user?.period,
-        user?.term,
-        user?.session,
-        question_type,
-        week
+      apiServices.getLessonNoteByClass(
+        user?.class_id,
+        subject_id,
+        week,
+        term,
+        session
       ),
     {
       retry: 2,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
-
-      // enabled: false,
       enabled: activateRetrieveCreated() && permission?.view,
 
       select: (data) => {
-        const asg = apiServices.formatData(data);
-
-        const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
-
-        console.log({ asg, data, filtAsg });
+        // const asg = apiServices.formatData(data);
+        // const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
+        console.log({ lnData: data });
       },
       onSuccess(data) {
-        if (question_type === "objective") {
-          // setObjectiveQ(data);
-        } else if (question_type === "theory") {
-          // setTheoryQ(data);
-        }
-        // trigger();
-        setAllowFetch(false);
+        // if (question_type === "objective") {
+        //   // setObjectiveQ(data);
+        // } else if (question_type === "theory") {
+        //   // setTheoryQ(data);
+        // }
+        // // trigger();
+        // setAllowFetch(false);
       },
       onError(err) {
         errorHandler(err);
@@ -262,13 +255,14 @@ const Create = ({
             class_id: Number(user?.class_id),
             topic,
             description,
-            file,
+            file: base64String,
+            file_name: fileName,
           }
         ),
       // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
       {
         onSuccess() {
-          // refetchAssignmentCreated();
+          refetchLessonNoteCreated();
           toast.success("Lesson note has been submitted successfully");
         },
         onError(err) {
@@ -300,10 +294,11 @@ const Create = ({
           question_mark: "",
           question_number: "",
         },
+        //
       ]),
     {
       onSuccess() {
-        refetchAssignmentCreated();
+        // refetchAssignmentCreated();
         toast.success("Theory assignment has been created successfully");
       },
       onError(err) {
@@ -319,7 +314,7 @@ const Create = ({
   } = useMutation(apiServices.editObjectiveAssignment, {
     onSuccess() {
       setAllowFetch(true);
-      refetchAssignmentCreated();
+      // refetchAssignmentCreated();
       toast.success("Objective question has been edited successfully");
     },
     onError(err) {
@@ -334,7 +329,7 @@ const Create = ({
   } = useMutation(apiServices.publishAssignment, {
     onSuccess() {
       setAllowFetch(true);
-      refetchAssignmentCreated();
+      // refetchAssignmentCreated();
       toast.success(
         `Assignment has been ${
           published ? "published" : "unpublished"
@@ -352,7 +347,7 @@ const Create = ({
     isLoading: editTheoryAssignmentLoading,
   } = useMutation(apiServices.editTheoryAssignment, {
     onSuccess() {
-      refetchAssignmentCreated();
+      // refetchAssignmentCreated();
       toast.success("theory question has been edited successfully");
     },
     onError(err) {
@@ -364,7 +359,7 @@ const Create = ({
   const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
     useMutation(() => apiServices.deleteAssignment(editQuestionId), {
       onSuccess() {
-        refetchAssignmentCreated();
+        // refetchAssignmentCreated();
         toast.success("Question has been deleted successfully");
       },
       onError(err) {
@@ -733,7 +728,7 @@ const Create = ({
         <div className={styles.create}>
           {/* drop downs */}
           <div className='d-flex flex-column gap-4 flex-md-row flex-grow-1 mb-4'>
-            <AuthSelect
+            {/* <AuthSelect
               // label='Period'
               sort
               value={createN.period}
@@ -746,7 +741,7 @@ const Create = ({
               options={periods}
               placeholder='Select Period'
               wrapperClassName='w-100'
-            />
+            /> */}
             <AuthSelect
               // label='Period'
               sort
@@ -902,6 +897,7 @@ const Create = ({
                 <p className='fs-1 fw-bold mt-3'>Create Lesson Note</p>
               </div>
             )}
+
           {!allLoading && !activateWarning() && (
             <NoteCard
               allLoading={allLoading}
@@ -913,6 +909,7 @@ const Create = ({
               subjects={subjects}
             />
           )}
+
           {!allLoading &&
             !activateWarning() &&
             newNote?.map((nn, i) => {
@@ -938,6 +935,8 @@ const Create = ({
                     setIframeUrl={setIframeUrl}
                     selectedDocs={selectedDocs}
                     setSelectedDocs={setSelectedDocs}
+                    base64String={base64String}
+                    setBase64String={setBase64String}
                   />
                 </div>
               );
@@ -977,6 +976,8 @@ const Create = ({
           setFileName={setFileName}
           addLessonNote={addLessonNote}
           addLessonNoteLoading={addLessonNoteLoading}
+          base64String={base64String}
+          setBase64String={setBase64String}
         />
         {/* publish all prompt */}
         <Prompt

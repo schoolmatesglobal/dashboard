@@ -2795,12 +2795,28 @@ class APIServies extends Helpers {
   }
 
   async addLessonNote(body) {
-    const { data } = await axios.post(`${backendAPI}/lessonnote/add`, body, {
+    const { data } = await axios.post(`${backendAPI}/v2/lessonnote/add`, body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+    return data;
+  }
+
+  async getLessonNoteByClass(class_id, subject_id, week, term, session) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/lessonnote/${class_id}/${subject_id}/${week}/${term}/${session}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }
