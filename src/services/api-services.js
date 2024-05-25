@@ -2847,7 +2847,7 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async approveLessonNote({ id,  }) {
+  async approveLessonNote(id) {
     const { data } = await axios.patch(
       `${backendAPI}/v2/lessonnote/approve/${id}`,
       {
@@ -2860,7 +2860,7 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async unApproveLessonNote({ id,  }) {
+  async unApproveLessonNote(id) {
     const { data } = await axios.patch(
       `${backendAPI}/v2/lessonnote/unapprove/${id}`,
       {

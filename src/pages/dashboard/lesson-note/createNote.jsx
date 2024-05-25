@@ -37,6 +37,7 @@ const CreateNote = ({
   addLessonNoteLoading,
   base64String,
   setBase64String,
+  trigger,
 }) => {
   const fileInputRef = useRef(null);
 
@@ -131,27 +132,15 @@ const CreateNote = ({
     {
       title: "Submit",
       disabled: activatePreview(),
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
-      onClick: () => {
-        
-        // setLessonNotes((prev) => [
-        //   ...prev,
-        //   { ...createQ, file_name: fileName, file, date_submitted: date },
-        // ]);
+      isLoading: addLessonNoteLoading,
+      onClick: async () => {
+        await addLessonNote();
 
-        addLessonNote()
+        // trigger(500);
 
-        // console.log({
-        //   staff_id: Number(user?.id),
-        //   week: Number(week),
-        //   subject_id: Number(subject_id),
-        //   class_id: Number(user?.class_id),
-        //   topic,
-        //   description,
-        //   file: base64String,
-        // });
-
-        setCreateQuestionPrompt(false);
+        setTimeout(() => {
+          setCreateQuestionPrompt(false);
+        }, 500);
       },
       // variant: "outline",
     },

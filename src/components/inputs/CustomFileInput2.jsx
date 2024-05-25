@@ -52,7 +52,8 @@ const CustomFileInput2 = ({
               ref={fileInputRef}
               id='fileInput'
               type='file'
-              accept='.doc,.docx,.pdf'
+              accept='.pdf'
+              // accept='.doc,.docx,.pdf'
               onChange={handleFileChange}
               className='d-none'
             />
@@ -70,7 +71,8 @@ const CustomFileInput2 = ({
         </div>
       </div>
       <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
-        {error ? error : "NB: Doc or PDF file with max size of 1MB"}
+        {error ? error : "NB: PDF file with max size of 1MB"}
+        {/* {error ? error : "NB: Doc or PDF file with max size of 1MB"} */}
       </p>
     </div>
   );

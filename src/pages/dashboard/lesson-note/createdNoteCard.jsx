@@ -106,7 +106,7 @@ const CreateNoteCard = ({
           {notes?.description}
         </p>
       </div>
-      {/* <div
+      <div
         className={`d-flex  ${
           xs ? "flex-column" : sm ? "flex-column" : "flex-row"
         }`}
@@ -129,7 +129,7 @@ const CreateNoteCard = ({
         >
           <p className='fs-3 lh-base'>{notes?.file_name}</p>
         </div>
-      </div> */}
+      </div>
       <div
         className={`d-flex  ${
           xs ? "flex-column" : sm ? "flex-column" : "flex-row"

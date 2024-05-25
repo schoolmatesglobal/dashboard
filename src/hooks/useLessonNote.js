@@ -138,13 +138,14 @@ export const useLessonNote = () => {
     const selectedFile = e.target.files[0];
     const validTypes = [
       "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      // "application/msword",
+      // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
     if (selectedFile) {
       if (!validTypes.includes(selectedFile.type)) {
-        setError("Please upload a PDF or DOC file.");
+        setError("Please upload a PDF file.");
+        // setError("Please upload a PDF or DOC file.");
         setFile(null);
         setFileName("");
         document.getElementById("fileInput").value = null;

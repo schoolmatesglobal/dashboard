@@ -178,11 +178,11 @@ const Create = ({
     }
   };
 
-  function trigger() {
+  function trigger(time) {
     setLoading1(true);
     setTimeout(() => {
       setLoading1(false);
-    }, 1000);
+    }, time);
   }
   function trigger2() {
     setLoading1(true);
@@ -221,7 +221,7 @@ const Create = ({
       },
       onSuccess(data) {
         setLessonNotes(data);
-        trigger();
+        trigger(1000);
       },
       onError(err) {
         errorHandler(err);
@@ -234,37 +234,18 @@ const Create = ({
   const { mutateAsync: addLessonNote, isLoading: addLessonNoteLoading } =
     useMutation(
       () =>
-        apiServices.addLessonNote(
-          // ...objectiveQ,
-          {
-            // term: user?.term,
-            // period: user?.period,
-            // session: user?.session,
-            // week,
-            // question_type,
-            // question: "",
-            // answer: "",
-            // subject_id: Number(subject_id),
-            // option1: "",
-            // option2: "",
-            // option3: "",
-            // option4: "",
-            // total_question: "",
-            // total_mark: "",
-            // question_mark: "",
-            // question_number: "",
-            staff_id: Number(user?.id),
-            term,
-            session,
-            week: Number(week),
-            subject_id: Number(subject_id),
-            class_id: Number(user?.class_id),
-            topic,
-            description,
-            file: base64String,
-            file_name: fileName,
-          }
-        ),
+        apiServices.addLessonNote({
+          staff_id: Number(user?.id),
+          term,
+          session,
+          week: Number(week),
+          subject_id: Number(subject_id),
+          class_id: Number(user?.class_id),
+          topic,
+          description,
+          file: base64String,
+          file_name: fileName,
+        }),
       // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
       {
         onSuccess() {
@@ -295,7 +276,8 @@ const Create = ({
     mutateAsync: approveLessonNote,
     isLoading: approveLessonNoteLoading,
   } = useMutation(
-    published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote,
+    () => apiServices.approveLessonNote(editLessonNoteId),
+    // published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote,
     {
       onSuccess() {
         // setAllowFetch(true);
@@ -311,6 +293,24 @@ const Create = ({
       },
     }
   );
+  //// UNAPPROVE LESSON NOTE ////
+  const {
+    mutateAsync: unApproveLessonNote,
+    isLoading: unApproveLessonNoteLoading,
+  } = useMutation(() => apiServices.unApproveLessonNote(editLessonNoteId), {
+    onSuccess() {
+      // setAllowFetch(true);
+      refetchLessonNoteCreated();
+      toast.success(
+        `Lesson Note has been ${
+          published ? "approve" : "unapproved"
+        } successfully`
+      );
+    },
+    onError(err) {
+      apiServices.errorHandler(err);
+    },
+  });
 
   //// EDIT THEORY ASSIGNMENT ////
   const {
@@ -351,11 +351,19 @@ const Create = ({
     {
       title: "Yes",
       onClick: () => {
-        approveLessonNote({ id: editLessonNoteId });
+        // published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote
 
-        setTimeout(() => {
-          setClearAllPrompt(false);
-        }, 1000);
+        if (published) {
+          approveLessonNote();
+          setTimeout(() => {
+            setClearAllPrompt(false);
+          }, 1000);
+        } else {
+          unApproveLessonNote();
+          setTimeout(() => {
+            setClearAllPrompt(false);
+          }, 1000);
+        }
       },
       variant: "outline",
       isLoading: approveLessonNoteLoading,
@@ -396,12 +404,12 @@ const Create = ({
     },
     {
       title: "Yes",
-      onClick: () => {
-        deleteLessonNote();
+      onClick: async () => {
+        await deleteLessonNote();
 
         setTimeout(() => {
           setDeletePrompt(false);
-        }, 1000);
+        }, 500);
       },
       variant: "outline-danger",
       isLoading: deleteLessonNoteLoading,
@@ -664,10 +672,10 @@ const Create = ({
       // });
     }
     // refetchLessonNoteCreated();
-    trigger();
+    trigger(500);
   }, [subject_id, week, term, session]);
 
-  const newNote = permission?.create ? lessonNotes : notes2;
+  // const newNote = permission?.create ? lessonNotes : notes2;
 
   // useEffect(() => {
   //   if (activateRetrieveCreated()) {
@@ -837,6 +845,12 @@ const Create = ({
               </Button>
             )}
           </div>
+
+          <div className='d-flex justify-content-center align-items-cneter'>
+            <p className='fs-4  mt-4 text-danger'>
+              NB: Lesson Note to be uploaded should be in PDF format
+            </p>
+          </div>
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>
@@ -949,6 +963,7 @@ const Create = ({
           addLessonNoteLoading={addLessonNoteLoading}
           base64String={base64String}
           setBase64String={setBase64String}
+          trigger={trigger}
         />
         {/* publish all prompt */}
         <Prompt
