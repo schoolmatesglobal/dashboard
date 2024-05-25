@@ -60,6 +60,7 @@ const CreateNote = ({
     // Return the original string if it is 5 characters or less
     return str;
   }
+
   // const {
   //   createQ,
   //   setCreateQ,
@@ -135,12 +136,7 @@ const CreateNote = ({
       isLoading: addLessonNoteLoading,
       onClick: async () => {
         await addLessonNote();
-
         // trigger(500);
-
-        setTimeout(() => {
-          setCreateQuestionPrompt(false);
-        }, 500);
       },
       // variant: "outline",
     },
@@ -218,7 +214,10 @@ const CreateNote = ({
             fileName={fileName}
             handleReset={handleReset}
             error={error}
+            loading={addLessonNoteLoading}
           />
+
+          {/* <p className="fs-3 text-center my-4">...Uploading</p> */}
         </>
       </Prompt>
     </div>

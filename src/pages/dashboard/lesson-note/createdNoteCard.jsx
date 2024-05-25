@@ -58,16 +58,22 @@ const CreateNoteCard = ({
           }`}
           style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
-          <p
-            style={{ whiteSpace: "nowrap" }}
-            className={`${
-              notes?.status === "Approved" ? "text-success  " : "text-danger"
-            } ${
-              notes?.status === "Approved" ? "bg-success  " : "bg-danger"
-            } bg-opacity-10 w-auto px-3 py-2`}
-          >
-            {notes?.status === "Approved" ? "Approved" : "Not Approved"}
-          </p>
+          <div className='d-flex align-items-center gap-2'>
+            <p
+              style={{ whiteSpace: "nowrap" }}
+              className={`${
+                notes?.status === "approved" ? "text-success  " : "text-danger"
+              } ${
+                notes?.status === "approved" ? "bg-success  " : "bg-danger"
+              } bg-opacity-10 w-auto px-3 py-2`}
+            >
+              {notes?.status === "approved" ? "Approved" : "Not Approved"}
+            </p>
+
+            {notes?.date_approved && (
+              <p className='fw-normal'>--- {notes?.date_approved}</p>
+            )}
+          </div>
         </div>
       </div>
       <div
@@ -145,7 +151,7 @@ const CreateNoteCard = ({
           className={`fs-3 lh-base py-3 px-4 border-2 border`}
           style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
-          {notes?.submitted_by} --- {notes?.date_submitted}
+          {notes?.submitted_by} <span className="">--- {notes?.date_submitted}</span>
         </p>
       </div>
 

@@ -10,6 +10,7 @@ const CustomFileInput2 = ({
   setFileName,
   handleReset,
   error,
+  loading,
 }) => {
   const { xs, sm, md, lg } = useMyMediaQuery2();
   const fileInputRef = useRef(null);
@@ -61,7 +62,7 @@ const CustomFileInput2 = ({
           <FontAwesomeIcon
             onClick={() => {
               handleReset();
-              if(setFileName){
+              if (setFileName) {
                 setFileName("");
               }
             }}
@@ -70,10 +71,18 @@ const CustomFileInput2 = ({
           />
         </div>
       </div>
-      <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
-        {error ? error : "NB: PDF file with max size of 1MB"}
-        {/* {error ? error : "NB: Doc or PDF file with max size of 1MB"} */}
-      </p>
+      {!loading && (
+        <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
+          {error ? error : "NB: PDF file with max size of 1MB"}
+          {/* {error ? error : "NB: Doc or PDF file with max size of 1MB"} */}
+        </p>
+      )}
+      {loading && (
+        <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
+          {"Uploading file ..."}
+          {/* {error ? error : "NB: Doc or PDF file with max size of 1MB"} */}
+        </p>
+      )}
     </div>
   );
 };

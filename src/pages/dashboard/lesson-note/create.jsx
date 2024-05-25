@@ -215,9 +215,13 @@ const Create = ({
       select: (data) => {
         const lsg = apiServices.formatData(data);
 
-        console.log({ data, lsg });
+        const filt = lsg?.filter(
+          (ls) => Number(ls?.staff_id) === Number(user?.id)
+        );
 
-        return lsg;
+        console.log({ data, lsg, filt });
+
+        return filt;
       },
       onSuccess(data) {
         setLessonNotes(data);
@@ -250,6 +254,9 @@ const Create = ({
       {
         onSuccess() {
           refetchLessonNoteCreated();
+          setTimeout(() => {
+            setCreateQuestionPrompt(false);
+          }, 1000);
           toast.success("Lesson note has been submitted successfully");
         },
         onError(err) {
@@ -276,7 +283,7 @@ const Create = ({
     mutateAsync: approveLessonNote,
     isLoading: approveLessonNoteLoading,
   } = useMutation(
-    () => apiServices.approveLessonNote(editLessonNoteId),
+    () => apiServices.approveLessonNote({ id: editLessonNoteId }),
     // published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote,
     {
       onSuccess() {
@@ -297,20 +304,23 @@ const Create = ({
   const {
     mutateAsync: unApproveLessonNote,
     isLoading: unApproveLessonNoteLoading,
-  } = useMutation(() => apiServices.unApproveLessonNote(editLessonNoteId), {
-    onSuccess() {
-      // setAllowFetch(true);
-      refetchLessonNoteCreated();
-      toast.success(
-        `Lesson Note has been ${
-          published ? "approve" : "unapproved"
-        } successfully`
-      );
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+  } = useMutation(
+    () => apiServices.unApproveLessonNote({ id: editLessonNoteId }),
+    {
+      onSuccess() {
+        // setAllowFetch(true);
+        refetchLessonNoteCreated();
+        toast.success(
+          `Lesson Note has been ${
+            published ? "approve" : "unapproved"
+          } successfully`
+        );
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
   //// EDIT THEORY ASSIGNMENT ////
   const {
@@ -331,6 +341,9 @@ const Create = ({
     useMutation(() => apiServices.deleteLessonNote(editLessonNoteId), {
       onSuccess() {
         refetchLessonNoteCreated();
+        setTimeout(() => {
+          setDeletePrompt(false);
+        }, 1000);
         toast.success("Lesson Note has been deleted successfully");
       },
       onError(err) {
@@ -404,12 +417,12 @@ const Create = ({
     },
     {
       title: "Yes",
-      onClick: async () => {
-        await deleteLessonNote();
+      onClick: () => {
+        deleteLessonNote();
 
-        setTimeout(() => {
-          setDeletePrompt(false);
-        }, 500);
+        // setTimeout(() => {
+        //   setDeletePrompt(false);
+        // }, 1000);
       },
       variant: "outline-danger",
       isLoading: deleteLessonNoteLoading,
@@ -672,8 +685,8 @@ const Create = ({
       // });
     }
     // refetchLessonNoteCreated();
-    trigger(500);
-  }, [subject_id, week, term, session]);
+    // trigger(500);
+  }, [subject_id, week, term, session, class_id]);
 
   // const newNote = permission?.create ? lessonNotes : notes2;
 
@@ -846,11 +859,13 @@ const Create = ({
             )}
           </div>
 
-          <div className='d-flex justify-content-center align-items-cneter'>
-            <p className='fs-4  mt-4 text-danger'>
-              NB: Lesson Note to be uploaded should be in PDF format
-            </p>
-          </div>
+          {permission.create && (
+            <div className='d-flex justify-content-center align-items-cneter'>
+              <p className='fs-4  mt-4 text-danger'>
+                NB: Lesson Note to be uploaded should be in PDF format
+              </p>
+            </div>
+          )}
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>
@@ -964,6 +979,7 @@ const Create = ({
           base64String={base64String}
           setBase64String={setBase64String}
           trigger={trigger}
+          refetchLessonNoteCreated={refetchLessonNoteCreated}
         />
         {/* publish all prompt */}
         <Prompt
