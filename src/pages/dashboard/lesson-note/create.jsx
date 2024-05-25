@@ -221,7 +221,7 @@ const Create = ({
 
         console.log({ data, lsg, filt });
 
-        return filt;
+        return permission?.create ? filt : lsg;
       },
       onSuccess(data) {
         setLessonNotes(data);
@@ -270,6 +270,9 @@ const Create = ({
     useMutation(apiServices.editLessonNote, {
       onSuccess() {
         // setAllowFetch(true);
+        setTimeout(() => {
+          setEditPrompt(false);
+        }, 1000);
         refetchLessonNoteCreated();
         toast.success("Lesson Note has been edited successfully");
       },
@@ -462,7 +465,7 @@ const Create = ({
     },
     {
       title: "Yes",
-      onClick: () => {
+      onClick: async () => {
         const newBody = file
           ? {
               topic: editTopic,
@@ -472,15 +475,15 @@ const Create = ({
             }
           : { topic: editTopic, description: editDescription };
 
-        editLessonNote({
+        await editLessonNote({
           id: editLessonNoteId,
           body: newBody,
         });
-        refetchLessonNoteCreated();
+        // refetchLessonNoteCreated();
 
-        setTimeout(() => {
-          setEditPrompt(false);
-        }, 1000);
+        // setTimeout(() => {
+        //   setEditPrompt(false);
+        // }, 1000);
 
         // console.log({ newBody, editLessonNoteId });
       },
@@ -1033,6 +1036,7 @@ const Create = ({
               setFileName={setEditFileName}
               handleReset={handleReset}
               error={error}
+              loading={editLessonNoteLoading}
             />
           </>
         </Prompt>
