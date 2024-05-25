@@ -104,11 +104,8 @@ const Create = ({
   const {
     classes,
     // checkedSubjects,
-    setCheckedSubjects,
-    isLoading: classLoading,
-    // subjectData2,
-    // subjects: subjectsByClass,
-    // subjectsByClass2,
+    // setCheckedSubjects,
+    // isLoading: classLoading,
   } = useClasses();
 
   function formatSubjects() {
@@ -325,21 +322,9 @@ const Create = ({
     }
   );
 
-  //// EDIT THEORY ASSIGNMENT ////
-  const {
-    mutateAsync: editTheoryAssignment,
-    isLoading: editTheoryAssignmentLoading,
-  } = useMutation(apiServices.editTheoryAssignment, {
-    onSuccess() {
-      // refetchAssignmentCreated();
-      toast.success("theory question has been edited successfully");
-    },
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+  
 
-  //// DELETE ASSIGNMENT ////
+  //// DELETE LESSON NOTE ////
   const { mutateAsync: deleteLessonNote, isLoading: deleteLessonNoteLoading } =
     useMutation(() => apiServices.deleteLessonNote(editLessonNoteId), {
       onSuccess() {
@@ -386,26 +371,7 @@ const Create = ({
     },
   ];
 
-  // const buttonOptions2 = [
-  //   {
-  //     title: `Save`,
-  //     onClick: () => {
-  //       setPublished(true);
-  //       setClearAllPrompt(true);
-  //     },
-  //     isLoading: publishAssignmentLoading,
-  //     variant: "success",
-  //   },
-  //   {
-  //     title: `Submit`,
-  //     onClick: () => {
-  //       setPublished(false);
-  //       setClearAllPrompt(true);
-  //     },
-  //     isLoading: publishAssignmentLoading,
-  //     variant: "danger",
-  //   },
-  // ];
+
 
   const deleteButtons = [
     {
@@ -504,59 +470,7 @@ const Create = ({
     },
   ];
 
-  const notes = [
-    {
-      status: "Approved",
-      topic: "Quadratic Equation",
-      description:
-        "A beginner's approach to solving quadratic equations, covering fundamental concepts, methods of solving, and practical applications in various fields.",
-      file_name: "Week_1_Quadratic.doc",
-      submitted_by: "Jane Obi",
-    },
-    {
-      status: "UnApproved",
-      topic: "Linear Equations",
-      description:
-        "An introduction to linear equations, including graphing, solving systems of linear equations, and exploring their significance in different contexts.",
-      file_name: "Week_2_Linear.pdf",
-      submitted_by: "Jane Obi",
-    },
-  ];
-
-  const notes2 = [
-    {
-      status: "Approved",
-      topic: "Quadratic Equation",
-      description:
-        "A beginner's approach to solving quadratic equations, covering fundamental concepts, methods of solving, and practical applications in various fields.",
-      file_name: "Week_1_Quadratic.doc",
-      submitted_by: "Jane Obi",
-    },
-    {
-      status: "UnApproved",
-      topic: "Linear Equations",
-      description:
-        "An introduction to linear equations, including graphing, solving systems of linear equations, and exploring their significance in different contexts.",
-      file_name: "Week_2_Linear.pdf",
-      submitted_by: "John Doe",
-    },
-    {
-      status: "UnApproved",
-      topic: "Polynomials",
-      description:
-        "A comprehensive guide to polynomials, detailing types of polynomials, operations, theorems, and their real-world applications in engineering and physics.",
-      file_name: "Week_3_Polynomials.ppt",
-      submitted_by: "Alice Smith",
-    },
-    {
-      status: "Approved",
-      topic: "Calculus",
-      description:
-        "An overview of calculus, focusing on limits, derivatives, integrals, and their use in solving complex problems in mathematics and science.",
-      file_name: "Week_4_Calculus.xls",
-      submitted_by: "Bob Johnson",
-    },
-  ];
+ 
 
   const allLoading =
     showLoading ||
@@ -940,6 +854,7 @@ const Create = ({
                     setSelectedDocs={setSelectedDocs}
                     base64String={base64String}
                     setBase64String={setBase64String}
+                    user={user}
                   />
                 </div>
               );

@@ -30,10 +30,11 @@ const CreateNoteCard = ({
   setBase64String,
   setFile,
   setFileName,
+  user,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
-  // console.log({ notes });
+  console.log({ user });
 
   return (
     <div
@@ -151,7 +152,8 @@ const CreateNoteCard = ({
           className={`fs-3 lh-base py-3 px-4 border-2 border`}
           style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
         >
-          {notes?.submitted_by} <span className="">--- {notes?.date_submitted}</span>
+          {notes?.submitted_by}{" "}
+          <span className=''>--- {notes?.date_submitted}</span>
         </p>
       </div>
 
@@ -164,58 +166,63 @@ const CreateNoteCard = ({
             : "flex-row justify-content-between"
         } border-2 border py-3 px-4`}
       >
-        <div className='d-flex align-content-center gap-4'>
-          <Button
-            variant=''
-            className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
-            onClick={() => {
-              if (permission?.approve) {
-                setEditLessonNoteId(notes?.id);
-                setPublished(true);
-                setClearAllPrompt(true);
-              } else {
-                const base64 = notes?.file;
-                setEditTopic(notes?.topic);
-                setEditDescription(notes?.description);
-                setEditFileName(notes?.file_name);
-                setEditSubmittedBy(notes?.submitted_by);
-                setEditStatus(notes?.status);
-                setEditFile(notes?.file);
-                setEditLessonNoteId(notes?.id);
-                setEditPrompt(true);
-                setFile(null);
-                setFileName("");
-                // setCreateN((prev) => {
-                //   return {
-                //     ...prev,
-                //     file: notes?.file,
-                //     file_name: notes?.file_name,
-                //   };
-                // });
-              }
-              // setCreateQuestionPrompt(true);
-            }}
-          >
-            {permission?.approve ? "Approve" : "Edit"}
-          </Button>
-          <Button
-            variant='outline-danger'
-            className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
-            onClick={() => {
-              if (permission?.approve) {
-                setEditLessonNoteId(notes?.id);
-                setPublished(false);
-                setClearAllPrompt(true);
-              } else {
-                setEditLessonNoteId(notes?.id);
-                setDeletePrompt(true);
-              }
-              // setCreateQuestionPrompt(true);
-            }}
-          >
-            {permission?.approve ? "Unapprove" : "Delete"}
-          </Button>
-        </div>
+        {/* designation_name
+: 
+"Principal" */}
+        {user?.designation_name !== "Principal" && (
+          <div className='d-flex align-content-center gap-4'>
+            <Button
+              variant=''
+              className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
+              onClick={() => {
+                if (permission?.approve) {
+                  setEditLessonNoteId(notes?.id);
+                  setPublished(true);
+                  setClearAllPrompt(true);
+                } else {
+                  const base64 = notes?.file;
+                  setEditTopic(notes?.topic);
+                  setEditDescription(notes?.description);
+                  setEditFileName(notes?.file_name);
+                  setEditSubmittedBy(notes?.submitted_by);
+                  setEditStatus(notes?.status);
+                  setEditFile(notes?.file);
+                  setEditLessonNoteId(notes?.id);
+                  setEditPrompt(true);
+                  setFile(null);
+                  setFileName("");
+                  // setCreateN((prev) => {
+                  //   return {
+                  //     ...prev,
+                  //     file: notes?.file,
+                  //     file_name: notes?.file_name,
+                  //   };
+                  // });
+                }
+                // setCreateQuestionPrompt(true);
+              }}
+            >
+              {permission?.approve ? "Approve" : "Edit"}
+            </Button>
+            <Button
+              variant='outline-danger'
+              className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
+              onClick={() => {
+                if (permission?.approve) {
+                  setEditLessonNoteId(notes?.id);
+                  setPublished(false);
+                  setClearAllPrompt(true);
+                } else {
+                  setEditLessonNoteId(notes?.id);
+                  setDeletePrompt(true);
+                }
+                // setCreateQuestionPrompt(true);
+              }}
+            >
+              {permission?.approve ? "Unapprove" : "Delete"}
+            </Button>
+          </div>
+        )}
 
         <Button
           variant=''
