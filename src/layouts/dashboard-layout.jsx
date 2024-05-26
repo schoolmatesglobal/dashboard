@@ -52,6 +52,7 @@ const DashboardLayout = () => {
       case "STARTER PLAN":
         return dashboardSideBarLinks[user?.designation_name].filter(
           (ps) =>
+            ps.title !== "Lesson Note" &&
             ps.title !== "Report" &&
             ps.title !== "Vehicle Logs" &&
             ps.title !== "Vehicles"
@@ -59,7 +60,13 @@ const DashboardLayout = () => {
         break;
 
       case "STANDARD PLAN":
-        return dashboardSideBarLinks[user?.designation_name];
+        return dashboardSideBarLinks[user?.designation_name].filter(
+          (ps) =>
+            ps.title !== "Lesson Note"
+            // ps.title !== "Report" &&
+            // ps.title !== "Vehicle Logs" &&
+            // ps.title !== "Vehicles"
+        );
         break;
 
       case "PREMIUM PLAN":
@@ -76,6 +83,10 @@ const DashboardLayout = () => {
   };
 
   const filterOutPreschoolMenu = () => {
+    // if(user?.plan === "STARTER PLAN"){
+
+    // }
+
     if (user?.is_preschool === "true") {
       // return dashboardSideBarLinks[user?.designation_name];
       return filterSideBarOnPlan()?.filter(
