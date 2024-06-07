@@ -1,4 +1,4 @@
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faBell } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
@@ -55,18 +55,13 @@ const DashboardLayout = () => {
             ps.title !== "Lesson Note" &&
             ps.title !== "Report" &&
             ps.title !== "Vehicle Logs" &&
-            ps.title !== "Vehicles"
+            ps.title !== "Vehicles" &&
+            ps.title !== "Communication Book"
         );
         break;
 
       case "STANDARD PLAN":
-        return dashboardSideBarLinks[user?.designation_name].filter(
-          (ps) =>
-            ps.title !== "Lesson Note"
-            // ps.title !== "Report" &&
-            // ps.title !== "Vehicle Logs" &&
-            // ps.title !== "Vehicles"
-        );
+        return dashboardSideBarLinks[user?.designation_name];
         break;
 
       case "PREMIUM PLAN":
@@ -153,7 +148,33 @@ const DashboardLayout = () => {
           >
             <Nav className='align-items-center'>
               <Hamburger onClick={toggleNavbar} />
-              <p className='ms-3'>Welcome {user?.firstname}</p>
+              <div className='d-flex gap-3 align-items-center'>
+                <p className='ms-3'>Welcome {user?.firstname}</p>
+                <div style={{ position: "relative" }}>
+                  <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px" }} />
+                  <div
+                    className='d-flex justify-content-center align-items-center '
+                    style={{
+                      background: "green",
+                      height: "20px",
+                      width: "20px",
+                      border: "1px solid #96ff9a",
+                      borderRadius: "50%",
+                      padding: "10px",
+                      position: "absolute",
+                      top: "-10px",
+                      left: "10px",
+                    }}
+                  >
+                    <p
+                      className='fw-bold text-white'
+                      style={{ fontSize: "10px" }}
+                    >
+                      5
+                    </p>
+                  </div>
+                </div>
+              </div>
             </Nav>
             <Nav className='ms-auto' navbar>
               <Dropdown isOpen={dropdown} toggle={() => setDropdown(!dropdown)}>

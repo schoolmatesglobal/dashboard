@@ -12,6 +12,7 @@ const Prompt = ({
   children,
   hasGroupedButtons = false,
   promptHeader = "",
+  showFooter = true,
 }) => {
   return (
     <Modal centered isOpen={isOpen} toggle={toggle}>
@@ -21,13 +22,15 @@ const Prompt = ({
         </ModalHeader>
       )}
       <ModalBody className='p-5'>{children}</ModalBody>
-      <ModalFooter>
-        {hasGroupedButtons ? (
-          <ButtonGroup options={groupedButtonProps} />
-        ) : (
-          <Button {...singleButtonProps}>{singleButtonText}</Button>
-        )}
-      </ModalFooter>
+      {showFooter && (
+        <ModalFooter>
+          {hasGroupedButtons ? (
+            <ButtonGroup options={groupedButtonProps} />
+          ) : (
+            <Button {...singleButtonProps}>{singleButtonText}</Button>
+          )}
+        </ModalFooter>
+      )}
     </Modal>
   );
 };

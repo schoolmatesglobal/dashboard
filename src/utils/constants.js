@@ -31,6 +31,7 @@ import {
   faSquarePollHorizontal,
   faSquarePollVertical,
   faBookBookmark,
+  faEnvelopeOpenText,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
@@ -71,6 +72,11 @@ export const dashboardSideBarLinks = {
       to: "/app/calendar",
       title: "Calendar",
       icon: faCalendarDays,
+    },
+    {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
     },
     {
       to: "/app/timetable",
@@ -216,6 +222,11 @@ export const dashboardSideBarLinks = {
       icon: faPeopleGroup,
     },
     {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
+    },
+    {
       to: "/app/results",
       title: "Results",
       icon: faSquarePollVertical,
@@ -260,6 +271,11 @@ export const dashboardSideBarLinks = {
       icon: faComment,
     },
     {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
+    },
+    {
       to: "/app/results",
       title: "Results",
       icon: faBuildingColumns,
@@ -295,6 +311,11 @@ export const dashboardSideBarLinks = {
       to: "/app/accounts",
       title: "Finance",
       icon: faSchool,
+    },
+    {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
     },
     {
       to: "/app/results",
@@ -656,4 +677,11 @@ export const roleMap = {
   Principal: "Principal",
   Teacher: "Teacher",
   Student: "Student",
+};
+
+export const colors = {
+  primary: "#01153b",
+  secondary: "#367fa9",
+  black: "#000",
+  white: "#fff",
 };

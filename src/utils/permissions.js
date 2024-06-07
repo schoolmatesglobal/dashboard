@@ -108,6 +108,11 @@ export const permissions = {
       view: true,
       preSchool: true,
     },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: false,
+    },
     "lesson-note": {
       create: true,
       view: true,
@@ -257,6 +262,11 @@ export const permissions = {
       // view: true,
       // preSchool: true,
     },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: false,
+    },
     vehicles: {
       create: false,
       read: true,
@@ -383,6 +393,11 @@ export const permissions = {
       read: true,
       update: true,
       delete: true,
+    },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: true,
     },
     "lesson-note": {
       create: false,

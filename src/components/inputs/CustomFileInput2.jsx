@@ -11,6 +11,8 @@ const CustomFileInput2 = ({
   handleReset,
   error,
   loading,
+  type = "file",
+  accept = ".pdf",
 }) => {
   const { xs, sm, md, lg } = useMyMediaQuery2();
   const fileInputRef = useRef(null);
@@ -24,6 +26,15 @@ const CustomFileInput2 = ({
   const trimString = (str) => {
     return str.length > wordCt ? `${str.slice(0, wordCt)}...` : str;
   };
+
+  const warningMessage =
+    type === "all"
+      ? "NB: File with max size of 1MB"
+      : "NB: PDF file with max size of 1MB";
+  // const warningMessage =
+  //   type === "image"
+  //     ? "NB: Image with max size of 1MB"
+  //     : "NB: PDF file with max size of 1MB";
 
   return (
     <div>
@@ -53,7 +64,7 @@ const CustomFileInput2 = ({
               ref={fileInputRef}
               id='fileInput'
               type='file'
-              accept='.pdf'
+              accept={accept}
               // accept='.doc,.docx,.pdf'
               onChange={handleFileChange}
               className='d-none'
@@ -73,7 +84,7 @@ const CustomFileInput2 = ({
       </div>
       {!loading && (
         <p className={`fs-4 mt-4 ${error ? "text-danger" : "text-black"}`}>
-          {error ? error : "NB: PDF file with max size of 1MB"}
+          {error ? error : warningMessage}
           {/* {error ? error : "NB: Doc or PDF file with max size of 1MB"} */}
         </p>
       )}
