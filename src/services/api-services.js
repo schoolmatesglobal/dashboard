@@ -167,6 +167,32 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async getAllStaffs2() {
+    const { data } = await axios.get(`${backendAPI}/staff`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async getStaffByClass(className) {
+    const { data } = await axios.get(
+      `${backendAPI}/staffbyclass/${className}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async getStudentPerformance(period, term, session, subject_id, student_id) {
     const { data } = await axios.get(
       `${backendAPI}/assignment/performance?period=${period}&term=${term}&session=${session}&student_id=${student_id}&subject_id=${subject_id}`,
@@ -2872,6 +2898,35 @@ class APIServies extends Helpers {
         },
       }
     );
+    return data;
+  }
+
+  async addCommunicationBook(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/communicationbook`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async getCommunicationBookByClass(class_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/${class_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
     return data;
   }
 }

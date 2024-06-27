@@ -7,7 +7,10 @@ const CBStudentsRow = ({
   onProfileSelect,
   idWithComputedResult,
   selectedStudent,
+  user,
 }) => {
+  console.log({ studentByClassAndSession });
+
   return (
     <div className='students-wrapper'>
       {studentByClassAndSession?.map((x) => (
@@ -23,14 +26,27 @@ const CBStudentsRow = ({
               selectedStudent?.student_id === x?.id ? "active" : ""
             }`}
           >
-            <ProfileImage src={x?.image} alt={x.firstname} gender={x?.gender} />
+            <ProfileImage
+              src={x?.image}
+              alt={x.firstname}
+              gender={x?.gender}
+              teacher={!!x?.department}
+            />
             {idWithComputedResult?.includes(x?.id) && (
               <div className='computed' />
             )}
           </div>
           <div>
             <p className={`${x?.id === "999" && "fw-bold"}`}>{x.firstname}</p>
-            <p className={`${x?.id === "999" && "fw-bold"}`}>{x.surname}</p>
+            <p className={`${x?.id === "999" && "fw-bold"}`}>{x.surname} </p>
+            {x?.teacher_type === "class teacher" && (
+              <p
+                className={`${x?.id === "999" && "fw-bold"}`}
+                style={{ fontWeight: "bold", marginTop: "5px" }}
+              >
+                (Class Teacher)
+              </p>
+            )}
           </div>
         </div>
       ))}

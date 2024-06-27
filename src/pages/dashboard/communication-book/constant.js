@@ -1,6 +1,6 @@
 export const trimText = (text, charLimit) => {
-  if (text.length > charLimit) {
-    return text.slice(0, charLimit) + "...";
+  if (text?.length > charLimit) {
+    return text?.slice(0, charLimit) + "...";
   }
   return text;
 };

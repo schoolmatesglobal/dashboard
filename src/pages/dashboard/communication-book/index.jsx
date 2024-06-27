@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
-
+import queryKeys from "../../../utils/queryKeys";
+import { useMutation, useQuery } from "react-query";
 import PageSheet from "../../../components/common/page-sheet";
 import { useCommunicationBook } from "../../../hooks/useCommunicationBook";
 import CbtStudentsRow from "../../../components/common/cbt-students-row";
@@ -22,6 +23,7 @@ import { FaEdit } from "react-icons/fa";
 import AuthInput from "../../../components/inputs/auth-input";
 import { TiPin } from "react-icons/ti";
 import { BsCheck2All } from "react-icons/bs";
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
@@ -41,6 +43,7 @@ import {
 const CommunicationBookPage = () => {
   const {
     permission,
+    apiServices,
     user,
     studentByClass,
     refetchStudentByClass,
@@ -146,6 +149,261 @@ const CommunicationBookPage = () => {
     return sc.email_address;
   });
 
+  const studentsId = studentByClass?.map((sc, i) => {
+    return {
+      student_id: sc.id,
+      admission_number: sc.admission_number,
+    };
+  });
+
+  /////// POST COMMUNICATION BOOK ////
+  const {
+    mutateAsync: addCommunicationBook,
+    isLoading: addCommunicationBookLoading,
+  } = useMutation(
+    () =>
+      apiServices.addCommunicationBook({
+        period: user?.period,
+        term: user?.term,
+        session: user?.session,
+        class_id: user?.class_id,
+        staff_id: user?.id,
+        subject: title,
+        message,
+        file,
+        file_name: fileName,
+        students: selectedStudent?.email_address,
+      }),
+    // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
+    {
+      onSuccess() {
+        // refetchGetCommunicationBookByClass();
+        setTimeout(() => {
+          setCreateQuestionPrompt(false);
+        }, 1000);
+        toast.success("Communication ticket has been created successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  //// FETCH COMMUNICATION BOOK CREATED /////////
+  // const {
+  //   isLoading: getCommunicationBookByClassLoading,
+  //   data: getCommunicationBookByClass,
+  //   isFetching: getCommunicationBookByClassFetching,
+  //   isRefetching: getCommunicationBookByClassRefetching,
+  //   refetch: refetchGetCommunicationBookByClass,
+  // } = useQuery(
+  //   [queryKeys.GET_COMMUNICATION_BOOK],
+  //   () => apiServices.getCommunicationBookByClass(user?.class_id),
+  //   {
+  //     retry: 2,
+  //     enabled: !!user?.class_id && permission?.view,
+
+  //     select: (data) => {
+  //       console.log({ data });
+
+  //       return data;
+
+  //       // return permission?.create ? filt : lsg;
+  //     },
+  //     onSuccess(data) {
+  //       const dt = [data?.data?.attributes];
+  //       const dtId = data?.data?.id;
+  //       const opened = dt?.filter((ms) => ms?.status === "active");
+  //       const closed = dt?.filter((ms) => ms?.status !== "active");
+
+  //       setOpenTickets([...opened]);
+  //       setClosedTickets([...closed]);
+  //       // setLessonNotes(data);
+  //       // trigger(1000);
+  //     },
+  //     onError(err) {
+  //       apiServices.errorHandler(err);
+  //     },
+  //     // select: apiServices.formatData,
+  //   }
+  // );
+
+  //// FETCH STAFF BY ID /////////
+  // const {
+  //   isLoading: getAllStaffsLoading,
+  //   data: getAllStaffs,
+  //   isFetching: getAllStaffsFetching,
+  //   isRefetching: getAllStaffsRefetching,
+  //   refetch: refetchGetAllStaffs,
+  // } = useQuery([queryKeys.GET_ALL_STAFFS], () => apiServices.getAllStaffs2(), {
+  //   retry: 2,
+  //   enabled: user?.class_id && permission?.view,
+
+  //   select: (data) => {
+  //     console.log({ datas: data?.data, });
+
+  //     return data?.data;
+
+  //     // return permission?.create ? filt : lsg;
+  //   },
+  //   onSuccess(data) {
+  //     // setLessonNotes(data);
+  //     // trigger(1000);
+  //   },
+  //   onError(err) {
+  //     apiServices.errorHandler(err);
+  //   },
+  //   // select: apiServices.formatData,
+  // });
+
+  //// FETCH STAFF BY class /////////
+  const {
+    isLoading: getStaffByClassLoading,
+    data: getStaffByClass,
+    isFetching: getStaffByClassFetching,
+    isRefetching: getStaffByClassRefetching,
+    refetch: refetchGetStaffByClass,
+  } = useQuery(
+    [queryKeys.GET_STAFF_BY_CLASS],
+    () => apiServices.getStaffByClass(user?.class),
+    {
+      retry: 2,
+      enabled: !!user?.class && user?.designation_name === "Student",
+
+      select: (data) => {
+        const ct = apiServices.formatData(data)?.map((sc, i) => {
+          return {
+            ...sc,
+            email_address: sc?.email,
+            admission_number: sc?.sch_id,
+            gender: "male",
+          };
+        });
+
+        const staffsId = ct?.map((sc, i) => {
+          return {
+            student_id: sc.id,
+            admission_number: sc.sch_id,
+          };
+        });
+
+        const newStaffsByClass = () => {
+          if (ct) {
+            return [
+              {
+                // admission_number: "",
+                // age: 1,
+                // blood_group: "A+",
+                // campus: "Corona Elementary",
+                // campus_type: "Elementary",
+                // class: "BASICS 1",
+                // class_sub_class: "",
+                // dob: "2023-02-08",
+                // firstname: "All",
+                // gender: "all",
+                // genotype: "AA",
+                // home_address: "2801 Island Avenue",
+                // id: "99999",
+                // image: "",
+                // middlename: "Class",
+                // nationality: "Nigeria",
+                // new_id: 1,
+                // phone_number: "+23481345685686",
+                // present_class: "BASICS 1",
+                // session_admitted: "2024",
+                // state: "Lagos",
+                // status: "active",
+                // sub_class: "",
+                // surname: "Students",
+                // username: "COROS001",
+                // email_address: studentsId,
+                // recipient: "All Students",
+                // students: studentsId,
+                sch_id: "SCHMATE/117209",
+                campus: "Corona Elementary",
+                designation_id: "4",
+                department: "Teaching Staff",
+                surname: "Staffs",
+                firstname: "All",
+                middlename: "Staffs",
+                username: "jane12",
+                email: "janeoge@coronaschools.com",
+                phoneno: "+2348026740123",
+                address: "2801 Island Avenue",
+                image: "",
+                class_assigned: "Basics 1",
+                campus_type: "Elementary",
+                is_preschool: "false",
+                signature: "",
+                teacher_type: "",
+                status: "active",
+                gender: "all",
+                subjects: [
+                  {
+                    name: "Mathematics",
+                  },
+                  {
+                    name: "English Language",
+                  },
+                  {
+                    name: "Computer Studies",
+                  },
+                  {
+                    name: "Civic Education",
+                  },
+                ],
+                plan: "PREMIUM PLAN",
+                id: "99999",
+                email_address: staffsId,
+                recipient: "All Staffs",
+                students: staffsId,
+              },
+              ...ct?.map((sp, i) => {
+                return {
+                  ...sp,
+                  students: [
+                    {
+                      student_id: sp.id,
+                      admission_number: sp.admission_number,
+                    },
+                  ],
+                };
+              }),
+            ];
+          }
+        };
+
+        // const dt = [data?.data?.attributes];
+        // const dtId = data?.data?.id;
+
+        // const filt = csg?.filter(
+        //   (ls) => Number(ls?.staff_id) === Number(user?.id)
+        // );
+        console.log({
+          datast: data?.data,
+          data,
+          ct,
+          staffsId,
+          newStaffsByClass: newStaffsByClass(),
+        });
+
+        if (ct) {
+          return newStaffsByClass();
+        }
+
+        // return permission?.create ? filt : lsg;
+      },
+      onSuccess(data) {
+        // setLessonNotes(data);
+        // trigger(1000);
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
   const activateSend = () => {
     if (!message || !title) {
       return true;
@@ -154,11 +412,11 @@ const CommunicationBookPage = () => {
     }
   };
 
-  const firstSelectedMessage = () => {
-    if (selectedMessage?.conversations?.length > 0) {
-      return messages[0]?.conversations[0];
-    }
-  };
+  // const firstSelectedMessage = () => {
+  //   if (selectedMessage?.conversations?.length > 0) {
+  //     return messages[0]?.conversations[0];
+  //   }
+  // };
 
   const newStudentByClass = () => {
     if (studentByClass) {
@@ -189,10 +447,21 @@ const CommunicationBookPage = () => {
           sub_class: "",
           surname: "Students",
           username: "COROS001",
-          email_address: studentsEmail,
+          email_address: studentsId,
           recipient: "All Students",
+          students: studentsId,
         },
-        ...studentByClass,
+        ...studentByClass?.map((sp, i) => {
+          return {
+            ...sp,
+            students: [
+              {
+                student_id: sp.id,
+                admission_number: sp.admission_number,
+              },
+            ],
+          };
+        }),
       ];
     }
   };
@@ -303,38 +572,47 @@ const CommunicationBookPage = () => {
     {
       title: "Send",
       disabled: activateSend(),
-      //   isLoading: addLessonNoteLoading,
+      isLoading: addCommunicationBookLoading,
       onClick: async () => {
-        setOpenTickets((prev) => [
-          ...prev,
-          {
-            id: dateString,
-            // sender: `${user?.firstname} ${user?.surname} (${user?.designation_name})`,
-            // sender_email: user?.email ?? "",
-            title,
-            ticket_status: "open",
-            // message,
-            // recipient_email: email_address,
-            // recipient,
-            // date,
-            conversations: [
-              {
-                id: dateString,
-                sender: `${user?.firstname} ${user?.surname} (${user?.designation_name})`,
-                sender_email: user?.email ?? "",
-                message,
-                file: file,
-                file_name: fileName,
-                recipient_email: email_address,
-                recipient,
-                date,
-                read_status: "unread",
-              },
-            ],
-          },
-        ]);
-        setCreateQuestionPrompt(false);
-        // await addLessonNote();
+        // setOpenTickets((prev) => [
+        //   ...prev,
+        //   {
+        //     id: dateString,
+        //     title,
+        //     ticket_status: "open",
+        //     conversations: [
+        //       {
+        //         id: dateString,
+        //         sender: `${user?.firstname} ${user?.surname} (${user?.designation_name})`,
+        //         sender_email: user?.email ?? "",
+        //         message,
+        //         file: file,
+        //         file_name: fileName,
+        //         recipient_email: email_address,
+        //         recipient,
+        //         date,
+        //         read_status: "unread",
+        //       },
+        //     ],
+        //   },
+        // ]);
+
+        // console.log({
+        //   period: user?.period,
+        //   term: user?.term,
+        //   session: user?.session,
+        //   class_id: user?.class_id,
+        //   staff_id: user?.id,
+        //   subject: title,
+        //   message,
+        //   file: base64String,
+        //   file_name: fileName,
+        //   students: selectedStudent?.email_address,
+        // });
+
+        // setCreateQuestionPrompt(false);
+
+        await addCommunicationBook();
         // trigger(500);
       },
       // variant: "outline",
@@ -639,12 +917,10 @@ const CommunicationBookPage = () => {
   }, [classSelected]);
 
   useEffect(() => {
-    const opened = msg?.filter((ms) => ms?.ticket_status === "open");
-    const closed = msg?.filter((ms) => ms?.ticket_status === "closed");
-
-    setOpenTickets([...opened]);
-    setClosedTickets([...closed]);
-
+    // const opened = msg?.filter((ms) => ms?.ticket_status === "open");
+    // const closed = msg?.filter((ms) => ms?.ticket_status === "closed");
+    // setOpenTickets([...opened]);
+    // setClosedTickets([...closed]);
     // setMessages([...msg]);
   }, []);
 
@@ -668,10 +944,12 @@ const CommunicationBookPage = () => {
   console.log({
     // classWidth: classWidth(),
     // permission,
-    // user,
-    // newStudentByClass: newStudentByClass(),
-    // selectedStudent,
+    user,
+    newStudentByClass: newStudentByClass(),
+    studentByClass,
+    selectedStudent,
     // studentsEmail,
+    studentsId,
     msg,
     messages,
     openTickets,
@@ -730,7 +1008,11 @@ const CommunicationBookPage = () => {
           <div className='w-100 mt-4 border border-2 pt-4 pb-2  px-3 rounded-3 d-flex align-items-center'>
             {showStudentRow() && (
               <CBStudentsRow
-                studentByClassAndSession={newStudentByClass()}
+                studentByClassAndSession={
+                  user?.designation_name === "Student"
+                    ? getStaffByClass
+                    : newStudentByClass()
+                }
                 onProfileSelect={(x) => {
                   setSelectedStudent((prev) => {
                     return {
@@ -744,15 +1026,14 @@ const CommunicationBookPage = () => {
                           ? `${x.firstname} ${x.surname} in ${user?.class_assigned}`
                           : `${x.surname} ${x.firstname}`,
                       student_id: x.id,
-                      email_address:
-                        x.id === "99999"
-                          ? [...x.email_address]
-                          : [x.email_address],
+                      email_address: x.students,
+                      designation: x.teacher_type,
                     };
                   });
                 }}
                 isLoading={allLoading}
                 selectedStudent={selectedStudent}
+                user={user}
                 // idWithComputedResult={idWithComputedResult}
               />
             )}
@@ -818,18 +1099,12 @@ const CommunicationBookPage = () => {
 
           {ticketTab === "1" &&
             openTickets
-              ?.filter((ms) => ms?.ticket_status === "open")
+              ?.filter((ms) => ms?.status === "active")
               ?.sort((a, b) => {
-                if (
-                  new Date(a.conversations[0]?.date) <
-                  new Date(b.conversations[0].date)
-                ) {
+                if (new Date(a.date) < new Date(b.date)) {
                   return 1;
                 }
-                if (
-                  new Date(a.conversations[0]?.date) >
-                  new Date(b.conversations[0].date)
-                ) {
+                if (new Date(a.date) > new Date(b.date)) {
                   return -1;
                 }
                 return 0;
@@ -853,6 +1128,8 @@ const CommunicationBookPage = () => {
                       setDeletePrompt={setDeletePrompt}
                       setTicketCloseId={setTicketCloseId}
                       ticketTab={ticketTab}
+                      apiServices={apiServices}
+                      allStaffs={[]}
                     />
                   </div>
                 );
@@ -860,7 +1137,7 @@ const CommunicationBookPage = () => {
 
           {ticketTab === "2" &&
             closedTickets
-              ?.filter((ms) => ms?.ticket_status === "closed")
+              ?.filter((ms) => ms?.status !== "active")
               ?.sort((a, b) => {
                 if (
                   new Date(a.conversations[0]?.date) <
@@ -895,6 +1172,8 @@ const CommunicationBookPage = () => {
                       setDeletePrompt={setDeletePrompt}
                       setTicketCloseId={setTicketCloseId}
                       ticketTab={ticketTab}
+                      apiServices={apiServices}
+                      allStaffs={[]}
                     />
                   </div>
                 );

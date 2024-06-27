@@ -7,6 +7,9 @@ import { FaEdit } from "react-icons/fa";
 import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
 import { trimText } from "./constant";
 import Button from "../../../components/buttons/button";
+import { toast } from "react-toastify";
+import { useMutation, useQuery } from "react-query";
+import queryKeys from "../../../utils/queryKeys";
 
 const MessageCard = ({
   message,
@@ -24,27 +27,31 @@ const MessageCard = ({
   selectedMessage,
   setTicketCloseId,
   ticketTab,
+  apiServices,
+  allStaffs,
 }) => {
-  console.log({ message });
-
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
-  const mssg = () => {
-    if (message?.conversations?.length > 0) {
-      const sortConv = message?.conversations?.sort((a, b) => {
-        if (new Date(a?.date) < new Date(b?.date)) {
-          return -1;
-        }
-        if (new Date(a?.date) > new Date(b?.date)) {
-          return 1;
-        }
-        return 0;
-      });
-      return sortConv[0];
-    }
-  };
+  // const mssg = () => {
+  //   if (message?.conversations?.length > 0) {
+  //     const sortConv = message?.conversations?.sort((a, b) => {
+  //       if (new Date(a?.date) < new Date(b?.date)) {
+  //         return -1;
+  //       }
+  //       if (new Date(a?.date) > new Date(b?.date)) {
+  //         return 1;
+  //       }
+  //       return 0;
+  //     });
+  //     return sortConv[0];
+  //   }
+  // };
 
-  const dateObject = new Date(mssg()?.date);
+  const staffDetails = allStaffs?.find(
+    (as) => Number(as?.id) === Number(message?.staff_id)
+  );
+
+  const dateObject = new Date(message?.date);
 
   const timeAgo = formatDistanceToNow(dateObject, {
     addSuffix: true,
@@ -100,12 +107,12 @@ const MessageCard = ({
         title: message?.title,
         ticket_status: message?.ticket_status,
         conversations: message?.conversations,
-        message: mssg()?.message,
-        date: mssg()?.date,
-        sender: mssg()?.sender,
-        sender_email: mssg()?.sender_email,
-        recipient: mssg()?.recipient,
-        recipient_email: mssg()?.recipient_email,
+        message: message?.message,
+        date: message?.date,
+        sender: message?.sender,
+        sender_email: message?.sender_email,
+        recipient: message?.recipient,
+        recipient_email: message?.recipient_email,
       };
     });
   };
@@ -132,6 +139,21 @@ const MessageCard = ({
       };
     });
   };
+
+  const designation = () => {
+    if (staffDetails.designation_id === 4) {
+      return "Teacher";
+    } else if (staffDetails.designation_id === 7) {
+      return null;
+    } else if (
+      staffDetails.designation_id !== 4 ||
+      staffDetails.designation_id !== 4
+    ) {
+      return "Principal";
+    }
+  };
+
+  console.log({ message, allStaffs, staffDetails });
 
   //   dayjs(new Date()).format("dddd, MMMM D, YYYY h:mm A")
 
@@ -164,7 +186,7 @@ const MessageCard = ({
             onClick={() => open()}
           >
             {trimText(
-              message?.title,
+              message?.subject,
               xs ? 20 : sm ? 30 : md ? 50 : lg ? 40 : 60
             )}
           </p>
@@ -202,7 +224,7 @@ const MessageCard = ({
           }}
           onClick={() => open()}
         >
-          {trimText(mssg()?.message, 300)}
+          {trimText(message?.message, 300)}
         </p>
         <div className='d-flex align-items-center gap-3 mt-3 mt-md-0'>
           <div
@@ -216,9 +238,9 @@ const MessageCard = ({
               padding: "10px",
             }}
           >
-            <p className='fw-bold text-white'>
+            {/* <p className='fw-bold text-white'>
               {message?.conversations?.length}
-            </p>
+            </p> */}
           </div>
           <p className='d-flex d-md-none'>Messages</p>
         </div>
@@ -228,18 +250,21 @@ const MessageCard = ({
         <div className='d-flex flex-column flex-md-row gap-3 align-items-md-center mb-3 mb-md-0'>
           <p className='fs-4'>
             <span className='fw-bold fs-4'>From: </span>
-            {mssg()?.sender}
+            {/* {message?.sender} */}
+            {staffDetails?.attributes?.firstname}{" "}
+            {staffDetails?.attributes?.surname}{" "}
+            {designation() ? `(${designation()})` : null}
           </p>
 
           <p className='fs-4 fw-bold d-none d-md-inline'>|</p>
 
           <p className='fs-4'>
             <span className='fw-bold fs-4'>To: </span>
-            {mssg()?.recipient}
+            {message?.recipient} sts
           </p>
         </div>
         {/* <p className='fs-3 fw-bold'>{dayjs(message?.date).format("dddd, MMMM D")}</p> */}
-        {mssg()?.sender_email === user?.email && (
+        {message?.sender_email === user?.email && (
           <div className='d-flex justify-content-end  align-items-center gap-4'>
             {/* <MdDelete
               style={{ color: "red", fontSize: "25px", cursor: "pointer" }}
@@ -257,7 +282,7 @@ const MessageCard = ({
                 variant='outline'
                 className='w-auto'
                 onClick={() => {
-                  editOpen();
+                  // editOpen();
                 }}
               >
                 Close Ticket

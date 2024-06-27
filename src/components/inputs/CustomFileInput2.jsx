@@ -49,12 +49,18 @@ const CustomFileInput2 = ({
               backgroundColor: "#f8f9fa",
               color: "#495057",
               fontSize: "16px",
-              cursor: "pointer",
+              // cursor: "pointer",
               width: "100%",
               boxSizing: "border-box",
             }}
           >
-            <Button variant='' onClick={handleButtonClick}>
+            <Button
+              variant=''
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={handleButtonClick}
+            >
               {fileName ? "Update" : "Choose"}
             </Button>
             <p className='' style={{ whiteSpace: "nowrap" }}>

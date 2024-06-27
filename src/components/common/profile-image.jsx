@@ -3,7 +3,7 @@ import defaultImage from "../../assets/images/placeholder.png";
 import allImage from "../../assets/images/allStudents.png";
 import femaleImage from "../../assets/images/femalePlaceholder.png";
 
-const ProfileImage = ({ src, alt, wrapperClassName, gender }) => {
+const ProfileImage = ({ src, alt, wrapperClassName, gender, teacher }) => {
   const img =
     gender === "male"
       ? defaultImage
@@ -12,6 +12,8 @@ const ProfileImage = ({ src, alt, wrapperClassName, gender }) => {
       : gender === "all"
       ? allImage
       : defaultImage;
+
+    const allSrc = !!teacher ? allImage : img
   return (
     <div className={`profile-image-wrapper ${wrapperClassName || ""}`}>
       <img src={src || img} alt={alt || ""} />
