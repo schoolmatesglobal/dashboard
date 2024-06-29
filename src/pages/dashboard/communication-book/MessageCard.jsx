@@ -72,51 +72,6 @@ const MessageCard = ({
     (ms) => ms.read_status === "unread"
   )?.length;
 
-  const open = () => {
-    setOpenMessage(true);
-    setFile(null);
-    setFileName("");
-    setReplyMessage("");
-
-    // const filt2 = openTickets?.conversations
-    const filt =
-      openTickets?.filter((mf) => mf.id === selectedMessage.id) ?? [];
-    const filt2 =
-      openTickets?.filter((mf) => mf.id !== selectedMessage.id) ?? [];
-
-    const newMessages = filt?.map((ms, i) => {
-      const filtConv = ms.conversations?.map((cs, i) => {
-        return {
-          ...cs,
-          status: "read",
-        };
-      });
-
-      return {
-        ...ms,
-        conversations: filtConv,
-      };
-    });
-
-    setOpenTickets([...filt2, ...newMessages]);
-
-    setSelectedMessage((prev) => {
-      return {
-        ...prev,
-        id: message?.id,
-        title: message?.title,
-        ticket_status: message?.ticket_status,
-        conversations: message?.conversations,
-        message: message?.message,
-        date: message?.date,
-        sender: message?.sender,
-        sender_email: message?.sender_email,
-        recipient: message?.recipient,
-        recipient_email: message?.recipient_email,
-      };
-    });
-  };
-
   const closeticket = () => {};
 
   const editOpen = () => {
@@ -140,17 +95,105 @@ const MessageCard = ({
     });
   };
 
-  const designation = () => {
-    if (staffDetails.designation_id === 4) {
-      return "Teacher";
-    } else if (staffDetails.designation_id === 7) {
-      return null;
-    } else if (
-      staffDetails.designation_id !== 4 ||
-      staffDetails.designation_id !== 4
-    ) {
-      return "Principal";
+  const designation = (id) => {
+    // if (message?.recipients?.sender?.designation == 4) {
+    if (id == 7) {
+      return "Student";
+    } else {
+      return "Staff";
     }
+  };
+
+  const senderDetails = (function () {
+    if (message?.recipients) {
+      return message?.recipients?.sender;
+    }
+  })();
+
+  const receiverDetails = (function () {
+    if (message?.recipients?.receivers?.length > 0) {
+      return message?.recipients?.receivers;
+    }
+  })();
+
+  const sender_designation = message?.recipients?.sender?.designation;
+  const receiever_designation =
+    message?.recipients?.receivers?.length > 0
+      ? message?.recipients?.receivers[0]?.designation
+      : null;
+
+  const receiver_name = (function () {
+    if (message?.recipients?.receivers?.length > 0) {
+      if (message?.recipients?.receivers?.length > 1) {
+        return `All ${designation(receiever_designation)}s`;
+      } else {
+        return `${message?.recipients?.receivers[0]?.first_name} ${
+          message?.recipients?.receivers[0]?.last_name
+        }  ${
+          designation(receiever_designation)
+            ? ` (${designation(receiever_designation)})`
+            : null
+        }`;
+      }
+    }
+  })();
+
+  const open = () => {
+    setOpenMessage(true);
+    setFile(null);
+    setFileName("");
+    setReplyMessage("");
+
+    setSelectedMessage((prev) => {
+      return {
+        ...prev,
+        id: message?.id,
+        title: message?.subject,
+        ticket_status: message?.status,
+        conversations: [
+          {
+            id: message?.id,
+            sender: message?.sender,
+          },
+        ],
+        message: message?.message,
+        date: message?.date,
+        sender: `${message?.recipients?.sender?.first_name} ${
+          message?.recipients?.sender?.last_name
+        }   ${
+          designation(sender_designation)
+            ? ` (${designation(sender_designation)})`
+            : null
+        }`,
+        sender_email: senderDetails?.email,
+        recipient: "",
+        recipient_email: "",
+        // recipient: message?.recipient,
+        // recipient_email: message?.recipient_email,
+      };
+    });
+
+    // const filt2 = openTickets?.conversations
+    // const filt =
+    //   openTickets?.filter((mf) => mf.id === selectedMessage.id) ?? [];
+    // const filt2 =
+    //   openTickets?.filter((mf) => mf.id !== selectedMessage.id) ?? [];
+
+    // const newMessages = filt?.map((ms, i) => {
+    //   const filtConv = ms.conversations?.map((cs, i) => {
+    //     return {
+    //       ...cs,
+    //       status: "read",
+    //     };
+    //   });
+
+    //   return {
+    //     ...ms,
+    //     conversations: filtConv,
+    //   };
+    // });
+
+    // setOpenTickets([...filt2, ...newMessages]);
   };
 
   console.log({ message, allStaffs, staffDetails });
@@ -250,17 +293,21 @@ const MessageCard = ({
         <div className='d-flex flex-column flex-md-row gap-3 align-items-md-center mb-3 mb-md-0'>
           <p className='fs-4'>
             <span className='fw-bold fs-4'>From: </span>
-            {/* {message?.sender} */}
-            {staffDetails?.attributes?.firstname}{" "}
-            {staffDetails?.attributes?.surname}{" "}
-            {designation() ? `(${designation()})` : null}
+            {message?.recipients?.sender?.first_name}{" "}
+            {message?.recipients?.sender?.last_name}
+            {designation(sender_designation)
+              ? ` (${designation(sender_designation)})`
+              : null}
           </p>
 
           <p className='fs-4 fw-bold d-none d-md-inline'>|</p>
 
           <p className='fs-4'>
             <span className='fw-bold fs-4'>To: </span>
-            {message?.recipient} sts
+            {receiver_name}{" "}
+            {/* {designation(receiever_designation)
+              ? ` (${designation(receiever_designation)})`
+              : null} */}
           </p>
         </div>
         {/* <p className='fs-3 fw-bold'>{dayjs(message?.date).format("dddd, MMMM D")}</p> */}

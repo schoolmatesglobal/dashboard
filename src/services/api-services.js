@@ -2929,6 +2929,20 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async getCommunicationBookReplies(communication_book_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/replies/${communication_book_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 }
 
 export default APIServies;

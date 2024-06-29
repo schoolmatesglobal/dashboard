@@ -151,8 +151,8 @@ const CommunicationBookPage = () => {
 
   const studentsId = studentByClass?.map((sc, i) => {
     return {
-      student_id: sc.id,
-      admission_number: sc.admission_number,
+      recipient_id: sc.id,
+      receiver_type: "student",
     };
   });
 
@@ -167,12 +167,13 @@ const CommunicationBookPage = () => {
         term: user?.term,
         session: user?.session,
         class_id: user?.class_id,
-        staff_id: user?.id,
+        sender_id: user?.id,
+        sender_type: user?.designation_name === "Student" ? "student" : "staff",
         subject: title,
         message,
-        file,
+        file: base64String,
         file_name: fileName,
-        students: selectedStudent?.email_address,
+        recipients: selectedStudent?.email_address,
       }),
     // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
     {
@@ -189,44 +190,90 @@ const CommunicationBookPage = () => {
     }
   );
 
-  //// FETCH COMMUNICATION BOOK CREATED /////////
-  // const {
-  //   isLoading: getCommunicationBookByClassLoading,
-  //   data: getCommunicationBookByClass,
-  //   isFetching: getCommunicationBookByClassFetching,
-  //   isRefetching: getCommunicationBookByClassRefetching,
-  //   refetch: refetchGetCommunicationBookByClass,
-  // } = useQuery(
-  //   [queryKeys.GET_COMMUNICATION_BOOK],
-  //   () => apiServices.getCommunicationBookByClass(user?.class_id),
-  //   {
-  //     retry: 2,
-  //     enabled: !!user?.class_id && permission?.view,
+  // FETCH COMMUNICATION BOOK CREATED /////////
+  const {
+    isLoading: getCommunicationBookByClassLoading,
+    data: getCommunicationBookByClass,
+    isFetching: getCommunicationBookByClassFetching,
+    isRefetching: getCommunicationBookByClassRefetching,
+    refetch: refetchGetCommunicationBookByClass,
+  } = useQuery(
+    [queryKeys.GET_COMMUNICATION_BOOK],
+    () => apiServices.getCommunicationBookByClass(user?.class_id),
+    {
+      retry: 2,
+      enabled: !!user?.class_id && permission?.view,
 
-  //     select: (data) => {
-  //       console.log({ data });
+      select: (data) => {
+        if (data?.data?.length > 0) {
+          const dt = apiServices.formatData(data);
+          console.log({ data, dt });
+          return dt;
+        }
 
-  //       return data;
+        // return permission?.create ? filt : lsg;
+      },
+      onSuccess(data) {
 
-  //       // return permission?.create ? filt : lsg;
-  //     },
-  //     onSuccess(data) {
-  //       const dt = [data?.data?.attributes];
-  //       const dtId = data?.data?.id;
-  //       const opened = dt?.filter((ms) => ms?.status === "active");
-  //       const closed = dt?.filter((ms) => ms?.status !== "active");
+        // const newData = data?.map((dt, i)=>{
 
-  //       setOpenTickets([...opened]);
-  //       setClosedTickets([...closed]);
-  //       // setLessonNotes(data);
-  //       // trigger(1000);
-  //     },
-  //     onError(err) {
-  //       apiServices.errorHandler(err);
-  //     },
-  //     // select: apiServices.formatData,
-  //   }
-  // );
+        // })
+        // const dt = data?.data;
+        // const dtId = data?.data?.id;
+        const opened = data?.filter((ms) => ms?.status === "active");
+        const closed = data?.filter((ms) => ms?.status !== "active");
+
+        setOpenTickets([...opened]);
+        setClosedTickets([...closed]);
+        // setLessonNotes(data);
+        // trigger(1000);
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  // FETCH COMMUNICATION BOOK REPLIES /////////
+  const {
+    isLoading: getCommunicationBookRepliesLoading,
+    data: getCommunicationBookReplies,
+    isFetching: getCommunicationBookRepliesFetching,
+    isRefetching: getCommunicationBookRepliesRefetching,
+    refetch: refetchGetCommunicationBookReplies,
+  } = useQuery(
+    [queryKeys.GET_COMMUNICATION_BOOK_REPLIES],
+    () => apiServices.getCommunicationBookReplies("7"),
+    {
+      retry: 2,
+      enabled: !!user?.class_id && permission?.view,
+
+      select: (data) => {
+        console.log({ dataff: data });
+
+        return data;
+
+        // return permission?.create ? filt : lsg;
+      },
+
+      onSuccess(data) {
+        // const dt = [data?.data?.attributes];
+        // const dtId = data?.data?.id;
+        // const opened = dt?.filter((ms) => ms?.status === "active");
+        // const closed = dt?.filter((ms) => ms?.status !== "active");
+        // setOpenTickets([...opened]);
+        // setClosedTickets([...closed]);
+        // setLessonNotes(data);
+        // trigger(1000);
+      },
+
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   //// FETCH STAFF BY ID /////////
   // const {
@@ -282,8 +329,8 @@ const CommunicationBookPage = () => {
 
         const staffsId = ct?.map((sc, i) => {
           return {
-            student_id: sc.id,
-            admission_number: sc.sch_id,
+            recipient_id: sc.id,
+            receiver_type: "staff",
           };
         });
 
@@ -291,34 +338,6 @@ const CommunicationBookPage = () => {
           if (ct) {
             return [
               {
-                // admission_number: "",
-                // age: 1,
-                // blood_group: "A+",
-                // campus: "Corona Elementary",
-                // campus_type: "Elementary",
-                // class: "BASICS 1",
-                // class_sub_class: "",
-                // dob: "2023-02-08",
-                // firstname: "All",
-                // gender: "all",
-                // genotype: "AA",
-                // home_address: "2801 Island Avenue",
-                // id: "99999",
-                // image: "",
-                // middlename: "Class",
-                // nationality: "Nigeria",
-                // new_id: 1,
-                // phone_number: "+23481345685686",
-                // present_class: "BASICS 1",
-                // session_admitted: "2024",
-                // state: "Lagos",
-                // status: "active",
-                // sub_class: "",
-                // surname: "Students",
-                // username: "COROS001",
-                // email_address: studentsId,
-                // recipient: "All Students",
-                // students: studentsId,
                 sch_id: "SCHMATE/117209",
                 campus: "Corona Elementary",
                 designation_id: "4",
@@ -363,8 +382,8 @@ const CommunicationBookPage = () => {
                   ...sp,
                   students: [
                     {
-                      student_id: sp.id,
-                      admission_number: sp.admission_number,
+                      recipient_id: sp.id,
+                      receiver_type: "staff",
                     },
                   ],
                 };
@@ -456,8 +475,8 @@ const CommunicationBookPage = () => {
             ...sp,
             students: [
               {
-                student_id: sp.id,
-                admission_number: sp.admission_number,
+                recipient_id: sp.id,
+                receiver_type: "student",
               },
             ],
           };
@@ -601,13 +620,17 @@ const CommunicationBookPage = () => {
         //   period: user?.period,
         //   term: user?.term,
         //   session: user?.session,
-        //   class_id: user?.class_id,
-        //   staff_id: user?.id,
+        //   class_id: user?.designation_name === "Student" ? "1" : user?.class_id,
+        //   sender_id: user?.id,
+        //   sender_type:
+        //     user?.designation_name === "Student"
+        //       ? "Student"
+        //       : user?.designation_name,
         //   subject: title,
         //   message,
         //   file: base64String,
         //   file_name: fileName,
-        //   students: selectedStudent?.email_address,
+        //   recipients: selectedStudent?.email_address,
         // });
 
         // setCreateQuestionPrompt(false);
@@ -1397,9 +1420,9 @@ const CommunicationBookPage = () => {
                 })
                 ?.map((oc, i) => {
                   const dateObject = new Date(oc.date);
-                  const timeAgo2 = formatDistanceToNow(dateObject, {
-                    addSuffix: true,
-                  });
+                  // const timeAgo2 = formatDistanceToNow(dateObject, {
+                  //   addSuffix: true,
+                  // });
                   const checkSender = () => {
                     if (oc?.sender?.includes("(")) {
                       return "staff";
