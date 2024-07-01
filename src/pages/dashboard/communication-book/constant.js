@@ -5,6 +5,13 @@ export const trimText = (text, charLimit) => {
   return text;
 };
 
+export function extractFileName(url) {
+  // Split the URL by the "/" character and get the last element
+  const parts = url?.split("/");
+  const fileName = parts[parts?.length - 1];
+  return fileName;
+}
+
 export const msg = [
   {
     id: "3",

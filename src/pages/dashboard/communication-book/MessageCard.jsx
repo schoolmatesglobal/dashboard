@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
-import { trimText } from "./constant";
+import { extractFileName, trimText } from "./constant";
 import Button from "../../../components/buttons/button";
 import { toast } from "react-toastify";
 import { useMutation, useQuery } from "react-query";
@@ -153,14 +153,30 @@ const MessageCard = ({
         conversations: [
           {
             id: message?.id,
-            sender: message?.sender,
+            sender: `${message?.recipients?.sender?.first_name} ${
+              message?.recipients?.sender?.last_name
+            } ${
+              designation(sender_designation)
+                ? ` (${designation(sender_designation)})`
+                : null
+            }`,
+            sender_email: message?.recipients?.sender?.email,
+            message: message?.message,
+            file: message?.attachment,
+            file_name: extractFileName(message?.attachment),
+            recipient_email: ["romelu@lukaku.com"],
+            recipient: receiver_name,
+            date: message?.date,
+            read_status: "read",
           },
         ],
+        file: message?.attachment,
+        file_name: extractFileName(message?.attachment),
         message: message?.message,
         date: message?.date,
         sender: `${message?.recipients?.sender?.first_name} ${
           message?.recipients?.sender?.last_name
-        }   ${
+        } ${
           designation(sender_designation)
             ? ` (${designation(sender_designation)})`
             : null
@@ -281,9 +297,9 @@ const MessageCard = ({
               padding: "10px",
             }}
           >
-            {/* <p className='fw-bold text-white'>
-              {message?.conversations?.length}
-            </p> */}
+            <p className='fw-bold text-white'>
+              0{/* {message?.conversations?.length} */}
+            </p>
           </div>
           <p className='d-flex d-md-none'>Messages</p>
         </div>
@@ -311,7 +327,7 @@ const MessageCard = ({
           </p>
         </div>
         {/* <p className='fs-3 fw-bold'>{dayjs(message?.date).format("dddd, MMMM D")}</p> */}
-        {message?.sender_email === user?.email && (
+        {
           <div className='d-flex justify-content-end  align-items-center gap-4'>
             {/* <MdDelete
               style={{ color: "red", fontSize: "25px", cursor: "pointer" }}
@@ -324,7 +340,8 @@ const MessageCard = ({
             <Button variant='' className='w-auto' onClick={() => open()}>
               View
             </Button>
-            {message?.ticket_status === "open" && (
+            {message?.recipients?.sender?.email === user?.email && (
+              // {message?.ticket_status === "open" && (
               <Button
                 variant='outline'
                 className='w-auto'
@@ -336,7 +353,7 @@ const MessageCard = ({
               </Button>
             )}
           </div>
-        )}
+        }
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ import Prompt from "../../../components/modals/prompt";
 import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
 import MessageCard from "./MessageCard";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import { msg, trimText } from "./constant";
 import { parse, formatDistanceToNow } from "date-fns";
 import { ImAttachment } from "react-icons/im";
@@ -39,6 +41,7 @@ import {
   scroller,
   scrollSpy,
 } from "react-scroll";
+import { Spinner } from "reactstrap";
 
 const CommunicationBookPage = () => {
   const {
@@ -72,6 +75,10 @@ const CommunicationBookPage = () => {
     messages,
     setMessages,
   } = useCommunicationBook();
+
+  // Extend Day.js with the required plugins
+  dayjs.extend(customParseFormat);
+  dayjs.extend(localizedFormat);
 
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery();
 
@@ -206,7 +213,15 @@ const CommunicationBookPage = () => {
 
       select: (data) => {
         if (data?.data?.length > 0) {
-          const dt = apiServices.formatData(data);
+          const dt = apiServices.formatData(data)?.map((da, i) => {
+            return {
+              ...da,
+              date: dayjs(da?.date, "D MMM YYYY h:mm A").format(
+                "dddd MMMM D, YYYY h:mm A"
+              ),
+            };
+          });
+
           console.log({ data, dt });
           return dt;
         }
@@ -214,7 +229,6 @@ const CommunicationBookPage = () => {
         // return permission?.create ? filt : lsg;
       },
       onSuccess(data) {
-
         // const newData = data?.map((dt, i)=>{
 
         // })
@@ -643,7 +657,7 @@ const CommunicationBookPage = () => {
   ];
 
   const buttonOptions2 =
-    selectedMessage?.ticket_status === "open"
+    selectedMessage?.ticket_status === "active"
       ? [
           {
             title: "Cancel",
@@ -668,45 +682,45 @@ const CommunicationBookPage = () => {
 
               // const filtConv = selectedMessage
 
-              setSelectedMessage({
-                ...selectedMessage,
-                conversations: [
-                  ...selectedMessage?.conversations,
-                  {
-                    id: dateString,
-                    sender: selectedMessage?.sender,
-                    sender_email: selectedMessage?.sender_email,
-                    title: selectedMessage?.title,
-                    message: replyMessage,
-                    file: file,
-                    file_name: fileName,
-                    recipient_email: selectedMessage?.recipient_email,
-                    recipient: selectedMessage?.recipient,
-                    date,
-                  },
-                ],
-              });
+              // setSelectedMessage({
+              //   ...selectedMessage,
+              //   conversations: [
+              //     ...selectedMessage?.conversations,
+              //     {
+              //       id: dateString,
+              //       sender: selectedMessage?.sender,
+              //       sender_email: selectedMessage?.sender_email,
+              //       title: selectedMessage?.title,
+              //       message: replyMessage,
+              //       file: file,
+              //       file_name: fileName,
+              //       recipient_email: selectedMessage?.recipient_email,
+              //       recipient: selectedMessage?.recipient,
+              //       date,
+              //     },
+              //   ],
+              // });
 
-              setOpenTickets([
-                ...filt,
-                {
-                  ...filt2,
-                  conversations: [
-                    ...selectedMessage?.conversations,
-                    {
-                      sender: selectedMessage?.sender,
-                      sender_email: selectedMessage?.sender_email,
-                      title: selectedMessage?.title,
-                      message: replyMessage,
-                      file: file,
-                      file_name: fileName,
-                      recipient_email: selectedMessage?.recipient_email,
-                      recipient: selectedMessage?.recipient,
-                      date,
-                    },
-                  ],
-                },
-              ]);
+              // setOpenTickets([
+              //   ...filt,
+              //   {
+              //     ...filt2,
+              //     conversations: [
+              //       ...selectedMessage?.conversations,
+              //       {
+              //         sender: selectedMessage?.sender,
+              //         sender_email: selectedMessage?.sender_email,
+              //         title: selectedMessage?.title,
+              //         message: replyMessage,
+              //         file: file,
+              //         file_name: fileName,
+              //         recipient_email: selectedMessage?.recipient_email,
+              //         recipient: selectedMessage?.recipient,
+              //         date,
+              //       },
+              //     ],
+              //   },
+              // ]);
 
               setReplyMessage("");
               setFile(null);
@@ -1028,50 +1042,58 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          <div className='w-100 mt-4 border border-2 pt-4 pb-2  px-3 rounded-3 d-flex align-items-center'>
-            {showStudentRow() && (
-              <CBStudentsRow
-                studentByClassAndSession={
-                  user?.designation_name === "Student"
-                    ? getStaffByClass
-                    : newStudentByClass()
-                }
-                onProfileSelect={(x) => {
-                  setSelectedStudent((prev) => {
-                    return {
-                      ...prev,
-                      //   ...x,
-                      sender: `${user?.firstname} ${user?.surname}`,
-                      sender_email: user?.email ?? "",
-                      student: `${x.surname} ${x.firstname}`,
-                      recipient:
-                        x.id === "99999"
-                          ? `${x.firstname} ${x.surname} in ${user?.class_assigned}`
-                          : `${x.surname} ${x.firstname}`,
-                      student_id: x.id,
-                      email_address: x.students,
-                      designation: x.teacher_type,
-                    };
-                  });
-                }}
-                isLoading={allLoading}
-                selectedStudent={selectedStudent}
-                user={user}
-                // idWithComputedResult={idWithComputedResult}
-              />
-            )}
-            {showStudentRowWarning() && (
-              <div className='w-100 d-flex justify-content-center align-items-center mb-3 gap-3 bg-danger bg-opacity-10 py-3 px-4'>
-                <p className='fs-4 text-danger'>
-                  {user?.department === "Admin"
-                    ? "Please select a class"
-                    : "No Student in Class"}
-                </p>
-              </div>
-            )}
-          </div>
+          {!allLoading && (
+            <div className='w-100 mt-4 border border-2 pt-4 pb-2  px-3 rounded-3 d-flex align-items-center'>
+              {showStudentRow() && (
+                <CBStudentsRow
+                  studentByClassAndSession={
+                    user?.designation_name === "Student"
+                      ? getStaffByClass
+                      : newStudentByClass()
+                  }
+                  onProfileSelect={(x) => {
+                    setSelectedStudent((prev) => {
+                      return {
+                        ...prev,
+                        //   ...x,
+                        sender: `${user?.firstname} ${user?.surname}`,
+                        sender_email: user?.email ?? "",
+                        student: `${x.surname} ${x.firstname}`,
+                        recipient:
+                          x.id === "99999"
+                            ? `${x.firstname} ${x.surname} in ${user?.class_assigned}`
+                            : `${x.surname} ${x.firstname}`,
+                        student_id: x.id,
+                        email_address: x.students,
+                        designation: x.teacher_type,
+                      };
+                    });
+                  }}
+                  isLoading={allLoading}
+                  selectedStudent={selectedStudent}
+                  user={user}
+                  // idWithComputedResult={idWithComputedResult}
+                />
+              )}
+              {showStudentRowWarning() && (
+                <div className='w-100 d-flex justify-content-center align-items-center mb-3 gap-3 bg-danger bg-opacity-10 py-3 px-4'>
+                  <p className='fs-4 text-danger'>
+                    {user?.department === "Admin"
+                      ? "Please select a class"
+                      : "No Student in Class"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
-          {ticketTab === "1" && (
+          {allLoading && (
+            <div className={styles.spinner_container}>
+              <Spinner /> <p className='fs-3'>Loading...</p>
+            </div>
+          )}
+
+          {!allLoading && ticketTab === "1" && (
             <div className='d-flex w-100 mt-3 justify-content-end'>
               <Button
                 variant=''
@@ -1100,7 +1122,7 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {ticketTab === "1" && openTickets?.length === 0 && (
+          {!allLoading && ticketTab === "1" && openTickets?.length === 0 && (
             <div
               className='d-flex flex-column w-100 align-items-center justify-content-center h-100'
               style={{ minHeight: "50vh" }}
@@ -1110,7 +1132,7 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {ticketTab === "2" && closedTickets?.length === 0 && (
+          {!allLoading && ticketTab === "2" && closedTickets?.length === 0 && (
             <div
               className='d-flex flex-column w-100 align-items-center justify-content-center h-100'
               style={{ minHeight: "50vh" }}
@@ -1120,7 +1142,8 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {ticketTab === "1" &&
+          {!allLoading &&
+            ticketTab === "1" &&
             openTickets
               ?.filter((ms) => ms?.status === "active")
               ?.sort((a, b) => {
@@ -1158,7 +1181,8 @@ const CommunicationBookPage = () => {
                 );
               })}
 
-          {ticketTab === "2" &&
+          {!allLoading &&
+            ticketTab === "2" &&
             closedTickets
               ?.filter((ms) => ms?.status !== "active")
               ?.sort((a, b) => {
@@ -1396,11 +1420,12 @@ const CommunicationBookPage = () => {
           toggle={() => setOpenMessage(!openMessage)}
           hasGroupedButtons={true}
           groupedButtonProps={buttonOptions2}
-          showFooter={selectedMessage?.sender_email === user?.email}
+          showFooter={true}
+          // showFooter={selectedMessage?.sender_email === user?.email}
           // singleButtonText='Preview'
           promptHeader={trimText(
             selectedMessage?.title,
-            xs ? 30 : sm ? 30 : md ? 30 : lg ? 40 : 50
+            xs ? 40 : sm ? 40 : md ? 30 : lg ? 40 : 50
           )}
         >
           <>
@@ -1496,7 +1521,7 @@ const CommunicationBookPage = () => {
                                 style={{ cursor: "pointer" }}
                                 // onClick={() => open()}
                               >
-                                {trimText(oc?.sender, 20)}
+                                {trimText(oc?.sender, 30)}
                               </p>
                               {oc?.file_name && (
                                 <ImAttachment
@@ -1523,8 +1548,10 @@ const CommunicationBookPage = () => {
                                   cursor: oc?.file_name ? "pointer" : "default",
                                 }}
                                 onClick={() => {
-                                  if (typeof oc?.file === "string") {
-                                    handleViewFile2(file);
+                                  if (
+                                    typeof selectedMessage?.file === "string"
+                                  ) {
+                                    handleViewFile2(selectedMessage?.file);
                                   } else {
                                     const url = URL.createObjectURL(oc.file);
                                     handleViewFile2(url);
@@ -1535,39 +1562,40 @@ const CommunicationBookPage = () => {
                                 View Attachment
                               </p>
                             }
-                            {selectedMessage?.ticket_status === "open" && (
+                            {selectedMessage?.ticket_status === "active" && (
                               <div className='d-flex justify-content-end  align-items-center gap-4'>
-                                {oc?.sender_email === user?.email && (
+                                {selectedMessage?.sender_email ===
+                                  user?.email && (
                                   <FaEdit
                                     style={{
                                       color: "#01153b",
                                       fontSize: "25px",
                                       cursor: "pointer",
                                     }}
-                                    onClick={() => {
-                                      setMessageDeleteId(oc?.id);
-                                      setSelectedMessage2({
-                                        ...selectedMessage2,
-                                        id: oc?.id,
-                                        title: selectedMessage?.title,
-                                        message: oc?.message,
-                                        date: oc?.date,
-                                        sender: oc?.sender,
-                                        sender_email: oc?.sender_email,
-                                        recipient: oc?.recipient,
-                                        recipient_email: oc?.recipient_email,
-                                        file: oc?.file,
-                                        file_name: oc?.file_name,
-                                        ticket_status: oc?.ticket_status,
-                                      });
-                                      setFile(oc?.file);
-                                      setFileName(oc?.file_name);
-                                      if (i != 0) {
-                                        setEditMessagePrompt(true);
-                                      } else if (i === 0) {
-                                        setEditMessagePrompt2(true);
-                                      }
-                                    }}
+                                    // onClick={() => {
+                                    //   setMessageDeleteId(oc?.id);
+                                    //   setSelectedMessage2({
+                                    //     ...selectedMessage2,
+                                    //     id: oc?.id,
+                                    //     title: selectedMessage?.title,
+                                    //     message: oc?.message,
+                                    //     date: oc?.date,
+                                    //     sender: oc?.sender,
+                                    //     sender_email: oc?.sender_email,
+                                    //     recipient: oc?.recipient,
+                                    //     recipient_email: oc?.recipient_email,
+                                    //     file: oc?.file,
+                                    //     file_name: oc?.file_name,
+                                    //     ticket_status: oc?.ticket_status,
+                                    //   });
+                                    //   setFile(oc?.file);
+                                    //   setFileName(oc?.file_name);
+                                    //   if (i != 0) {
+                                    //     setEditMessagePrompt(true);
+                                    //   } else if (i === 0) {
+                                    //     setEditMessagePrompt2(true);
+                                    //   }
+                                    // }}
                                   />
                                 )}
                                 {i != 0 && (
@@ -1577,10 +1605,10 @@ const CommunicationBookPage = () => {
                                       fontSize: "25px",
                                       cursor: "pointer",
                                     }}
-                                    onClick={() => {
-                                      setMessageDeleteId(oc?.id);
-                                      setDeletePrompt2(true);
-                                    }}
+                                    // onClick={() => {
+                                    //   setMessageDeleteId(oc?.id);
+                                    //   setDeletePrompt2(true);
+                                    // }}
                                   />
                                 )}
                               </div>
@@ -1593,45 +1621,45 @@ const CommunicationBookPage = () => {
                 })}
             </div>
 
-            {selectedMessage?.ticket_status === "open" &&
-              selectedMessage?.sender_email === user?.email && (
-                <div
-                  className='mt-5'
-                  style={{
-                    borderTop: "1px solid rgba(47, 46, 65, 0.2)",
-                    paddingTop: "20px",
-                  }}
-                >
-                  <AuthInput
-                    className='form-control fs-3 lh-base'
-                    type='text'
-                    value={replyMessage}
-                    placeholder='Type your response'
-                    onChange={(e) => setReplyMessage(e.target.value)}
-                    style={
-                      {
-                        //   minHeight: "70px",
-                      }
+            {selectedMessage?.ticket_status === "active" && (
+              // selectedMessage?.sender_email === user?.email &&
+              <div
+                className='mt-5'
+                style={{
+                  borderTop: "1px solid rgba(47, 46, 65, 0.2)",
+                  paddingTop: "20px",
+                }}
+              >
+                <AuthInput
+                  className='form-control fs-3 lh-base'
+                  type='text'
+                  value={replyMessage}
+                  placeholder='Type your response'
+                  onChange={(e) => setReplyMessage(e.target.value)}
+                  style={
+                    {
+                      //   minHeight: "70px",
                     }
-                  />
+                  }
+                />
 
-                  <div className='mt-3'>
-                    <CustomFileInput2
-                      handleFileChange={handleFileChange}
-                      fileName={fileName}
-                      handleReset={handleReset}
-                      error={error}
-                      type='all'
-                      accept='.jpeg, .jpeg,
+                <div className='mt-3'>
+                  <CustomFileInput2
+                    handleFileChange={handleFileChange}
+                    fileName={fileName}
+                    handleReset={handleReset}
+                    error={error}
+                    type='all'
+                    accept='.jpeg, .jpeg,
                   .png,
                   .gif,
                   .bmp,
                   .webp, doc, .docx, .pdf'
-                      // loading={addLessonNoteLoading}
-                    />
-                  </div>
+                    // loading={addLessonNoteLoading}
+                  />
                 </div>
-              )}
+              </div>
+            )}
 
             {/* <ScrollLink
               to='service1'
