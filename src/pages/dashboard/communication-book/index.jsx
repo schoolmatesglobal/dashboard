@@ -47,7 +47,7 @@ const CommunicationBookPage = () => {
   const {
     permission,
     apiServices,
-    user,
+    user: newUser,
     studentByClass,
     refetchStudentByClass,
     studentByClassLoading,
@@ -75,6 +75,11 @@ const CommunicationBookPage = () => {
     messages,
     setMessages,
   } = useCommunicationBook();
+
+  const user = {
+    ...newUser,
+    email: newUser?.email || newUser?.email_address,
+  };
 
   // Extend Day.js with the required plugins
   dayjs.extend(customParseFormat);
@@ -213,14 +218,23 @@ const CommunicationBookPage = () => {
 
       select: (data) => {
         if (data?.data?.length > 0) {
-          const dt = apiServices.formatData(data)?.map((da, i) => {
-            return {
-              ...da,
-              date: dayjs(da?.date, "D MMM YYYY h:mm A").format(
-                "dddd MMMM D, YYYY h:mm A"
-              ),
-            };
-          });
+          const dt = apiServices
+            .formatData(data)
+            ?.map((da, i) => {
+              return {
+                ...da,
+                date: dayjs(da?.date, "D MMM YYYY h:mm A").format(
+                  "dddd MMMM D, YYYY h:mm A"
+                ),
+              };
+            })
+            ?.filter(
+              (da) =>
+                da?.recipients?.sender?.email === user?.email ||
+                da?.recipients?.receivers?.some(
+                  (obj) => obj.email === user?.email
+                )
+            );
 
           console.log({ data, dt });
           return dt;
