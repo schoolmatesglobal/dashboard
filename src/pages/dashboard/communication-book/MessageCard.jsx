@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TimeAgo from "react-timeago";
 import { parse, formatDistanceToNow } from "date-fns";
 import dayjs from "dayjs";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
-import { extractFileName, trimText } from "./constant";
+import { designation, extractFileName, trimText } from "./constant";
 import Button from "../../../components/buttons/button";
 import { toast } from "react-toastify";
 import { useMutation, useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
 
+import { useLocation, useNavigate } from "react-router-dom";
+
 const MessageCard = ({
   message,
   messages,
+  openMessage,
   setOpenMessage,
   setSelectedMessage,
   setFile,
@@ -29,8 +32,18 @@ const MessageCard = ({
   ticketTab,
   apiServices,
   allStaffs,
+  replyMessages,
+  setReplyMessages,
+  refetchGetCommunicationBookReplies,
+  communicationId,
+  setCommunicationId,
+  getCommunicationBookRepliesLoading,
+  getCommunicationBookRepliesFetching,
+  getCommunicationBookRepliesRefetching,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
+
+  const navigate = useNavigate();
 
   // const mssg = () => {
   //   if (message?.conversations?.length > 0) {
@@ -95,14 +108,14 @@ const MessageCard = ({
     });
   };
 
-  const designation = (id) => {
-    // if (message?.recipients?.sender?.designation == 4) {
-    if (id == 7) {
-      return "Student";
-    } else {
-      return "Staff";
-    }
-  };
+  // const designation = (id) => {
+  //   // if (message?.recipients?.sender?.designation == 4) {
+  //   if (id == 7) {
+  //     return "Student";
+  //   } else {
+  //     return "Staff";
+  //   }
+  // };
 
   const senderDetails = (function () {
     if (message?.recipients) {
@@ -139,10 +152,11 @@ const MessageCard = ({
   })();
 
   const open = () => {
-    setOpenMessage(true);
     setFile(null);
     setFileName("");
     setReplyMessage("");
+
+    setCommunicationId(message?.id);
 
     setSelectedMessage((prev) => {
       return {
@@ -178,16 +192,70 @@ const MessageCard = ({
           message?.recipients?.sender?.last_name
         } ${
           designation(sender_designation)
-            ? ` (${designation(sender_designation)})`
+            ? `(${designation(sender_designation)})`
             : null
         }`,
         sender_email: senderDetails?.email,
-        recipient: "",
+        recipient: message?.recipients,
         recipient_email: "",
+        communication_id: message?.id,
         // recipient: message?.recipient,
         // recipient_email: message?.recipient_email,
       };
     });
+
+    if (communicationId) {
+      refetchGetCommunicationBookReplies();
+    }
+
+    navigate(`/app/communication-book/${message?.id}`, {
+      state: {
+        id: message?.id,
+        title: message?.subject,
+        ticket_status: message?.status,
+        conversations: [
+          {
+            id: message?.id,
+            sender: `${message?.recipients?.sender?.first_name} ${
+              message?.recipients?.sender?.last_name
+            } ${
+              designation(sender_designation)
+                ? `(${designation(sender_designation)})`
+                : null
+            }`,
+            sender_email: message?.recipients?.sender?.email,
+            sender_type: designation(sender_designation),
+            message: message?.message,
+            file: message?.attachment,
+            file_name: extractFileName(message?.attachment),
+            recipient_email: ["romelu@lukaku.com"],
+            recipient: receiver_name,
+            date: message?.date,
+            read_status: "read",
+          },
+        ],
+        file: message?.attachment,
+        file_name: extractFileName(message?.attachment),
+        message: message?.message,
+        date: message?.date,
+        sender: `${message?.recipients?.sender?.first_name} ${
+          message?.recipients?.sender?.last_name
+        } ${
+          designation(sender_designation)
+            ? ` (${designation(sender_designation)})`
+            : null
+        }`,
+        sender_email: senderDetails?.email,
+        recipient: message?.recipients,
+        recipient_email: "",
+        communication_id: message?.id,
+      },
+    });
+
+    // setOpenMessage(true);
+
+    // if (replyMessages?.length >= 0) {
+    // }
 
     // const filt2 = openTickets?.conversations
     // const filt =
@@ -212,7 +280,14 @@ const MessageCard = ({
     // setOpenTickets([...filt2, ...newMessages]);
   };
 
-  console.log({ message, allStaffs, staffDetails });
+  useEffect(() => {
+    if (openMessage === false) {
+      setCommunicationId("");
+      setReplyMessages([]);
+    }
+  }, [openMessage]);
+
+  // console.log({ message, allStaffs, staffDetails });
 
   //   dayjs(new Date()).format("dddd, MMMM D, YYYY h:mm A")
 
@@ -241,8 +316,8 @@ const MessageCard = ({
         <div className='d-flex align-items-center gap-3'>
           <p
             className='fs-3 fw-bold'
-            style={{ cursor: "pointer" }}
-            onClick={() => open()}
+            // style={{ cursor: "pointer" }}
+            // onClick={() => open()}
           >
             {trimText(
               message?.subject,
@@ -279,9 +354,9 @@ const MessageCard = ({
           className='fs-3 lh-base'
           style={{
             maxWidth: xs ? "100%" : sm ? "100%" : "60vw",
-            cursor: "pointer",
+            // cursor: "pointer",
           }}
-          onClick={() => open()}
+          // onClick={() => open()}
         >
           {trimText(message?.message, 300)}
         </p>
@@ -346,7 +421,7 @@ const MessageCard = ({
                 variant='outline'
                 className='w-auto'
                 onClick={() => {
-                  // editOpen();
+                  editOpen();
                 }}
               >
                 Close Ticket

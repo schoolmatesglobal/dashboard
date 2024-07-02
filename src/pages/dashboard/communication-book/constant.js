@@ -5,12 +5,27 @@ export const trimText = (text, charLimit) => {
   return text;
 };
 
+export const designation = (id) => {
+  // if (message?.recipients?.sender?.designation == 4) {
+  if (Number(id) === 7) {
+    return "Student";
+  } else {
+    return "Staff";
+  }
+};
+
 export function extractFileName(url) {
   // Split the URL by the "/" character and get the last element
   const parts = url?.split("/");
   const fileName = parts[parts?.length - 1];
   return fileName;
 }
+
+export const chatColors = {
+  grey: "#e0e0e0",
+  lightBlue: "#cfedff",
+  primary: "#01153b",
+};
 
 export const msg = [
   {

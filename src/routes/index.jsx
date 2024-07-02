@@ -118,6 +118,7 @@ import StudentCBTResults from "../pages/dashboard/cbt/student/results";
 import StudentCbtPerformances from "../pages/dashboard/cbt/performances/students";
 import LessonNote from "../pages/dashboard/lesson-note";
 import CommunicationBookPage from "../pages/dashboard/communication-book";
+import CommunicationMessages from "../pages/dashboard/communication-book/messages";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -838,6 +839,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='communication-book'>
               <CommunicationBookPage />
+            </Guard>
+          }
+        />
+        <Route
+          path='communication-book/:id'
+          element={
+            <Guard routeName='communication-book'>
+              <CommunicationMessages />
             </Guard>
           }
         />

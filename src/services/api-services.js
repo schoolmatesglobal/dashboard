@@ -2929,6 +2929,49 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async editCommunicationBook({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/edit/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async closeCommunicationBook({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/close/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async addCommunicationBookReplies({ communication_book_id, body }) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/communicationbook/${communication_book_id}/replies`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
   async getCommunicationBookReplies(communication_book_id) {
     const { data } = await axios.get(
       `${backendAPI}/v2/communicationbook/replies/${communication_book_id}`,
@@ -2941,6 +2984,34 @@ class APIServies extends Helpers {
       }
     );
 
+    return data;
+  }
+
+  async deleteCommunicationBookReplies(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/communicationbook/reply/delete/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editCommunicationBookReplies({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/reply/edit/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
     return data;
   }
 }

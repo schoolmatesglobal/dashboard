@@ -17,9 +17,10 @@ import MessageCard from "./MessageCard";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { msg, trimText } from "./constant";
+import { chatColors, designation, msg, trimText } from "./constant";
 import { parse, formatDistanceToNow } from "date-fns";
 import { ImAttachment } from "react-icons/im";
+import { IoCheckmarkDone } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import AuthInput from "../../../components/inputs/auth-input";
@@ -100,12 +101,14 @@ const CommunicationBookPage = () => {
   const [deletePrompt2, setDeletePrompt2] = useState(false);
 
   const [replyMessage, setReplyMessage] = useState("");
+  const [replyMessages, setReplyMessages] = useState([]);
   const [messageDeleteId, setMessageDeleteId] = useState("");
   const [ticketCloseId, setTicketCloseId] = useState("");
   const [ticketTab, setTicketTab] = useState("1");
 
   const [openedTitle, setOpenedTitle] = useState("");
   const [openedConversations, setOpenedConversations] = useState([]);
+  const [communicationId, setCommunicationId] = useState("");
 
   const [selectedMessage, setSelectedMessage] = useState({
     id: "",
@@ -272,20 +275,43 @@ const CommunicationBookPage = () => {
     refetch: refetchGetCommunicationBookReplies,
   } = useQuery(
     [queryKeys.GET_COMMUNICATION_BOOK_REPLIES],
-    () => apiServices.getCommunicationBookReplies("7"),
+    () => apiServices.getCommunicationBookReplies(communicationId),
     {
       retry: 2,
-      enabled: !!user?.class_id && permission?.view,
+      enabled: !!communicationId && permission?.view,
 
       select: (data) => {
-        console.log({ dataff: data });
+        console.log({ datarr: data, dtr: data?.data });
 
-        return data;
+        if (data?.data?.length > 0) {
+          const ddt = data?.data?.map((dt, i) => {
+            const type = designation(dt?.sender?.designation);
+            return {
+              communication_id: dt?.communication_book_id,
+              reply_id: dt?.id,
+              sender_id: dt?.sender_id,
+              sender_type: type,
+              sender_email: dt?.sender?.email,
+              sender: `${dt?.sender?.first_name} ${dt?.sender?.last_name} (${type})`,
+              message: dt?.message,
+              date: dayjs(dt?.date, "D MMM YYYY h:mm A").format(
+                "dddd MMMM D, YYYY h:mm A"
+              ),
+            };
+          });
+
+          console.log({ ddt });
+
+          return ddt;
+        } else {
+          return [];
+        }
 
         // return permission?.create ? filt : lsg;
       },
 
       onSuccess(data) {
+        setReplyMessages(data);
         // const dt = [data?.data?.attributes];
         // const dtId = data?.data?.id;
         // const opened = dt?.filter((ms) => ms?.status === "active");
@@ -300,6 +326,41 @@ const CommunicationBookPage = () => {
         apiServices.errorHandler(err);
       },
       // select: apiServices.formatData,
+    }
+  );
+
+  /////// POST REPLY ////
+  const {
+    mutateAsync: addCommunicationBookReplies,
+    isLoading: addCommunicationBookRepliesLoading,
+  } = useMutation(
+    // () =>
+    apiServices.addCommunicationBookReplies,
+    // ({
+    //     period: user?.period,
+    //     term: user?.term,
+    //     session: user?.session,
+    //     class_id: user?.class_id,
+    //     sender_id: user?.id,
+    //     sender_type: user?.designation_name === "Student" ? "student" : "staff",
+    //     subject: title,
+    //     message,
+    //     file: base64String,
+    //     file_name: fileName,
+    //     recipients: selectedStudent?.email_address,
+    //   })
+    // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
+    {
+      onSuccess() {
+        refetchGetCommunicationBookReplies();
+        // setTimeout(() => {
+        //   setCreateQuestionPrompt(false);
+        // }, 1000);
+        toast.success("Reply was sent successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
     }
   );
 
@@ -683,16 +744,52 @@ const CommunicationBookPage = () => {
             title: "Send",
             //   title: "Send",
             //   disabled: !replyMessage,
-            //   isLoading: addLessonNoteLoading,
+            isLoading: addCommunicationBookRepliesLoading,
             onClick: async () => {
               if (!replyMessage) return;
 
-              const filt = openTickets?.filter(
-                (sm) => sm?.id !== selectedMessage?.id
-              );
-              const filt2 = openTickets?.find(
-                (sm) => sm?.id === selectedMessage?.id
-              );
+              // const filt = openTickets?.filter(
+              //   (sm) => sm?.id !== selectedMessage?.id
+              // );
+              // const filt2 = openTickets?.find(
+              //   (sm) => sm?.id === selectedMessage?.id
+              // );
+
+              setReplyMessages((prev) => [
+                ...prev,
+                {
+                  communication_id: selectedMessage?.id,
+                  // sender_id: selectedMessage?.recipient?.sender?.id,
+                  sender_id: user?.id,
+                  sender_type:
+                    user?.designation_name === "Student" ? "student" : "staff",
+                  sender_email: user?.email,
+                  sender: `${user?.firstname} ${
+                    user?.surname
+                  } (${designation`${user?.designation_id}`})`,
+                  // receiver_id:
+                  //   selectedMessage?.recipient?.sender?.email === user?.email
+                  //     ? 4
+                  //     : selectedMessage?.recipient?.sender?.id,
+                  // receiver_type:
+                  //   selectedMessage?.recipient?.sender?.email === user?.email
+                  //     ? user?.designation_name === "Student"
+                  //       ? "student"
+                  //       : "staff"
+                  //     : "staff",
+                  message: replyMessage,
+                  date,
+                },
+              ]);
+
+              addCommunicationBookReplies({
+                communication_book_id: selectedMessage?.id,
+                body: {
+                  sender_id: user?.id,
+                  receiver_id: "4",
+                  message: replyMessage,
+                },
+              });
 
               // const filtConv = selectedMessage
 
@@ -852,70 +949,70 @@ const CommunicationBookPage = () => {
       onClick: async () => {
         if (!selectedMessage2?.message) return;
 
-        const filt = openTickets?.filter(
-          (sm) => sm?.id !== selectedMessage?.id
-        );
+        // const filt = openTickets?.filter(
+        //   (sm) => sm?.id !== selectedMessage?.id
+        // );
 
-        const filtOpened = openTickets?.find(
-          (sm) => sm?.id === selectedMessage?.id
-        );
+        // const filtOpened = openTickets?.find(
+        //   (sm) => sm?.id === selectedMessage?.id
+        // );
 
-        const filt2 = selectedMessage?.conversations?.filter(
-          (ms) => ms?.id !== messageDeleteId
-        );
+        // const filt2 = selectedMessage?.conversations?.filter(
+        //   (ms) => ms?.id !== messageDeleteId
+        // );
 
-        const checkFirstMessage = () => {
-          if (messageDeleteId === msg[0]?.conversations[0]?.id) {
-            return true;
-          } else {
-            return false;
-          }
-        };
+        // const checkFirstMessage = () => {
+        //   if (messageDeleteId === msg[0]?.conversations[0]?.id) {
+        //     return true;
+        //   } else {
+        //     return false;
+        //   }
+        // };
 
         // const filtConv = selectedMessage
 
-        setSelectedMessage({
-          ...selectedMessage,
-          title: selectedMessage2?.title,
-          conversations: [
-            ...filt2,
-            {
-              id: messageDeleteId,
-              sender: selectedMessage2?.sender,
-              sender_email: selectedMessage2?.sender_email,
-              //   title: selectedMessage2?.title,
-              message: selectedMessage2?.message,
-              file: file,
-              file_name: fileName,
-              recipient_email: selectedMessage2?.recipient_email,
-              recipient: selectedMessage2?.recipient,
-              date: checkFirstMessage() ? selectedMessage2?.date : date,
-            },
-          ],
-        });
+        // setSelectedMessage({
+        //   ...selectedMessage,
+        //   title: selectedMessage2?.title,
+        //   conversations: [
+        //     ...filt2,
+        //     {
+        //       id: messageDeleteId,
+        //       sender: selectedMessage2?.sender,
+        //       sender_email: selectedMessage2?.sender_email,
+        //       //   title: selectedMessage2?.title,
+        //       message: selectedMessage2?.message,
+        //       file: file,
+        //       file_name: fileName,
+        //       recipient_email: selectedMessage2?.recipient_email,
+        //       recipient: selectedMessage2?.recipient,
+        //       date: checkFirstMessage() ? selectedMessage2?.date : date,
+        //     },
+        //   ],
+        // });
 
-        setOpenTickets([
-          ...filt,
-          {
-            ...filtOpened,
-            title: selectedMessage2?.title,
-            conversations: [
-              ...filt2,
-              {
-                id: messageDeleteId,
-                sender: selectedMessage2?.sender,
-                sender_email: selectedMessage2?.sender_email,
-                //   title: selectedMessage2?.title,
-                message: selectedMessage2?.message,
-                file: file,
-                file_name: fileName,
-                recipient_email: selectedMessage2?.recipient_email,
-                recipient: selectedMessage2?.recipient,
-                date: checkFirstMessage() ? selectedMessage2?.date : date,
-              },
-            ],
-          },
-        ]);
+        // setOpenTickets([
+        //   ...filt,
+        //   {
+        //     ...filtOpened,
+        //     title: selectedMessage2?.title,
+        //     conversations: [
+        //       ...filt2,
+        //       {
+        //         id: messageDeleteId,
+        //         sender: selectedMessage2?.sender,
+        //         sender_email: selectedMessage2?.sender_email,
+        //         //   title: selectedMessage2?.title,
+        //         message: selectedMessage2?.message,
+        //         file: file,
+        //         file_name: fileName,
+        //         recipient_email: selectedMessage2?.recipient_email,
+        //         recipient: selectedMessage2?.recipient,
+        //         date: checkFirstMessage() ? selectedMessage2?.date : date,
+        //       },
+        //     ],
+        //   },
+        // ]);
 
         setReplyMessage("");
         setFile(null);
@@ -949,7 +1046,10 @@ const CommunicationBookPage = () => {
     }
   };
 
-  const allLoading = studentByClassLoading || isRefetchingStudentByClass;
+  const allLoading =
+    studentByClassLoading ||
+    getCommunicationBookByClassLoading ||
+    getCommunicationBookByClassFetching;
   const showStudentRowWarning = () => {
     if (user?.department === "Admin" && !classSelected) {
       return true;
@@ -990,11 +1090,18 @@ const CommunicationBookPage = () => {
     };
   }, []);
 
+  const communicationLoading =
+    getCommunicationBookRepliesLoading ||
+    getCommunicationBookRepliesFetching ||
+    getCommunicationBookRepliesRefetching;
+
   //   const allLoading = studentByClassLoading || isRefetchingStudentByClass;
 
   console.log({
     // classWidth: classWidth(),
     // permission,
+    communicationId,
+    openMessage,
     user,
     newStudentByClass: newStudentByClass(),
     studentByClass,
@@ -1007,6 +1114,7 @@ const CommunicationBookPage = () => {
     closedTickets,
     selectedMessage,
     selectedMessage2,
+    replyMessages,
     // messageDeleteId,
     ticketTab,
   });
@@ -1179,6 +1287,7 @@ const CommunicationBookPage = () => {
                       selectedMessage={selectedMessage}
                       setMessages={setMessages}
                       setOpenTickets={setOpenTickets}
+                      openMessage={openMessage}
                       setOpenMessage={setOpenMessage}
                       setSelectedMessage={setSelectedMessage}
                       setFile={setFile}
@@ -1190,6 +1299,22 @@ const CommunicationBookPage = () => {
                       ticketTab={ticketTab}
                       apiServices={apiServices}
                       allStaffs={[]}
+                      replyMessages={replyMessages}
+                      setReplyMessages={setReplyMessages}
+                      refetchGetCommunicationBookReplies={
+                        refetchGetCommunicationBookReplies
+                      }
+                      communicationId={communicationId}
+                      setCommunicationId={setCommunicationId}
+                      getCommunicationBookRepliesLoading={
+                        getCommunicationBookRepliesLoading
+                      }
+                      getCommunicationBookRepliesFetching={
+                        getCommunicationBookRepliesFetching
+                      }
+                      getCommunicationBookRepliesRefetching={
+                        getCommunicationBookRepliesRefetching
+                      }
                     />
                   </div>
                 );
@@ -1235,6 +1360,9 @@ const CommunicationBookPage = () => {
                       ticketTab={ticketTab}
                       apiServices={apiServices}
                       allStaffs={[]}
+                      refetchGetCommunicationBookReplies={
+                        refetchGetCommunicationBookReplies
+                      }
                     />
                   </div>
                 );
@@ -1378,6 +1506,7 @@ const CommunicationBookPage = () => {
             {/* <p className="fs-3 text-center my-4">...Uploading</p> */}
           </>
         </Prompt>
+
         {/* Edit communication message */}
         <Prompt
           isOpen={editMessagePrompt}
@@ -1437,10 +1566,19 @@ const CommunicationBookPage = () => {
           showFooter={true}
           // showFooter={selectedMessage?.sender_email === user?.email}
           // singleButtonText='Preview'
-          promptHeader={trimText(
-            selectedMessage?.title,
-            xs ? 40 : sm ? 40 : md ? 30 : lg ? 40 : 50
-          )}
+          promptHeader={
+            <p className='w-100' style={{}}>
+              {trimText(
+                selectedMessage?.title,
+                xs ? 40 : sm ? 40 : md ? 30 : lg ? 40 : 50
+              )}
+              {communicationLoading && (
+                <span style={{ margin: "0px 10px" }}>
+                  <Spinner />
+                </span>
+              )}
+            </p>
+          }
         >
           <>
             {/* <Element name='service1'>
@@ -1483,11 +1621,20 @@ const CommunicationBookPage = () => {
                       return "student";
                     }
                   };
+
+                  const checkUserChat = (function () {
+                    if (oc?.sender_email === user?.email) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  })();
+
                   return (
                     <div className='' key={i}>
                       <div
                         className={`d-flex w-100 ${
-                          checkSender() === "staff"
+                          checkUserChat
                             ? "justify-content-start"
                             : "justify-content-end"
                         }`}
@@ -1523,8 +1670,9 @@ const CommunicationBookPage = () => {
                             padding: "15px 15px",
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                             margin: "0px 0px 20px 0px",
-                            background:
-                              checkSender() === "staff" ? "#e0e0e0" : "#cfedff",
+                            background: checkUserChat
+                              ? chatColors?.grey
+                              : chatColors?.lightBlue,
                             overflow: "auto",
                           }}
                         >
@@ -1635,10 +1783,202 @@ const CommunicationBookPage = () => {
                 })}
             </div>
 
+            {replyMessages?.length > 0 && (
+              <div className='mt-4' style={{ minHeight: "200px" }}>
+                {replyMessages
+                  ?.sort((a, b) => {
+                    if (new Date(a?.date) < new Date(b?.date)) {
+                      return -1;
+                    }
+                    if (new Date(a?.date) > new Date(b?.date)) {
+                      return 1;
+                    }
+                    return 0;
+                  })
+                  ?.map((oc, i) => {
+                    const dateObject = new Date(oc.date);
+
+                    const checkUserChat = (function () {
+                      if (oc?.sender_email === user?.email) {
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    })();
+
+                    return (
+                      <div className='' key={i}>
+                        <div
+                          className={`d-flex w-100 ${
+                            checkUserChat
+                              ? "justify-content-start"
+                              : "justify-content-end"
+                          }`}
+                        >
+                          <div className='mb-3 d-flex gap-3 align-items-center'>
+                            <p className='fs-4'>
+                              {dayjs(new Date(oc?.date)).format(
+                                "dddd, MMMM D, YYYY "
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <Element name={oc?.date}>
+                          <div
+                            className=''
+                            style={{
+                              //   height: "fit",
+                              maxHeight: "200px",
+                              minWidth: "200px",
+                              border: "1px solid rgba(47, 46, 65, 0.2)",
+                              borderRadius: "10px",
+                              padding: "15px 15px",
+                              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                              margin: "0px 0px 20px 0px",
+                              background: checkUserChat
+                                ? chatColors?.grey
+                                : chatColors?.lightBlue,
+                              overflow: "auto",
+                            }}
+                          >
+                            <div className='d-flex align-items-center justify-content-between  mb-4'>
+                              <div className='d-flex align-items-center gap-3'>
+                                <p
+                                  className='fs-4 fw-bold '
+                                  style={{ cursor: "pointer" }}
+                                  // onClick={() => open()}
+                                >
+                                  {trimText(oc?.sender, 30)}
+                                </p>
+                                {oc?.file_name && (
+                                  <ImAttachment
+                                    style={{
+                                      color: "#01153b",
+                                      fontSize: "20px",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                              <p className='fs-4 fw-bold'>
+                                {dayjs(new Date(oc?.date)).format("h:mm A")}
+                              </p>
+                            </div>
+                            <p className='fs-3 lh-base'>{oc?.message}</p>
+                            <div className='d-flex flex-column  flex-md-row justify-content-md-between align-items-md-center mt-4'>
+                              {
+                                <p
+                                  className={`fs-4 fw-bold d-none d-md-inline ${
+                                    oc?.file_name ? "opacity-100" : "opacity-0"
+                                  }`}
+                                  style={{
+                                    cursor: oc?.file_name
+                                      ? "pointer"
+                                      : "default",
+                                  }}
+                                  onClick={() => {
+                                    if (
+                                      typeof selectedMessage?.file === "string"
+                                    ) {
+                                      handleViewFile2(selectedMessage?.file);
+                                    } else {
+                                      const url = URL.createObjectURL(oc.file);
+                                      handleViewFile2(url);
+                                      URL.revokeObjectURL(url);
+                                    }
+                                  }}
+                                >
+                                  View Attachment
+                                </p>
+                              }
+                              {selectedMessage?.ticket_status === "active" && (
+                                <div className='d-flex justify-content-end  align-items-center gap-4'>
+                                  {oc?.sender_email === user?.email && (
+                                    <FaEdit
+                                      style={{
+                                        color: "#01153b",
+                                        fontSize: "25px",
+                                        cursor: "pointer",
+                                      }}
+                                      // onClick={() => {
+                                      //   setMessageDeleteId(oc?.id);
+                                      //   setSelectedMessage2({
+                                      //     ...selectedMessage2,
+                                      //     id: oc?.id,
+                                      //     title: selectedMessage?.title,
+                                      //     message: oc?.message,
+                                      //     date: oc?.date,
+                                      //     sender: oc?.sender,
+                                      //     sender_email: oc?.sender_email,
+                                      //     recipient: oc?.recipient,
+                                      //     recipient_email: oc?.recipient_email,
+                                      //     file: oc?.file,
+                                      //     file_name: oc?.file_name,
+                                      //     ticket_status: oc?.ticket_status,
+                                      //   });
+                                      //   setFile(oc?.file);
+                                      //   setFileName(oc?.file_name);
+                                      //   if (i != 0) {
+                                      //     setEditMessagePrompt(true);
+                                      //   } else if (i === 0) {
+                                      //     setEditMessagePrompt2(true);
+                                      //   }
+                                      // }}
+                                    />
+                                  )}
+                                  {oc?.sender_email === user?.email && (
+                                    <MdDelete
+                                      style={{
+                                        color: "red",
+                                        fontSize: "25px",
+                                        cursor: "pointer",
+                                      }}
+                                      // onClick={() => {
+                                      //   setMessageDeleteId(oc?.id);
+                                      //   setDeletePrompt2(true);
+                                      // }}
+                                    />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* <div className={`d-flex w-100 justify-content-end`}>
+                            <div className='mb-3 d-flex gap-2 align-items-center'>
+                              <IoCheckmarkDone
+                                style={{
+                                  color: "#01153b",
+                                  fontSize: "20px",
+                                  cursor: "pointer",
+                                }}
+                              />
+                              <p className='fs-4'>sent</p>
+                            </div>
+                          </div> */}
+                        </Element>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+
+            {!communicationLoading && replyMessages?.length === 0 && (
+              <div
+                className='mt-1 d-flex justify-content-center align-items-center'
+                style={{
+                  borderTop: "1px solid rgba(47, 46, 65, 0.2)",
+                  padding: "30px 0px",
+                }}
+              >
+                {<p className='fs-4'>-- No Replies --</p>}
+              </div>
+            )}
+
             {selectedMessage?.ticket_status === "active" && (
               // selectedMessage?.sender_email === user?.email &&
               <div
-                className='mt-5'
+                className='mt-0'
                 style={{
                   borderTop: "1px solid rgba(47, 46, 65, 0.2)",
                   paddingTop: "20px",
@@ -1657,7 +1997,7 @@ const CommunicationBookPage = () => {
                   }
                 />
 
-                <div className='mt-3'>
+                {/* <div className='mt-3'>
                   <CustomFileInput2
                     handleFileChange={handleFileChange}
                     fileName={fileName}
@@ -1671,7 +2011,7 @@ const CommunicationBookPage = () => {
                   .webp, doc, .docx, .pdf'
                     // loading={addLessonNoteLoading}
                   />
-                </div>
+                </div> */}
               </div>
             )}
 
