@@ -9,7 +9,7 @@ const CBStudentsRow = ({
   selectedStudent,
   user,
 }) => {
-  console.log({ studentByClassAndSession });
+  // console.log({ studentByClassAndSession });
 
   return (
     <div className='students-wrapper'>

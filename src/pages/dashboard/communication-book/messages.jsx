@@ -86,6 +86,7 @@ const CommunicationMessages = () => {
   });
 
   const [messageDeleteId, setMessageDeleteId] = useState("");
+  const [conversations, setConversations] = useState([]);
 
   const [editMessagePrompt, setEditMessagePrompt] = useState(false);
   const [editMessagePrompt2, setEditMessagePrompt2] = useState(false);
@@ -97,6 +98,8 @@ const CommunicationMessages = () => {
 
   const [showScrollIcon, setShowScrollIcon] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const [loading1, setLoading1] = useState(false);
 
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -115,6 +118,13 @@ const CommunicationMessages = () => {
   } = useMyMediaQuery2();
 
   const { id } = useParams();
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
 
   const userDesignation = designation(user?.designation_id);
 
@@ -184,6 +194,38 @@ const CommunicationMessages = () => {
     }
   );
 
+  //// EDIT COMMUNICATION BOOK ////
+  const {
+    mutateAsync: editCommunicationBook,
+    isLoading: editCommunicationBookLoading,
+  } = useMutation(
+    () =>
+      apiServices.editCommunicationBook({
+        id: messageDeleteId,
+        body: {
+          message: selectedMessage2?.message,
+          subject: selectedMessage2?.title,
+          file: base64String,
+          file_name: fileName,
+        },
+      }),
+    {
+      onSuccess() {
+        // setAllowFetch(true);
+        // refetchGetCommunicationBookReplies();
+        // setTimeout(() => {
+        //   setEditMessagePrompt2(false);
+        // }, 1000);
+        navigate(`/app/communication-book`);
+
+        toast.success("Reply has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
   /////// POST REPLY ////
   const {
     mutateAsync: addCommunicationBookReplies,
@@ -219,6 +261,51 @@ const CommunicationMessages = () => {
     }
   );
 
+  //// DELETE REPLY ////
+  const {
+    mutateAsync: deleteCommunicationBookReplies,
+    isLoading: deleteCommunicationBookRepliesLoading,
+  } = useMutation(
+    () => apiServices.deleteCommunicationBookReplies(messageDeleteId),
+    {
+      onSuccess() {
+        refetchGetCommunicationBookReplies();
+        setTimeout(() => {
+          setDeletePrompt2(false);
+        }, 1000);
+        toast.success("Reply has been deleted successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
+  //// EDIT REPLY ////
+  const {
+    mutateAsync: editCommunicationBookReplies,
+    isLoading: editCommunicationBookRepliesLoading,
+  } = useMutation(
+    () =>
+      apiServices.editCommunicationBookReplies({
+        id: messageDeleteId,
+        body: { message: selectedMessage2?.message },
+      }),
+    {
+      onSuccess() {
+        // setAllowFetch(true);
+        refetchGetCommunicationBookReplies();
+        setTimeout(() => {
+          setEditMessagePrompt(false);
+        }, 1000);
+        toast.success("Reply has been edited successfully");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
+
   // edit of ticket details
   const editButtonOptions2 = [
     {
@@ -227,83 +314,47 @@ const CommunicationMessages = () => {
       variant: "outline",
     },
     {
-      title: "Send",
+      title: "Update",
       //   title: "Send",
-      //   disabled: !replyMessage,
-      //   isLoading: addLessonNoteLoading,
+      disabled:
+        !selectedMessage2?.message ||
+        !selectedMessage2?.title ||
+        !file ||
+        !fileName,
+      isLoading: editCommunicationBookLoading,
       onClick: async () => {
-        if (!selectedMessage2?.message) return;
+        if (
+          !selectedMessage2?.message ||
+          !selectedMessage2?.title ||
+          !file ||
+          !fileName
+        )
+          return;
 
-        // const filt = openTickets?.filter(
-        //   (sm) => sm?.id !== selectedMessage?.id
-        // );
-
-        // const filtOpened = openTickets?.find(
-        //   (sm) => sm?.id === selectedMessage?.id
-        // );
-
-        // const filt2 = selectedMessage?.conversations?.filter(
-        //   (ms) => ms?.id !== messageDeleteId
-        // );
-
-        // const checkFirstMessage = () => {
-        //   if (messageDeleteId === msg[0]?.conversations[0]?.id) {
-        //     return true;
-        //   } else {
-        //     return false;
-        //   }
-        // };
-
-        // const filtConv = selectedMessage
-
-        // setSelectedMessage({
-        //   ...selectedMessage,
-        //   title: selectedMessage2?.title,
-        //   conversations: [
-        //     ...filt2,
-        //     {
-        //       id: messageDeleteId,
-        //       sender: selectedMessage2?.sender,
-        //       sender_email: selectedMessage2?.sender_email,
-        //       //   title: selectedMessage2?.title,
-        //       message: selectedMessage2?.message,
-        //       file: file,
-        //       file_name: fileName,
-        //       recipient_email: selectedMessage2?.recipient_email,
-        //       recipient: selectedMessage2?.recipient,
-        //       date: checkFirstMessage() ? selectedMessage2?.date : date,
-        //     },
-        //   ],
-        // });
-
-        // setOpenTickets([
-        //   ...filt,
+        // setConversations([
         //   {
-        //     ...filtOpened,
-        //     title: selectedMessage2?.title,
-        //     conversations: [
-        //       ...filt2,
-        //       {
-        //         id: messageDeleteId,
-        //         sender: selectedMessage2?.sender,
-        //         sender_email: selectedMessage2?.sender_email,
-        //         //   title: selectedMessage2?.title,
-        //         message: selectedMessage2?.message,
-        //         file: file,
-        //         file_name: fileName,
-        //         recipient_email: selectedMessage2?.recipient_email,
-        //         recipient: selectedMessage2?.recipient,
-        //         date: checkFirstMessage() ? selectedMessage2?.date : date,
-        //       },
-        //     ],
+        //     id: conversations?.id,
+        //     sender: conversations?.sender,
+        //     sender_email: conversations?.sender_email,
+        //     sender_type: conversations?.sender_type,
+        //     message: selectedMessage2?.message,
+        //     file: base64String,
+        //     file_name: fileName,
+        //     recipient_email: conversations?.recipient_email,
+        //     recipient: conversations?.recipient_email,
+        //     date: conversations?.date,
+        //     read_status: conversations?.read_status,
         //   },
         // ]);
 
-        setReplyMessage("");
-        setFile(null);
-        setFileName("");
+        editCommunicationBook();
+        // setReplyMessage("");
+        // setFile(null);
+        // setFileName("");
 
-        setEditMessagePrompt2(false);
+        // setEditMessagePrompt2(false);
+
+        // editCommunicationBookReplies();
         // setCreateQuestionPrompt(false);
         // await addLessonNote();
         // trigger(500);
@@ -323,70 +374,17 @@ const CommunicationMessages = () => {
       title: "Update",
       //   title: "Send",
       //   disabled: !replyMessage,
-      //   isLoading: addLessonNoteLoading,
+      isLoading: editCommunicationBookRepliesLoading,
       onClick: async () => {
         if (!selectedMessage2?.message) return;
 
-        // const filt = openTickets?.filter(
-        //   (sm) => sm?.id !== selectedMessage2?.id
-        // );
+        editCommunicationBookReplies();
 
-        // const filtOpened = openTickets?.find(
-        //   (sm) => sm?.id === selectedMessage2?.id
-        // );
+        // setReplyMessage("");
+        // setFile(null);
+        // setFileName("");
 
-        // const filt2 = selectedMessage?.conversations?.filter(
-        //   (ms) => ms?.id !== messageDeleteId
-        // );
-
-        // const filtConv = selectedMessage
-
-        // setSelectedMessage({
-        //   ...selectedMessage,
-        //   conversations: [
-        //     ...filt2,
-        //     {
-        //       id: messageDeleteId,
-        //       sender: selectedMessage2?.sender,
-        //       sender_email: selectedMessage2?.sender_email,
-        //       //   title: selectedMessage2?.title,
-        //       message: selectedMessage2?.message,
-        //       file: file,
-        //       file_name: fileName,
-        //       recipient_email: selectedMessage2?.recipient_email,
-        //       recipient: selectedMessage2?.recipient,
-        //       date,
-        //     },
-        //   ],
-        // });
-
-        // setOpenTickets([
-        //   ...filt,
-        //   {
-        //     ...filtOpened,
-        //     conversations: [
-        //       ...filt2,
-        //       {
-        //         id: messageDeleteId,
-        //         sender: selectedMessage2?.sender,
-        //         sender_email: selectedMessage2?.sender_email,
-        //         //   title: selectedMessage2?.title,
-        //         message: selectedMessage2?.message,
-        //         file: file,
-        //         file_name: fileName,
-        //         recipient_email: selectedMessage2?.recipient_email,
-        //         recipient: selectedMessage2?.recipient,
-        //         date,
-        //       },
-        //     ],
-        //   },
-        // ]);
-
-        setReplyMessage("");
-        setFile(null);
-        setFileName("");
-
-        setEditMessagePrompt(false);
+        // setEditMessagePrompt(false);
         // setCreateQuestionPrompt(false);
         // await addLessonNote();
         // trigger(500);
@@ -408,33 +406,6 @@ const CommunicationMessages = () => {
     {
       title: "Yes",
       onClick: () => {
-        //   const filt = messages?.filter((ms) => ms?.id !== selectedMessage?.id);
-
-        //   setMessages([...filt]);
-        //   setDeletePrompt(false);
-        //   // deleteLessonNote();
-        //   // setTimeout(() => {
-        //   //   setDeletePrompt(false);
-        //   // }, 1000);
-        // },
-        // const filt = openTickets?.filter(
-        //   (ms) => ms?.id !== selectedMessage?.id
-        // );
-        // // const filtClosed = closedTickets?.filter(
-        // //   (ms) => ms?.id !== selectedMessage?.id
-        // // );
-        // const filt2 = openTickets?.find((ms) => ms?.id === selectedMessage?.id);
-
-        // setOpenTickets([...filt]);
-
-        // setClosedTickets([
-        //   ...closedTickets,
-        //   {
-        //     ...filt2,
-        //     ticket_status: "closed",
-        //   },
-        // ]);
-
         setDeletePrompt(false);
       },
       variant: "outline-danger",
@@ -455,32 +426,7 @@ const CommunicationMessages = () => {
     {
       title: "Yes",
       onClick: () => {
-        // const filt = openTickets?.filter(
-        //   (ms) => ms?.id !== selectedMessage?.id
-        // );
-
-        // const filtOpened = openTickets?.find(
-        //   (ms) => ms?.id === selectedMessage?.id
-        // );
-
-        // const filt2 = selectedMessage?.conversations?.filter(
-        //   (ms) => ms?.id !== messageDeleteId
-        // );
-
-        // setSelectedMessage({
-        //   ...selectedMessage,
-        //   conversations: [...filt2],
-        // });
-
-        // setOpenTickets([
-        //   ...filt,
-        //   {
-        //     ...filtOpened,
-        //     conversations: [...filt2],
-        //   },
-        // ]);
-
-        setDeletePrompt2(false);
+        deleteCommunicationBookReplies();
 
         // deleteLessonNote();
         // setTimeout(() => {
@@ -488,7 +434,7 @@ const CommunicationMessages = () => {
         // }, 1000);
       },
       variant: "outline-danger",
-      //   isLoading: deleteLessonNoteLoading,
+      isLoading: deleteCommunicationBookRepliesLoading,
     },
   ];
 
@@ -505,9 +451,19 @@ const CommunicationMessages = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      scrollToBottom();
-    }, 1000);
+    // if (state?.conversations?.length > 0) {
+    //   setConversations([...state?.conversations]);
+    // }
+
+    scrollToBottom();
+    // setTimeout(() => {
+    // }, 1000);
+  }, [replyMessages]);
+
+  useEffect(() => {
+    if (state?.conversations?.length > 0) {
+      setConversations([...state?.conversations]);
+    }
   }, []);
 
   console.log({
@@ -518,6 +474,11 @@ const CommunicationMessages = () => {
     userDesignation,
     user,
     messageDeleteId,
+    selectedMessage2,
+    file,
+    fileName,
+    base64String,
+    conversations,
   });
 
   // navigate(`${state.pathname}/edit/${id}`)
@@ -582,6 +543,9 @@ const CommunicationMessages = () => {
             <button
               type='button'
               className='btn go-back-button'
+              // onClick={() =>
+              //   navigate(`/app/communication-book?status=${state?.status}`)
+              // }
               onClick={() => navigate(-1)}
             >
               <FontAwesomeIcon icon={faArrowLeft} className='me-2' /> Go Back
@@ -590,7 +554,7 @@ const CommunicationMessages = () => {
         </div>
 
         <div className='' style={{ minHeight: "200px" }}>
-          {state?.conversations
+          {conversations
             ?.sort((a, b) => {
               if (new Date(a?.date) < new Date(b?.date)) {
                 return -1;
@@ -802,7 +766,15 @@ const CommunicationMessages = () => {
             style={{
               minHeight: "200px",
               marginTop: "30px",
-              marginBottom: "50px",
+              marginBottom: xss
+                ? "70px"
+                : smm
+                ? "70px"
+                : mdd
+                ? "70px"
+                : lgg
+                ? "70px"
+                : "70px",
             }}
           >
             {replyMessages
@@ -922,7 +894,7 @@ const CommunicationMessages = () => {
                           }
                           {state?.ticket_status === "active" && (
                             <div className='d-flex justify-content-end  align-items-center gap-4'>
-                              {oc?.sender_email === user?.email && (
+                              {oc?.sender_type === userDesignation && (
                                 <FaEdit
                                   style={{
                                     color: "#01153b",
@@ -955,7 +927,7 @@ const CommunicationMessages = () => {
                                   }}
                                 />
                               )}
-                              {oc?.sender_email === user?.email && (
+                              {oc?.sender_type === userDesignation && (
                                 <MdDelete
                                   style={{
                                     color: "red",

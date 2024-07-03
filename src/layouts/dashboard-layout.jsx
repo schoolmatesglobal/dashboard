@@ -14,6 +14,9 @@ import Hamburger from "../components/common/hamburger";
 import ProfileImage from "../components/common/profile-image";
 import { useAppContext } from "../hooks/useAppContext";
 import { dashboardSideBarLinks } from "../utils/constants";
+import { useCommunicationBook } from "../hooks/useCommunicationBook";
+import { useQuery } from "react-query";
+import queryKeys from "../utils/queryKeys";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -29,6 +32,103 @@ const DashboardLayout = () => {
     setHideAllBars,
   } = useAppContext();
   const sidebarRef = useRef(null);
+
+  const {
+    permission,
+    apiServices,
+    user: newUser,
+    studentByClass,
+    refetchStudentByClass,
+    studentByClassLoading,
+    selectedStudent,
+    setSelectedStudent,
+    classSelected,
+    setClassSelected,
+    isRefetchingStudentByClass,
+    classValue,
+    createQuestionPrompt,
+    setCreateQuestionPrompt,
+    file,
+    setFile,
+    fileName,
+    setFileName,
+    error,
+    setError,
+    handleFileChange,
+    handleReset,
+    // handleDownload,
+    handleViewFile,
+    handleViewFile2,
+    base64String,
+    setBase64String,
+    messages,
+    setMessages,
+  } = useCommunicationBook();
+
+  // GET COMMUNICATION BOOK COUNTS /////////
+  const {
+    isLoading: getUnreadCommunicationBookCountLoading,
+    data: getUnreadCommunicationBookCount,
+    isFetching: getUnreadCommunicationBookCountFetching,
+    isRefetching: getUnreadCommunicationBookCountRefetching,
+    refetch: refetchGetUnreadCommunicationBookCount,
+  } = useQuery(
+    [queryKeys.GET_COMMUNICATION_BOOK_COUNT],
+    () => apiServices.getUnreadCommunicationBookCount(),
+    {
+      retry: 2,
+      // enabled: !!id && permission?.view,
+
+      select: (data) => {
+        console.log({ datarr: data, dtr: data?.data });
+
+        return data?.data || 0;
+
+        // if (data?.data?.length > 0) {
+        //   const ddt = data?.data?.map((dt, i) => {
+        //     const type = designation(dt?.sender?.designation);
+        //     return {
+        //       communication_id: dt?.communication_book_id,
+        //       reply_id: dt?.id,
+        //       sender_id: dt?.sender_id,
+        //       sender_type: type,
+        //       sender_email: dt?.sender?.email,
+        //       sender: `${dt?.sender?.first_name} ${dt?.sender?.last_name} (${type})`,
+        //       message: dt?.message,
+        //       date: dayjs(dt?.date, "D MMM YYYY h:mm A").format(
+        //         "dddd MMMM D, YYYY h:mm A"
+        //       ),
+        //     };
+        //   });
+
+        // console.log({ ddt });
+
+        //   return ddt;
+        // } else {
+        //   return [];
+        // }
+
+        // return permission?.create ? filt : lsg;
+      },
+
+      onSuccess(data) {
+        // setReplyMessages(data);
+        // const dt = [data?.data?.attributes];
+        // const dtId = data?.data?.id;
+        // const opened = dt?.filter((ms) => ms?.status === "active");
+        // const closed = dt?.filter((ms) => ms?.status !== "active");
+        // setOpenTickets([...opened]);
+        // setClosedTickets([...closed]);
+        // setLessonNotes(data);
+        // trigger(1000);
+      },
+
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -170,7 +270,7 @@ const DashboardLayout = () => {
                       className='fw-bold text-white'
                       style={{ fontSize: "10px" }}
                     >
-                      5
+                      {getUnreadCommunicationBookCount}
                     </p>
                   </div>
                 </div>

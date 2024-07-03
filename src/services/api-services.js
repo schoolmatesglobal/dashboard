@@ -2930,10 +2930,25 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async editCommunicationBook({ id }) {
+  async getClosedCommunicationBookByClass(class_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/closed/${class_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editCommunicationBook({ id, body }) {
     const { data } = await axios.patch(
       `${backendAPI}/v2/communicationbook/edit/${id}`,
-      {},
+      body,
       {
         headers: {
           "Content-Type": "application/json",
@@ -2987,6 +3002,21 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getUnreadCommunicationBookCount() {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/unread/count`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async deleteCommunicationBookReplies(id) {
     const { data } = await axios.delete(
       `${backendAPI}/v2/communicationbook/reply/delete/${id}`,
@@ -3001,10 +3031,10 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async editCommunicationBookReplies({ id }) {
+  async editCommunicationBookReplies({ id, body }) {
     const { data } = await axios.patch(
       `${backendAPI}/v2/communicationbook/reply/edit/${id}`,
-      {},
+      body,
       {
         headers: {
           "Content-Type": "application/json",

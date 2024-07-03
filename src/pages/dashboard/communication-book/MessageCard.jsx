@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { useMutation, useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useHistory } from "react-router-dom";
 
 const MessageCard = ({
   message,
@@ -29,7 +29,7 @@ const MessageCard = ({
   setMessages,
   selectedMessage,
   setTicketCloseId,
-  ticketTab,
+  // ticketTab,
   apiServices,
   allStaffs,
   replyMessages,
@@ -40,6 +40,7 @@ const MessageCard = ({
   getCommunicationBookRepliesLoading,
   getCommunicationBookRepliesFetching,
   getCommunicationBookRepliesRefetching,
+  status,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -210,12 +211,14 @@ const MessageCard = ({
 
     navigate(`/app/communication-book/${message?.id}`, {
       state: {
+        status,
         id: message?.id,
         title: message?.subject,
         ticket_status: message?.status,
         conversations: [
           {
             id: message?.id,
+            title: message?.subject,
             sender: `${message?.recipients?.sender?.first_name} ${
               message?.recipients?.sender?.last_name
             } ${
@@ -324,7 +327,7 @@ const MessageCard = ({
               xs ? 20 : sm ? 30 : md ? 50 : lg ? 40 : 60
             )}
           </p>
-          {ticketTab === "1" && unRead > 0 && (
+          {status === "active" && unRead > 0 && (
             <div
               className='d-flex justify-content-center align-items-center '
               style={{
@@ -360,7 +363,7 @@ const MessageCard = ({
         >
           {trimText(message?.message, 300)}
         </p>
-        <div className='d-flex align-items-center gap-3 mt-3 mt-md-0'>
+        {/* <div className='d-flex align-items-center gap-3 mt-3 mt-md-0'>
           <div
             className='d-flex justify-content-center align-items-center '
             style={{
@@ -373,14 +376,14 @@ const MessageCard = ({
             }}
           >
             <p className='fw-bold text-white'>
-              0{/* {message?.conversations?.length} */}
+              0
             </p>
           </div>
           <p className='d-flex d-md-none'>Messages</p>
-        </div>
+        </div> */}
       </div>
 
-      <div className='d-flex flex-column  flex-md-row justify-content-md-between align-items-md-center mt-4'>
+      <div className='d-flex flex-column gap-3 flex-md-row justify-content-md-between align-items-md-center mt-4'>
         <div className='d-flex flex-column flex-md-row gap-3 align-items-md-center mb-3 mb-md-0'>
           <p className='fs-4'>
             <span className='fw-bold fs-4'>From: </span>
@@ -415,18 +418,19 @@ const MessageCard = ({
             <Button variant='' className='w-auto' onClick={() => open()}>
               View
             </Button>
-            {message?.recipients?.sender?.email === user?.email && (
-              // {message?.ticket_status === "open" && (
-              <Button
-                variant='outline'
-                className='w-auto'
-                onClick={() => {
-                  editOpen();
-                }}
-              >
-                Close Ticket
-              </Button>
-            )}
+            {message?.recipients?.sender?.email === user?.email &&
+              status === "active" && (
+                // {message?.ticket_status === "open" && (
+                <Button
+                  variant='outline'
+                  className='w-auto'
+                  onClick={() => {
+                    editOpen();
+                  }}
+                >
+                  Close Ticket
+                </Button>
+              )}
           </div>
         }
       </div>

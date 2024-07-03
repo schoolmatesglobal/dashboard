@@ -43,6 +43,7 @@ import {
   scrollSpy,
 } from "react-scroll";
 import { Spinner } from "reactstrap";
+import { useLocation, useNavigate, useHistory } from "react-router-dom";
 
 const CommunicationBookPage = () => {
   const {
@@ -77,6 +78,18 @@ const CommunicationBookPage = () => {
     setMessages,
   } = useCommunicationBook();
 
+  // const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Function to get the current status from the URL query parameter
+  const getStatusFromURL = () => {
+    const searchParams = new URLSearchParams(location.search);
+    return searchParams.get("status") || "active"; // default to 'closed' if not set
+  };
+
+  const status = getStatusFromURL();
+
   const user = {
     ...newUser,
     email: newUser?.email || newUser?.email_address,
@@ -109,6 +122,7 @@ const CommunicationBookPage = () => {
   const [openedTitle, setOpenedTitle] = useState("");
   const [openedConversations, setOpenedConversations] = useState([]);
   const [communicationId, setCommunicationId] = useState("");
+  const [loading1, setLoading1] = useState(false);
 
   const [selectedMessage, setSelectedMessage] = useState({
     id: "",
@@ -123,6 +137,13 @@ const CommunicationBookPage = () => {
     file_name: "",
     conversations: [],
   });
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
 
   const [selectedMessage2, setSelectedMessage2] = useState({
     id: "",
@@ -193,10 +214,11 @@ const CommunicationBookPage = () => {
     // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
     {
       onSuccess() {
-        // refetchGetCommunicationBookByClass();
+        refetchGetCommunicationBookByClass();
+        trigger(500);
         setTimeout(() => {
           setCreateQuestionPrompt(false);
-        }, 1000);
+        }, 1200);
         toast.success("Communication ticket has been created successfully");
       },
       onError(err) {
@@ -239,7 +261,7 @@ const CommunicationBookPage = () => {
                 )
             );
 
-          console.log({ data, dt });
+          // console.log({ data, dt });
           return dt;
         }
 
@@ -252,12 +274,66 @@ const CommunicationBookPage = () => {
         // const dt = data?.data;
         // const dtId = data?.data?.id;
         const opened = data?.filter((ms) => ms?.status === "active");
-        const closed = data?.filter((ms) => ms?.status !== "active");
+        // const closed = data?.filter((ms) => ms?.status !== "active");
 
         setOpenTickets([...opened]);
-        setClosedTickets([...closed]);
+        // setClosedTickets([...closed]);
         // setLessonNotes(data);
         // trigger(1000);
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
+  // FETCH CLOSED COMMUNICATION BOOK /////////
+  const {
+    isLoading: getClosedCommunicationBookByClassLoading,
+    data: getClosedCommunicationBookByClass,
+    isFetching: getClosedCommunicationBookByClassFetching,
+    isRefetching: getClosedCommunicationBookByClassRefetching,
+    refetch: refetchClosedGetCommunicationBookByClass,
+  } = useQuery(
+    [queryKeys.GET_CLOSED_COMMUNICATION_BOOK],
+    () => apiServices.getClosedCommunicationBookByClass(user?.class_id),
+    {
+      retry: 2,
+      enabled: !!user?.class_id && permission?.view,
+
+      select: (data) => {
+        // const cdt = apiServices.formatData(data)
+        const cdt = [{ ...data?.data?.attributes, id: data?.data?.id }]
+          ?.map((da, i) => {
+            return {
+              ...da,
+              date: dayjs(da?.date, "D MMM YYYY h:mm A").format(
+                "dddd MMMM D, YYYY h:mm A"
+              ),
+            };
+          })
+          ?.filter(
+            (da) =>
+              da?.recipients?.sender?.email === user?.email ||
+              da?.recipients?.receivers?.some(
+                (obj) => obj.email === user?.email
+              )
+          );
+
+        console.log({ cdata: data, cdt });
+
+        if (cdt?.length > 0) {
+          return cdt;
+        } else {
+          return [];
+        }
+
+        // return permission?.create ? filt : lsg;
+      },
+      onSuccess(data) {
+        const closed = data?.filter((ms) => ms?.status === "closed");
+        setClosedTickets([...closed]);
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -364,33 +440,33 @@ const CommunicationBookPage = () => {
     }
   );
 
-  //// FETCH STAFF BY ID /////////
-  // const {
-  //   isLoading: getAllStaffsLoading,
-  //   data: getAllStaffs,
-  //   isFetching: getAllStaffsFetching,
-  //   isRefetching: getAllStaffsRefetching,
-  //   refetch: refetchGetAllStaffs,
-  // } = useQuery([queryKeys.GET_ALL_STAFFS], () => apiServices.getAllStaffs2(), {
-  //   retry: 2,
-  //   enabled: user?.class_id && permission?.view,
+  //// CLOSE COMMUNICATION BOOK ////
+  const {
+    mutateAsync: closeCommunicationBook,
+    isLoading: closeCommunicationBookLoading,
+  } = useMutation(
+    () =>
+      apiServices.closeCommunicationBook({
+        id: selectedMessage?.id,
+      }),
+    {
+      onSuccess() {
+        // setAllowFetch(true);
+        refetchGetCommunicationBookByClass();
+        trigger(500);
+        // trigger(500);
+        setTimeout(() => {
+          setDeletePrompt(false);
+        }, 1000);
+        // navigate(`/app/communication-book`);
 
-  //   select: (data) => {
-  //     console.log({ datas: data?.data, });
-
-  //     return data?.data;
-
-  //     // return permission?.create ? filt : lsg;
-  //   },
-  //   onSuccess(data) {
-  //     // setLessonNotes(data);
-  //     // trigger(1000);
-  //   },
-  //   onError(err) {
-  //     apiServices.errorHandler(err);
-  //   },
-  //   // select: apiServices.formatData,
-  // });
+        toast.success("Ticket has been successfully closed.");
+      },
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
   //// FETCH STAFF BY class /////////
   const {
@@ -577,7 +653,7 @@ const CommunicationBookPage = () => {
   const deleteButtons = [
     {
       title: "No",
-      // isLoading: addObjectAssignmentLoading || addTheoryAssignmentLoading,
+      // isLoading: closeCommunicationBookLoading,
       onClick: () => {
         // setWarningPrompt(true);
         setDeletePrompt(false);
@@ -587,37 +663,10 @@ const CommunicationBookPage = () => {
     {
       title: "Yes",
       onClick: () => {
-        //   const filt = messages?.filter((ms) => ms?.id !== selectedMessage?.id);
-
-        //   setMessages([...filt]);
-        //   setDeletePrompt(false);
-        //   // deleteLessonNote();
-        //   // setTimeout(() => {
-        //   //   setDeletePrompt(false);
-        //   // }, 1000);
-        // },
-        const filt = openTickets?.filter(
-          (ms) => ms?.id !== selectedMessage?.id
-        );
-        // const filtClosed = closedTickets?.filter(
-        //   (ms) => ms?.id !== selectedMessage?.id
-        // );
-        const filt2 = openTickets?.find((ms) => ms?.id === selectedMessage?.id);
-
-        setOpenTickets([...filt]);
-
-        setClosedTickets([
-          ...closedTickets,
-          {
-            ...filt2,
-            ticket_status: "closed",
-          },
-        ]);
-
-        setDeletePrompt(false);
+        closeCommunicationBook();
       },
       variant: "outline-danger",
-      //   isLoading: deleteLessonNoteLoading,
+      isLoading: closeCommunicationBookLoading,
     },
   ];
 
@@ -949,71 +998,6 @@ const CommunicationBookPage = () => {
       onClick: async () => {
         if (!selectedMessage2?.message) return;
 
-        // const filt = openTickets?.filter(
-        //   (sm) => sm?.id !== selectedMessage?.id
-        // );
-
-        // const filtOpened = openTickets?.find(
-        //   (sm) => sm?.id === selectedMessage?.id
-        // );
-
-        // const filt2 = selectedMessage?.conversations?.filter(
-        //   (ms) => ms?.id !== messageDeleteId
-        // );
-
-        // const checkFirstMessage = () => {
-        //   if (messageDeleteId === msg[0]?.conversations[0]?.id) {
-        //     return true;
-        //   } else {
-        //     return false;
-        //   }
-        // };
-
-        // const filtConv = selectedMessage
-
-        // setSelectedMessage({
-        //   ...selectedMessage,
-        //   title: selectedMessage2?.title,
-        //   conversations: [
-        //     ...filt2,
-        //     {
-        //       id: messageDeleteId,
-        //       sender: selectedMessage2?.sender,
-        //       sender_email: selectedMessage2?.sender_email,
-        //       //   title: selectedMessage2?.title,
-        //       message: selectedMessage2?.message,
-        //       file: file,
-        //       file_name: fileName,
-        //       recipient_email: selectedMessage2?.recipient_email,
-        //       recipient: selectedMessage2?.recipient,
-        //       date: checkFirstMessage() ? selectedMessage2?.date : date,
-        //     },
-        //   ],
-        // });
-
-        // setOpenTickets([
-        //   ...filt,
-        //   {
-        //     ...filtOpened,
-        //     title: selectedMessage2?.title,
-        //     conversations: [
-        //       ...filt2,
-        //       {
-        //         id: messageDeleteId,
-        //         sender: selectedMessage2?.sender,
-        //         sender_email: selectedMessage2?.sender_email,
-        //         //   title: selectedMessage2?.title,
-        //         message: selectedMessage2?.message,
-        //         file: file,
-        //         file_name: fileName,
-        //         recipient_email: selectedMessage2?.recipient_email,
-        //         recipient: selectedMessage2?.recipient,
-        //         date: checkFirstMessage() ? selectedMessage2?.date : date,
-        //       },
-        //     ],
-        //   },
-        // ]);
-
         setReplyMessage("");
         setFile(null);
         setFileName("");
@@ -1047,9 +1031,8 @@ const CommunicationBookPage = () => {
   };
 
   const allLoading =
-    studentByClassLoading ||
-    getCommunicationBookByClassLoading ||
-    getCommunicationBookByClassFetching;
+    studentByClassLoading || getCommunicationBookByClassLoading || loading1;
+
   const showStudentRowWarning = () => {
     if (user?.department === "Admin" && !classSelected) {
       return true;
@@ -1098,25 +1081,24 @@ const CommunicationBookPage = () => {
   //   const allLoading = studentByClassLoading || isRefetchingStudentByClass;
 
   console.log({
-    // classWidth: classWidth(),
-    // permission,
-    communicationId,
-    openMessage,
-    user,
-    newStudentByClass: newStudentByClass(),
-    studentByClass,
-    selectedStudent,
-    // studentsEmail,
-    studentsId,
-    msg,
-    messages,
-    openTickets,
-    closedTickets,
-    selectedMessage,
-    selectedMessage2,
-    replyMessages,
-    // messageDeleteId,
-    ticketTab,
+    // communicationId,
+    // openMessage,
+    // user,
+    // newStudentByClass: newStudentByClass(),
+    // studentByClass,
+    // selectedStudent,
+    // studentsId,
+    // msg,
+    // messages,
+    // openTickets,
+    // closedTickets,
+    // selectedMessage,
+    // selectedMessage2,
+    // replyMessages,
+    // ticketTab,
+    // history,
+    location,
+    status,
   });
 
   return (
@@ -1127,20 +1109,22 @@ const CommunicationBookPage = () => {
             <Button
               className='w-auto'
               onClick={() => {
-                setTicketTab("1");
+                // setTicketTab("1");
+                navigate(`/app/communication-book/?status=active`);
                 // handleViewFile(notes?.file);
               }}
-              variant={`${ticketTab === "1" ? "" : "outline"}`}
+              variant={`${status === "active" ? "" : "outline"}`}
             >
               <FontAwesomeIcon icon={faCalendarAlt} /> Active Tickets
             </Button>
             <Button
               className='w-auto'
               onClick={() => {
-                setTicketTab("2");
+                // setTicketTab("2");
+                navigate(`/app/communication-book/?status=closed`);
                 // handleViewFile(notes?.file);
               }}
-              variant={`${ticketTab === "2" ? "" : "outline"}`}
+              variant={`${status === "closed" ? "" : "outline"}`}
             >
               <FontAwesomeIcon icon={faCalendarCheck} /> Closed Tickets
             </Button>
@@ -1215,7 +1199,7 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {!allLoading && ticketTab === "1" && (
+          {!allLoading && status === "active" && (
             <div className='d-flex w-100 mt-3 justify-content-end'>
               <Button
                 variant=''
@@ -1244,7 +1228,7 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {!allLoading && ticketTab === "1" && openTickets?.length === 0 && (
+          {!allLoading && status === "active" && openTickets?.length === 0 && (
             <div
               className='d-flex flex-column w-100 align-items-center justify-content-center h-100'
               style={{ minHeight: "50vh" }}
@@ -1254,18 +1238,20 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {!allLoading && ticketTab === "2" && closedTickets?.length === 0 && (
-            <div
-              className='d-flex flex-column w-100 align-items-center justify-content-center h-100'
-              style={{ minHeight: "50vh" }}
-            >
-              <HiOutlineDocumentPlus style={{ fontSize: "50px" }} />
-              <p className='fs-1 fw-bold mt-3'>No Ticket</p>
-            </div>
-          )}
+          {!allLoading &&
+            status === "closed" &&
+            closedTickets?.length === 0 && (
+              <div
+                className='d-flex flex-column w-100 align-items-center justify-content-center h-100'
+                style={{ minHeight: "50vh" }}
+              >
+                <HiOutlineDocumentPlus style={{ fontSize: "50px" }} />
+                <p className='fs-1 fw-bold mt-3'>No Ticket</p>
+              </div>
+            )}
 
           {!allLoading &&
-            ticketTab === "1" &&
+            status === "active" &&
             openTickets
               ?.filter((ms) => ms?.status === "active")
               ?.sort((a, b) => {
@@ -1296,7 +1282,7 @@ const CommunicationBookPage = () => {
                       user={user}
                       setDeletePrompt={setDeletePrompt}
                       setTicketCloseId={setTicketCloseId}
-                      ticketTab={ticketTab}
+                      // ticketTab={ticketTab}
                       apiServices={apiServices}
                       allStaffs={[]}
                       replyMessages={replyMessages}
@@ -1315,15 +1301,16 @@ const CommunicationBookPage = () => {
                       getCommunicationBookRepliesRefetching={
                         getCommunicationBookRepliesRefetching
                       }
+                      status={status}
                     />
                   </div>
                 );
               })}
 
           {!allLoading &&
-            ticketTab === "2" &&
+            status === "closed" &&
             closedTickets
-              ?.filter((ms) => ms?.status !== "active")
+              ?.filter((ms) => ms?.status === "closed")
               ?.sort((a, b) => {
                 if (
                   new Date(a.conversations[0]?.date) <
@@ -1349,6 +1336,7 @@ const CommunicationBookPage = () => {
                       selectedMessage={selectedMessage}
                       setMessages={setMessages}
                       setOpenTickets={setOpenTickets}
+                      openMessage={openMessage}
                       setOpenMessage={setOpenMessage}
                       setSelectedMessage={setSelectedMessage}
                       setFile={setFile}
@@ -1357,12 +1345,26 @@ const CommunicationBookPage = () => {
                       user={user}
                       setDeletePrompt={setDeletePrompt}
                       setTicketCloseId={setTicketCloseId}
-                      ticketTab={ticketTab}
+                      // ticketTab={ticketTab}
                       apiServices={apiServices}
                       allStaffs={[]}
+                      replyMessages={replyMessages}
+                      setReplyMessages={setReplyMessages}
                       refetchGetCommunicationBookReplies={
                         refetchGetCommunicationBookReplies
                       }
+                      communicationId={communicationId}
+                      setCommunicationId={setCommunicationId}
+                      getCommunicationBookRepliesLoading={
+                        getCommunicationBookRepliesLoading
+                      }
+                      getCommunicationBookRepliesFetching={
+                        getCommunicationBookRepliesFetching
+                      }
+                      getCommunicationBookRepliesRefetching={
+                        getCommunicationBookRepliesRefetching
+                      }
+                      status={status}
                     />
                   </div>
                 );
