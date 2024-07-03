@@ -1,49 +1,39 @@
-import React, { useEffect, useState } from "react";
-import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
-import queryKeys from "../../../utils/queryKeys";
-import { useMutation, useQuery } from "react-query";
-import PageSheet from "../../../components/common/page-sheet";
-import { useCommunicationBook } from "../../../hooks/useCommunicationBook";
-import CbtStudentsRow from "../../../components/common/cbt-students-row";
-import CBStudentsRow from "../../../components/common/cb-students-row";
-import Button from "../../../components/buttons/button";
-import { useClasses } from "../../../hooks/useClasses";
-import AuthSelect from "../../../components/inputs/auth-select";
-import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
-import useMyMediaQuery from "../../../hooks/useMyMediaQuery";
-import Prompt from "../../../components/modals/prompt";
-import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
-import MessageCard from "./MessageCard";
+import {
+  faCalendarAlt,
+  faCalendarCheck,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { chatColors, designation, msg, trimText } from "./constant";
-import { parse, formatDistanceToNow } from "date-fns";
-import { ImAttachment } from "react-icons/im";
-import { IoCheckmarkDone } from "react-icons/io5";
-import { MdDelete } from "react-icons/md";
+import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import AuthInput from "../../../components/inputs/auth-input";
-import { TiPin } from "react-icons/ti";
-import { BsCheck2All } from "react-icons/bs";
-import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendarCheck,
-  faCalendarAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FaRegCalendarCheck, FaRegCalendar } from "react-icons/fa";
-import { colors } from "../../../utils/constants";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
+import { ImAttachment } from "react-icons/im";
+import { MdDelete } from "react-icons/md";
+import { TiPin } from "react-icons/ti";
+import { useMutation, useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Element,
-  Events,
-  Link as ScrollLink,
-  scroller,
-  scrollSpy,
+  Events
 } from "react-scroll";
+import { toast } from "react-toastify";
 import { Spinner } from "reactstrap";
-import { useLocation, useNavigate, useHistory } from "react-router-dom";
+import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
+import Button from "../../../components/buttons/button";
+import CBStudentsRow from "../../../components/common/cb-students-row";
+import PageSheet from "../../../components/common/page-sheet";
+import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
+import AuthInput from "../../../components/inputs/auth-input";
+import AuthSelect from "../../../components/inputs/auth-select";
+import Prompt from "../../../components/modals/prompt";
+import { useClasses } from "../../../hooks/useClasses";
+import { useCommunicationBook } from "../../../hooks/useCommunicationBook";
+import useMyMediaQuery from "../../../hooks/useMyMediaQuery";
+import queryKeys from "../../../utils/queryKeys";
+import MessageCard from "./MessageCard";
+import { chatColors, designation, trimText } from "./constant";
 
 const CommunicationBookPage = () => {
   const {

@@ -33,37 +33,7 @@ const DashboardLayout = () => {
   } = useAppContext();
   const sidebarRef = useRef(null);
 
-  const {
-    permission,
-    apiServices,
-    user: newUser,
-    studentByClass,
-    refetchStudentByClass,
-    studentByClassLoading,
-    selectedStudent,
-    setSelectedStudent,
-    classSelected,
-    setClassSelected,
-    isRefetchingStudentByClass,
-    classValue,
-    createQuestionPrompt,
-    setCreateQuestionPrompt,
-    file,
-    setFile,
-    fileName,
-    setFileName,
-    error,
-    setError,
-    handleFileChange,
-    handleReset,
-    // handleDownload,
-    handleViewFile,
-    handleViewFile2,
-    base64String,
-    setBase64String,
-    messages,
-    setMessages,
-  } = useCommunicationBook();
+  const { permission, apiServices, user: newUser } = useCommunicationBook();
 
   // GET COMMUNICATION BOOK COUNTS /////////
   const {
@@ -250,30 +220,37 @@ const DashboardLayout = () => {
               <Hamburger onClick={toggleNavbar} />
               <div className='d-flex gap-3 align-items-center'>
                 <p className='ms-3'>Welcome {user?.firstname}</p>
-                <div style={{ position: "relative" }}>
-                  <FontAwesomeIcon icon={faBell} style={{ fontSize: "20px" }} />
-                  <div
-                    className='d-flex justify-content-center align-items-center '
-                    style={{
-                      background: "green",
-                      height: "20px",
-                      width: "20px",
-                      border: "1px solid #96ff9a",
-                      borderRadius: "50%",
-                      padding: "10px",
-                      position: "absolute",
-                      top: "-10px",
-                      left: "10px",
-                    }}
-                  >
-                    <p
-                      className='fw-bold text-white'
-                      style={{ fontSize: "10px" }}
-                    >
-                      {getUnreadCommunicationBookCount}
-                    </p>
+                {
+                  <div style={{ position: "relative" }}>
+                    <FontAwesomeIcon
+                      icon={faBell}
+                      style={{ fontSize: "20px" }}
+                    />
+                    {getUnreadCommunicationBookCount > 0 && (
+                      <div
+                        className='d-flex justify-content-center align-items-center '
+                        style={{
+                          background: "green",
+                          height: "20px",
+                          width: "20px",
+                          border: "1px solid #96ff9a",
+                          borderRadius: "50%",
+                          padding: "10px",
+                          position: "absolute",
+                          top: "-10px",
+                          left: "10px",
+                        }}
+                      >
+                        <p
+                          className='fw-bold text-white'
+                          style={{ fontSize: "10px" }}
+                        >
+                          {getUnreadCommunicationBookCount}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
+                }
               </div>
             </Nav>
             <Nav className='ms-auto' navbar>
