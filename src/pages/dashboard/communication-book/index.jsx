@@ -1066,7 +1066,7 @@ const CommunicationBookPage = () => {
   }, []);
 
   const communicationLoading =
-    getCommunicationBookByClassLoading ||
+    // getCommunicationBookByClassLoading ||
     getCommunicationBookByClassFetching ||
     getCommunicationBookByClassRefetching;
 
