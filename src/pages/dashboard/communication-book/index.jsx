@@ -14,10 +14,7 @@ import { MdDelete } from "react-icons/md";
 import { TiPin } from "react-icons/ti";
 import { useMutation, useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  Element,
-  Events
-} from "react-scroll";
+import { Element, Events } from "react-scroll";
 import { toast } from "react-toastify";
 import { Spinner } from "reactstrap";
 import styles from "../../../assets/scss/pages/dashboard/assignment.module.scss";
@@ -251,7 +248,7 @@ const CommunicationBookPage = () => {
                 )
             );
 
-          // console.log({ data, dt });
+          console.log({ data, dt });
           return dt;
         }
 
@@ -293,8 +290,9 @@ const CommunicationBookPage = () => {
       enabled: !!user?.class_id && permission?.view,
 
       select: (data) => {
-        // const cdt = apiServices.formatData(data)
-        const cdt = [{ ...data?.data?.attributes, id: data?.data?.id }]
+        // const cdt = [{ ...data?.data?.attributes, id: data?.data?.id }]
+        const cdt = apiServices
+          .formatData(data)
           ?.map((da, i) => {
             return {
               ...da,
@@ -1021,7 +1019,11 @@ const CommunicationBookPage = () => {
   };
 
   const allLoading =
-    studentByClassLoading || getCommunicationBookByClassLoading || loading1;
+    studentByClassLoading ||
+    getCommunicationBookByClassLoading ||
+    // getCommunicationBookByClassFetching ||
+    // getCommunicationBookByClassRefetching ||
+    loading1;
 
   const showStudentRowWarning = () => {
     if (user?.department === "Admin" && !classSelected) {
@@ -1064,9 +1066,9 @@ const CommunicationBookPage = () => {
   }, []);
 
   const communicationLoading =
-    getCommunicationBookRepliesLoading ||
-    getCommunicationBookRepliesFetching ||
-    getCommunicationBookRepliesRefetching;
+    getCommunicationBookByClassLoading ||
+    getCommunicationBookByClassFetching ||
+    getCommunicationBookByClassRefetching;
 
   //   const allLoading = studentByClassLoading || isRefetchingStudentByClass;
 
@@ -1081,12 +1083,13 @@ const CommunicationBookPage = () => {
     // msg,
     // messages,
     // openTickets,
-    // closedTickets,
+    closedTickets,
     // selectedMessage,
     // selectedMessage2,
     // replyMessages,
     // ticketTab,
     // history,
+    allLoading,
     location,
     status,
   });
@@ -1118,6 +1121,11 @@ const CommunicationBookPage = () => {
             >
               <FontAwesomeIcon icon={faCalendarCheck} /> Closed Tickets
             </Button>
+            {communicationLoading && (
+              <span style={{ margin: "0px 10px" }}>
+                <Spinner />
+              </span>
+            )}
           </div>
           {user?.department === "Admin" && (
             <div className='d-flex col-6 col-md-3 col-lg-3'>
@@ -1138,7 +1146,7 @@ const CommunicationBookPage = () => {
             </div>
           )}
 
-          {!allLoading && (
+          {!allLoading && status === "active" && (
             <div className='w-100 mt-4 border border-2 pt-4 pb-2  px-3 rounded-3 d-flex align-items-center'>
               {showStudentRow() && (
                 <CBStudentsRow
@@ -1302,16 +1310,10 @@ const CommunicationBookPage = () => {
             closedTickets
               ?.filter((ms) => ms?.status === "closed")
               ?.sort((a, b) => {
-                if (
-                  new Date(a.conversations[0]?.date) <
-                  new Date(b.conversations[0].date)
-                ) {
+                if (new Date(a.date) < new Date(b.date)) {
                   return 1;
                 }
-                if (
-                  new Date(a.conversations[0]?.date) >
-                  new Date(b.conversations[0].date)
-                ) {
+                if (new Date(a.date) > new Date(b.date)) {
                   return -1;
                 }
                 return 0;

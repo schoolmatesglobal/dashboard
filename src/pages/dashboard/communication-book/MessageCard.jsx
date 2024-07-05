@@ -186,7 +186,8 @@ const MessageCard = ({
           },
         ],
         file: message?.attachment,
-        file_name: extractFileName(message?.attachment),
+        file_name: message?.file_name,
+        // file_name: extractFileName(message?.attachment),
         message: message?.message,
         date: message?.date,
         sender: `${message?.recipients?.sender?.first_name} ${
@@ -230,7 +231,7 @@ const MessageCard = ({
             sender_type: designation(sender_designation),
             message: message?.message,
             file: message?.attachment,
-            file_name: extractFileName(message?.attachment),
+            file_name: message?.file_name,
             recipient_email: ["romelu@lukaku.com"],
             recipient: receiver_name,
             date: message?.date,
