@@ -522,19 +522,19 @@ export const useStudent = () => {
     }
   );
 
-  const { isLoading: communicationListLoading, data: communicationList } =
-    useQuery(
-      [queryKeys.GET_COMMUNICATION_BOOK],
-      apiServices.getCommunicationBook,
-      {
-        retry: 3,
-        enabled: permission?.communication ?? false,
-        select: apiServices.formatData,
-        onError(err) {
-          errorHandler(err);
-        },
-      }
-    );
+  // const { isLoading: communicationListLoading, data: communicationList } =
+  //   useQuery(
+  //     [queryKeys.GET_COMMUNICATION_BOOK],
+  //     apiServices.getCommunicationBook,
+  //     {
+  //       retry: 3,
+  //       enabled: permission?.communication ?? false,
+  //       select: apiServices.formatData,
+  //       onError(err) {
+  //         errorHandler(err);
+  //       },
+  //     }
+  //   );
 
   const { mutate: graduateStudent, isLoading: graduateStudentLoading } =
     useMutation(apiServices.graduateStudent, {
@@ -583,7 +583,7 @@ export const useStudent = () => {
     promoteStudentLoading ||
     postHealthReportLoading ||
     postBusRoutingLoading ||
-    communicationListLoading ||
+    // communicationListLoading ||
     postCommunicationBookLoading ||
     campusListLoading;
 
@@ -634,7 +634,7 @@ export const useStudent = () => {
     postHealthReport,
     apiServices,
     postBusRouting,
-    communicationList,
+    // communicationList,
     postCommunicationBook,
     onDeleteStudent: handleDeleteStudent,
     onUpdateStudent: handleUpdateStudent,

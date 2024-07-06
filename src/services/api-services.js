@@ -167,6 +167,32 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async getAllStaffs2() {
+    const { data } = await axios.get(`${backendAPI}/staff`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
+  async getStaffByClass(className) {
+    const { data } = await axios.get(
+      `${backendAPI}/staffbyclass/${className}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async getStudentPerformance(period, term, session, subject_id, student_id) {
     const { data } = await axios.get(
       `${backendAPI}/assignment/performance?period=${period}&term=${term}&session=${session}&student_id=${student_id}&subject_id=${subject_id}`,
@@ -2791,6 +2817,231 @@ class APIServies extends Helpers {
       }
     );
 
+    return data;
+  }
+
+  async addLessonNote(body) {
+    const { data } = await axios.post(`${backendAPI}/v2/lessonnote/add`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+
+  async getLessonNoteByClass(class_id, subject_id, week, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/lessonnote/${class_id}/${subject_id}/${week}/${term}/${session}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async deleteLessonNote(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/lessonnote/remove/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editLessonNote({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async approveLessonNote({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/approve/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async unApproveLessonNote({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/lessonnote/unapprove/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async addCommunicationBook(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/communicationbook`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async getCommunicationBookByClass(class_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/${class_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getClosedCommunicationBookByClass(class_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/closed/${class_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editCommunicationBook({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async closeCommunicationBook({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/close/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async addCommunicationBookReplies({ communication_book_id, body }) {
+    const { data } = await axios.post(
+      `${backendAPI}/v2/communicationbook/${communication_book_id}/replies`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async getCommunicationBookReplies(communication_book_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/replies/${communication_book_id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getUnreadCommunicationBookCount() {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/communicationbook/unread/count`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async deleteCommunicationBookReplies(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/communicationbook/reply/delete/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editCommunicationBookReplies({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/communicationbook/reply/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
     return data;
   }
 }

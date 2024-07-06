@@ -1,4 +1,4 @@
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faBell } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
@@ -14,6 +14,9 @@ import Hamburger from "../components/common/hamburger";
 import ProfileImage from "../components/common/profile-image";
 import { useAppContext } from "../hooks/useAppContext";
 import { dashboardSideBarLinks } from "../utils/constants";
+import { useCommunicationBook } from "../hooks/useCommunicationBook";
+import { useQuery } from "react-query";
+import queryKeys from "../utils/queryKeys";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -29,6 +32,73 @@ const DashboardLayout = () => {
     setHideAllBars,
   } = useAppContext();
   const sidebarRef = useRef(null);
+
+  const { permission, apiServices, user: newUser } = useCommunicationBook();
+
+  // GET COMMUNICATION BOOK COUNTS /////////
+  const {
+    isLoading: getUnreadCommunicationBookCountLoading,
+    data: getUnreadCommunicationBookCount,
+    isFetching: getUnreadCommunicationBookCountFetching,
+    isRefetching: getUnreadCommunicationBookCountRefetching,
+    refetch: refetchGetUnreadCommunicationBookCount,
+  } = useQuery(
+    [queryKeys.GET_COMMUNICATION_BOOK_COUNT],
+    () => apiServices.getUnreadCommunicationBookCount(),
+    {
+      retry: 2,
+      // enabled: !!id && permission?.view,
+
+      select: (data) => {
+        console.log({ datarr: data, dtr: data?.data });
+
+        return data?.data || 0;
+
+        // if (data?.data?.length > 0) {
+        //   const ddt = data?.data?.map((dt, i) => {
+        //     const type = designation(dt?.sender?.designation);
+        //     return {
+        //       communication_id: dt?.communication_book_id,
+        //       reply_id: dt?.id,
+        //       sender_id: dt?.sender_id,
+        //       sender_type: type,
+        //       sender_email: dt?.sender?.email,
+        //       sender: `${dt?.sender?.first_name} ${dt?.sender?.last_name} (${type})`,
+        //       message: dt?.message,
+        //       date: dayjs(dt?.date, "D MMM YYYY h:mm A").format(
+        //         "dddd MMMM D, YYYY h:mm A"
+        //       ),
+        //     };
+        //   });
+
+        // console.log({ ddt });
+
+        //   return ddt;
+        // } else {
+        //   return [];
+        // }
+
+        // return permission?.create ? filt : lsg;
+      },
+
+      onSuccess(data) {
+        // setReplyMessages(data);
+        // const dt = [data?.data?.attributes];
+        // const dtId = data?.data?.id;
+        // const opened = dt?.filter((ms) => ms?.status === "active");
+        // const closed = dt?.filter((ms) => ms?.status !== "active");
+        // setOpenTickets([...opened]);
+        // setClosedTickets([...closed]);
+        // setLessonNotes(data);
+        // trigger(1000);
+      },
+
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -52,9 +122,11 @@ const DashboardLayout = () => {
       case "STARTER PLAN":
         return dashboardSideBarLinks[user?.designation_name].filter(
           (ps) =>
+            ps.title !== "Lesson Note" &&
             ps.title !== "Report" &&
             ps.title !== "Vehicle Logs" &&
-            ps.title !== "Vehicles"
+            ps.title !== "Vehicles" &&
+            ps.title !== "Communication Book"
         );
         break;
 
@@ -76,6 +148,10 @@ const DashboardLayout = () => {
   };
 
   const filterOutPreschoolMenu = () => {
+    // if(user?.plan === "STARTER PLAN"){
+
+    // }
+
     if (user?.is_preschool === "true") {
       // return dashboardSideBarLinks[user?.designation_name];
       return filterSideBarOnPlan()?.filter(
@@ -142,7 +218,40 @@ const DashboardLayout = () => {
           >
             <Nav className='align-items-center'>
               <Hamburger onClick={toggleNavbar} />
-              <p className='ms-3'>Welcome {user?.firstname}</p>
+              <div className='d-flex gap-3 align-items-center'>
+                <p className='ms-3'>Welcome {user?.firstname}</p>
+                {
+                  <div style={{ position: "relative" }}>
+                    <FontAwesomeIcon
+                      icon={faBell}
+                      style={{ fontSize: "20px" }}
+                    />
+                    {getUnreadCommunicationBookCount > 0 && (
+                      <div
+                        className='d-flex justify-content-center align-items-center '
+                        style={{
+                          background: "green",
+                          height: "20px",
+                          width: "20px",
+                          border: "1px solid #96ff9a",
+                          borderRadius: "50%",
+                          padding: "10px",
+                          position: "absolute",
+                          top: "-10px",
+                          left: "10px",
+                        }}
+                      >
+                        <p
+                          className='fw-bold text-white'
+                          style={{ fontSize: "10px" }}
+                        >
+                          {getUnreadCommunicationBookCount}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                }
+              </div>
             </Nav>
             <Nav className='ms-auto' navbar>
               <Dropdown isOpen={dropdown} toggle={() => setDropdown(!dropdown)}>

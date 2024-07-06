@@ -2,7 +2,7 @@ import { faEye, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import PageView from "../../../components/views/table-view";
-import { ResultIcon } from "../../../assets/svgs";
+import { BroadSheetIcon } from "../../../assets/svgs";
 import Prompt from "../../../components/modals/prompt";
 import AuthSelect from "../../../components/inputs/auth-select";
 import { useForm } from "react-formid";
@@ -189,7 +189,7 @@ const BroadSheet = () => {
       <PageView
         hasSortOptions
         showIllustration
-        svgIllustrationBanner={ResultIcon}
+        svgIllustrationBanner={BroadSheetIcon}
         hideTable
         groupedButtonOptions={getToggleButtons()}
         canCreate={false}

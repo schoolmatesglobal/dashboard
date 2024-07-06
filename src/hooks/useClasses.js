@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-formid";
 import { useMutation, useQuery } from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigation } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
@@ -42,6 +42,8 @@ export const useClasses = () => {
     },
   });
 
+  // const router = useNavigation();
+
   const { isLoading: subjectsLoading, data: subjects } = useQuery(
     [queryKeys.GET_SUBJECTS, id],
     () => apiServices.getSubjectByClass(id),
@@ -75,33 +77,33 @@ export const useClasses = () => {
     }
   );
 
-  const { isLoading: classListLoading, refetch: refetchClasses } = useQuery(
-    [queryKeys.GET_ALL_CLASSES],
-    apiServices.getAllClasses,
-    {
-      retry: 3,
-      enabled: permission?.read || permission?.readClass,
-      onSuccess(data) {
-        setClasses(data);
-        const formatClassList = data?.map((x) => ({
-          ...x,
-          sub_class: x.sub_class.split(",").join(", "),
-        }));
+  const {
+    isLoading: classListLoading,
+    data: classDt,
+    refetch: refetchClasses,
+  } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
+    retry: 3,
+    enabled: permission?.read || permission?.readClass,
+    onSuccess(data) {
+      setClasses(data);
+      const formatClassList = data?.map((x) => ({
+        ...x,
+        sub_class: x.sub_class.split(",").join(", "),
+      }));
 
-        setClassList(
-          formatClassList?.map((obj, index) => {
-            const newObj = { ...obj };
-            newObj.new_id = index + 1;
-            return newObj;
-          })
-        );
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-      select: apiServices.formatData,
-    }
-  );
+      setClassList(
+        formatClassList?.map((obj, index) => {
+          const newObj = { ...obj };
+          newObj.new_id = index + 1;
+          return newObj;
+        })
+      );
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+    select: apiServices.formatData,
+  });
 
   const { isLoading: subjectsByClassLoading2, data: subjectsByClass2 } =
     useQuery(
@@ -171,7 +173,8 @@ export const useClasses = () => {
     ],
     () => apiServices.getStudentByClass(newClass),
     {
-      enabled: !!newClass.present_class && permission?.create,
+      // enabled: false,
+      enabled: newClass.present_class && permission?.create,
       onError(err) {
         errorHandler(err);
         // setClasses({ present_class: "", sub_class: "" });

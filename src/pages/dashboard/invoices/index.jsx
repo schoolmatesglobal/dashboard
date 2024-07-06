@@ -59,7 +59,7 @@ const Invoices = () => {
     graduatedStudents,
     // setClasses,
     studentLoginDetailsStudents,
-    communicationList,
+    // communicationList,
   } = useStudent();
 
   const navigate = useNavigate();

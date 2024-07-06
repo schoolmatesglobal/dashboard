@@ -14,20 +14,19 @@ import "./assets/scss/index.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-
 const queryClient = new QueryClient();
 
 root.render(
   <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <UserProvider>
-              <NavbarProvider>
-                <App />
-              </NavbarProvider>
-            </UserProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <UserProvider>
+          <NavbarProvider>
+            <App />
+          </NavbarProvider>
+        </UserProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

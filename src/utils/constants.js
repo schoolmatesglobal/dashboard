@@ -30,6 +30,8 @@ import {
   faPersonSwimming,
   faSquarePollHorizontal,
   faSquarePollVertical,
+  faBookBookmark,
+  faEnvelopeOpenText,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
@@ -70,6 +72,11 @@ export const dashboardSideBarLinks = {
       to: "/app/calendar",
       title: "Calendar",
       icon: faCalendarDays,
+    },
+    {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
     },
     {
       to: "/app/timetable",
@@ -116,6 +123,11 @@ export const dashboardSideBarLinks = {
       to: "/app/staffs",
       title: "Staffs",
       icon: faClipboardUser,
+    },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
     },
     {
       to: "/app/students",
@@ -210,6 +222,11 @@ export const dashboardSideBarLinks = {
       icon: faPeopleGroup,
     },
     {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
+    },
+    {
       to: "/app/results",
       title: "Results",
       icon: faSquarePollVertical,
@@ -219,6 +236,11 @@ export const dashboardSideBarLinks = {
       to: "/app/broadsheet",
       title: "Broad Sheet",
       icon: faSquarePollHorizontal,
+    },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
     },
 
     {
@@ -249,6 +271,11 @@ export const dashboardSideBarLinks = {
       icon: faComment,
     },
     {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
+    },
+    {
       to: "/app/results",
       title: "Results",
       icon: faBuildingColumns,
@@ -257,6 +284,11 @@ export const dashboardSideBarLinks = {
       to: "/app/broadsheet",
       title: "Broad Sheet",
       icon: faSquarePollHorizontal,
+    },
+    {
+      to: "/app/lesson-note",
+      title: "Lesson Note",
+      icon: faBookBookmark,
     },
     {
       to: "/app/staffs",
@@ -279,6 +311,11 @@ export const dashboardSideBarLinks = {
       to: "/app/accounts",
       title: "Finance",
       icon: faSchool,
+    },
+    {
+      to: "/app/communication-book",
+      title: "Communication Book",
+      icon: faEnvelopeOpenText,
     },
     {
       to: "/app/results",
@@ -641,3 +678,13 @@ export const roleMap = {
   Teacher: "Teacher",
   Student: "Student",
 };
+
+export const colors = {
+  primary: "#01153b",
+  secondary: "#367fa9",
+  black: "#000",
+  white: "#ffffff",
+};
+
+
+

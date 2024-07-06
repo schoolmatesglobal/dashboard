@@ -9,7 +9,7 @@ export const useAcademicSession = () => {
     apiServices.getAcademicSessions,
     {
       select: (data) => {
-        console.log({ datam: data });
+        // console.log({ datam: data });
         return data?.data;
       },
       onError: apiServices.errorHandler,
