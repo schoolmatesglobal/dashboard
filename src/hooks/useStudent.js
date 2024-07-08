@@ -176,9 +176,10 @@ export const useStudent = () => {
           ? state?.creds?.class_name
           : user?.class_assigned
       ),
-   
+
     {
-      enabled: permission?.myStudents || user?.designation_name === "Principal",
+      enabled: permission?.myStudents,
+      // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
         // console.log({ pdata: data, state });

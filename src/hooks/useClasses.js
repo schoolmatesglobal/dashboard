@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-formid";
 import { useMutation, useQuery } from "react-query";
-import { useParams, useNavigation } from "react-router-dom";
+import { useParams, useNavigation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
@@ -16,6 +16,7 @@ export const useClasses = () => {
   const [checkedRows, setCheckedRows] = useState([]);
   const [checkedSubjects, setCheckedSubjects] = useState([]);
   const [activateCampus, setActivateCampus] = useState(false);
+  const navigate = useNavigate();
 
   const {
     getFieldProps,
@@ -146,6 +147,7 @@ export const useClasses = () => {
       onSuccess() {
         toast.success("Class has been added successfully");
         reset();
+        navigate(-1);
       },
       onError(err) {
         errorHandler(err);
@@ -225,6 +227,7 @@ export const useClasses = () => {
     useMutation(apiServices.updateClass, {
       onSuccess() {
         toast.success("Class has been updated successfully");
+        navigate(-1);
       },
       onError(err) {
         errorHandler(err);

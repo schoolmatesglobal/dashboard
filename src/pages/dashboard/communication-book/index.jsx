@@ -92,6 +92,7 @@ const CommunicationBookPage = () => {
   const [closedTickets, setClosedTickets] = useState([]);
 
   const [activeSection, setActiveSection] = useState("");
+  const [classId, setClassId] = useState("");
 
   const [openMessage, setOpenMessage] = useState(false);
   const [editMessagePrompt, setEditMessagePrompt] = useState(false);
@@ -144,6 +145,10 @@ const CommunicationBookPage = () => {
     file: "",
     file_name: "",
   });
+
+  const checkClassId = () => {
+    return classes?.find((cl) => cl?.class_name === classId)?.id;
+  };
 
   const dateString = new Date().toLocaleString();
 
@@ -1008,10 +1013,15 @@ const CommunicationBookPage = () => {
   };
 
   const showStudentRow = () => {
-    if (user?.department === "Admin" && classSelected) {
+    if (
+      (user?.department === "Admin" ||
+        user?.designation_name === "Principal") &&
+      classSelected
+    ) {
       return true;
     } else if (
-      user?.department !== "Admin" &&
+      (user?.designation_name === "Teacher" ||
+        user?.designation_name === "Student") &&
       newStudentByClass()?.length > 0
     ) {
       return true;
@@ -1026,10 +1036,15 @@ const CommunicationBookPage = () => {
     loading1;
 
   const showStudentRowWarning = () => {
-    if (user?.department === "Admin" && !classSelected) {
+    if (
+      (user?.department === "Admin" ||
+        user?.designation_name === "Principal") &&
+      !classSelected
+    ) {
       return true;
     } else if (
-      user?.department !== "Admin" &&
+      (user?.designation_name === "Teacher" ||
+        user?.designation_name === "Student") &&
       newStudentByClass()?.length == 0
     ) {
       return true;
@@ -1081,6 +1096,9 @@ const CommunicationBookPage = () => {
     // msg,
     // messages,
     // openTickets,
+    classId,
+    classes,
+    classSelected,
     selectedStudent,
     closedTickets,
     message,
@@ -1095,8 +1113,6 @@ const CommunicationBookPage = () => {
     location,
     status,
   });
-
-  
 
   return (
     <div className='results-sheet'>
@@ -1131,13 +1147,17 @@ const CommunicationBookPage = () => {
               </span>
             )}
           </div>
-          {user?.department === "Admin" && (
+          {(user?.department === "Admin" ||
+            user?.designation_name === "Principal") && (
             <div className='d-flex col-6 col-md-3 col-lg-3'>
               <AuthSelect
                 sort
                 value={classSelected}
                 onChange={({ target: { value } }) => {
                   setClassSelected(value);
+                  setClassId(
+                    classes?.find((cl) => cl?.class_name === value)?.id
+                  );
                 }}
                 options={(classes || []).map((x) => ({
                   value: x?.class_name,
@@ -1186,7 +1206,8 @@ const CommunicationBookPage = () => {
               {showStudentRowWarning() && (
                 <div className='w-100 d-flex justify-content-center align-items-center mb-3 gap-3 bg-danger bg-opacity-10 py-3 px-4'>
                   <p className='fs-4 text-danger'>
-                    {user?.department === "Admin"
+                    {user?.department === "Admin" ||
+                    user?.designation_name === "Principal"
                       ? "Please select a class"
                       : "No Student in Class"}
                   </p>

@@ -182,9 +182,13 @@ export const useCommunicationBook = () => {
   });
 
   const classValue = () => {
-    if (user?.department !== "Admin") {
+    if (user?.designation_name === "Teacher" ||
+        user?.designation_name === "Student") {
       return user?.class_assigned || "";
-    } else if (user?.department === "Admin") {
+    } else if (
+      user?.department === "Admin" ||
+      user?.designation_name === "Principal"
+    ) {
       return classSelected || "";
     }
   };
@@ -244,7 +248,8 @@ export const useCommunicationBook = () => {
     () => apiServices.getStudentByClass2(classValue()),
 
     {
-      enabled: classValue() !== "",
+      // enabled: false,
+      enabled: classValue() !== " " && user?.designation_name === "Student",
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
@@ -302,7 +307,7 @@ export const useCommunicationBook = () => {
     }
   );
 
-  // console.log({ studentByClass2, studentByClassAndSession });
+  console.log({ classValue: classValue() });
 
   return {
     activeTab,

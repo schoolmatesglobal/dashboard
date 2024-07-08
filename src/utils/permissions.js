@@ -169,6 +169,11 @@ export const permissions = {
     comment: {
       create: true,
     },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: true,
+    },
     staffs: {
       create: false,
       read: true,
@@ -485,6 +490,11 @@ export const permissions = {
     },
     reports: {
       read: true,
+    },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: true,
     },
     expense: {
       canCreate: true,
