@@ -114,6 +114,15 @@ export const useResults = () => {
     }
   );
 
+  const classValue = () => {
+    if (user?.department !== "Admin") {
+      return user?.class_assigned || "";
+    } else if (user?.department === "Admin") {
+      // return classSelected || "";
+    }
+  };
+
+  // STUDENT BY CLASS AND SESSION
   const { data: studentByClassAndSession, isLoading: studentByClassLoading } =
     useQuery(
       [
@@ -124,7 +133,7 @@ export const useResults = () => {
         state?.creds?.session,
       ],
       () =>
-        apiServices.getStudentByClassAndSession(
+        apiServices.getStudentByClass2(
           state?.creds?.class_name
             ? state?.creds?.class_name
             : user?.class_assigned,
@@ -132,21 +141,43 @@ export const useResults = () => {
         ),
       {
         enabled: initGetStudentData,
-        select: apiServices.formatData,
+        select: (data) => {
+          const dt2 = apiServices.formatData(data);
+
+          if (dt2?.length > 0) {
+            const sst2 = dt2?.find((x) => x?.id === user?.id) ?? {};
+
+            const studentInfo =
+              user?.designation_name === "Student"
+                ? dt2?.find((x) => x?.id === user?.id)
+                : dt2[0];
+
+            console.log({
+              dataSS: data,
+              user,
+              dt2,
+              studentInfo,
+              sst2,
+            });
+
+            return studentInfo;
+          }
+        },
         onSuccess(data) {
           // setInitGetStudentsByClass(true)
           setInitGetStudentData(false);
-          const studentInfo =
-            user?.designation_name === "Student"
-              ? data?.find((x) => x.id === user?.id)
-              : data[0];
+
           if (enableStudentToggle) {
-            setStudentData(studentInfo);
+            if (!data) return;
+            setStudentData(data);
             setEnableStudentToggle(false);
           }
           state?.creds?.period === "First Half"
             ? setInitGetExistingResult(true)
             : setInitGetExistingSecondHalfResult(true);
+        },
+        onError(err) {
+          errorHandler(err);
         },
       }
     );
@@ -1289,7 +1320,7 @@ export const useResults = () => {
     academicDateLoading ||
     maxScoresLoading ||
     studentByClassLoading ||
-    // studentResultLoading ||
+    // getStudentByClassLoading ||
     subjectsByClassLoading ||
     addResultLoading ||
     commentsLoading ||
@@ -1385,6 +1416,8 @@ export const useResults = () => {
     setActivateEndOfTerm,
     initGetExistingSecondHalfResult,
     activateEndOfTerm,
+    // studentByClass,
+    // getStudentByClassLoading,
     // mergedSubjects,
   };
 };

@@ -72,7 +72,13 @@ const Admin = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) => (formatData(data)?.length ? formatData(data)[0] : {}),
+      select: (data) => {
+        // console.log({ dataCC: data });
+
+        return formatData(data)?.length
+          ? formatData(data)[formatData(data)?.length - 1]
+          : {};
+      },
     }
   );
 
@@ -84,7 +90,13 @@ const Admin = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) => (formatData(data)?.length ? formatData(data)[0] : {}),
+      select: (data) => {
+        // console.log({ dataCC: data });
+
+        return formatData(data)?.length
+          ? formatData(data)[formatData(data)?.length - 1]
+          : {};
+      },
     }
   );
 
@@ -148,6 +160,8 @@ const Admin = () => {
     calendarLoading ||
     timetableLoading ||
     academicPeriodLoading;
+
+  console.log({ calendarData });
 
   return (
     <div className='teachers'>

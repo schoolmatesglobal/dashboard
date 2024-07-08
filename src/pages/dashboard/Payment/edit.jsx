@@ -43,6 +43,8 @@ const PaymentEdit = () => {
 
   const [amount, setAmount] = useState("");
 
+  const navigate = useNavigate();
+
   const { id } = useParams();
 
   const isEdit = !!id;

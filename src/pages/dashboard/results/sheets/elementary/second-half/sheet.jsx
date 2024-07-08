@@ -12,6 +12,7 @@ import { useStudent } from "../../../../../../hooks/useStudent";
 import { useActivities } from "../../../../../../hooks/useActivities";
 import { Input } from "reactstrap";
 import { useGrading } from "../../../../../../hooks/useGrading";
+import GoBack from "../../../../../../components/common/go-back";
 
 const ElementarySecondHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -186,6 +187,7 @@ const ElementarySecondHalfSheet = () => {
 
   return (
     <div className='results-sheet'>
+      <GoBack />
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}

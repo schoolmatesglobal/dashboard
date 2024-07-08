@@ -1075,24 +1075,28 @@ const CommunicationBookPage = () => {
   console.log({
     // communicationId,
     // openMessage,
-    // user,
     // newStudentByClass: newStudentByClass(),
     // studentByClass,
-    // selectedStudent,
     // studentsId,
     // msg,
     // messages,
     // openTickets,
+    selectedStudent,
     closedTickets,
+    message,
+    title,
     // selectedMessage,
     // selectedMessage2,
     // replyMessages,
     // ticketTab,
     // history,
+    user,
     allLoading,
     location,
     status,
   });
+
+  
 
   return (
     <div className='results-sheet'>

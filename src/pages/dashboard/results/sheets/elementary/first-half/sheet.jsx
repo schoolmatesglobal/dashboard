@@ -9,6 +9,7 @@ import { useAppContext } from "../../../../../../hooks/useAppContext";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useStudent } from "../../../../../../hooks/useStudent";
 import AuthSelect from "../../../../../../components/inputs/auth-select";
+import GoBack from "../../../../../../components/common/go-back";
 
 const ElementaryFirstHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -26,6 +27,7 @@ const ElementaryFirstHalfSheet = () => {
     setInitGetExistingResult,
     inputs,
     handleChange,
+    // studentByClass,
   } = useResults();
 
   const { studentByClass2 } = useStudent();
@@ -93,16 +95,19 @@ const ElementaryFirstHalfSheet = () => {
 
   // console.log({ additionalCreds });
 
-  // console.log({
-  //   inputs,
-  //   studentData,
-  //   result,
-  //   cs: countSubjects(),
-  //   additionalCreds,
-  // });
+  console.log({
+    inputs,
+    studentData,
+    // studentByClass,
+    studentByClass2,
+    // result,
+    cs: countSubjects(),
+    additionalCreds,
+  });
 
   return (
     <div className='results-sheet'>
+      <GoBack />
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}

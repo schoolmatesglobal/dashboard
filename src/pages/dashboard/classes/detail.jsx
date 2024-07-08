@@ -63,6 +63,9 @@ const ClassDetail = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classData]);
+
+  console.log({ inputs, classData });
+
   return (
     <DetailView
       isLoading={isLoading}
@@ -100,6 +103,7 @@ const ClassDetail = () => {
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
             label='Class Name'
+            name='class_name'
             hasError={!!errors.class_name}
             {...getFieldProps("class_name")}
           />

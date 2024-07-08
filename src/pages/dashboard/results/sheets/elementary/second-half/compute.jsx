@@ -12,6 +12,7 @@ import StudentsResults from "../../../../../../components/common/students-result
 import { useStudent } from "../../../../../../hooks/useStudent";
 import { useActivities } from "../../../../../../hooks/useActivities";
 import { useReporting } from "../../../../../../hooks/useReporting";
+import GoBack from "../../../../../../components/common/go-back";
 
 const ComputeElementarySecondHalfResult = () => {
   const { user } = useAppContext("results");
@@ -122,6 +123,7 @@ const ComputeElementarySecondHalfResult = () => {
 
   return (
     <div className='results-sheet'>
+      <GoBack />
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}
@@ -236,7 +238,8 @@ const ComputeElementarySecondHalfResult = () => {
             <Fragment key={index}>
               {index !== 0 && <hr className='my-5' />}
               <PageTitle>
-                {report.report_type === "PUPIL REPORT" && user?.campus?.includes("College") 
+                {report.report_type === "PUPIL REPORT" &&
+                user?.campus?.includes("College")
                   ? "AFFECTIVE DEVELOPMENT"
                   : report.report_type}
               </PageTitle>

@@ -271,7 +271,7 @@ export const useClasses = () => {
     // subjectsByClassLoading ||
     subjectsByClassLoading2;
 
-  // console.log({ classes, gs: getClassName(), id, subjectsByClass });
+  console.log({ classes });
   // console.log({ id });
 
   return {

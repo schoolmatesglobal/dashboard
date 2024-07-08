@@ -239,10 +239,15 @@ export const useHome = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) =>
-        apiServices.formatData(data)?.length
-          ? apiServices.formatData(data)[0]
-          : {},
+      select: (data) => {
+        // console.log({ dataCC: data });
+
+        return apiServices.formatData(data)?.length
+          ? apiServices.formatData(data)[
+              apiServices.formatData(data)?.length - 1
+            ]
+          : {};
+      },
     }
   );
 
@@ -255,10 +260,15 @@ export const useHome = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) =>
-        apiServices.formatData(data)?.length
-          ? apiServices.formatData(data)[0]
-          : {},
+      select: (data) => {
+        // console.log({ dataCC: data });
+
+        return apiServices.formatData(data)?.length
+          ? apiServices.formatData(data)[
+              apiServices.formatData(data)?.length - 1
+            ]
+          : {};
+      },
     }
   );
 

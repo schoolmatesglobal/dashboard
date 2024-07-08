@@ -4,9 +4,12 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useNavigate } from "react-router-dom";
 
 export const useAccounts = () => {
   const [indexStatus, setIndexStatus] = useState("my-invoice");
+
+  const navigate = useNavigate();
 
   const { id } = useParams();
 
@@ -98,6 +101,7 @@ export const useAccounts = () => {
     useMutation(apiServices.updatePayment, {
       onSuccess(data) {
         toast.success("Payment has been updated successfully");
+        navigate(-1);
       },
       onError(err) {
         errorHandler(err);

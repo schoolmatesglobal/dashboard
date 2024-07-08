@@ -40,6 +40,8 @@ const PaymentDetail = () => {
     },
   });
 
+  const navigate = useNavigate();
+
   const [amount, setAmount] = useState("");
 
   const { paymentLoading, payment } = useAccounts();
@@ -71,6 +73,7 @@ const PaymentDetail = () => {
     {
       onSuccess() {
         toast.success("Payment Successful");
+        navigate(-1);
       },
 
       onError(err) {
@@ -132,17 +135,17 @@ const PaymentDetail = () => {
         type: data?.payment_type,
       });
     }
-    console.log({
-      student_id: filteredInvoice?.student_id,
-      invoice_id: filteredInvoice?.id,
-      bank_name: data?.bank_name,
-      account_name: data?.account_name,
-      student_fullname: filteredInvoice?.fullname,
-      payment_method: data?.payment_method,
-      amount_paid: data?.amount_paid,
-      total_amount: amount,
-      type: data?.payment_type,
-    });
+    // console.log({
+    //   student_id: filteredInvoice?.student_id,
+    //   invoice_id: filteredInvoice?.id,
+    //   bank_name: data?.bank_name,
+    //   account_name: data?.account_name,
+    //   student_fullname: filteredInvoice?.fullname,
+    //   payment_method: data?.payment_method,
+    //   amount_paid: data?.amount_paid,
+    //   total_amount: amount,
+    //   type: data?.payment_type,
+    // });
   };
 
   function filterPayment() {

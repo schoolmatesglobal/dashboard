@@ -9,6 +9,7 @@ import Prompt from "../../../../../../components/modals/prompt";
 import StudentsResults from "../../../../../../components/common/students-results";
 import { useStudent } from "../../../../../../hooks/useStudent";
 import AuthSelect from "../../../../../../components/inputs/auth-select";
+import GoBack from "../../../../../../components/common/go-back";
 
 const ComputeElementaryFirstHalfResult = () => {
   const { user } = useAppContext("results");
@@ -80,6 +81,7 @@ const ComputeElementaryFirstHalfResult = () => {
 
   return (
     <div className='results-sheet'>
+      <GoBack />
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}
