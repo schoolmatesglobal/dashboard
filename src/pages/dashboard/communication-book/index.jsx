@@ -63,11 +63,16 @@ const CommunicationBookPage = () => {
     setBase64String,
     messages,
     setMessages,
+    className,
+    setClassName,
+    academicPeriod,
   } = useCommunicationBook();
 
   // const history = useHistory();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // const { state } = useLocation();
 
   // Function to get the current status from the URL query parameter
   const getStatusFromURL = () => {
@@ -184,6 +189,20 @@ const CommunicationBookPage = () => {
     };
   });
 
+  const classIdValue = (function () {
+    if (
+      user?.designation_name === "Teacher" ||
+      user?.designation_name === "Student"
+    ) {
+      return user?.class_id || "";
+    } else if (
+      user?.department === "Admin" ||
+      user?.designation_name === "Principal"
+    ) {
+      return classId || location?.state?.classId || "";
+    }
+  })();
+
   /////// POST COMMUNICATION BOOK ////
   const {
     mutateAsync: addCommunicationBook,
@@ -191,10 +210,10 @@ const CommunicationBookPage = () => {
   } = useMutation(
     () =>
       apiServices.addCommunicationBook({
-        period: user?.period,
-        term: user?.term,
-        session: user?.session,
-        class_id: user?.class_id,
+        period: academicPeriod?.period,
+        term: academicPeriod?.term,
+        session: academicPeriod?.session,
+        class_id: classIdValue,
         sender_id: user?.id,
         sender_type: user?.designation_name === "Student" ? "student" : "staff",
         subject: title,
@@ -228,10 +247,10 @@ const CommunicationBookPage = () => {
     refetch: refetchGetCommunicationBookByClass,
   } = useQuery(
     [queryKeys.GET_COMMUNICATION_BOOK],
-    () => apiServices.getCommunicationBookByClass(user?.class_id),
+    () => apiServices.getCommunicationBookByClass(classIdValue),
     {
       retry: 2,
-      enabled: !!user?.class_id && permission?.view,
+      enabled: !!classIdValue && permission?.view,
 
       select: (data) => {
         if (data?.data?.length > 0) {
@@ -254,7 +273,7 @@ const CommunicationBookPage = () => {
             );
 
           console.log({ data, dt });
-          return dt;
+          return dt ?? [];
         }
 
         // return permission?.create ? filt : lsg;
@@ -268,7 +287,12 @@ const CommunicationBookPage = () => {
         const opened = data?.filter((ms) => ms?.status === "active");
         // const closed = data?.filter((ms) => ms?.status !== "active");
 
-        setOpenTickets([...opened]);
+        if (opened?.length > 0) {
+          setOpenTickets([...opened]);
+        } else {
+          setOpenTickets([]);
+        }
+
         // setClosedTickets([...closed]);
         // setLessonNotes(data);
         // trigger(1000);
@@ -289,10 +313,10 @@ const CommunicationBookPage = () => {
     refetch: refetchClosedGetCommunicationBookByClass,
   } = useQuery(
     [queryKeys.GET_CLOSED_COMMUNICATION_BOOK],
-    () => apiServices.getClosedCommunicationBookByClass(user?.class_id),
+    () => apiServices.getClosedCommunicationBookByClass(classIdValue),
     {
       retry: 2,
-      enabled: !!user?.class_id && permission?.view,
+      enabled: !!classIdValue && permission?.view,
 
       select: (data) => {
         // const cdt = [{ ...data?.data?.attributes, id: data?.data?.id }]
@@ -326,7 +350,12 @@ const CommunicationBookPage = () => {
       },
       onSuccess(data) {
         const closed = data?.filter((ms) => ms?.status === "closed");
-        setClosedTickets([...closed]);
+
+        if (closed?.length > 0) {
+          setClosedTickets([...closed]);
+        } else {
+          setClosedTickets([]);
+        }
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -1054,15 +1083,27 @@ const CommunicationBookPage = () => {
   useEffect(() => {
     if (classSelected) {
       refetchStudentByClass();
+      refetchGetCommunicationBookByClass();
+      // trigger(1000);
     }
   }, [classSelected]);
 
   useEffect(() => {
-    // const opened = msg?.filter((ms) => ms?.ticket_status === "open");
-    // const closed = msg?.filter((ms) => ms?.ticket_status === "closed");
-    // setOpenTickets([...opened]);
-    // setClosedTickets([...closed]);
-    // setMessages([...msg]);
+    if (
+      user?.designation_name === "Teacher" ||
+      user?.designation_name === "Student"
+    ) {
+      // return user?.class_assigned || "";
+      setClassName(user?.class_assigned);
+    } else if (
+      user?.department === "Admin" ||
+      user?.designation_name === "Principal"
+    ) {
+      // return classSelected || "";
+      setClassName(classSelected);
+    }
+
+    setClassSelected(location?.state?.classSelected || "");
   }, []);
 
   useEffect(() => {
@@ -1096,6 +1137,8 @@ const CommunicationBookPage = () => {
     // msg,
     // messages,
     // openTickets,
+    classIdValue,
+    academicPeriod,
     classId,
     classes,
     classSelected,
@@ -1103,6 +1146,7 @@ const CommunicationBookPage = () => {
     closedTickets,
     message,
     title,
+    showStudentRow: showStudentRow(),
     // selectedMessage,
     // selectedMessage2,
     // replyMessages,
@@ -1134,7 +1178,12 @@ const CommunicationBookPage = () => {
               className='w-auto'
               onClick={() => {
                 // setTicketTab("2");
-                navigate(`/app/communication-book/?status=closed`);
+                navigate(`/app/communication-book/?status=closed`, {
+                  state: {
+                    classId,
+                  }
+                });
+                
                 // handleViewFile(notes?.file);
               }}
               variant={`${status === "closed" ? "" : "outline"}`}
@@ -1189,7 +1238,8 @@ const CommunicationBookPage = () => {
                         student: `${x.surname} ${x.firstname}`,
                         recipient:
                           x.id === "99999"
-                            ? `${x.firstname} ${x.surname} in ${user?.class_assigned}`
+                            ? `${x.firstname} ${x.surname}`
+                            // ? `${x.firstname} ${x.surname} in ${className}`
                             : `${x.surname} ${x.firstname}`,
                         student_id: x.id,
                         email_address: x.students,
@@ -1325,6 +1375,8 @@ const CommunicationBookPage = () => {
                         getCommunicationBookRepliesRefetching
                       }
                       status={status}
+                      classSelected={classSelected}
+                      classId={classId}
                     />
                   </div>
                 );
@@ -1382,6 +1434,8 @@ const CommunicationBookPage = () => {
                         getCommunicationBookRepliesRefetching
                       }
                       status={status}
+                      classSelected={classSelected}
+                      classId={classId}
                     />
                   </div>
                 );

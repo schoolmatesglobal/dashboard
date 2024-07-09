@@ -41,6 +41,8 @@ const MessageCard = ({
   getCommunicationBookRepliesFetching,
   getCommunicationBookRepliesRefetching,
   status,
+  classSelected,
+  classId,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -216,6 +218,8 @@ const MessageCard = ({
         id: message?.id,
         title: message?.subject,
         ticket_status: message?.status,
+        classSelected,
+        classId,
         conversations: [
           {
             id: message?.id,
