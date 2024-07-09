@@ -74,14 +74,14 @@ const PaymentDetails = () => {
           //   accessor: "sch_id",
           // },
           {
-            Header: "Account Name",
+            Header: "Bank Details",
             accessor: "account_name",
           },
 
-          {
-            Header: "Bank Name",
-            accessor: "bank_name",
-          },
+          // {
+          //   Header: "Bank Name",
+          //   accessor: "bank_name",
+          // },
           {
             Header: "Amount Paid",
             accessor: "amount_paid",

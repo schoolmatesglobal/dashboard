@@ -13,6 +13,7 @@ import { useInvoices } from "../../../hooks/useInvoice";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAccounts } from "../../../hooks/useAccounts";
 import queryKeys from "../../../utils/queryKeys";
+import { useBank } from "../../../hooks/useBank";
 
 const PaymentEdit = () => {
   const { permission, apiServices, errorHandler } = useAppContext();
@@ -40,6 +41,15 @@ const PaymentEdit = () => {
       payment_type: "",
     },
   });
+
+  const {
+    bank,
+    deleteBank,
+    handleUpdateBank,
+    isLoading: bankLoading,
+  } = useBank();
+
+  const [newBank, setNewBank] = useState([]);
 
   const [amount, setAmount] = useState("");
 
@@ -114,7 +124,7 @@ const PaymentEdit = () => {
     if (
       !inputs?.amount_paid ||
       !inputs?.payment_method ||
-      !inputs?.bank_name ||
+      // !inputs?.bank_name ||
       !inputs?.account_name ||
       !inputs?.payment_type
     ) {
@@ -150,7 +160,7 @@ const PaymentEdit = () => {
     handleUpdatePayment({
       id: paymentById?.id,
       total_amount: amount,
-      bank_name: data?.bank_name,
+      bank_name: data?.account_name,
       account_name: data?.account_name,
       payment_method: data?.payment_method,
       amount_paid: data?.amount_paid,
@@ -167,32 +177,6 @@ const PaymentEdit = () => {
     //   type: data?.payment_type,
     // });
   };
-
-  // function filterPayment() {
-  //   if (payment?.length > 0) {
-  //     const pt = payment?.filter(
-  //       (pi) => Number(pi?.student_id) === Number(filteredInvoice?.student_id)
-  //     );
-  //     return pt[0]?.payment?.map((py, i) => {
-  //       calcAmount2 = calcAmount2 + Number(py?.amount_paid);
-  //       return {
-  //         ...py,
-  //         amount_paid: `₦${apiServices.formatNumberWithCommas(
-  //           py?.amount_paid
-  //         )}`,
-  //         total_amount: `₦${apiServices.formatNumberWithCommas(
-  //           py?.total_amount
-  //         )}`,
-  //         sum_amount: calcAmount2,
-  //         // sum_amount: `₦${apiServices.formatNumberWithCommas(calcAmount2)}`,
-  //       };
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }
-
-  // const fp = filterPayment() ?? [];
 
   useEffect(() => {
     if (isEdit) {
@@ -218,36 +202,26 @@ const PaymentEdit = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentById]);
 
-  // useEffect(() => {
-  //   if (filteredInvoice?.fee?.length > 0) {
-  //     fi()?.fee?.forEach((fi, i) => {
-  //       calcAmount =
-  //         (Number(calcAmount) + Number(fi?.discount_amount)).toFixed(0) ?? 0;
+  useEffect(() => {
+    if (bank?.length > 1) {
+      const bk = bank?.map((bk, i) => {
+        return {
+          title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
+          value: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
+        };
+      });
+      setNewBank(bk);
+    }
+  }, [bank]);
 
-  //       let dc = fp[fp?.length - 1]?.sum_amount ?? 0;
-
-  //       let cc = (calcAmount - dc).toString();
-
-  //       setAmount(cc);
-  //     });
-  //   }
-  // }, [amount]);
-
-  // console.log({
-  //   paymentById,
-  //   filteredInvoice,
-  //   amount,
-  //   fp,
-  //   payment,
-  //   pm: permission?.myPayment,
-  //   id: !!id,
-  // });
+  console.log({
+    newBank,
+    bank,
+  });
 
   return (
     <DetailView
-      isLoading={
-        isLoading || paymentLoading || paymentByIdLoading
-      }
+      isLoading={isLoading || paymentLoading || paymentByIdLoading}
       pageTitle='Edit Payment'
       onFormSubmit={handleSubmit(onSubmit)}
     >
@@ -391,28 +365,35 @@ const PaymentEdit = () => {
       </Row>
       {inputs.payment_method !== "Physical Cash" && (
         <Row className='mb-0 mb-sm-4'>
-          <Col sm='6' className='mb-4 mb-sm-0'>
+          {/* <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthInput
               label='Account Name'
               required
               // hasError={!!errors.account_name}
               {...getFieldProps("account_name")}
             />
-            {/* {!!errors.account_name && (
-            <p className="error-message">{errors.account_name}</p>
-          )} */}
-          </Col>
+          </Col> */}
           <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthSelect
+              label='Bank Name'
+              required
+              value={inputs.account_name}
+              name='account_name'
+              // hasError={!!errors.term}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              options={newBank}
+            />
+          </Col>
+          {/* <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthInput
               label='Bank Name'
               required
               // hasError={!!errors.bank_name}
               {...getFieldProps("bank_name")}
             />
-            {/* {!!errors.bank_name && (
-            <p className="error-message">{errors.bank_name}</p>
-          )} */}
-          </Col>
+          </Col> */}
         </Row>
       )}
     </DetailView>
