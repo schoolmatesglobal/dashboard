@@ -180,7 +180,7 @@ const InvoiceDetail = () => {
     // ),
     {
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
-      enabled: classLoading,
+      enabled: classLoading && !!studentData?.present_class,
       // select: apiServices.formatData,
       select: (data) => {
         const filtered = apiServices

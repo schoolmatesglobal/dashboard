@@ -444,6 +444,16 @@ export const permissions = {
       "bus-routing": true,
       "create-communication": true,
     },
+    results: {
+      compute: false,
+      view: true,
+      preSchool: true,
+    },
+    broadsheet: {
+      compute: true,
+      view: true,
+      preSchool: true,
+    },
     subjects: {
       read: true,
       create: true,

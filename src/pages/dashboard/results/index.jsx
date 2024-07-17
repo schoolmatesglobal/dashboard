@@ -27,7 +27,7 @@ const Results = () => {
     },
     validation: {
       class_name: {
-        required: user?.designation_name === "Principal",
+        required: user?.designation_name === "Principal" || "Admin",
       },
     },
   });
@@ -112,7 +112,6 @@ const Results = () => {
           { state: { creds: inputs } }
         ),
     },
-
   };
 
   const displayPrompt = (status) => {
@@ -171,7 +170,9 @@ const Results = () => {
           type: "button",
           isLoading: false,
           disabled:
-            user?.designation_name === "Principal" ? !inputs.class_name : false,
+            user?.designation_name === "Principal" || "Admin"
+              ? !inputs.class_name
+              : false,
           onClick: promptMapper[promptStatus].onFormSubmit,
         }}
         singleButtonText='Continue'
@@ -241,7 +242,7 @@ const Results = () => {
           )}
         </div>
 
-        {user?.designation_name === "Principal" && (
+        {(user?.designation_name === "Principal" || "Admin") && (
           <div className='form-group mb-4'>
             <AuthSelect
               label='Class'

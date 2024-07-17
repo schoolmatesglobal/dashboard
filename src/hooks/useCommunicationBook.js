@@ -291,7 +291,7 @@ export const useCommunicationBook = () => {
 
     {
       // enabled: false,
-      enabled: !!className,
+      enabled: !!className && !!classValue(),
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {

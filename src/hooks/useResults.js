@@ -131,6 +131,14 @@ export const useResults = () => {
     }
   };
 
+  const chk = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
+
+  // const chk = state?.creds?.class_name
+  //   ? state?.creds?.class_name
+  //   : user?.class_assigned;
+
   // STUDENT BY CLASS AND SESSION
   const { data: studentByClassAndSession, isLoading: studentByClassLoading } =
     useQuery(
@@ -139,17 +147,16 @@ export const useResults = () => {
         state?.creds?.class_name
           ? state?.creds?.class_name
           : user?.class_assigned,
-        state?.creds?.session,
+        // state?.creds?.session,
       ],
       () =>
         apiServices.getStudentByClass2(
-          state?.creds?.class_name
-            ? state?.creds?.class_name
-            : user?.class_assigned,
-          state?.creds?.session
+          chk
+          //   ,
+          // state?.creds?.session
         ),
       {
-        enabled: initGetStudentData,
+        enabled: initGetStudentData && !!chk,
         select: (data) => {
           const dt2 = apiServices.formatData(data);
 
@@ -190,6 +197,36 @@ export const useResults = () => {
         },
       }
     );
+
+  // student by class2
+  const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
+    [queryKeys.GET_ALL_STUDENTS_BY_CLASS3, user?.class_assigned],
+    () =>
+      apiServices.getStudentByClass2(
+        state?.creds?.class_name
+          ? state?.creds?.class_name
+          : user?.class_assigned
+      ),
+
+    {
+      enabled: permission?.view && !!chk,
+      // enabled: permission?.myStudents || user?.designation_name === "Principal",
+      // select: apiServices.formatData,
+      select: (data) => {
+        // console.log({ pdata: data, state });
+        return apiServices.formatData(data)?.map((obj, index) => {
+          const newObj = { ...obj };
+          newObj.new_id = index + 1;
+          return newObj;
+        });
+
+        // return { ...data, options: f };
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
 
   // end of term result
   const {
@@ -1231,13 +1268,20 @@ export const useResults = () => {
     },
   });
 
+  // const getScoreRemark = (score) => {
+  //   const res = grading?.find(
+  //     (x) =>
+  //       score >= Number(x?.score_from ?? 0) && score <= Number(x?.score_to ?? 0)
+  //   );
+
+  //   return res;
+  // };
   const getScoreRemark = (score) => {
-    const res = grading?.find(
-      (x) =>
-        score >= Number(x?.score_from ?? 0) && score <= Number(x?.score_to ?? 0)
+    const res = grading.find(
+      (x) => score >= Number(x.score_from) && score <= Number(x.score_to)
     );
 
-    return res;
+    return res || { grade: "N/A", remark: "Out of range", id: null };
   };
 
   // console.log({ grading });
@@ -1445,11 +1489,12 @@ export const useResults = () => {
     midtermResultLoading ||
     addEndOfTermResultLoading ||
     firstAssessResultLoading2 ||
-    addMidTermResultLoading || loading1
+    addMidTermResultLoading ||
+    loading1;
   // ||
   // releaseResultLoading;
 
-  // console.log({ subjectsByClass });
+  console.log({ grading });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {
@@ -1530,6 +1575,7 @@ export const useResults = () => {
     releaseResultLoading,
     withholdResult,
     withholdResultLoading,
+    studentByClass2,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,

@@ -166,19 +166,21 @@ export const useStudent = () => {
       }
     );
 
+    const chk = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned
+
   // console.log({ user });
 
   const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS2, user?.class_assigned],
     () =>
       apiServices.getStudentByClass2(
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned
+        chk
       ),
 
     {
-      enabled: permission?.myStudents,
+      enabled: permission?.read && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
@@ -588,7 +590,7 @@ export const useStudent = () => {
     postCommunicationBookLoading ||
     campusListLoading;
 
-  // console.log({ studentByClassAndSession, studentByClass, studentByClass2 });
+  console.log({ state });
 
   return {
     user,

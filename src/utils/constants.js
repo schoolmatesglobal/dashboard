@@ -79,6 +79,11 @@ export const dashboardSideBarLinks = {
       icon: faEnvelopeOpenText,
     },
     {
+      to: "/app/results",
+      title: "Results",
+      icon: faBuildingColumns,
+    },
+    {
       to: "/app/timetable",
       title: "Timetable",
       icon: faTimeline,
