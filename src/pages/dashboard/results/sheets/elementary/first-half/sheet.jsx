@@ -12,6 +12,7 @@ import AuthSelect from "../../../../../../components/inputs/auth-select";
 import GoBack from "../../../../../../components/common/go-back";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
 import { PiWarningCircleFill } from "react-icons/pi";
+import ButtonGroup from "../../../../../../components/buttons/button-group";
 
 const ElementaryFirstHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -29,10 +30,18 @@ const ElementaryFirstHalfSheet = () => {
     setInitGetExistingResult,
     inputs,
     handleChange,
+    releaseResult,
+    releaseResultLoading,
+    withholdResult,
+    withholdResultLoading,
+    studentByClass2,
     // studentByClass,
   } = useResults();
 
-  const { studentByClass2 } = useStudent();
+  const [loading1, setLoading1] = useState(false);
+  const [status, setStatus] = useState("");
+
+  // const { studentByClass2 } = useStudent();
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
 
@@ -127,6 +136,16 @@ const ElementaryFirstHalfSheet = () => {
     }
   })();
 
+  const checkResultComputed2 = (function () {
+    if ("results" in additionalCreds) {
+      return true;
+    } else {
+      return false;
+    }
+  })();
+
+  const allLoading = isLoading || loading1;
+
   // console.log({ additionalCreds });
 
   console.log({
@@ -157,21 +176,56 @@ const ElementaryFirstHalfSheet = () => {
       )}
       <PageSheet>
         <div className='d-flex flex-column flex-md-row  justify-content-md-between mb-3'>
-          <Button
-            onClick={() => {
-              setChangeTableStyle(true);
-              setTimeout(() => {
-                if (pdfExportComponent.current) {
-                  handlePrint();
-                }
-              }, 1000);
-              setTimeout(() => {
-                setChangeTableStyle(false);
-              }, 3000);
-            }}
-          >
-            <FontAwesomeIcon icon={faPrint} /> Print
-          </Button>
+          <div className='d-flex gap-4 align-items-center'>
+            <Button
+              onClick={() => {
+                setChangeTableStyle(true);
+                setTimeout(() => {
+                  if (pdfExportComponent.current) {
+                    handlePrint();
+                  }
+                }, 1000);
+                setTimeout(() => {
+                  setChangeTableStyle(false);
+                }, 3000);
+              }}
+            >
+              <FontAwesomeIcon icon={faPrint} /> Print
+            </Button>
+
+            {user?.designation_name !== "Student" && (
+              <ButtonGroup
+                options={[
+                  {
+                    title: `${status === "released" ? "withhold" : "Release"}`,
+                    type: "button",
+                    variant: `${status === "released" ? "danger" : ""}`,
+                    onClick: () => {
+                      if (status === "released") {
+                        withholdResult();
+                        setStatus("withheld");
+                        // trigger(2000);
+                      } else if (status === "withheld") {
+                        releaseResult();
+                        setStatus("released");
+                        // trigger(2000);
+                      } else {
+                        releaseResult();
+                        setStatus("released");
+                        // trigger(2000);
+                      }
+                    },
+                    isLoading: releaseResultLoading || withholdResultLoading,
+                    disabled:
+                      !checkResultComputed2 ||
+                      allLoading ||
+                      releaseResultLoading ||
+                      withholdResultLoading,
+                  },
+                ]}
+              />
+            )}
+          </div>
 
           {maxScores?.has_two_assessment && (
             <div className='form-group mb-4' style={{ width: "300px" }}>
@@ -403,94 +457,148 @@ const ElementaryFirstHalfSheet = () => {
               </div>
             )}
             {checkResultComputed === "Released" && (
-              <div className='first-half-result-table'>
-                <div className='table-row'>
-                  <div className='table-data'></div>
-                  <div className='table-data'>
-                    <h4
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                        // textAlign: "justify",
-                        // padding: "0px 10px",
-                        // fontStyle: "italic"
-                      }}
-                    >
-                      {assessmentType()} Scores
-                    </h4>
-                  </div>
-                </div>
-                <div className='table-row'>
-                  <div className='table-data'>
-                    <h4
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                        color: "green",
-                        // textAlign: "justify",
-                        // padding: "0px 10px",
-                        // fontStyle: "italic"
-                      }}
-                    >
-                      Max Score Obtainable
-                    </h4>
-                  </div>
-                  <div className='table-data'>
-                    <h4
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                        // textAlign: "justify",
-                        // padding: "0px 10px",
-                        // fontStyle: "italic"
-                      }}
-                    >
-                      {midTermMax()}
-                      {/* {maxScores?.midterm} */}
-                    </h4>
-                  </div>
-                </div>
-                {additionalCreds?.results?.map((x, index) => {
-                  return (
-                    <div className='table-row' key={index}>
-                      {Number(x.score) !== 0 && (
-                        <div className='table-data'>
-                          <p
+              <>
+                {
+                  <div className='first-half-result-table'>
+                    <div className='table-row'>
+                      <div className='table-data'></div>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "18px",
+                            lineHeight: "16px",
+                            // textAlign: "justify",
+                            // padding: "0px 10px",
+                            // fontStyle: "italic"
+                          }}
+                        >
+                          {assessmentType()} Scores
+                        </h4>
+                      </div>
+                    </div>
+                    <div className='table-row'>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "18px",
+                            lineHeight: "16px",
+                            color: "green",
+                            // textAlign: "justify",
+                            // padding: "0px 10px",
+                            // fontStyle: "italic"
+                          }}
+                        >
+                          Max Score Obtainable
+                        </h4>
+                      </div>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "18px",
+                            lineHeight: "16px",
+                            // textAlign: "justify",
+                            // padding: "0px 10px",
+                            // fontStyle: "italic"
+                          }}
+                        >
+                          {midTermMax()}
+                          {/* {maxScores?.midterm} */}
+                        </h4>
+                      </div>
+                    </div>
+                    {additionalCreds?.results?.map((x, index) => {
+                      return (
+                        <div className='table-row' key={index}>
+                          {Number(x.score) !== 0 && (
+                            <div className='table-data'>
+                              <p
+                                style={{
+                                  fontSize: "15px",
+                                  lineHeight: "16px",
+                                  fontWeight: "bold",
+                                  // textAlign: "justify",
+                                  // padding: "0px 10px",
+                                  // fontStyle: "italic"
+                                }}
+                              >
+                                {x.subject}
+                              </p>
+                            </div>
+                          )}
+                          {Number(x.score) !== 0 && (
+                            <div className='table-data'>
+                              <p
+                                style={{
+                                  fontSize: "15px",
+                                  lineHeight: "16px",
+                                  fontWeight: "bold",
+                                  // textAlign: "justify",
+                                  // padding: "0px 10px",
+                                  // fontStyle: "italic"
+                                }}
+                              >
+                                {x.score}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    <div className='table-row'>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "18px",
+                            lineHeight: "16px",
+                            // textAlign: "justify",
+                            // padding: "0px 10px",
+                            // fontStyle: "italic"
+                          }}
+                        >
+                          <span
                             style={{
-                              fontSize: "15px",
+                              fontSize: "18px",
                               lineHeight: "16px",
-                              fontWeight: "bold",
-                              // textAlign: "justify",
-                              // padding: "0px 10px",
-                              // fontStyle: "italic"
+                              color: "green",
                             }}
                           >
-                            {x.subject}
-                          </p>
-                        </div>
-                      )}
-                      {Number(x.score) !== 0 && (
-                        <div className='table-data'>
-                          <p
+                            Student&apos;s Total Score:
+                          </span>{" "}
+                          {getTotalScores()}
+                        </h4>
+                      </div>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "18px",
+                            lineHeight: "16px",
+                            // textAlign: "justify",
+                            // padding: "0px 10px",
+                            // fontStyle: "italic"
+                          }}
+                        >
+                          <span
                             style={{
-                              fontSize: "15px",
+                              fontSize: "18px",
                               lineHeight: "16px",
-                              fontWeight: "bold",
-                              // textAlign: "justify",
-                              // padding: "0px 10px",
-                              // fontStyle: "italic"
+                              color: "green",
                             }}
                           >
-                            {x.score}
-                          </p>
-                        </div>
-                      )}
+                            Student&apos;s Average Score:
+                          </span>{" "}
+                          {(getTotalScores() / (countSubjects() || 1))?.toFixed(
+                            3
+                          )}
+                          {/* {(getTotalScores() / (subjects?.length || 1))?.toFixed(5)} */}
+                        </h4>
+                      </div>
                     </div>
-                  );
-                })}
-                <div className='table-row'>
-                  <div className='table-data'>
-                    <h4
+                  </div>
+                }
+                {/* class teacher comment */}
+                {
+                  <div className='table-head'>
+                    <h3
                       style={{
                         fontSize: "18px",
                         lineHeight: "16px",
@@ -499,119 +607,71 @@ const ElementaryFirstHalfSheet = () => {
                         // fontStyle: "italic"
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: "18px",
-                          lineHeight: "16px",
-                          color: "green",
-                        }}
-                      >
-                        Student&apos;s Total Score:
-                      </span>{" "}
-                      {getTotalScores()}
-                    </h4>
+                      Class Teacher's General Comment
+                    </h3>
                   </div>
-                  <div className='table-data'>
+                }
+                {
+                  <div className='comment'>
                     <h4
                       style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                        // textAlign: "justify",
-                        // padding: "0px 10px",
-                        // fontStyle: "italic"
+                        fontSize: "19px",
+                        lineHeight: "22px",
+                        textAlign: "justify",
+                        padding: "0px 10px",
+                        fontStyle: "italic",
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: "18px",
-                          lineHeight: "16px",
-                          color: "green",
-                        }}
-                      >
-                        Student&apos;s Average Score:
-                      </span>{" "}
-                      {(getTotalScores() / (countSubjects() || 1))?.toFixed(3)}
-                      {/* {(getTotalScores() / (subjects?.length || 1))?.toFixed(5)} */}
+                      {additionalCreds?.teacher_comment}
                     </h4>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* class teacher comment */}
-            {checkResultComputed === "Released" && (
-              <div className='table-head'>
-                <h3
-                  style={{
-                    fontSize: "18px",
-                    lineHeight: "16px",
-                    // textAlign: "justify",
-                    // padding: "0px 10px",
-                    // fontStyle: "italic"
-                  }}
-                >
-                  Class Teacher's General Comment
-                </h3>
-              </div>
-            )}
-            {checkResultComputed === "Released" && (
-              <div className='comment'>
-                <h4
-                  style={{
-                    fontSize: "19px",
-                    lineHeight: "22px",
-                    textAlign: "justify",
-                    padding: "0px 10px",
-                    fontStyle: "italic",
-                  }}
-                >
-                  {additionalCreds?.teacher_comment}
-                </h4>
-                {additionalCreds?.teachers?.length > 0 && (
-                  <div className='d-flex px-5 justify-content-between mt-5'>
-                    <div>
-                      {additionalCreds?.teachers[0]?.signature && (
+                    {additionalCreds?.teachers?.length > 0 && (
+                      <div className='d-flex px-5 justify-content-between mt-5'>
                         <div>
-                          <img
-                            src={additionalCreds?.teachers[0]?.signature}
-                            alt=''
-                            width='100px'
-                            // height="200px"
-                          />
+                          {additionalCreds?.teachers[0]?.signature && (
+                            <div>
+                              <img
+                                src={additionalCreds?.teachers[0]?.signature}
+                                alt=''
+                                width='100px'
+                                // height="200px"
+                              />
+                            </div>
+                          )}
+                          <div className='line' style={{ marginTop: "18px" }} />
+                          <h3 style={{ fontSize: "18px" }}>
+                            {additionalCreds?.teachers[0]?.name}
+                          </h3>
                         </div>
-                      )}
-                      <div className='line' style={{ marginTop: "18px" }} />
-                      <h3 style={{ fontSize: "18px" }}>
-                        {additionalCreds?.teachers[0]?.name}
-                      </h3>
-                    </div>
-                    <div>
-                      {additionalCreds?.teachers[1]?.signature && (
                         <div>
-                          <img
-                            src={additionalCreds?.teachers[1]?.signature}
-                            alt=''
+                          {additionalCreds?.teachers[1]?.signature && (
+                            <div>
+                              <img
+                                src={additionalCreds?.teachers[1]?.signature}
+                                alt=''
+                                style={{
+                                  width: "100px", // Set the desired width
+                                  height: "80px", // Set the desired height
+                                  objectFit: "cover", // You can use 'cover', 'contain', 'fill', etc.
+                                }}
+                                // height="200px"
+                              />
+                            </div>
+                          )}
+                          <div className='line' style={{ marginTop: "18px" }} />
+                          <h3
                             style={{
-                              width: "100px", // Set the desired width
-                              height: "80px", // Set the desired height
-                              objectFit: "cover", // You can use 'cover', 'contain', 'fill', etc.
+                              fontSize: "18px",
+                              lineHeight: "16px",
                             }}
-                            // height="200px"
-                          />
+                          >
+                            {additionalCreds?.teachers[1]?.name}
+                          </h3>
                         </div>
-                      )}
-                      <div className='line' style={{ marginTop: "18px" }} />
-                      <h3
-                        style={{
-                          fontSize: "18px",
-                          lineHeight: "16px",
-                        }}
-                      >
-                        {additionalCreds?.teachers[1]?.name}
-                      </h3>
-                    </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                }
+              </>
             )}
           </div>
         </div>

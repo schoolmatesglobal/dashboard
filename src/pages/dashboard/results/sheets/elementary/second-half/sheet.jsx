@@ -346,7 +346,7 @@ const ElementarySecondHalfSheet = () => {
       //   minWidth: "700px",
       // }}
       >
-        <div className='mb-3 d-flex justify-content-between'>
+        <div className='mb-3 d-flex gap-4 align-items-center'>
           <Button
             onClick={() => {
               setChangeTableStyle(true);
