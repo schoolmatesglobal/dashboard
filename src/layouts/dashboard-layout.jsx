@@ -17,6 +17,7 @@ import { dashboardSideBarLinks } from "../utils/constants";
 import { useCommunicationBook } from "../hooks/useCommunicationBook";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
+import { useNavigate } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -32,6 +33,8 @@ const DashboardLayout = () => {
     setHideAllBars,
   } = useAppContext();
   const sidebarRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const { permission, apiServices, user: newUser } = useCommunicationBook();
 
@@ -221,7 +224,15 @@ const DashboardLayout = () => {
               <div className='d-flex gap-3 align-items-center'>
                 <p className='ms-3'>Welcome {user?.firstname}</p>
                 {
-                  <div style={{ position: "relative" }}>
+                  <div
+                    style={{ position: "relative", cursor: "pointer" }}
+                    onClick={() => {
+                      if (getUnreadCommunicationBookCount > 0) {
+                        navigate("/app/communication-book");
+                      } else {
+                      }
+                    }}
+                  >
                     <FontAwesomeIcon
                       icon={faBell}
                       style={{ fontSize: "20px" }}
