@@ -1695,6 +1695,7 @@ const ElementarySecondHalfSheet = () => {
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
+                          color: "green",
                         }}
                       >
                         End of Year Class Average
@@ -1705,6 +1706,7 @@ const ElementarySecondHalfSheet = () => {
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
+                          color: "green",
                         }}
                       >
                         End of Year Pupil's Average
@@ -1715,6 +1717,7 @@ const ElementarySecondHalfSheet = () => {
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
+                          color: "green",
                         }}
                       >
                         End of Year Pupil's Grade
