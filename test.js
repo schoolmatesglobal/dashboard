@@ -1,4 +1,4 @@
-const grading = [
+const grading =[
     {
         score_from: "0",
         score_to: "39",

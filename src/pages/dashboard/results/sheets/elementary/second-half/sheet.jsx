@@ -397,6 +397,34 @@ const ElementarySecondHalfSheet = () => {
           )}
         </div>
 
+        {user?.designation_name !== "Student" && (
+          <div className='w-full d-flex justify-content-center mb-3'>
+            <div className=''>
+              <p
+                className={`${
+                  status?.toUpperCase() === "WITHHELD"
+                    ? "bg-danger text-danger"
+                    : "bg-black text-black"
+                } bg-opacity-10 px-4 py-3 fw-bold`}
+                style={{
+                  textTransform: "uppercase",
+                  width: "fit",
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                  // textAlign: "center",
+                }}
+              >
+                RESULT{" "}
+                {status
+                  ? status
+                  : status === ""
+                  ? "Not-Released"
+                  : "Not-Computed"}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div
           ref={pdfExportComponent}
           className='first-level-results-sheet preschool first-half'
