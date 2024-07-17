@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StudentsResults from "../../../../../../components/common/students-results";
 import PageSheet from "../../../../../../components/common/page-sheet";
 import Button from "../../../../../../components/buttons/button";
@@ -145,6 +145,11 @@ const ElementaryFirstHalfSheet = () => {
   })();
 
   const allLoading = isLoading || loading1;
+
+  useEffect(() => {
+    // setTeacherComment(additionalCreds?.teacher_comment);
+    setStatus(additionalCreds?.status);
+  }, [additionalCreds?.status]);
 
   // console.log({ additionalCreds });
 
