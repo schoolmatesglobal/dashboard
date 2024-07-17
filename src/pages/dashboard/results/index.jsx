@@ -27,7 +27,8 @@ const Results = () => {
     },
     validation: {
       class_name: {
-        required: user?.designation_name === "Principal" || "Admin",
+        required: (user?.designation_name === "Principal" ||
+          user?.designation_name === "Admin"),
       },
     },
   });
@@ -150,7 +151,7 @@ const Results = () => {
     return arr;
   };
 
-  console.log({ sessions });
+  console.log({ sessions, user });
 
   return (
     <div>
@@ -170,7 +171,8 @@ const Results = () => {
           type: "button",
           isLoading: false,
           disabled:
-            user?.designation_name === "Principal" || "Admin"
+            user?.designation_name === "Principal" ||
+            user?.designation_name === "Admin"
               ? !inputs.class_name
               : false,
           onClick: promptMapper[promptStatus].onFormSubmit,
@@ -242,7 +244,8 @@ const Results = () => {
           )}
         </div>
 
-        {(user?.designation_name === "Principal" || "Admin") && (
+        {(user?.designation_name === "Principal" ||
+          user?.designation_name === "Admin") && (
           <div className='form-group mb-4'>
             <AuthSelect
               label='Class'
