@@ -197,6 +197,66 @@ const ElementarySecondHalfSheet = () => {
     }
   })();
 
+  const cumDiv = {
+    width: "100%",
+    position: "relative",
+    border: "1px solid green",
+    // display: "flex",
+    // justifyContent: "center",
+    // alignItems: "center",
+  };
+  const cumDiv2 = {
+    width: "100%",
+    // position: "relative",
+    border: "1px solid green",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+  const cumH4 = {
+    width: "100%",
+    // height: "100%",
+    color: "green",
+    fontSize: "15px",
+    lineHeight: "16px",
+    transform: "translate(-50%, -50%) rotate(-90deg)",
+    transformOrigin: "center",
+    whiteSpace: "nowrap",
+    position: "absolute",
+    top: "60%",
+    left: "50%",
+    textTransform: "uppercase",
+  };
+  const cumH42 = {
+    width: "100%",
+    // color: "green",
+    fontSize: "15px",
+    lineHeight: "16px",
+    textAlign: "center",
+    // transform: "translate(-50%, -50%) rotate(-90deg)",
+    // transformOrigin: "center",
+    whiteSpace: "nowrap",
+    // position: "absolute",
+    // top: "50%",
+    // left: "50%",
+    textTransform: "uppercase",
+  };
+
+  const cumH42B = {
+    width: "100%",
+    // color: "green",
+    fontSize: "12px",
+    lineHeight: "15px",
+    textAlign: "center",
+    // transform: "translate(-50%, -50%) rotate(-90deg)",
+    // transformOrigin: "center",
+    whiteSpace: "nowrap",
+    // position: "absolute",
+    // top: "50%",
+    // left: "50%",
+    textTransform: "uppercase",
+  };
+
   // useEffect(() => {
   //   setPrincipalClassName(locationState?.creds?.class_name);
   // }, []);
@@ -1321,128 +1381,48 @@ const ElementarySecondHalfSheet = () => {
                         Subjects
                       </h4>
                     </div>
-                    <div className='right-data'>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          First Term
-                        </h4>
+                    <div style={{ display: "flex", width: "100%" }}>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>First Term</h4>
                       </div>
                       {locationState?.creds?.term !== "First Term" && (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            Second Term
-                          </h4>
+                        <div style={cumDiv}>
+                          <h4 style={cumH4}>Second Term</h4>
                         </div>
                       )}
                       {!(
                         locationState?.creds?.term === "First Term" ||
                         locationState?.creds?.term === "Second Term"
                       ) ? (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            Third Term
-                          </h4>
+                        <div style={cumDiv}>
+                          <h4 style={cumH4}>Third Term</h4>
                         </div>
                       ) : null}
                       {!(
                         locationState?.creds?.term === "First Term" ||
                         locationState?.creds?.term === "Second Term"
                       ) ? (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            Total
-                          </h4>
+                        <div style={cumDiv}>
+                          <h4 style={cumH4}>Total</h4>
                         </div>
                       ) : null}
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Average
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Average</h4>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Remark
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Remark</h4>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Rank
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Rank</h4>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Class Average
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Class Average</h4>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Highest
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Highest</h4>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            color: "green",
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Lowest
-                        </h4>
+                      <div style={cumDiv}>
+                        <h4 style={cumH4}>Lowest</h4>
                       </div>
                     </div>
                   </div>
@@ -1458,118 +1438,50 @@ const ElementarySecondHalfSheet = () => {
                         Max Scores
                       </h4>
                     </div>
-                    <div className='right-data'>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          100
-                        </h4>
+                    <div style={{ display: "flex", width: "100%" }}>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>100</p>
                       </div>
                       {locationState?.creds?.term !== "First Term" && (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            100
-                          </h4>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>100</p>
                         </div>
                       )}
                       {!(
                         locationState?.creds?.term === "First Term" ||
                         locationState?.creds?.term === "Second Term"
                       ) ? (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            100
-                          </h4>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>100</p>
                         </div>
                       ) : null}
                       {!(
                         locationState?.creds?.term === "First Term" ||
                         locationState?.creds?.term === "Second Term"
                       ) ? (
-                        <div className='table-data'>
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            100
-                          </h4>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>100</p>
                         </div>
                       ) : null}
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          100.00
-                        </h4>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>100.00</p>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          Excellent
-                        </h4>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>Excellent</p>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>
                           N<sup>th</sup>
-                        </h4>
+                        </p>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          100
-                        </h4>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>100</p>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          100
-                        </h4>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>100</p>
                       </div>
-                      <div className='table-data'>
-                        <h4
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                          }}
-                        >
-                          100
-                        </h4>
+                      <div style={cumDiv2}>
+                        <p style={cumH42}>100</p>
                       </div>
                     </div>
                   </div>
@@ -1586,171 +1498,191 @@ const ElementarySecondHalfSheet = () => {
                           {score.subject}
                         </p>
                       </div>
-                      <div className='right-data'>
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {score["First Term"]}
-                          </p>
+                      <div style={{ display: "flex", width: "100%" }}>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>{score["First Term"]}</p>
                         </div>
                         {locationState?.creds?.term !== "First Term" && (
-                          <div className='table-data'>
-                            <p
-                              style={{
-                                fontSize: "15px",
-                                lineHeight: "16px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {score["Second Term"]}
-                            </p>
+                          <div style={cumDiv2}>
+                            <p style={cumH42}>{score["Second Term"]}</p>
                           </div>
                         )}
                         {!(
                           locationState?.creds?.term === "First Term" ||
                           locationState?.creds?.term === "Second Term"
                         ) ? (
-                          <div className='table-data'>
-                            <p
-                              style={{
-                                fontSize: "15px",
-                                lineHeight: "16px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {score["Third Term"]}
-                            </p>
+                          <div style={cumDiv2}>
+                            <p style={cumH42}>{score["Third Term"]}</p>
                           </div>
                         ) : null}
                         {!(
                           locationState?.creds?.term === "First Term" ||
                           locationState?.creds?.term === "Second Term"
                         ) ? (
-                          <div className='table-data'>
-                            <p
-                              style={{
-                                fontSize: "15px",
-                                lineHeight: "16px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {score["Total Score"]}
-                            </p>
+                          <div style={cumDiv2}>
+                            <p style={cumH42}>{score["Total Score"]}</p>
                           </div>
                         ) : null}
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>
                             {Number(score["Average Score"])?.toFixed(2)}
                           </p>
                         </div>
-                        <div className='table-data'>
+                        <div style={cumDiv2}>
                           <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
+                            style={
+                              score["Remark"]?.toUpperCase() === "SATISFACTORY"
+                                ? cumH42B
+                                : cumH42
+                            }
                           >
                             {score["Remark"]}
                           </p>
                         </div>
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {score["Rank"]}
-                          </p>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>{score["Rank"]}</p>
                         </div>
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>
                             {Number(score["Class Average"])?.toFixed(2)}
                           </p>
                         </div>
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {Number(score["Highest"])}
-                          </p>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>{Number(score["Highest"])}</p>
                         </div>
-                        <div className='table-data'>
-                          <p
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {Number(score["Lowest"])}
-                          </p>
+                        <div style={cumDiv2}>
+                          <p style={cumH42}>{Number(score["Lowest"])}</p>
                         </div>
                       </div>
                     </div>
                   ))}
-                  {locationState?.creds?.term === "Third Term" && (
-                    <div className='table-row year-total-score'>
+                  <div className='table-row'>
+                    <div className='table-data'>
+                      <h4
+                        style={{
+                          color: "green",
+                          fontSize: "15px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        End Of Year Total Score
+                      </h4>
+                    </div>
+                    <div className='right-data'>
                       <div className='table-data'>
-                        <p
+                        <h4
                           style={{
                             fontSize: "15px",
                             lineHeight: "16px",
                           }}
                         >
-                          End of year total score
-                        </p>
+                          {getTotalYearlyScores()}
+                        </h4>
                       </div>
-                      <div className='right-data'>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
+                      {/* {locationState?.creds?.term !== "First Term" && (
                         <div className='table-data'>
-                          <p
+                          <h4
                             style={{
                               fontSize: "15px",
                               lineHeight: "16px",
                             }}
                           >
-                            {getTotalYearlyScores()}
-                          </p>
+                            100
+                          </h4>
                         </div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                        <div className='table-data'></div>
-                      </div>
+                      )} */}
+                      {/* {!(
+                        locationState?.creds?.term === "First Term" ||
+                        locationState?.creds?.term === "Second Term"
+                      ) ? (
+                        <div className='table-data'>
+                          <h4
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                            }}
+                          >
+                            100
+                          </h4>
+                        </div>
+                      ) : null} */}
+                      {/* {!(
+                        locationState?.creds?.term === "First Term" ||
+                        locationState?.creds?.term === "Second Term"
+                      ) ? (
+                        <div className='table-data'>
+                          <h4
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                            }}
+                          >
+                            100
+                          </h4>
+                        </div>
+                      ) : null} */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          100.00
+                        </h4>
+                      </div> */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          Excellent
+                        </h4>
+                      </div> */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          N<sup>th</sup>
+                        </h4>
+                      </div> */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          100
+                        </h4>
+                      </div> */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          100
+                        </h4>
+                      </div> */}
+                      {/* <div className='table-data'>
+                        <h4
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
+                          100
+                        </h4>
+                      </div> */}
                     </div>
-                  )}
-                  {/* <div className='table-data'>
-                  <br />
-                  <br />
-                </div> */}
+                  </div>
                 </div>
               )}
 
@@ -1791,7 +1723,7 @@ const ElementarySecondHalfSheet = () => {
                   </div>
                   <div className='table-row'>
                     <div className='table-data'>
-                      <p
+                      <h4
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
@@ -1800,10 +1732,10 @@ const ElementarySecondHalfSheet = () => {
                         {Number(
                           yearlyClassAverage?.["Class Average"] || 0
                         ).toFixed(2)}
-                      </p>
+                      </h4>
                     </div>
                     <div className='table-data'>
-                      <p
+                      <h4
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
@@ -1812,17 +1744,17 @@ const ElementarySecondHalfSheet = () => {
                         {Number(
                           yearlyClassAverage?.["Student Average"] || 0
                         ).toFixed(2)}
-                      </p>
+                      </h4>
                     </div>
                     <div className='table-data'>
-                      <p
+                      <h4
                         style={{
                           fontSize: "15px",
                           lineHeight: "16px",
                         }}
                       >
                         {yearlyClassAverage?.["Grade"]}
-                      </p>
+                      </h4>
                     </div>
                   </div>
                 </div>
