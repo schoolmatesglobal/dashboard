@@ -42,9 +42,10 @@ const ComputeElementaryFirstHalfResult = () => {
     releaseResultLoading,
     withholdResult,
     withholdResultLoading,
+    studentByClass2,
   } = useResults();
 
-  const { studentByClass2 } = useStudent();
+  // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
 
