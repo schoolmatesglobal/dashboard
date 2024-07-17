@@ -1181,9 +1181,9 @@ const CommunicationBookPage = () => {
                 navigate(`/app/communication-book/?status=closed`, {
                   state: {
                     classId,
-                  }
+                  },
                 });
-                
+
                 // handleViewFile(notes?.file);
               }}
               variant={`${status === "closed" ? "" : "outline"}`}
@@ -1239,8 +1239,8 @@ const CommunicationBookPage = () => {
                         recipient:
                           x.id === "99999"
                             ? `${x.firstname} ${x.surname}`
-                            // ? `${x.firstname} ${x.surname} in ${className}`
-                            : `${x.surname} ${x.firstname}`,
+                            : // ? `${x.firstname} ${x.surname} in ${className}`
+                              `${x.surname} ${x.firstname}`,
                         student_id: x.id,
                         email_address: x.students,
                         designation: x.teacher_type,

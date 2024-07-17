@@ -44,6 +44,15 @@ export const useResults = () => {
   const [preActivities2, setPreActivities2] = useState([]);
   const [activateEndOfTerm, setActivateEndOfTerm] = useState(true);
 
+  const [loading1, setLoading1] = useState(false);
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
+
   const { state } = useLocation();
   const studentClassName = `${studentData?.present_class}`;
   // const studentClassName = `${studentData?.present_class} ${studentData?.sub_class}`;
@@ -880,7 +889,11 @@ export const useResults = () => {
     }
   );
 
-  const { data: midtermResult, isLoading: midtermResultLoading } = useQuery(
+  const {
+    data: midtermResult,
+    isLoading: midtermResultLoading,
+    refetch: refetchMidtermResult,
+  } = useQuery(
     [
       queryKeys.GET_MIDTERM,
       studentData?.id,
@@ -1054,6 +1067,7 @@ export const useResults = () => {
     }
   );
 
+  // Add Result
   const { mutateAsync: addResult, isLoading: addResultLoading } = useMutation(
     apiServices.addResult,
     {
@@ -1065,12 +1079,15 @@ export const useResults = () => {
           state?.creds?.period === "First Half"
         ) {
           refetchFirstAssess();
+          trigger(500);
+          // refetchFirstAssess2();
         } else if (
           maxScores?.has_two_assessment &&
           inputs.assessment === "second_assesment" &&
           state?.creds?.period === "First Half"
         ) {
           refetchSecondAssess();
+          // refetchFirstAssess2();
         }
       },
       onError(err) {
@@ -1078,6 +1095,92 @@ export const useResults = () => {
       },
     }
   );
+
+  // Release Result
+  const { mutateAsync: releaseResult, isLoading: releaseResultLoading } =
+    useMutation(
+      () =>
+        apiServices.releaseResult({
+          period: state?.creds?.period,
+          term: state?.creds?.term,
+          session: state?.creds?.session,
+          students: [
+            {
+              student_id: studentData?.id,
+            },
+          ],
+        }),
+      {
+        onSuccess() {
+          if (
+            maxScores?.has_two_assessment &&
+            inputs.assessment === "first_assesment" &&
+            state?.creds?.period === "First Half"
+          ) {
+            trigger(500);
+            refetchFirstAssess();
+            refetchMidtermResult();
+            // refetchFirstAssess2();
+          } else if (
+            maxScores?.has_two_assessment &&
+            inputs.assessment === "second_assesment" &&
+            state?.creds?.period === "First Half"
+          ) {
+            trigger(500);
+            refetchSecondAssess();
+            refetchMidtermResult();
+            // refetchFirstAssess2();
+          }
+          toast.success("Result has been released successfully");
+        },
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
+
+  // withhold Result
+  const { mutateAsync: withholdResult, isLoading: withholdResultLoading } =
+    useMutation(
+      () =>
+        apiServices.withholdResult({
+          period: state?.creds?.period,
+          term: state?.creds?.term,
+          session: state?.creds?.session,
+          students: [
+            {
+              student_id: studentData?.id,
+            },
+          ],
+        }),
+      {
+        onSuccess() {
+          toast.success("Result has been withheld successfully");
+          if (
+            maxScores?.has_two_assessment &&
+            inputs.assessment === "first_assesment" &&
+            state?.creds?.period === "First Half"
+          ) {
+            trigger(500);
+            refetchFirstAssess();
+            refetchMidtermResult();
+            // refetchFirstAssess2();
+          } else if (
+            maxScores?.has_two_assessment &&
+            inputs.assessment === "second_assesment" &&
+            state?.creds?.period === "First Half"
+          ) {
+            trigger(500);
+            refetchSecondAssess();
+            refetchMidtermResult();
+            // refetchFirstAssess2();
+          }
+        },
+        onError(err) {
+          apiServices.errorHandler(err);
+        },
+      }
+    );
 
   const toastValue =
     inputs.assessment === "first_assesment"
@@ -1087,6 +1190,8 @@ export const useResults = () => {
   const { mutateAsync: addMidTermResult, isLoading: addMidTermResultLoading } =
     useMutation(apiServices.addMidTermResult, {
       onSuccess() {
+        trigger(500);
+        refetchMidtermResult();
         toast.success(
           `${
             maxScores?.has_two_assessment ? toastValue : "Mid Term"
@@ -1104,6 +1209,7 @@ export const useResults = () => {
   } = useMutation(apiServices.addEndOfTermResult, {
     onSuccess() {
       toast.success(`End of Term Result has been computed successfully`);
+      trigger(500);
       endOfTermResultsRefetch();
     },
     onError(err) {
@@ -1116,6 +1222,7 @@ export const useResults = () => {
     isLoading: addPreSchoolResultLoading,
   } = useMutation(apiServices.postPreSchoolResult, {
     onSuccess() {
+      trigger(500);
       preSchoolCompiledResultsRefetch();
       toast.success("Result has been computed successfully");
     },
@@ -1338,7 +1445,9 @@ export const useResults = () => {
     midtermResultLoading ||
     addEndOfTermResultLoading ||
     firstAssessResultLoading2 ||
-    addMidTermResultLoading;
+    addMidTermResultLoading || loading1
+  // ||
+  // releaseResultLoading;
 
   // console.log({ subjectsByClass });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
@@ -1416,6 +1525,11 @@ export const useResults = () => {
     setActivateEndOfTerm,
     initGetExistingSecondHalfResult,
     activateEndOfTerm,
+
+    releaseResult,
+    releaseResultLoading,
+    withholdResult,
+    withholdResultLoading,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,

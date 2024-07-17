@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useResults } from "../../../../../../hooks/useResults";
 import { useAppContext } from "../../../../../../hooks/useAppContext";
 import DetailView from "../../../../../../components/views/detail-view";
@@ -51,9 +51,16 @@ const ComputeElementarySecondHalfResult = () => {
     setActivateEndOfTerm,
     initGetExistingSecondHalfResult,
     activateEndOfTerm,
+    releaseResult,
+    releaseResultLoading,
+    withholdResult,
+    withholdResultLoading,
   } = useResults();
 
   const { studentByClass2 } = useStudent();
+
+  const [loading1, setLoading1] = useState(false);
+  const [status, setStatus] = useState("");
 
   const handleSocialChecks = (property, type, value) => {
     if (additionalCreds[property]) {
@@ -107,6 +114,21 @@ const ComputeElementarySecondHalfResult = () => {
     // setPerformanceRemark(additionalCreds?.performance_remark);
   }, [initGetExistingSecondHalfResult]);
 
+  useEffect(() => {
+    // setTeacherComment(additionalCreds?.teacher_comment);
+    setStatus(additionalCreds?.status);
+  }, [additionalCreds?.status]);
+
+  const checkResultComputed = (function () {
+    if ("results" in additionalCreds) {
+      return true;
+    } else {
+      return false;
+    }
+  })();
+
+  const allLoading = isLoading || loading1 || skillLoading || reportLoading;
+
   const newSubjects = subjects ?? [];
 
   // console.log({
@@ -119,7 +141,7 @@ const ComputeElementarySecondHalfResult = () => {
   //   subjects,
   // });
   // console.log({ extraActivities, activities, additionalCreds, maxScores });
-  console.log({ maxScores });
+  console.log({ maxScores, status, newSubjects, additionalCreds });
 
   return (
     <div className='results-sheet'>
@@ -141,9 +163,37 @@ const ComputeElementarySecondHalfResult = () => {
       )}
       <DetailView
         hasGoBack={false}
-        isLoading={isLoading || skillLoading || reportLoading}
+        isLoading={allLoading}
+        doubleSubmit={true}
+        doubleSubmitTitle={`${status === "released" ? "withhold" : "Release"}`}
+        doubleSubmitVariant={`${status === "released" ? "danger" : ""}`}
+        doubleIsDisabled={
+          !checkResultComputed ||
+          allLoading ||
+          releaseResultLoading ||
+          withholdResultLoading
+        }
+        doubleIsLoading={releaseResultLoading || withholdResultLoading}
+        doubleSubmitOnclick={() => {
+          if (status === "released") {
+            withholdResult();
+            setStatus("withheld");
+            // trigger(2000);
+          } else if (status === "withheld") {
+            releaseResult();
+            setStatus("released");
+            // trigger(2000);
+          } else {
+            releaseResult();
+            setStatus("released");
+            // trigger(2000);
+          }
+        }}
         cancelLink='/app/results/preschool'
-        pageTitle={`${studentData?.firstname || "Student"}'s Result`}
+        // doubleSubmitOnclick={()=> }
+        pageTitle={`${studentData?.firstname || "Student"}'s Result (${
+          status ? status : status === "" ? "Not-Released" : "Not-Computed"
+        })`}
         onFormSubmit={(e) => {
           e.preventDefault();
           createEndOfTermResult();
@@ -204,32 +254,33 @@ const ComputeElementarySecondHalfResult = () => {
         </PageTitle>
         <div>
           <div>
-            {newSubjects?.map((x, key) => (
-              <Row key={key} className='my-5 '>
-                <Col sm='6' className='mb- mb-sm-0'>
-                  <h5>
-                    {key + 1}. {x.subject}:
-                  </h5>
-                </Col>
-                <Col sm='6' className='mb-1 mb-sm-0'>
-                  <AuthInput
-                    value={x.grade}
-                    onChange={({ target: { value } }) => {
-                      if (Number.isNaN(Number(value))) return;
+            {newSubjects?.length > 0 &&
+              newSubjects?.map((x, key) => (
+                <Row key={key} className='my-5 '>
+                  <Col sm='6' className='mb- mb-sm-0'>
+                    <h5>
+                      {key + 1}. {x.subject}:
+                    </h5>
+                  </Col>
+                  <Col sm='6' className='mb-1 mb-sm-0'>
+                    <AuthInput
+                      value={x.grade}
+                      onChange={({ target: { value } }) => {
+                        if (Number.isNaN(Number(value))) return;
 
-                      if (Number(value) > Number(maxScores?.exam)) return;
+                        if (Number(value) > Number(maxScores?.exam)) return;
 
-                      const fd = subjects.map((s) => ({
-                        ...s,
-                        grade: s.subject === x.subject ? value : s.grade,
-                      }));
+                        const fd = subjects.map((s) => ({
+                          ...s,
+                          grade: s.subject === x.subject ? value : s.grade,
+                        }));
 
-                      setSubjects(fd);
-                    }}
-                  />
-                </Col>
-              </Row>
-            ))}
+                        setSubjects(fd);
+                      }}
+                    />
+                  </Col>
+                </Row>
+              ))}
           </div>
         </div>
         {user?.teacher_type === "class teacher" && <hr className='my-5' />}

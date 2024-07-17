@@ -36,7 +36,7 @@ import {
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
 
-const backendUrl = function () {
+export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
     return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (
@@ -48,9 +48,9 @@ const backendUrl = function () {
   } else {
     return "https://staging.sapsms.com/api";
   }
-};
+})();
 
-export const backendAPI = backendUrl();
+// export const backendAPI = backendUrl();
 
 export const homeUrl = {
   Superadmin: "/app/super-admin",
@@ -685,6 +685,3 @@ export const colors = {
   black: "#000",
   white: "#ffffff",
 };
-
-
-

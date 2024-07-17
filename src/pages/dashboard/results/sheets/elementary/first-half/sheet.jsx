@@ -10,6 +10,8 @@ import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useStudent } from "../../../../../../hooks/useStudent";
 import AuthSelect from "../../../../../../components/inputs/auth-select";
 import GoBack from "../../../../../../components/common/go-back";
+import { HiOutlineDocumentPlus } from "react-icons/hi2";
+import { PiWarningCircleFill } from "react-icons/pi";
 
 const ElementaryFirstHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -93,6 +95,38 @@ const ElementaryFirstHalfSheet = () => {
     return correctCount;
   }
 
+  const checkResultComputed = (function () {
+    if (user?.designation_name === "Student") {
+      if (
+        "results" in additionalCreds &&
+        additionalCreds?.status === "released"
+      ) {
+        return "Released";
+      } else if (
+        "results" in additionalCreds &&
+        additionalCreds?.status === "withheld"
+      ) {
+        return "Withheld";
+      } else {
+        return "Not Released";
+      }
+    } else {
+      if (
+        "results" in additionalCreds &&
+        additionalCreds?.status === "released"
+      ) {
+        return "Released";
+      } else if (
+        "results" in additionalCreds &&
+        additionalCreds?.status === "withheld"
+      ) {
+        return "Released";
+      } else {
+        return "Not Released";
+      }
+    }
+  })();
+
   // console.log({ additionalCreds });
 
   console.log({
@@ -103,6 +137,7 @@ const ElementaryFirstHalfSheet = () => {
     // result,
     cs: countSubjects(),
     additionalCreds,
+    checkResultComputed,
   });
 
   return (
@@ -329,6 +364,7 @@ const ElementaryFirstHalfSheet = () => {
                 </div>
               </div>
             </div>
+            {/* Assessment Report */}
             <div className='table-head'>
               <h3
                 style={{
@@ -342,210 +378,241 @@ const ElementaryFirstHalfSheet = () => {
                 Assessment Report
               </h3>
             </div>
-            <div className='first-half-result-table'>
-              <div className='table-row'>
-                <div className='table-data'></div>
-                <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      lineHeight: "16px",
-                      // textAlign: "justify",
-                      // padding: "0px 10px",
-                      // fontStyle: "italic"
-                    }}
-                  >
-                    {assessmentType()} Scores
-                  </h4>
-                </div>
+            {checkResultComputed !== "Released" && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                  margin: "100px 0",
+                }}
+              >
+                <PiWarningCircleFill
+                  style={{
+                    fontSize: "80px",
+                    width: "50px",
+                    height: "50px",
+                    color: "red",
+                  }}
+                />
+                <p className='fs-1 fw-bold mt-3'>
+                  Result {checkResultComputed}
+                </p>
               </div>
-              <div className='table-row'>
-                <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      lineHeight: "16px",
-                      color: "green",
-                      // textAlign: "justify",
-                      // padding: "0px 10px",
-                      // fontStyle: "italic"
-                    }}
-                  >
-                    Max Score Obtainable
-                  </h4>
-                </div>
-                <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      lineHeight: "16px",
-                      // textAlign: "justify",
-                      // padding: "0px 10px",
-                      // fontStyle: "italic"
-                    }}
-                  >
-                    {midTermMax()}
-                    {/* {maxScores?.midterm} */}
-                  </h4>
-                </div>
-              </div>
-              {additionalCreds?.results?.map((x, index) => {
-                return (
-                  <div className='table-row' key={index}>
-                    {Number(x.score) !== 0 && (
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            // textAlign: "justify",
-                            // padding: "0px 10px",
-                            // fontStyle: "italic"
-                          }}
-                        >
-                          {x.subject}
-                        </p>
-                      </div>
-                    )}
-                    {Number(x.score) !== 0 && (
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            // textAlign: "justify",
-                            // padding: "0px 10px",
-                            // fontStyle: "italic"
-                          }}
-                        >
-                          {x.score}
-                        </p>
-                      </div>
-                    )}
+            )}
+            {checkResultComputed === "Released" && (
+              <div className='first-half-result-table'>
+                <div className='table-row'>
+                  <div className='table-data'></div>
+                  <div className='table-data'>
+                    <h4
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: "16px",
+                        // textAlign: "justify",
+                        // padding: "0px 10px",
+                        // fontStyle: "italic"
+                      }}
+                    >
+                      {assessmentType()} Scores
+                    </h4>
                   </div>
-                );
-              })}
-              <div className='table-row'>
-                <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      lineHeight: "16px",
-                      // textAlign: "justify",
-                      // padding: "0px 10px",
-                      // fontStyle: "italic"
-                    }}
-                  >
-                    <span
+                </div>
+                <div className='table-row'>
+                  <div className='table-data'>
+                    <h4
                       style={{
                         fontSize: "18px",
                         lineHeight: "16px",
                         color: "green",
+                        // textAlign: "justify",
+                        // padding: "0px 10px",
+                        // fontStyle: "italic"
                       }}
                     >
-                      Student&apos;s Total Score:
-                    </span>{" "}
-                    {getTotalScores()}
-                  </h4>
-                </div>
-                <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "18px",
-                      lineHeight: "16px",
-                      // textAlign: "justify",
-                      // padding: "0px 10px",
-                      // fontStyle: "italic"
-                    }}
-                  >
-                    <span
+                      Max Score Obtainable
+                    </h4>
+                  </div>
+                  <div className='table-data'>
+                    <h4
                       style={{
                         fontSize: "18px",
                         lineHeight: "16px",
-                        color: "green",
+                        // textAlign: "justify",
+                        // padding: "0px 10px",
+                        // fontStyle: "italic"
                       }}
                     >
-                      Student&apos;s Average Score:
-                    </span>{" "}
-                    {(getTotalScores() / (countSubjects() || 1))?.toFixed(3)}
-                    {/* {(getTotalScores() / (subjects?.length || 1))?.toFixed(5)} */}
-                  </h4>
+                      {midTermMax()}
+                      {/* {maxScores?.midterm} */}
+                    </h4>
+                  </div>
+                </div>
+                {additionalCreds?.results?.map((x, index) => {
+                  return (
+                    <div className='table-row' key={index}>
+                      {Number(x.score) !== 0 && (
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              // textAlign: "justify",
+                              // padding: "0px 10px",
+                              // fontStyle: "italic"
+                            }}
+                          >
+                            {x.subject}
+                          </p>
+                        </div>
+                      )}
+                      {Number(x.score) !== 0 && (
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              // textAlign: "justify",
+                              // padding: "0px 10px",
+                              // fontStyle: "italic"
+                            }}
+                          >
+                            {x.score}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                <div className='table-row'>
+                  <div className='table-data'>
+                    <h4
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: "16px",
+                        // textAlign: "justify",
+                        // padding: "0px 10px",
+                        // fontStyle: "italic"
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                          color: "green",
+                        }}
+                      >
+                        Student&apos;s Total Score:
+                      </span>{" "}
+                      {getTotalScores()}
+                    </h4>
+                  </div>
+                  <div className='table-data'>
+                    <h4
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: "16px",
+                        // textAlign: "justify",
+                        // padding: "0px 10px",
+                        // fontStyle: "italic"
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                          color: "green",
+                        }}
+                      >
+                        Student&apos;s Average Score:
+                      </span>{" "}
+                      {(getTotalScores() / (countSubjects() || 1))?.toFixed(3)}
+                      {/* {(getTotalScores() / (subjects?.length || 1))?.toFixed(5)} */}
+                    </h4>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className='table-head'>
-              <h3
-                style={{
-                  fontSize: "18px",
-                  lineHeight: "16px",
-                  // textAlign: "justify",
-                  // padding: "0px 10px",
-                  // fontStyle: "italic"
-                }}
-              >
-                Class Teacher's General Comment
-              </h3>
-            </div>
-            <div className='comment'>
-              <h4
-                style={{
-                  fontSize: "19px",
-                  lineHeight: "22px",
-                  textAlign: "justify",
-                  padding: "0px 10px",
-                  fontStyle: "italic",
-                }}
-              >
-                {additionalCreds?.teacher_comment}
-              </h4>
-              {additionalCreds?.teachers?.length > 0 && (
-                <div className='d-flex px-5 justify-content-between mt-5'>
-                  <div>
-                    {additionalCreds?.teachers[0]?.signature && (
-                      <div>
-                        <img
-                          src={additionalCreds?.teachers[0]?.signature}
-                          alt=''
-                          width='100px'
-                          // height="200px"
-                        />
-                      </div>
-                    )}
-                    <div className='line' style={{ marginTop: "18px" }} />
-                    <h3 style={{ fontSize: "18px" }}>
-                      {additionalCreds?.teachers[0]?.name}
-                    </h3>
+            )}
+            {/* class teacher comment */}
+            {checkResultComputed === "Released" && (
+              <div className='table-head'>
+                <h3
+                  style={{
+                    fontSize: "18px",
+                    lineHeight: "16px",
+                    // textAlign: "justify",
+                    // padding: "0px 10px",
+                    // fontStyle: "italic"
+                  }}
+                >
+                  Class Teacher's General Comment
+                </h3>
+              </div>
+            )}
+            {checkResultComputed === "Released" && (
+              <div className='comment'>
+                <h4
+                  style={{
+                    fontSize: "19px",
+                    lineHeight: "22px",
+                    textAlign: "justify",
+                    padding: "0px 10px",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {additionalCreds?.teacher_comment}
+                </h4>
+                {additionalCreds?.teachers?.length > 0 && (
+                  <div className='d-flex px-5 justify-content-between mt-5'>
+                    <div>
+                      {additionalCreds?.teachers[0]?.signature && (
+                        <div>
+                          <img
+                            src={additionalCreds?.teachers[0]?.signature}
+                            alt=''
+                            width='100px'
+                            // height="200px"
+                          />
+                        </div>
+                      )}
+                      <div className='line' style={{ marginTop: "18px" }} />
+                      <h3 style={{ fontSize: "18px" }}>
+                        {additionalCreds?.teachers[0]?.name}
+                      </h3>
+                    </div>
+                    <div>
+                      {additionalCreds?.teachers[1]?.signature && (
+                        <div>
+                          <img
+                            src={additionalCreds?.teachers[1]?.signature}
+                            alt=''
+                            style={{
+                              width: "100px", // Set the desired width
+                              height: "80px", // Set the desired height
+                              objectFit: "cover", // You can use 'cover', 'contain', 'fill', etc.
+                            }}
+                            // height="200px"
+                          />
+                        </div>
+                      )}
+                      <div className='line' style={{ marginTop: "18px" }} />
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        {additionalCreds?.teachers[1]?.name}
+                      </h3>
+                    </div>
                   </div>
-                  <div>
-                    {additionalCreds?.teachers[1]?.signature && (
-                      <div>
-                        <img
-                          src={additionalCreds?.teachers[1]?.signature}
-                          alt=''
-                          style={{
-                            width: "100px", // Set the desired width
-                            height: "80px", // Set the desired height
-                            objectFit: "cover", // You can use 'cover', 'contain', 'fill', etc.
-                          }}
-                          // height="200px"
-                        />
-                      </div>
-                    )}
-                    <div className='line' style={{ marginTop: "18px" }} />
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      {additionalCreds?.teachers[1]?.name}
-                    </h3>
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </PageSheet>

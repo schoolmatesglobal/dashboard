@@ -199,15 +199,7 @@ const CreateNoteCard = ({
                   setEditPrompt(true);
                   setFile(null);
                   setFileName("");
-                  // setCreateN((prev) => {
-                  //   return {
-                  //     ...prev,
-                  //     file: notes?.file,
-                  //     file_name: notes?.file_name,
-                  //   };
-                  // });
                 }
-                // setCreateQuestionPrompt(true);
               }}
             >
               {permission?.approve ? "Approve" : "Edit"}

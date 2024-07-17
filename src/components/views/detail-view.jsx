@@ -11,6 +11,12 @@ const DetailView = ({
   cancelLink,
   isLoading,
   children,
+  doubleSubmit = false,
+  doubleSubmitTitle = "Submit",
+  doubleSubmitVariant = "",
+  doubleIsLoading = false,
+  doubleIsDisabled = false,
+  doubleSubmitOnclick = () => {},
   hasGoBack = true,
 }) => {
   const navigate = useNavigate();
@@ -20,12 +26,30 @@ const DetailView = ({
       <PageSheet>
         <PageTitle>{pageTitle}</PageTitle>
         <form
-          className="form-wrapper"
-          autoComplete="off"
+          className='form-wrapper'
+          autoComplete='off'
           onSubmit={onFormSubmit}
         >
           {children}
-          <div className="mb-5 d-flex justify-content-end">
+          <div
+            className={`mb-5 d-flex ${
+              doubleSubmit ? "justify-content-between" : "justify-content-end"
+            }`}
+          >
+            {doubleSubmit && (
+              <ButtonGroup
+                options={[
+                  {
+                    title: doubleSubmitTitle,
+                    type: "button",
+                    variant: doubleSubmitVariant,
+                    onClick: doubleSubmitOnclick,
+                    isLoading: doubleIsLoading,
+                    disabled: doubleIsDisabled,
+                  },
+                ]}
+              />
+            )}
             <ButtonGroup
               options={[
                 {

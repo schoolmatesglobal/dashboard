@@ -3044,6 +3044,26 @@ class APIServies extends Helpers {
     );
     return data;
   }
+
+  async releaseResult(body) {
+    const { data } = await axios.patch(`${backendAPI}/release/result`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+
+  async withholdResult(body) {
+    const { data } = await axios.patch(`${backendAPI}/withhold/result`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
 }
 
 export default APIServies;
