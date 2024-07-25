@@ -123,7 +123,7 @@ const DashboardLayout = () => {
   const filterSideBarOnPlan = () => {
     switch (user?.plan) {
       case "STARTER PLAN":
-        return dashboardSideBarLinks[user?.designation_name].filter(
+        return dashboardSideBarLinks[user?.designation_name]?.filter(
           (ps) =>
             ps.title !== "Lesson Note" &&
             ps.title !== "Report" &&
@@ -164,13 +164,13 @@ const DashboardLayout = () => {
           ps.title !== "Broad Sheet"
       );
     } else if (user?.is_preschool === "false") {
-      return filterSideBarOnPlan().filter(
+      return filterSideBarOnPlan()?.filter(
         (ps) => ps.title !== "Pre School" && ps.title !== "Extra_Curricular"
       );
     }
   };
 
-  // console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
+  console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
   return (
     <div className='dashboard-layout-wrapper'>

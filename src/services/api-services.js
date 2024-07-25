@@ -330,6 +330,35 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async enableStudentStatus({ student_id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/enablestudent/${student_id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async disableStudentStatus({ student_id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/disablestudent/${student_id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async getAllStudents(page) {
     const { data } = await axios.get(`${backendAPI}/student?page=${page}`, {
       headers: {
@@ -423,7 +452,6 @@ class APIServies extends Helpers {
         },
       }
     );
-
     return data;
   }
 

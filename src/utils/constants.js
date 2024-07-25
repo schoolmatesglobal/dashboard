@@ -35,18 +35,22 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
+// const url1 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
+const url1 = "https://staging.sapsms.com/api";
+const url2 = "https://dashboard.sapsms.com/api";
+// const url = "https://goshenpillarsportal.schoolmateglobal.com/esc/api"
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return "https://staging.sapsms.com/api"; // Update with your development API URL
+    return url1; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return "https://dashboard.sapsms.com/api";
+    return url2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return "https://staging.sapsms.com/api";
+    return url1;
   } else {
-    return "https://staging.sapsms.com/api";
+    return url1;
   }
 })();
 
