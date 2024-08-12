@@ -156,6 +156,12 @@ export const permissions = {
       retrieve: true,
       save: true,
     },
+    "scan-codes": {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
     "dress-code": {
       read: true,
     },
@@ -392,6 +398,12 @@ export const permissions = {
       statusToggle: false,
     },
     skills: {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    "qr-codes": {
       create: true,
       read: true,
       update: true,
