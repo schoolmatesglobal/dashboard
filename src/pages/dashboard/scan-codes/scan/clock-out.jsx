@@ -51,7 +51,8 @@ const ClockOut = () => {
       (result) => {
         scanner.clear();
         setLoading(true);
-        toast.success(`Clock-out at ${time} was successful`);
+        const currentTime = dayjs().format("h:mm:ss A");
+        toast.success(`Clock-out at ${currentTime} was successful`);
         setScanResult(result);
         setLoading(false);
       },

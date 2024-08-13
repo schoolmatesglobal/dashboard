@@ -51,7 +51,8 @@ const ClockIn = () => {
       (result) => {
         scanner.clear();
         setLoading(true);
-        toast.success(`Clock-in at ${time} was successful`);
+        const currentTime = dayjs().format("h:mm:ss A");
+        toast.success(`Clock-in at ${currentTime} was successful`);
         setScanResult(result);
         setLoading(false);
       },
