@@ -41,9 +41,14 @@ const ScanCodes = () => {
       ]}
       action={[
         {
-          title: "Scan QR Code",
+          title: "Scan to clock in",
           // onClick: (id) => navigate(`/app/qr-codes/download/5`),
-          onClick: (id) => navigate(`/app/scan-codes/scan/${id}`),
+          onClick: (id) => navigate(`/app/scan-codes/clock-in/${id}`),
+        },
+        {
+          title: "Scan to clock out",
+          // onClick: (id) => navigate(`/app/qr-codes/download/5`),
+          onClick: (id) => navigate(`/app/scan-codes/clock-out/${id}`),
         },
       ]}
     />

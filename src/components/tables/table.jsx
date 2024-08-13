@@ -195,17 +195,29 @@ const CustomTable = ({
   console.log({ row, rows, enable, enableId });
 
   return (
-    <div className='custom-table-wrapper'>
+    <div
+      className='custom-table-wrapper'
+      style={{
+        minHeight: "200px",
+      }}
+    >
       {isLoading && (
         <div className='d-flex align-items-center justify-content-center w-full'>
           <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
-        <div>
+        <div
+          style={{
+            height: "fit",
+          }}
+        >
           <Table
             {...getTableProps()}
-            className={`custom-table ${centered ? "centered" : ""}`}
+            className={`custom-table ${centered ? "centered" : ""} `}
+            style={{
+              height: "fit",
+            }}
           >
             <thead>
               {headerGroups?.map((headerGroup) => (
@@ -304,8 +316,9 @@ const CustomTable = ({
                           disabled={row.original.status === "graduated"}
                         >
                           {row.original.status === "active"
-                            ? "Disable" : row.original.status === "graduated"
-                            ? "Graduated" 
+                            ? "Disable"
+                            : row.original.status === "graduated"
+                            ? "Graduated"
                             : "Enable"}
                         </Button>
                       </td>
@@ -334,7 +347,11 @@ const CustomTable = ({
                               onClick={() => toggleAction(row.original.id)}
                             />
                           </DropdownToggle>
-                          <DropdownMenu>
+                          <DropdownMenu
+                            style={{
+                              zIndex: "10",
+                            }}
+                          >
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}

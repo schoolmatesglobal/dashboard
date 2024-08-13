@@ -122,7 +122,9 @@ import CommunicationMessages from "../pages/dashboard/communication-book/message
 import QRCodes from "../pages/dashboard/qr-codes";
 import DownloadDetail from "../pages/dashboard/qr-codes/download";
 import ScanCodes from "../pages/dashboard/scan-codes";
-import ScanDetail from "../pages/dashboard/scan-codes/scan";
+import ScanDetail from "../pages/dashboard/scan-codes/scan/clock-in";
+import ClockIn from "../pages/dashboard/scan-codes/scan/clock-in";
+import ClockOut from "../pages/dashboard/scan-codes/scan/clock-out";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -467,10 +469,18 @@ const CustomRoutes = () => {
           }
         />
         <Route
-          path='scan-codes/scan/:id'
+          path='scan-codes/clock-in/:id'
           element={
             <Guard routeName='scan-codes'>
-              <ScanDetail />
+              <ClockIn />
+            </Guard>
+          }
+        />
+        <Route
+          path='scan-codes/clock-out/:id'
+          element={
+            <Guard routeName='scan-codes'>
+              <ClockOut />
             </Guard>
           }
         />
