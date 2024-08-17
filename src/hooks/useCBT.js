@@ -141,7 +141,7 @@ export const useCBT = () => {
     () => apiServices.getStudentByClass2(user?.class_assigned),
 
     {
-      enabled: true,
+      enabled: !!user?.class_assigned,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {

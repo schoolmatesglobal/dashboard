@@ -5,22 +5,28 @@ import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { formatCurrency } from "../pages/dashboard/bank/constant";
 
 export const useBank = () => {
   const { permission, apiServices, user } = useAppContext("bank");
   const { id } = useParams();
 
+  const navigate = useNavigate();
 
-  const { createBankLoading, mutate: createBank } = useMutation(apiServices.postBank, {
-    onSuccess() {
-      toast.success("Bank has been created");
-    },
+  const { createBankLoading, mutate: createBank } = useMutation(
+    apiServices.postBank,
+    {
+      onSuccess() {
+        toast.success("Bank has been created");
+      },
 
-    onError(err) {
-      apiServices.errorHandler(err);
-    },
-  });
+      onError(err) {
+        apiServices.errorHandler(err);
+      },
+    }
+  );
 
+  // GET BANK LIST
   const {
     data: bank,
     isLoading: bankLoading,
@@ -34,9 +40,13 @@ export const useBank = () => {
       const format = apiServices.formatData(data)?.map((bank, i) => {
         return {
           ...bank,
+          opening_balance2: formatCurrency(bank?.opening_balance),
+
           sn: i + 1,
         };
       });
+
+      console.log({ Bdata: data, format });
 
       return format;
     },
@@ -59,6 +69,7 @@ export const useBank = () => {
       onSuccess() {
         toast.success("Bank has been updated successfully");
         refetchBank();
+        navigate(-1);
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -68,7 +79,8 @@ export const useBank = () => {
 
   const handleUpdateBank = async (data) => await updateBank(data);
 
-  const isLoading = bankLoading || deleteBankLoading || updateBankLoading || createBankLoading;
+  const isLoading =
+    bankLoading || deleteBankLoading || updateBankLoading || createBankLoading;
 
   console.log({ pa: permission?.read });
 

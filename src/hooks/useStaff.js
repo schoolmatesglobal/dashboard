@@ -118,6 +118,9 @@ export const useStaff = () => {
         errorHandler(err);
       },
       select: (data) => {
+
+        console.log({sfdata: data})
+        
         const f = apiServices.formatData(data).map((staff) => {
           const { designation_name } =
             designations?.data?.find((item) => item.id === staff.designation_id)

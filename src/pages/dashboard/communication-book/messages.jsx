@@ -149,7 +149,7 @@ const CommunicationMessages = () => {
         console.log({ datarr: data, dtr: data?.data });
 
         if (data?.data?.length > 0) {
-          const ddt = data?.data?.map((dt, i) => {
+          const dt = data?.data?.map((dt, i) => {
             const type = designation(dt?.sender?.designation);
             return {
               communication_id: dt?.communication_book_id,
@@ -165,9 +165,41 @@ const CommunicationMessages = () => {
             };
           });
 
-          console.log({ ddt });
+          const ddt = data?.data
+            ?.filter(
+              (da) =>
+                Number(da?.sender?.id) === Number(user?.id) ||
+                Number(da?.receiver?.id) === Number(user?.id) ||
+                // da?.sender?.email === Number(user?.id)
+                conversations?.some(
+                  (cn) => cn.sender_email === da?.sender?.email
+                )
+            )
+            ?.map((dt, i) => {
+              const type = designation(dt?.sender?.designation);
+              return {
+                communication_id: dt?.communication_book_id,
+                reply_id: dt?.id,
+                sender_id: dt?.sender_id,
+                sender_type: type,
+                sender_email: dt?.sender?.email,
+                sender: `${dt?.sender?.first_name} ${dt?.sender?.last_name} (${type})`,
+                message: dt?.message,
+                date: dayjs(dt?.date, "D MMM YYYY h:mm A").format(
+                  "dddd MMMM D, YYYY h:mm A"
+                ),
+              };
+            });
 
-          return ddt;
+          // const ft = ddt?.filter(
+          //   (da) =>
+          //     Number(da?.sender?.id) === Number(user?.id) ||
+          //     Number(da?.receiver?.id) === Number(user?.id)
+          // );
+
+          console.log({ ddt, dt });
+
+          return user?.designation_name === "Student" ? ddt : dt;
         } else {
           return [];
         }
@@ -216,7 +248,12 @@ const CommunicationMessages = () => {
         // setTimeout(() => {
         //   setEditMessagePrompt2(false);
         // }, 1000);
-        navigate(`/app/communication-book`);
+        navigate(`/app/communication-book`, {
+          state: {
+            classSelected: state?.classSelected,
+            classId: state?.classId,
+          },
+        });
 
         toast.success("Reply has been edited successfully");
       },
@@ -546,9 +583,17 @@ const CommunicationMessages = () => {
               // onClick={() =>
               //   navigate(`/app/communication-book?status=${state?.status}`)
               // }
-              onClick={() => navigate(-1)}
+              onClick={() =>
+                navigate(`/app/communication-book?status=${state?.status}`, {
+                  state: {
+                    classSelected: state?.classSelected,
+                    classId: state?.classId,
+                  },
+                })
+              }
             >
-              <FontAwesomeIcon icon={faArrowLeft} className='me-2' /> Go Back
+              <FontAwesomeIcon icon={faArrowLeft} className='me-2' /> Back To
+              Tickets
             </button>
           </div>
         </div>

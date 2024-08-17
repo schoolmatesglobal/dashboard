@@ -119,6 +119,12 @@ import StudentCbtPerformances from "../pages/dashboard/cbt/performances/students
 import LessonNote from "../pages/dashboard/lesson-note";
 import CommunicationBookPage from "../pages/dashboard/communication-book";
 import CommunicationMessages from "../pages/dashboard/communication-book/messages";
+import QRCodes from "../pages/dashboard/qr-codes";
+import DownloadDetail from "../pages/dashboard/qr-codes/download";
+import ScanCodes from "../pages/dashboard/scan-codes";
+import ScanDetail from "../pages/dashboard/scan-codes/scan/clock-in";
+import ClockIn from "../pages/dashboard/scan-codes/scan/clock-in";
+import ClockOut from "../pages/dashboard/scan-codes/scan/clock-out";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -438,6 +444,48 @@ const CustomRoutes = () => {
         /> */}
         <Route
           exact
+          path='qr-codes'
+          element={
+            <Guard routeName='qr-codes'>
+              <QRCodes />
+            </Guard>
+          }
+        />
+        <Route
+          path='qr-codes/download/:id'
+          element={
+            <Guard routeName='qr-codes'>
+              <DownloadDetail />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='scan-codes'
+          element={
+            <Guard routeName='scan-codes'>
+              <ScanCodes />
+            </Guard>
+          }
+        />
+        <Route
+          path='scan-codes/clock-in/:id'
+          element={
+            <Guard routeName='scan-codes'>
+              <ClockIn />
+            </Guard>
+          }
+        />
+        <Route
+          path='scan-codes/clock-out/:id'
+          element={
+            <Guard routeName='scan-codes'>
+              <ClockOut />
+            </Guard>
+          }
+        />
+        <Route
+          exact
           path='skills'
           element={
             <Guard routeName='skills'>
@@ -445,6 +493,7 @@ const CustomRoutes = () => {
             </Guard>
           }
         />
+
         <Route
           path='skills/new'
           element={

@@ -25,7 +25,7 @@ const AuthInput = forwardRef(
     if (type === "password")
       return (
         <>
-          {label && <label className='mb-2'>{label}</label>}
+          {label && <label className='mb-3 fs-4 fw-semibold'>{label}</label>}
           <div
             className={`auth-input-wrapper auth-password-input ${
               hasError ? "has-error" : ""
@@ -51,7 +51,7 @@ const AuthInput = forwardRef(
     if (isPhone)
       return (
         <>
-          {label && <label className='mb-2'>{label}</label>}{" "}
+          {label && <label className='mb-3 fs-4 fw-semibold'>{label}</label>}{" "}
           {required && (
             <span
               style={{
@@ -84,7 +84,7 @@ const AuthInput = forwardRef(
     if (isMulti)
       return (
         <>
-          {label && <label className='mb-2'>{label}</label>}
+          {label && <label className='mb-3 fs-4 fw-semibold'>{label}</label>}
           <div
             className={`auth-input-wrapper ${rest.disabled ? "disabled" : ""} ${
               hasError ? "has-error" : ""
@@ -99,7 +99,7 @@ const AuthInput = forwardRef(
       <>
         {label && (
           <label
-            className='mb-2'
+            className='mb-3 fs-4 fw-semibold'
             style={{ display: "flex", alignItems: "center" }}
           >
             {label}{" "}

@@ -40,6 +40,8 @@ const Student = () => {
     setClasses,
     studentLoginDetailsStudents,
     communicationList,
+    enableStudentStatus,
+    disableStudentStatus,
   } = useStudent();
 
   const { classes } = useClasses();
@@ -99,7 +101,7 @@ const Student = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.status]);
 
-  console.log({ dt: data[indexStatus] });
+  // console.log({ dt: data[indexStatus], sortedStudents, students });
 
   return (
     <PageView
@@ -144,6 +146,10 @@ const Student = () => {
       // rowHasUpdate={["all"].includes(indexStatus) && permission?.update}
       rowHasUpdate={permission?.update}
       rowHasDelete={["all"].includes(indexStatus) && permission?.delete}
+      rowHasEnable={permission?.enable}
+      // onEnable={() => {}}
+      enableStudentStatus={enableStudentStatus}
+      disableStudentStatus={disableStudentStatus}
       searchPlaceholder={searchPlaceholder[sortBy] || "Enter Admission Number"}
     />
   );

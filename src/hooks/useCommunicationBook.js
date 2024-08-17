@@ -6,8 +6,12 @@ import { useAppContext } from "./useAppContext";
 import { useStudent } from "./useStudent";
 
 import useLocalStorage from "use-local-storage";
+import { useLocation } from "react-router-dom";
 
 export const useCommunicationBook = () => {
+
+   const { state } = useLocation();
+
   const [activeTab, setActiveTab] = useState("1");
   const [submissionTab, setSubmissionTab] = useState("1");
   const [ResultTab, setResultTab] = useState("1");
@@ -24,7 +28,7 @@ export const useCommunicationBook = () => {
   const [answeredObjResults, setAnsweredObjResults] = useState([]);
   const [answeredTheoryResults, setAnsweredTheoryResults] = useState([]);
   const [objMark, setObjMark] = useState(0);
-  const [classSelected, setClassSelected] = useState("");
+  const [classSelected, setClassSelected] = useState(state?.classSelected || "");
 
   const [answerQ, setAnswerQ] = useState({
     question_type: "",
@@ -139,6 +143,8 @@ export const useCommunicationBook = () => {
   const [selectedDocs, setSelectedDocs] = useState([]);
   const [base64String, setBase64String] = useState("");
 
+  const [className, setClassName] = useState("");
+
   const handleReset = () => {
     setFile(null);
     setFileName("");
@@ -182,9 +188,15 @@ export const useCommunicationBook = () => {
   });
 
   const classValue = () => {
-    if (user?.department !== "Admin") {
+    if (
+      user?.designation_name === "Teacher" ||
+      user?.designation_name === "Student"
+    ) {
       return user?.class_assigned || "";
-    } else if (user?.department === "Admin") {
+    } else if (
+      user?.department === "Admin" ||
+      user?.designation_name === "Principal"
+    ) {
       return classSelected || "";
     }
   };
@@ -231,8 +243,42 @@ export const useCommunicationBook = () => {
     }
   };
 
-  // console.log({ classValue: classValue(), classSelected });
+  console.log({ classValue: classValue(), classSelected, className });
 
+  ///// GET ACADEMIC PERIOD
+  const {
+    data: academicPeriod,
+    isLoading: academicPeriodLoading,
+    refetch: refetchAcademicPeriod,
+    isRefetching: isRefetchingAcademicPeriod,
+  } = useQuery(
+    [queryKeys.GET_ACADEMIC_PERIOD2],
+    () => apiServices.getAcademicPeriod(),
+
+    {
+      // enabled: false,
+      // enabled: !!className,
+      // enabled: permission?.myStudents || user?.designation_name === "Principal",
+      // select: apiServices.formatData,
+      select: (data) => {
+        const ppr = data?.data;
+        console.log({ Adata: data, ppr });
+        // return (
+        //   apiServices.formatData(data)?.map((obj, index) => {
+        //     const newObj = { ...obj };
+        //     newObj.new_id = index + 1;
+        //     return newObj;
+        //   }) ?? []
+        // );
+        if (ppr?.length > 0) {
+          return ppr[0];
+        }
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
   ///// GET STUDENT BY CLASS
   const {
     data: studentByClass,
@@ -244,7 +290,8 @@ export const useCommunicationBook = () => {
     () => apiServices.getStudentByClass2(classValue()),
 
     {
-      enabled: classValue() !== "",
+      // enabled: false,
+      enabled: !!className && !!classValue(),
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
@@ -302,7 +349,7 @@ export const useCommunicationBook = () => {
     }
   );
 
-  // console.log({ studentByClass2, studentByClassAndSession });
+  console.log({ classValue: classValue() });
 
   return {
     activeTab,
@@ -423,5 +470,10 @@ export const useCommunicationBook = () => {
 
     messages,
     setMessages,
+
+    className,
+    setClassName,
+    academicPeriod,
+    academicPeriodLoading,
   };
 };

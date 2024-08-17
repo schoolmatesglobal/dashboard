@@ -43,6 +43,7 @@ export const permissions = {
       readCreditors: true,
       readDebtors: true,
       update: false,
+      enable: false,
       delete: false,
       statusToggle: false,
       sort: true,
@@ -85,6 +86,7 @@ export const permissions = {
       readCreditors: false,
       readDebtors: false,
       update: true,
+      enable: true,
       delete: false,
       statusToggle: false,
       sort: true,
@@ -154,6 +156,12 @@ export const permissions = {
       retrieve: true,
       save: true,
     },
+    "scan-codes": {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
     "dress-code": {
       read: true,
     },
@@ -168,6 +176,11 @@ export const permissions = {
     },
     comment: {
       create: true,
+    },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: true,
     },
     staffs: {
       create: false,
@@ -185,6 +198,7 @@ export const permissions = {
       readCreditors: false,
       readDebtors: false,
       update: false,
+      enable: false,
       delete: false,
       statusToggle: false,
       sort: true,
@@ -299,6 +313,7 @@ export const permissions = {
       readCreditors: false,
       readDebtors: false,
       update: false,
+      enable: false,
       delete: false,
       statusToggle: false,
       sort: true,
@@ -388,6 +403,12 @@ export const permissions = {
       update: true,
       delete: true,
     },
+    "qr-codes": {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
     reporting: {
       create: true,
       read: true,
@@ -418,6 +439,7 @@ export const permissions = {
       readCreditors: false,
       readDebtors: false,
       update: true,
+      enable: true,
       // delete: false,
       delete: true,
       statusToggle: true,
@@ -438,6 +460,16 @@ export const permissions = {
       "health-report": true,
       "bus-routing": true,
       "create-communication": true,
+    },
+    results: {
+      compute: false,
+      view: true,
+      preSchool: true,
+    },
+    broadsheet: {
+      compute: true,
+      view: true,
+      preSchool: true,
     },
     subjects: {
       read: true,
@@ -485,6 +517,11 @@ export const permissions = {
     },
     reports: {
       read: true,
+    },
+    "communication-book": {
+      create: true,
+      view: true,
+      approve: true,
     },
     expense: {
       canCreate: true,
@@ -591,6 +628,7 @@ export const permissions = {
       readDebtors: true,
       action: true,
       update: false,
+      enable: false,
       delete: false,
       statusToggle: false,
       sort: true,

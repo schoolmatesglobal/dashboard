@@ -38,7 +38,7 @@ const BankList = () => {
         },
         {
           Header: "Opening Balance",
-          accessor: "opening_balance",
+          accessor: "opening_balance2",
         },
         {
           Header: "Account Purpose",

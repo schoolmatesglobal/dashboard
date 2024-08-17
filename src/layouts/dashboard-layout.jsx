@@ -17,6 +17,7 @@ import { dashboardSideBarLinks } from "../utils/constants";
 import { useCommunicationBook } from "../hooks/useCommunicationBook";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
+import { useNavigate } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -32,6 +33,8 @@ const DashboardLayout = () => {
     setHideAllBars,
   } = useAppContext();
   const sidebarRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const { permission, apiServices, user: newUser } = useCommunicationBook();
 
@@ -120,7 +123,7 @@ const DashboardLayout = () => {
   const filterSideBarOnPlan = () => {
     switch (user?.plan) {
       case "STARTER PLAN":
-        return dashboardSideBarLinks[user?.designation_name].filter(
+        return dashboardSideBarLinks[user?.designation_name]?.filter(
           (ps) =>
             ps.title !== "Lesson Note" &&
             ps.title !== "Report" &&
@@ -161,13 +164,13 @@ const DashboardLayout = () => {
           ps.title !== "Broad Sheet"
       );
     } else if (user?.is_preschool === "false") {
-      return filterSideBarOnPlan().filter(
+      return filterSideBarOnPlan()?.filter(
         (ps) => ps.title !== "Pre School" && ps.title !== "Extra_Curricular"
       );
     }
   };
 
-  // console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
+  console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
   return (
     <div className='dashboard-layout-wrapper'>
@@ -221,7 +224,15 @@ const DashboardLayout = () => {
               <div className='d-flex gap-3 align-items-center'>
                 <p className='ms-3'>Welcome {user?.firstname}</p>
                 {
-                  <div style={{ position: "relative" }}>
+                  <div
+                    style={{ position: "relative", cursor: "pointer" }}
+                    onClick={() => {
+                      if (getUnreadCommunicationBookCount > 0) {
+                        navigate("/app/communication-book");
+                      } else {
+                      }
+                    }}
+                  >
                     <FontAwesomeIcon
                       icon={faBell}
                       style={{ fontSize: "20px" }}

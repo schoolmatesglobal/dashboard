@@ -12,6 +12,7 @@ import { useStudent } from "../../../hooks/useStudent";
 import { useInvoices } from "../../../hooks/useInvoice";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAccounts } from "../../../hooks/useAccounts";
+import { useBank } from "../../../hooks/useBank";
 
 const PaymentDetail = () => {
   const { apiServices } = useAppContext();
@@ -40,9 +41,31 @@ const PaymentDetail = () => {
     },
   });
 
+  const navigate = useNavigate();
+
   const [amount, setAmount] = useState("");
+  const [newBank, setNewBank] = useState([]);
 
   const { paymentLoading, payment } = useAccounts();
+
+  const {
+    bank,
+    deleteBank,
+    handleUpdateBank,
+    isLoading: bankLoading,
+  } = useBank();
+
+  // const newBank = (function () {
+  //   if (bank?.length < 1) {
+  //     return bank?.map((bk, i) => {
+  //       return {
+  //         ...bk,
+  //         title: `${bk?.bank_name} - ${bk?.account_number}`,
+  //         value: `${bk?.bank_name} - ${bk?.account_number}`,
+  //       };
+  //     });
+  //   }
+  // })
 
   const { data: sessions } = useAcademicSession();
   const { isLoading: loadStudent, studentData, isEdit } = useStudent();
@@ -71,6 +94,7 @@ const PaymentDetail = () => {
     {
       onSuccess() {
         toast.success("Payment Successful");
+        navigate(-1);
       },
 
       onError(err) {
@@ -92,7 +116,7 @@ const PaymentDetail = () => {
       inputs.payment_method !== "Physical Cash" &&
       (!inputs?.amount_paid ||
         !inputs?.payment_method ||
-        !inputs?.bank_name ||
+        // !inputs?.bank_name ||
         !inputs?.account_name ||
         !inputs?.payment_type)
     ) {
@@ -123,7 +147,7 @@ const PaymentDetail = () => {
       createPayment({
         student_id: filteredInvoice?.student_id,
         invoice_id: filteredInvoice?.id,
-        bank_name: data?.bank_name,
+        bank_name: data?.account_name,
         account_name: data?.account_name,
         student_fullname: filteredInvoice?.fullname,
         payment_method: data?.payment_method,
@@ -132,17 +156,6 @@ const PaymentDetail = () => {
         type: data?.payment_type,
       });
     }
-    console.log({
-      student_id: filteredInvoice?.student_id,
-      invoice_id: filteredInvoice?.id,
-      bank_name: data?.bank_name,
-      account_name: data?.account_name,
-      student_fullname: filteredInvoice?.fullname,
-      payment_method: data?.payment_method,
-      amount_paid: data?.amount_paid,
-      total_amount: amount,
-      type: data?.payment_type,
-    });
   };
 
   function filterPayment() {
@@ -201,7 +214,26 @@ const PaymentDetail = () => {
     }
   }, [invoicesList, amount]);
 
-  console.log({ filteredInvoice, amount, fp, payment });
+  useEffect(() => {
+    if (bank?.length > 1) {
+      const bk = bank?.map((bk, i) => {
+        return {
+          title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
+          value: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
+        };
+      });
+      setNewBank(bk);
+    }
+  }, [bank]);
+
+  console.log({
+    newBank,
+    filteredInvoice,
+    amount,
+    fp,
+    payment,
+    bank,
+  });
 
   return (
     <DetailView
@@ -290,7 +322,7 @@ const PaymentDetail = () => {
       <Row className='mb-0 mb-sm-4'>
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label='Outstanding Amount'
+            label='Outstanding Amount (₦)'
             // required
             value={amount}
             readOnly
@@ -304,7 +336,7 @@ const PaymentDetail = () => {
 
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label='Amount Paid'
+            label='Amount Paid (₦)'
             type='number'
             required
             // hasError={!!errors.amount_paid}
@@ -348,28 +380,34 @@ const PaymentDetail = () => {
       </Row>
       {inputs.payment_method !== "Physical Cash" && (
         <Row className='mb-0 mb-sm-4'>
-          <Col sm='6' className='mb-4 mb-sm-0'>
+          {/* <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthInput
               label='Account Name'
               required
-              // hasError={!!errors.account_name}
               {...getFieldProps("account_name")}
             />
-            {/* {!!errors.account_name && (
-            <p className="error-message">{errors.account_name}</p>
-          )} */}
-          </Col>
+          </Col> */}
           <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthSelect
+              label='Bank Name'
+              required
+              value={inputs.account_name}
+              name='account_name'
+              // hasError={!!errors.term}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              options={newBank}
+            />
+          </Col>
+          {/* <Col sm='6' className='mb-4 mb-sm-0'>
             <AuthInput
               label='Bank Name'
               required
               // hasError={!!errors.bank_name}
               {...getFieldProps("bank_name")}
             />
-            {/* {!!errors.bank_name && (
-            <p className="error-message">{errors.bank_name}</p>
-          )} */}
-          </Col>
+          </Col> */}
         </Row>
       )}
     </DetailView>

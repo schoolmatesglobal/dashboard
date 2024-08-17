@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTable } from "react-table";
 import {
   Dropdown,
@@ -22,6 +22,8 @@ const CustomTable = ({
   rowHasDelete = false,
   rowHasUpdate = false,
   rowHasStatusToggle = false,
+  rowHasEnable = false,
+  onEnable = () => null,
   onRowDelete = () => null,
   onRowStatusToggle = () => null,
   onRowUpdate = () => null,
@@ -30,8 +32,12 @@ const CustomTable = ({
   setCheckedRows = () => null,
   rowHasAction = false,
   action = [],
+  enableStudentStatus = () => null,
+  disableStudentStatus = () => null,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [enable, setEnable] = useState(true);
+  const [enableId, setEnableId] = useState({ id: "", status: true });
   const [actionDropdown, setActionDropdown] = useState(false);
   const [actionId, setActionId] = useState("");
   const [modalStatus, setModalStatus] = useState("disable");
@@ -50,11 +56,32 @@ const CustomTable = ({
     setModalOpen(true);
   };
 
+  const enableFxn = () => {
+    setEnable(!enable);
+    setEnableId((prev) => ({
+      ...prev,
+      id: row?.original?.id,
+      status: prev?.id === row?.original?.id ? !prev?.status : false,
+    }));
+
+    if (row?.original?.status === "active") {
+      disableStudentStatus({ student_id: row?.original?.id });
+    } else {
+      enableStudentStatus({ student_id: row?.original?.id });
+    }
+
+    // onEnable({ student_id: row?.original?.id });
+
+    // console.log({ student_id: row?.original?.id, enable, row });
+  };
+
   const onModalContinue = () => {
     setModalOpen(false);
     switch (modalStatus) {
       case "delete":
         return onRowDelete(row?.original?.id);
+      case "disable2":
+        return enableFxn();
 
       default:
         return onRowStatusToggle({
@@ -133,18 +160,64 @@ const CustomTable = ({
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns: memoisedColumns, data: memoisedData });
 
+  const chk = function (rowData) {
+    if (enableId?.id === rowData?.id) {
+      return enableId?.status;
+
+      // return actionId === row?.original?.id;
+    } else {
+      return rowData?.status === "active"
+        ? true
+        : rowData?.status === "disabled"
+        ? false
+        : true;
+      // return true;
+    }
+  };
+
+  useEffect(() => {
+    if (rows.length > 0) {
+      const filt = rows?.find((row) => row?.original?.id === enableId?.id);
+      setEnableId((prev) => ({
+        ...prev,
+        status: filt?.original?.status,
+      }));
+    }
+  }, [rows]);
+
+  // useEffect(() => {
+  //   if (modalOpen === false) {
+  //     setRow({});
+  //     setActionId("")
+  //   }
+  // }, [modalOpen]);
+
+  console.log({ row, rows, enable, enableId });
+
   return (
-    <div className='custom-table-wrapper'>
+    <div
+      className='custom-table-wrapper'
+      style={{
+        minHeight: "200px",
+      }}
+    >
       {isLoading && (
         <div className='d-flex align-items-center justify-content-center w-full'>
           <Spinner /> <p className='ms-2'>Loading...</p>
         </div>
       )}
       {memoisedData.length && !isLoading ? (
-        <div>
+        <div
+          style={{
+            height: "fit",
+          }}
+        >
           <Table
             {...getTableProps()}
-            className={`custom-table ${centered ? "centered" : ""}`}
+            className={`custom-table ${centered ? "centered" : ""} `}
+            style={{
+              height: "fit",
+            }}
           >
             <thead>
               {headerGroups?.map((headerGroup) => (
@@ -165,6 +238,7 @@ const CustomTable = ({
                   ))}
                   {rowHasUpdate && <th>Update</th>}
                   {rowHasStatusToggle && <th>Disable</th>}
+                  {rowHasEnable && <th>Enable / Disable</th>}
                   {rowHasDelete && <th>Delete</th>}
                   {rowHasAction && <th>Action</th>}
                 </tr>
@@ -225,6 +299,30 @@ const CustomTable = ({
                         </Button>
                       </td>
                     )}
+                    {rowHasEnable && (
+                      <td>
+                        <Button
+                          variant={
+                            row.original.status === "active"
+                              ? "danger"
+                              : row.original.status === "disabled"
+                              ? "warning"
+                              : row.original.status === "graduated"
+                              ? ""
+                              : "warning"
+                          }
+                          className='d-block mx-auto'
+                          onClick={() => openModal(row, "disable2")}
+                          disabled={row.original.status === "graduated"}
+                        >
+                          {row.original.status === "active"
+                            ? "Disable"
+                            : row.original.status === "graduated"
+                            ? "Graduated"
+                            : "Enable"}
+                        </Button>
+                      </td>
+                    )}
                     {rowHasDelete && (
                       <td>
                         <Button
@@ -249,7 +347,11 @@ const CustomTable = ({
                               onClick={() => toggleAction(row.original.id)}
                             />
                           </DropdownToggle>
-                          <DropdownMenu>
+                          <DropdownMenu
+                            style={{
+                              zIndex: "10",
+                            }}
+                          >
                             {action?.map(({ onClick, title }, key) => (
                               <DropdownItem
                                 onClick={() => onClick(row.original.id)}

@@ -139,7 +139,7 @@ const BankDetail = () => {
             required
             type='number'
             min='0'
-            label='Opening Balance'
+            label='Opening Balance (₦)'
             placeholder='e.g 20000'
             className='noSpinButtons'
             hasError={!!errors.opening_balance}

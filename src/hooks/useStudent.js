@@ -122,6 +122,8 @@ export const useStudent = () => {
         errorHandler(err);
       },
       select: (data) => {
+        console.log({ std: data });
+
         const format = apiServices.formatData(data)?.map((student) => {
           return {
             ...student,
@@ -166,21 +168,26 @@ export const useStudent = () => {
       }
     );
 
+  const chk = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
+
   // console.log({ user });
 
-  const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
-    [queryKeys.GET_ALL_STUDENTS_BY_CLASS2, user?.class_assigned],
-    () =>
-      apiServices.getStudentByClass2(
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned
-      ),
-   
+  const {
+    data: studentByClass2,
+    isLoading: studentByClass2Loading,
+    refetch: refetchStudentByClass2,
+  } = useQuery(
+    [queryKeys.GET_ALL_STUDENTS_BY_CLASS2, chk],
+    () => apiServices.getStudentByClass2(chk),
+
     {
-      enabled: permission?.myStudents || user?.designation_name === "Principal",
+      enabled: permission?.myStudents && !!chk,
+      // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
+        console.log({ mystd: data });
         // console.log({ pdata: data, state });
         return apiServices.formatData(data)?.map((obj, index) => {
           const newObj = { ...obj };
@@ -536,6 +543,38 @@ export const useStudent = () => {
   //     }
   //   );
 
+  const { mutate: enableStudentStatus, isLoading: enableStudentStatusLoading } =
+    useMutation(apiServices.enableStudentStatus, {
+      onSuccess() {
+        // refetchStaffList();
+        if (permission?.myStudents) {
+          refetchStudentByClass2();
+        }
+        toast.success("Student has been enabled successfully");
+        refetchStudents();
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+    });
+
+  const {
+    mutate: disableStudentStatus,
+    isLoading: disableStudentStatusLoading,
+  } = useMutation(apiServices.disableStudentStatus, {
+    onSuccess() {
+      // refetchStaffList();
+      if (permission?.myStudents) {
+        refetchStudentByClass2();
+      }
+      toast.success("Student has been disabled successfully");
+      refetchStudents();
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
   const { mutate: graduateStudent, isLoading: graduateStudentLoading } =
     useMutation(apiServices.graduateStudent, {
       onSuccess() {
@@ -585,9 +624,11 @@ export const useStudent = () => {
     postBusRoutingLoading ||
     // communicationListLoading ||
     postCommunicationBookLoading ||
-    campusListLoading;
+    campusListLoading ||
+    enableStudentStatusLoading ||
+    disableStudentStatusLoading;
 
-  // console.log({ studentByClassAndSession, studentByClass, studentByClass2 });
+  console.log({ state, permission });
 
   return {
     user,
@@ -642,5 +683,7 @@ export const useStudent = () => {
     campusList,
     principalClassName,
     setPrincipalClassName,
+    enableStudentStatus,
+    disableStudentStatus,
   };
 };
