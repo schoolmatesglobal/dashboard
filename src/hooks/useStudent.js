@@ -124,9 +124,10 @@ export const useStudent = () => {
       select: (data) => {
         console.log({ std: data });
 
-        const format = apiServices.formatData(data)?.map((student) => {
+        const format = apiServices.formatData(data)?.map((student, i) => {
           return {
             ...student,
+            new_id: i + 1,
             image: (
               <ProfileImage src={student?.image} wrapperClassName='mx-auto' />
             ),
@@ -344,9 +345,10 @@ export const useStudent = () => {
         setSession("");
       },
       onSuccess(data) {
-        const format = apiServices.formatData(data)?.map((student) => {
+        const format = apiServices.formatData(data)?.map((student, index) => {
           return {
             ...student,
+            new_id: index + 1,
             image: (
               <ProfileImage src={student?.image} wrapperClassName='mx-auto' />
             ),
@@ -499,9 +501,10 @@ export const useStudent = () => {
       retry: 3,
       enabled: permission?.alumni,
       select: (data) => {
-        return apiServices.formatData(data)?.map((student) => {
+        return apiServices.formatData(data)?.map((student, i) => {
           return {
             ...student,
+            new_id: i + 1,
             image: (
               <ProfileImage src={student?.image} wrapperClassName='mx-auto' />
             ),
@@ -523,6 +526,17 @@ export const useStudent = () => {
     {
       retry: 3,
       enabled: permission?.studentLoginDetails,
+      select: (data) => {
+        console.log({ ddsData: data });
+        const dt = data?.data?.map((student, i) => {
+          return {
+            ...student,
+            new_id: i + 1,
+          };
+        });
+        console.log({ ddsData: data, dt });
+        return dt;
+      },
       onError(err) {
         errorHandler(err);
       },

@@ -54,7 +54,7 @@ const Student = () => {
     debtors: studentDebtors,
     myStudents: studentByClass2,
     alumni: graduatedStudents,
-    loginDetails: studentLoginDetailsStudents?.data,
+    loginDetails: studentLoginDetailsStudents,
     communication: communicationList,
   };
 

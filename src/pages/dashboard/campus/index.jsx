@@ -22,8 +22,8 @@ const Campus = () => {
       onDelete={async (id) => await deleteCampus(id)}
       columns={[
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "Name",

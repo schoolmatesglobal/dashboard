@@ -3,7 +3,8 @@ import PageView from "../../../components/views/table-view";
 import { useDepartments } from "../../../hooks/useDepartments";
 
 const Departments = () => {
-  const { isLoading, departmentsList, permission, deleteDepartment } = useDepartments();
+  const { isLoading, departmentsList, permission, deleteDepartment } =
+    useDepartments();
 
   return (
     <PageView
@@ -14,8 +15,8 @@ const Departments = () => {
       isLoading={isLoading}
       columns={[
         {
-          Header: "ID",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "Department ID",

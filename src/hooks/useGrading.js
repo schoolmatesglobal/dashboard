@@ -63,7 +63,16 @@ export const useGrading = () => {
     isLoading: gradingLoading,
     refetch: refetchGrading,
   } = useQuery([queryKeys.GET_GRADING], apiServices.getGrading, {
-    select: apiServices.formatData,
+    select: (data) => {
+      // console.log({ data });
+      return apiServices.formatData(data)?.map((obj, index) => {
+        const newObj = { ...obj };
+        newObj.new_id = index + 1;
+        return newObj;
+      });
+
+      // return { ...data, options: f };
+    },
     onError(err) {
       apiServices.errorHandler(err);
     },

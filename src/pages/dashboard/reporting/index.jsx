@@ -37,7 +37,7 @@ const Reporting = () => {
       onDelete={deleteReport}
       columns={[
         {
-          Header: "id",
+          Header: "S/N",
           accessor: "id",
         },
         {

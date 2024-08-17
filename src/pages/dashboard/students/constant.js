@@ -7,8 +7,8 @@ export const getColumns = ({ indexStatus }) => {
           accessor: "image",
         },
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "First Name",
@@ -50,8 +50,8 @@ export const getColumns = ({ indexStatus }) => {
           accessor: "image",
         },
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "First Name",
@@ -90,7 +90,7 @@ export const getColumns = ({ indexStatus }) => {
     case "myStudents":
       return [
         {
-          Header: "id",
+          Header: "S/N",
           accessor: "new_id",
         },
         {
@@ -130,8 +130,8 @@ export const getColumns = ({ indexStatus }) => {
     case "loginDetails":
       return [
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "First Name",
@@ -268,7 +268,7 @@ export const getStudentColumns = ({ indexStatus }) => {
         },
         {
           Header: "id",
-          accessor: "id",
+          accessor: "new_id",
         },
         {
           Header: "First Name",
@@ -296,7 +296,7 @@ export const getStudentColumns = ({ indexStatus }) => {
       return [
         {
           Header: "id",
-          accessor: "id",
+          accessor: "new_id",
         },
         {
           Header: "First Name",

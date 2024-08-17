@@ -76,7 +76,16 @@ export const useCampus = () => {
     onError(err) {
       errorHandler(err);
     },
-    select: apiServices.formatData,
+    select: (data) => {
+      // console.log({ data });
+      return apiServices.formatData(data)?.map((obj, index) => {
+        const newObj = { ...obj };
+        newObj.new_id = index + 1;
+        return newObj;
+      });
+
+      // return { ...data, options: f };
+    },
   });
 
   // Fetch Campus by Id
