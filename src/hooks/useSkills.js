@@ -25,7 +25,8 @@ export const useSkills = () => {
   } = useQuery([queryKeys.GET_ALL_SKILLS], apiServices.getSkills, {
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
-    select: (data) => data?.data?.map((x) => ({ id: x.id, ...x.attributes })),
+    select: (data) =>
+      data?.data?.map((x, i) => ({ id: x.id, new_id: i + 1, ...x.attributes })),
   });
 
   const { data: skill, isLoading: skillLoading } = useQuery(
@@ -58,7 +59,11 @@ export const useSkills = () => {
     });
 
   const isLoading =
-    addSkillLoading || skillsLoading || skillLoading || editSkillLoading || deleteSkillLoading;
+    addSkillLoading ||
+    skillsLoading ||
+    skillLoading ||
+    editSkillLoading ||
+    deleteSkillLoading;
 
   return {
     addSkill,

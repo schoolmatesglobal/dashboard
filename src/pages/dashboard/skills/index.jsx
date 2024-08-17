@@ -15,8 +15,8 @@ const Skills = () => {
       onDelete={deleteSkill}
       columns={[
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "Name",

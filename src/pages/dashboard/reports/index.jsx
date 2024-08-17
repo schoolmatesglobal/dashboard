@@ -91,7 +91,7 @@ const Reports = () => {
   const columns = {
     income: [
       {
-        Header: "id",
+        Header: "S/N",
         accessor: "id",
       },
       {

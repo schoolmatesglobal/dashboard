@@ -27,7 +27,11 @@ export const useReporting = () => {
     onError: apiServices.errorHandler,
     select: (data) => {
       // console.log({data})
-      return data?.data?.map((x) => ({ id: x.id, ...x.attributes }))
+      return data?.data?.map((x, i) => ({
+        id: x.id,
+        new_id: i + 1,
+        ...x.attributes,
+      }));
     },
   });
 

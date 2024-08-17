@@ -21,9 +21,7 @@ const Staff = () => {
   } = useStaff();
 
   const checkForExtraButton = () => {
-    if (
-      user?.department === "Admin"
-    ) {
+    if (user?.department === "Admin") {
       return true;
     } else {
       return false;
@@ -36,6 +34,10 @@ const Staff = () => {
         {
           Header: "",
           accessor: "image",
+        },
+        {
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "First Name",
@@ -197,7 +199,7 @@ const Staff = () => {
     <PageView
       extraButton={checkForExtraButton()}
       extraLink={`/app/staffs/dos`}
-      extraButtonTitle="Update DOS"
+      extraButtonTitle='Update DOS'
       pagination={dataMapper[indexStatus].pagination}
       rowHasAction={permission?.action && indexStatus === "all"}
       rowHasUpdate={indexStatus === "all" && permission?.update}

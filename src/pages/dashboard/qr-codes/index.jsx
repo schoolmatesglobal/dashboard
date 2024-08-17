@@ -31,7 +31,7 @@ const QRCodes = () => {
       // onDelete={deleteSkill}
       columns={[
         {
-          Header: "id",
+          Header: "S/N",
           accessor: "id",
         },
         {

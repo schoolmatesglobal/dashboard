@@ -49,6 +49,7 @@ export const permissions = {
       sort: true,
       sortSession: true,
       sortAdmissionNumber: true,
+      myStudents: false,
       alumni: true,
       graduateStudent: false,
       readClass: true,
@@ -65,6 +66,12 @@ export const permissions = {
       delete: true,
       statusToggle: false,
       sort: true,
+    },
+    "qr-codes": {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
     },
     vendors: {
       create: false,
@@ -231,6 +238,12 @@ export const permissions = {
       create: false,
       view: true,
       approve: false,
+    },
+    "qr-codes": {
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
     },
     skills: {
       create: false,

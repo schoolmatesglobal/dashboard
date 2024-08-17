@@ -3,7 +3,7 @@ import PageView from "../../../components/views/table-view";
 import { useGrading } from "../../../hooks/useGrading";
 
 const Grading = () => {
-  const { isLoading, grading, deleteGrading, } = useGrading();
+  const { isLoading, grading, deleteGrading } = useGrading();
 
   // console.log({ grading, permission });
 
@@ -18,8 +18,8 @@ const Grading = () => {
       isLoading={isLoading}
       columns={[
         {
-          Header: "id",
-          accessor: "id",
+          Header: "S/N",
+          accessor: "new_id",
         },
         {
           Header: "From",

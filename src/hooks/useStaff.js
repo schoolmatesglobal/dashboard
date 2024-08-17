@@ -121,13 +121,14 @@ export const useStaff = () => {
 
         console.log({sfdata: data})
         
-        const f = apiServices.formatData(data).map((staff) => {
+        const f = apiServices.formatData(data).map((staff, i) => {
           const { designation_name } =
             designations?.data?.find((item) => item.id === staff.designation_id)
               ?.attributes || {};
 
           return {
             ...staff,
+            new_id: i + 1,
             designation_name: roleMap[designation_name],
             image: (
               <ProfileImage src={staff?.image} wrapperClassName='mx-auto' />
@@ -327,12 +328,13 @@ export const useStaff = () => {
         retry: 3,
         enabled: permission?.staffLoginDetails,
         select: (data) => {
-          const f = apiServices.formatData(data)?.map((staff) => {
+          const f = apiServices.formatData(data)?.map((staff, i) => {
             const { designation_name } = designations?.data?.find(
               (item) => item.id === staff.designation_id
             )?.attributes ?? { designation_name: "" };
             return {
               ...staff,
+              new_id: i + 1,
               designation_name: roleMap[designation_name],
             };
           });
