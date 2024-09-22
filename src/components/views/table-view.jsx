@@ -10,12 +10,17 @@ import PageTitle from "../common/title";
 import AuthSelect from "../inputs/auth-select";
 import PaginationComponent from "../tables/pagination";
 import Button from "../buttons/button";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faPlusCircle,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GoBack from "../common/go-back";
 import { Spinner } from "reactstrap";
 import ButtonGroup2 from "../buttons/button-group2";
 import { useMediaQuery } from "react-responsive";
+import AuthInput from "../inputs/auth-input";
 
 const PageView = ({
   useBtn2,
@@ -24,6 +29,11 @@ const PageView = ({
   groupedButtonOptions = [],
   hasSortOptions = false,
   hasSearch,
+  hasDateSort,
+  dateSortLabel,
+  dateSortValue,
+  clearDateSortValue,
+  onDateSortChange,
   onSearch,
   pagination,
   searchPlaceholder,
@@ -49,6 +59,8 @@ const PageView = ({
   searchIsSelect = false,
   svgIllustrationBanner: SvgIllustrationBanner,
   hasGoBack = false,
+  footer = null,
+  header = null,
   ...rest
 }) => {
   const navigate = useNavigate();
@@ -81,6 +93,7 @@ const PageView = ({
                 )}
               </div>
             )}
+
             {hasSortOptions && (
               <div className='mb-5 d-md-flex'>
                 {groupedButtonOptions.length ? (
@@ -121,6 +134,7 @@ const PageView = ({
                 )}
               </div>
             )}
+
             {showIllustration ? (
               SvgIllustrationBanner ? (
                 <div
@@ -142,6 +156,43 @@ const PageView = ({
             {!hideTable && (
               <div>
                 {showTableTitle && <PageTitle>{pageTitle}</PageTitle>}
+
+                {hasDateSort && (
+                  <div className='d-flex align-items-center gap-3'>
+                    <div
+                      className=''
+                      style={{
+                        width: "300px",
+                      }}
+                    >
+                      <AuthInput
+                        // label={dateSortLabel}
+                        // required
+                        type='date'
+                        //  hasError={!!errors.dob}
+                        value={dateSortValue}
+                        onChange={onDateSortChange}
+                        style={{
+                          width: "300px",
+                        }}
+                        //  {...getFieldProps("dob")}
+                      />
+                    </div>
+
+                    {dateSortValue && (
+                      <FontAwesomeIcon
+                        icon={faXmark}
+                        style={{
+                          cursor: "pointer",
+                          color: "red",
+                          fontSize: "20px",
+                        }}
+                        onClick={clearDateSortValue}
+                      />
+                    )}
+                  </div>
+                )}
+
                 <CustomTable
                   centered
                   isLoading={isLoading}
@@ -175,6 +226,8 @@ const PageView = ({
             <Spinner />
           </div>
         )}
+
+        {footer && footer}
       </PageSheet>
     </div>
   );
