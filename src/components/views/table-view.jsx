@@ -162,7 +162,7 @@ const PageView = ({
                     <div
                       className=''
                       style={{
-                        width: "300px",
+                        width: "200px",
                       }}
                     >
                       <AuthInput
@@ -173,7 +173,7 @@ const PageView = ({
                         value={dateSortValue}
                         onChange={onDateSortChange}
                         style={{
-                          width: "300px",
+                          width: "200px",
                         }}
                         //  {...getFieldProps("dob")}
                       />

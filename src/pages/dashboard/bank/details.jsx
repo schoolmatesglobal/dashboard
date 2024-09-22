@@ -152,7 +152,7 @@ const BankDetails = () => {
               className='d-flex justify-content-end'
               style={{
                 fontWeight: "bold",
-                marginTop: "0px",
+                marginTop: "10px",
                 height: "45px",
                 color: "rgb(39, 39, 39)",
                 // padding: "0px 40px",
