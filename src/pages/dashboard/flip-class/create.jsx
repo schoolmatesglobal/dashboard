@@ -804,7 +804,12 @@ const Create = ({
             (activateWarning() || lessonNotes?.length === 0) && (
               <div className={styles.placeholder_container}>
                 <HiOutlineDocumentPlus className={styles.icon} />
-                <p className='fs-1 fw-bold mt-3'>Create Class Note</p>
+                {permission?.create && (
+                  <p className='fs-1 fw-bold mt-3'>Create Class Note</p>
+                )}
+                {!permission?.create && (
+                  <p className='fs-1 fw-bold mt-3'>No Class Note</p>
+                )}
               </div>
             )}
 

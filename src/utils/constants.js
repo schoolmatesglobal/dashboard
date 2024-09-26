@@ -141,7 +141,11 @@ export const dashboardSideBarLinks = {
       title: "Lesson Note",
       icon: faBookBookmark,
     },
-   
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
+    },
     {
       to: "/app/students",
       title: "Students",
