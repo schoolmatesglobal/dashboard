@@ -33,6 +33,7 @@ import {
   faBookBookmark,
   faQrcode,
   faEnvelopeOpenText,
+  faChalkboardUser,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
@@ -140,6 +141,7 @@ export const dashboardSideBarLinks = {
       title: "Lesson Note",
       icon: faBookBookmark,
     },
+   
     {
       to: "/app/students",
       title: "Students",
@@ -268,7 +270,11 @@ export const dashboardSideBarLinks = {
       title: "Lesson Note",
       icon: faBookBookmark,
     },
-
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
+    },
     {
       to: "/app/students",
       title: "Students",
@@ -367,6 +373,11 @@ export const dashboardSideBarLinks = {
       to: "/app/students",
       title: "Students",
       icon: faGraduationCap,
+    },
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
     },
     {
       to: "/app/vehicles",
