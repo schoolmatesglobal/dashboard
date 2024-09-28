@@ -198,9 +198,9 @@ const Create = ({
     isRefetching: lessonNoteCreatedRefetching,
     refetch: refetchLessonNoteCreated,
   } = useQuery(
-    [queryKeys.GET_SUBMITTED_LESSON_NOTE],
+    [queryKeys.GET_SUBMITTED_FLIP_CLASS],
     () =>
-      apiServices.getLessonNoteByClass(
+      apiServices.getFlipClassByClass(
         permission?.create ? user?.class_id : class_id,
         subject_id,
         week,
@@ -237,7 +237,7 @@ const Create = ({
   const { mutateAsync: addLessonNote, isLoading: addLessonNoteLoading } =
     useMutation(
       () =>
-        apiServices.addLessonNote({
+        apiServices.addFlipClass({
           staff_id: Number(user?.id),
           term,
           session,
@@ -248,6 +248,7 @@ const Create = ({
           description,
           file: base64String,
           file_name: fileName,
+          video_url: videoUrl,
         }),
       // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
       {
@@ -256,7 +257,7 @@ const Create = ({
           setTimeout(() => {
             setCreateQuestionPrompt(false);
           }, 1000);
-          toast.success("Lesson note has been submitted successfully");
+          toast.success("Flip class note has been submitted successfully");
         },
         onError(err) {
           apiServices.errorHandler(err);
@@ -266,14 +267,14 @@ const Create = ({
 
   //// EDIT LESSON NOTE ////
   const { mutateAsync: editLessonNote, isLoading: editLessonNoteLoading } =
-    useMutation(apiServices.editLessonNote, {
+    useMutation(apiServices.editLFlipClass, {
       onSuccess() {
         // setAllowFetch(true);
         setTimeout(() => {
           setEditPrompt(false);
         }, 1000);
         refetchLessonNoteCreated();
-        toast.success("Lesson Note has been edited successfully");
+        toast.success("Flip class Note has been edited successfully");
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -285,14 +286,14 @@ const Create = ({
     mutateAsync: approveLessonNote,
     isLoading: approveLessonNoteLoading,
   } = useMutation(
-    () => apiServices.approveLessonNote({ id: editLessonNoteId }),
+    () => apiServices.approveLFlipClass({ id: editLessonNoteId }),
     // published ? apiServices.approveLessonNote : apiServices.unApproveLessonNote,
     {
       onSuccess() {
         // setAllowFetch(true);
         refetchLessonNoteCreated();
         toast.success(
-          `Lesson Note has been ${
+          `Flip class Note has been ${
             published ? "approve" : "unapproved"
           } successfully`
         );
@@ -307,13 +308,13 @@ const Create = ({
     mutateAsync: unApproveLessonNote,
     isLoading: unApproveLessonNoteLoading,
   } = useMutation(
-    () => apiServices.unApproveLessonNote({ id: editLessonNoteId }),
+    () => apiServices.unApproveLFlipClass({ id: editLessonNoteId }),
     {
       onSuccess() {
         // setAllowFetch(true);
         refetchLessonNoteCreated();
         toast.success(
-          `Lesson Note has been ${
+          `Flip class Note has been ${
             published ? "approve" : "unapproved"
           } successfully`
         );
@@ -326,13 +327,13 @@ const Create = ({
 
   //// DELETE LESSON NOTE ////
   const { mutateAsync: deleteLessonNote, isLoading: deleteLessonNoteLoading } =
-    useMutation(() => apiServices.deleteLessonNote(editLessonNoteId), {
+    useMutation(() => apiServices.deleteFlipClass(editLessonNoteId), {
       onSuccess() {
         refetchLessonNoteCreated();
         setTimeout(() => {
           setDeletePrompt(false);
         }, 1000);
-        toast.success("Lesson Note has been deleted successfully");
+        toast.success("Flip class Note has been deleted successfully");
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -623,6 +624,7 @@ const Create = ({
     file,
     fileName,
     classes,
+    class_id
   });
 
   return (
@@ -925,7 +927,7 @@ const Create = ({
                 className='form-control fs-3 lh-base'
                 type='text'
                 value={editTopic}
-                placeholder='Type the title of the lesson note'
+                placeholder='Type the title of the flip class note'
                 onChange={(e) => setEditTopic(e.target.value)}
                 style={{
                   minHeight: "100px",
@@ -938,7 +940,7 @@ const Create = ({
                 className='form-control fs-3 lh-base'
                 type='text'
                 value={editDescription}
-                placeholder='Type the description of the lesson note'
+                placeholder='Type the description of the flip class note'
                 onChange={(e) => setEditDescription(e.target.value)}
                 style={{
                   minHeight: "100px",

@@ -2929,6 +2929,87 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async addFlipClass(body) {
+    const { data } = await axios.post(`${backendAPI}/v2/flipclass/add`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+
+  async getFlipClassByClass(class_id, subject_id, week, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/flipclass/${class_id}/${subject_id}/${week}/${term}/${session}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async deleteFlipClass(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/flipclass/remove/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editLFlipClass({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async approveLFlipClass({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/approve/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async unApproveLFlipClass({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/unapprove/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
   async addCommunicationBook(body) {
     const { data } = await axios.post(
       `${backendAPI}/v2/communicationbook`,
