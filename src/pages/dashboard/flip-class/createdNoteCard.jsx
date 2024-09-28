@@ -4,6 +4,12 @@ import ButtonGroup from "../../../components/buttons/button-group";
 import useMyMediaQuery from "../../../hooks/useMyMediaQuery";
 import useMyMediaQuery2 from "../../../hooks/useMyMediaQuery2";
 import Button from "../../../components/buttons/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faUpRightFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { trimText } from "../communication-book/constant";
 
 const CreateNoteCard = ({
   setCreateN,
@@ -13,6 +19,7 @@ const CreateNoteCard = ({
   setEditTopic,
   setEditDescription,
   setEditFileName,
+  setEditVideoUrl,
   setEditSubmittedBy,
   setEditStatus,
   setEditFile,
@@ -32,12 +39,17 @@ const CreateNoteCard = ({
   setFileName,
   user,
 }) => {
-  
-
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
-  
-  console.log({ user, permission });
 
+  const handleViewVideo = () => {
+    if (notes?.video_url) {
+      // const url = URL.createObjectURL(file);
+      window.open(notes?.video_url, "_blank");
+      // URL.revokeObjectURL(url);
+    }
+  };
+
+  console.log({ user, permission, notes });
 
   return (
     <div
@@ -143,6 +155,46 @@ const CreateNoteCard = ({
           <p className='fs-3 lh-base'>{notes?.file_name}</p>
         </div>
       </div>
+      {notes?.video_url && (
+        <div
+          className={`d-flex  ${
+            xs ? "flex-column" : sm ? "flex-column" : "flex-row"
+          }`}
+        >
+          <p
+            className={`fw-bold fs-3 lh-base border-2 border py-3 px-4`}
+            style={{ width: `${xs ? "100%" : sm ? "100%" : "20%"}` }}
+          >
+            Video Link:
+          </p>
+          <div
+            className={`d-flex gap-3 ${
+              xs
+                ? "flex-column"
+                : sm
+                ? "flex-column"
+                : "flex-row align-items-center"
+            } py-3 px-4 border-2 border`}
+            style={{ width: `${xs ? "100%" : sm ? "100%" : "80%"}` }}
+          >
+            <p
+              className='fs-3 lh-base text-danger d-flex align-items-center gap-3'
+              onClick={handleViewVideo}
+            >
+              <span
+                className='fs-3 lh-base mr-3'
+                style={{ textDecoration: "underline", cursor: "pointer" }}
+              >
+                {trimText(
+                  notes?.video_url,
+                  xs ? 30 : sm ? 30 : md ? 40 : lg ? 50 : 50
+                )}{" "}
+              </span>
+              <FontAwesomeIcon icon={faUpRightFromSquare} className='ml-2' />
+            </p>
+          </div>
+        </div>
+      )}
       <div
         className={`d-flex  ${
           xs ? "flex-column" : sm ? "flex-column" : "flex-row"
@@ -177,52 +229,54 @@ const CreateNoteCard = ({
         {/* designation_name
 : 
 "Principal" */}
-        {user?.designation_name === "Principal" && (
-          <div className='d-flex align-content-center gap-4'>
-            <Button
-              variant=''
-              className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
-              onClick={() => {
-                if (permission?.approve) {
-                  setEditLessonNoteId(notes?.id);
-                  setPublished(true);
-                  setClearAllPrompt(true);
-                } else {
-                  const base64 = notes?.file;
-                  setEditTopic(notes?.topic);
-                  setEditDescription(notes?.description);
-                  setEditFileName(notes?.file_name);
-                  setEditSubmittedBy(notes?.submitted_by);
-                  setEditStatus(notes?.status);
-                  setEditFile(notes?.file);
-                  setEditLessonNoteId(notes?.id);
-                  setEditPrompt(true);
-                  setFile(null);
-                  setFileName("");
-                }
-              }}
-            >
-              {permission?.approve ? "Approve" : "Edit"}
-            </Button>
-            <Button
-              variant='outline-danger'
-              className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
-              onClick={() => {
-                if (permission?.approve) {
-                  setEditLessonNoteId(notes?.id);
-                  setPublished(false);
-                  setClearAllPrompt(true);
-                } else {
-                  setEditLessonNoteId(notes?.id);
-                  setDeletePrompt(true);
-                }
-                // setCreateQuestionPrompt(true);
-              }}
-            >
-              {permission?.approve ? "Unapprove" : "Delete"}
-            </Button>
-          </div>
-        )}
+        {user?.designation_name !== "Principal" &&
+          user?.designation_name !== "Student" && (
+            <div className='d-flex align-content-center gap-4'>
+              <Button
+                variant=''
+                className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
+                onClick={() => {
+                  if (permission?.approve) {
+                    setEditLessonNoteId(notes?.id);
+                    setPublished(true);
+                    setClearAllPrompt(true);
+                  } else {
+                    const base64 = notes?.file;
+                    setEditTopic(notes?.topic);
+                    setEditDescription(notes?.description);
+                    setEditFileName(notes?.file_name);
+                    setEditSubmittedBy(notes?.submitted_by);
+                    setEditStatus(notes?.status);
+                    setEditFile(notes?.file);
+                    setEditVideoUrl(notes?.video_url);
+                    setEditLessonNoteId(notes?.id);
+                    setEditPrompt(true);
+                    setFile(null);
+                    setFileName("");
+                  }
+                }}
+              >
+                {permission?.approve ? "Approve" : "Edit"}
+              </Button>
+              <Button
+                variant='outline-danger'
+                className={`${xs ? "w-100" : sm ? "w-100" : "w-auto"} `}
+                onClick={() => {
+                  if (permission?.approve) {
+                    setEditLessonNoteId(notes?.id);
+                    setPublished(false);
+                    setClearAllPrompt(true);
+                  } else {
+                    setEditLessonNoteId(notes?.id);
+                    setDeletePrompt(true);
+                  }
+                  // setCreateQuestionPrompt(true);
+                }}
+              >
+                {permission?.approve ? "Unapprove" : "Delete"}
+              </Button>
+            </div>
+          )}
 
         <Button
           variant=''

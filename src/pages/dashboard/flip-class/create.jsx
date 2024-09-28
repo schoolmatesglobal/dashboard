@@ -582,24 +582,14 @@ const Create = ({
   // }, []);
 
   useEffect(() => {
+    if (user?.designation_name === "Student") {
+      setCreateN((prev) => {
+        return { ...prev, class_id: user?.class_id };
+      });
+    }
     if (activateRetrieveCreated()) {
       refetchLessonNoteCreated();
-
-      // setCreateN((prev) => {
-      //   return {
-      //     ...prev,
-      //     week: "",
-      //     subject_id: "",
-      //     status: "UnApproved",
-      //     topic: "",
-      //     description: "",
-      //     file: "",
-      //     file_name: "",
-      //   };
-      // });
     }
-    // refetchLessonNoteCreated();
-    // trigger(500);
   }, [subject_id, week, term, session, class_id]);
 
   // const newNote = permission?.create ? lessonNotes : notes2;
@@ -624,7 +614,7 @@ const Create = ({
     file,
     fileName,
     classes,
-    class_id
+    class_id,
   });
 
   return (
@@ -737,7 +727,7 @@ const Create = ({
                 wrapperClassName='w-100'
               />
               {/* class name */}
-              {!permission?.create && (
+              {!permission?.create && user?.designation_name !== "Student" && (
                 <AuthSelect
                   sort
                   value={class_id}
@@ -830,35 +820,43 @@ const Create = ({
           {!allLoading &&
             !activateWarning() &&
             lessonNotes?.map((nn, i) => {
+              const showCard =
+                user?.designation_name === "Student"
+                  ? nn?.status === "approved"
+                  : true;
+
               return (
                 <div className='mb-5' key={i}>
-                  <CreateNoteCard
-                    setCreateN={setCreateN}
-                    permission={permission}
-                    setEditPrompt={setEditPrompt}
-                    setClearAllPrompt={setClearAllPrompt}
-                    setDeletePrompt={setDeletePrompt}
-                    setEditTopic={setEditTopic}
-                    setEditDescription={setEditDescription}
-                    setEditFile={setEditFile}
-                    setFile={setFile}
-                    setEditFileName={setEditFileName}
-                    setFileName={setFileName}
-                    setEditSubmittedBy={setEditSubmittedBy}
-                    setEditStatus={setEditStatus}
-                    setEditLessonNoteId={setEditLessonNoteId}
-                    notes={nn}
-                    handleDownload={handleDownload}
-                    setPublished={setPublished}
-                    handleViewFile={handleViewFile}
-                    iframeUrl={iframeUrl}
-                    setIframeUrl={setIframeUrl}
-                    selectedDocs={selectedDocs}
-                    setSelectedDocs={setSelectedDocs}
-                    base64String={base64String}
-                    setBase64String={setBase64String}
-                    user={user}
-                  />
+                  {showCard && (
+                    <CreateNoteCard
+                      setCreateN={setCreateN}
+                      permission={permission}
+                      setEditPrompt={setEditPrompt}
+                      setClearAllPrompt={setClearAllPrompt}
+                      setDeletePrompt={setDeletePrompt}
+                      setEditTopic={setEditTopic}
+                      setEditDescription={setEditDescription}
+                      setEditFile={setEditFile}
+                      setFile={setFile}
+                      setEditFileName={setEditFileName}
+                      setFileName={setFileName}
+                      setEditVideoUrl={setEditVideoUrl}
+                      setEditSubmittedBy={setEditSubmittedBy}
+                      setEditStatus={setEditStatus}
+                      setEditLessonNoteId={setEditLessonNoteId}
+                      notes={nn}
+                      handleDownload={handleDownload}
+                      setPublished={setPublished}
+                      handleViewFile={handleViewFile}
+                      iframeUrl={iframeUrl}
+                      setIframeUrl={setIframeUrl}
+                      selectedDocs={selectedDocs}
+                      setSelectedDocs={setSelectedDocs}
+                      base64String={base64String}
+                      setBase64String={setBase64String}
+                      user={user}
+                    />
+                  )}
                 </div>
               );
             })}
