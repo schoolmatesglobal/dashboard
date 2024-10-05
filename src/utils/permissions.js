@@ -127,6 +127,11 @@ export const permissions = {
       view: true,
       approve: false,
     },
+    "flip-class": {
+      create: true,
+      view: true,
+      approve: false,
+    },
     assignments: {
       view: false,
       create: true,
@@ -239,6 +244,11 @@ export const permissions = {
       view: true,
       approve: false,
     },
+    "flip-class": {
+      create: false,
+      view: true,
+      approve: false,
+    },
     "qr-codes": {
       create: true,
       read: true,
@@ -319,6 +329,11 @@ export const permissions = {
       compute: false,
       view: true,
       preSchool: true,
+    },
+    "flip-class": {
+      create: false,
+      view: true,
+      approve: false,
     },
     students: {
       create: false,
@@ -434,6 +449,11 @@ export const permissions = {
       approve: true,
     },
     "lesson-note": {
+      create: false,
+      view: true,
+      approve: true,
+    },
+    "flip-class": {
       create: false,
       view: true,
       approve: true,

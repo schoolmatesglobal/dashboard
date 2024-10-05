@@ -103,6 +103,10 @@ const PaymentDetail = () => {
     }
   );
 
+  const bankId = (function () {
+    return bank?.find((bk) =>  inputs?.account_name?.includes(bk?.bank_name))?.id ?? "";
+  })();
+
   const onSubmit = (data) => {
     if (
       inputs.payment_method === "Physical Cash" &&
@@ -135,6 +139,7 @@ const PaymentDetail = () => {
       createPayment({
         student_id: filteredInvoice?.student_id,
         invoice_id: filteredInvoice?.id,
+        bank_id: Number(bankId),
         bank_name: "none",
         account_name: "none",
         student_fullname: filteredInvoice?.fullname,
@@ -147,6 +152,7 @@ const PaymentDetail = () => {
       createPayment({
         student_id: filteredInvoice?.student_id,
         invoice_id: filteredInvoice?.id,
+        bank_id: Number(bankId),
         bank_name: data?.account_name,
         account_name: data?.account_name,
         student_fullname: filteredInvoice?.fullname,
@@ -233,6 +239,8 @@ const PaymentDetail = () => {
     fp,
     payment,
     bank,
+    bankId,
+    inputs,
   });
 
   return (

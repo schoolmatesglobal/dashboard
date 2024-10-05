@@ -48,13 +48,6 @@ const Payment = () => {
     const arr = [];
 
     return [
-      // {
-      //   title: "View / Print Invoice",
-      //   onClick: (id) => {
-      //     console.log({ id });
-      //     navigate(`/app/invoices/fees/${id}`);
-      //   },
-      // },
       {
         title: "Views Details",
         onClick: (id) => navigate(`/app/payment/details/${id}`),
