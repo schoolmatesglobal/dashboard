@@ -19,7 +19,7 @@ const Classes = () => {
     if (
       user?.is_preschool === "false" &&
       // user?.designation_name === "Admin" &&
-      user?.department === "Admin"
+      user?.department?.toUpperCase() === "ADMIN"
     ) {
       return true;
     } else {
@@ -28,7 +28,7 @@ const Classes = () => {
   };
   const navigate = useNavigate();
 
- 
+  console.log({ user });
 
   useEffect(() => {
     setOnGetSubjectByClass2(true);
