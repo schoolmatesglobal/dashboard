@@ -52,7 +52,7 @@ export const backendAPI = (function () {
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
     return url1;
   } else {
-    return url2;
+    return url1;
   }
 })();
 
