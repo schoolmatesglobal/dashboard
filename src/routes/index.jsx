@@ -127,6 +127,7 @@ import ClockIn from "../pages/dashboard/scan-codes/scan/clock-in";
 import ClockOut from "../pages/dashboard/scan-codes/scan/clock-out";
 import BankDetails from "../pages/dashboard/bank/details";
 import FlipClass from "../pages/dashboard/flip-class";
+import Exercises from "../pages/dashboard/exercises";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -162,6 +163,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='assignments'>
               <Assignments />
+            </Guard>
+          }
+        />
+        <Route
+          path='exercises'
+          element={
+            <Guard routeName='exercises'>
+              <Exercises />
             </Guard>
           }
         />

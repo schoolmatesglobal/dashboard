@@ -17,7 +17,7 @@ import TheoryViewCard from "./theoryViewCard";
 import MarkCard from "./noteCard";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CreateNote from "./createNote";
 import CustomTable from "../../../components/tables/table";
 import PageTitle from "../../../components/common/title";
@@ -108,6 +108,8 @@ const Create = ({
     // setCheckedSubjects,
     // isLoading: classLoading,
   } = useClasses();
+
+  const { state } = useLocation();
 
   function formatSubjects() {
     return subjects?.map((sb) => {
@@ -592,6 +594,20 @@ const Create = ({
     }
   }, [subject_id, week, term, session, class_id]);
 
+  useEffect(() => {
+    if (state?.week || state?.term || state?.session || state?.subject_id) {
+      setCreateN((prev) => {
+        return {
+          ...prev,
+          week: state?.week,
+          term: state?.term,
+          session: state?.session,
+          subject_id: state?.subject_id,
+        };
+      });
+    }
+  }, []);
+
   // const newNote = permission?.create ? lessonNotes : notes2;
 
   // useEffect(() => {
@@ -602,19 +618,20 @@ const Create = ({
   // }, [editLessonNote]);
 
   console.log({
-    lessonNotes,
-    user,
-    createN,
-    subjectsByTeacher,
+    // lessonNotes,
+    // user,
+    // createN,
+    // subjectsByTeacher,
+    // // subjects,
+    // newSubjects,
+    // permission,
     // subjects,
-    newSubjects,
-    permission,
-    subjects,
-    activateWarning: activateWarning(),
-    file,
-    fileName,
-    classes,
-    class_id,
+    // activateWarning: activateWarning(),
+    // file,
+    // fileName,
+    // classes,
+    // class_id,
+    state2: state,
   });
 
   return (
@@ -829,6 +846,7 @@ const Create = ({
                 <div className='mb-5' key={i}>
                   {showCard && (
                     <CreateNoteCard
+                      createN={createN}
                       setCreateN={setCreateN}
                       permission={permission}
                       setEditPrompt={setEditPrompt}

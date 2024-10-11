@@ -10,8 +10,10 @@ import {
   faUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { trimText } from "../communication-book/constant";
+import { useNavigate } from "react-router-dom";
 
 const CreateNoteCard = ({
+  createN,
   setCreateN,
   setEditPrompt,
   notes,
@@ -41,6 +43,8 @@ const CreateNoteCard = ({
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
+  const navigate = useNavigate();
+
   const handleViewVideo = () => {
     if (notes?.video_url) {
       // const url = URL.createObjectURL(file);
@@ -49,7 +53,7 @@ const CreateNoteCard = ({
     }
   };
 
-  console.log({ user, permission, notes });
+  console.log({ createN });
 
   return (
     <div
@@ -278,15 +282,39 @@ const CreateNoteCard = ({
             </div>
           )}
 
-        <Button
-          variant=''
-          className='w-auto'
-          onClick={() => {
-            handleViewFile(notes?.file);
-          }}
-        >
-          View Note
-        </Button>
+        <div className='d-flex align-items-center gap-4'>
+          <Button
+            variant=''
+            className='w-auto'
+            onClick={() => {
+              handleViewFile(notes?.file);
+            }}
+          >
+            View Note
+          </Button>
+
+          {user?.designation_name?.toUpperCase() === "TEACHER" && (
+            <Button
+              variant=''
+              className='w-auto'
+              onClick={() => {
+                // handleViewFile(notes?.file);
+                navigate("/app/exercises", {
+                  state: {
+                    week: createN?.week,
+                    term: createN?.term,
+                    session: createN?.session,
+                    subject_id: createN?.subject_id,
+                    topic: notes?.topic,
+                    date: notes?.date_submitted,
+                  },
+                });
+              }}
+            >
+              Exercises
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
