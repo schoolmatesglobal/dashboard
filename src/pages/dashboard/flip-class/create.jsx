@@ -618,7 +618,7 @@ const Create = ({
   // }, [editLessonNote]);
 
   console.log({
-    // lessonNotes,
+    lessonNotes,
     // user,
     // createN,
     // subjectsByTeacher,
@@ -873,6 +873,7 @@ const Create = ({
                       base64String={base64String}
                       setBase64String={setBase64String}
                       user={user}
+                      flip_class_id={nn?.id}
                     />
                   )}
                 </div>

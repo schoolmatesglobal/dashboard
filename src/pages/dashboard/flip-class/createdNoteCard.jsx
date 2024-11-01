@@ -40,6 +40,7 @@ const CreateNoteCard = ({
   setFile,
   setFileName,
   user,
+  flip_class_id,
 }) => {
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
 
@@ -301,6 +302,7 @@ const CreateNoteCard = ({
                 // handleViewFile(notes?.file);
                 navigate("/app/exercises", {
                   state: {
+                    flip_class_id,
                     week: createN?.week,
                     term: createN?.term,
                     session: createN?.session,
@@ -309,6 +311,15 @@ const CreateNoteCard = ({
                     date: notes?.date_submitted,
                   },
                 });
+                // console.log({
+                //   flip_class_id: flip_class_id,
+                //   week: createN?.week,
+                //   term: createN?.term,
+                //   session: createN?.session,
+                //   subject_id: createN?.subject_id,
+                //   topic: notes?.topic,
+                //   date: notes?.date_submitted,
+                // });
               }}
             >
               Exercises

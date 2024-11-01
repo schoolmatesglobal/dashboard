@@ -151,12 +151,14 @@ const Create = ({
   } = useQuery(
     [queryKeys.GET_CREATED_ASSIGNMENT],
     () =>
-      apiServices.getAssignment(
+      apiServices.getAssessment(
         user?.period,
         user?.term,
         user?.session,
+        state?.flip_class_id,
         question_type,
-        week
+        week,
+        subject_id
       ),
     {
       retry: 2,
@@ -246,11 +248,11 @@ const Create = ({
     isLoading: addObjectAssignmentLoading,
   } = useMutation(
     () =>
-      apiServices.addObjectiveAssignment([
-        // ...objectiveQ,
+      apiServices.addObjectiveAssessment([
         {
-          term: user?.term,
+          flip_class_id: Number(state?.flip_class_id),
           period: user?.period,
+          term: user?.term,
           session: user?.session,
           week,
           question_type,
@@ -265,6 +267,7 @@ const Create = ({
           total_mark: Number(total_mark),
           question_mark: Number(objMark),
           question_number: Number(question_number),
+          topic: state?.topic,
         },
       ]),
     // () => apiServices.addObjectiveAssignment(finalObjectiveArray),
@@ -285,7 +288,7 @@ const Create = ({
     isLoading: addTheoryAssignmentLoading,
   } = useMutation(
     () =>
-      apiServices.addTheoryAssignment([
+      apiServices.addTheoryAssessment([
         // ...theoryQ,
         {
           term: user?.term,
@@ -318,7 +321,7 @@ const Create = ({
   const {
     mutateAsync: editObjectiveAssignment,
     isLoading: editObjectiveAssignmentLoading,
-  } = useMutation(apiServices.editObjectiveAssignment, {
+  } = useMutation(apiServices.editObjectiveAssessment, {
     onSuccess() {
       setAllowFetch(true);
       refetchAssignmentCreated();
@@ -333,7 +336,7 @@ const Create = ({
   const {
     mutateAsync: publishAssignment,
     isLoading: publishAssignmentLoading,
-  } = useMutation(apiServices.publishAssignment, {
+  } = useMutation(apiServices.publishAssessment, {
     onSuccess() {
       setAllowFetch(true);
       refetchAssignmentCreated();
@@ -352,7 +355,7 @@ const Create = ({
   const {
     mutateAsync: editTheoryAssignment,
     isLoading: editTheoryAssignmentLoading,
-  } = useMutation(apiServices.editTheoryAssignment, {
+  } = useMutation(apiServices.editTheoryAssessment, {
     onSuccess() {
       refetchAssignmentCreated();
       toast.success("theory question has been edited successfully");
@@ -364,7 +367,7 @@ const Create = ({
 
   //// DELETE ASSIGNMENT ////
   const { mutateAsync: deleteAssignment, isLoading: deleteAssignmentLoading } =
-    useMutation(() => apiServices.deleteAssignment(editQuestionId), {
+    useMutation(() => apiServices.deleteAssessment(editQuestionId), {
       onSuccess() {
         refetchAssignmentCreated();
         toast.success("Question has been deleted successfully");

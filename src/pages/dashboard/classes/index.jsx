@@ -19,7 +19,7 @@ const Classes = () => {
     if (
       user?.is_preschool === "false" &&
       // user?.designation_name === "Admin" &&
-      user?.department?.toUpperCase() === "ADMIN"
+      user?.designation_id === "1"
     ) {
       return true;
     } else {
