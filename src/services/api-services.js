@@ -2239,12 +2239,51 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async getAssessment(
+    period,
+    term,
+    session,
+    flip_class_id,
+    question_type,
+    week,
+    subject_id
+  ) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/flipclass/${period}/${term}/${session}/${flip_class_id}/${question_type}/${week}/${subject_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 
   async addObjectiveAssignment(body) {
     // const backendAPI =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.post(
       `${backendAPI}/objective-assignment`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async addObjectiveAssessment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/v2/flipclass/assessment/add-obj`,
       body,
       {
         headers: {
@@ -2268,7 +2307,39 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async addTheoryAssessment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/v2/flipclass/assessment/add-theory`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   async submitObjectiveAssignment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/objective-assignment-answer`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async submitObjectiveAssessment(body) {
     // const backendAPI =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.post(
@@ -2460,10 +2531,38 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async editObjectiveAssessment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/edit-obj`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 
   async publishAssignment(body) {
     const { data } = await axios.patch(
       `${backendAPI}/publish/assignment`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async publishAssessment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/publish`,
       body,
       {
         headers: {
@@ -2504,6 +2603,21 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async editTheoryAssessment({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/edit-theory`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   async deleteAssignment(id) {
     const { data } = await axios.delete(`${backendAPI}/assignment/${id}`, {
       headers: {
@@ -2511,6 +2625,20 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+
+    return data;
+  }
+
+  async deleteAssessment(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/flipclass/assessment/delete/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }
