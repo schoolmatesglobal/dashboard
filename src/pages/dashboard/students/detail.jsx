@@ -193,7 +193,7 @@ const StudentDetail = () => {
     title: x?.name,
   }));
 
-  const classArray = user?.is_preschool ? cls2 : cls;
+  const classArray = user?.is_preschool === "true" ? cls2 : cls;
 
   console.log({ user, classes, preSchools, classArray, cls, cls2 });
 
