@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Prompt from "../../../components/modals/prompt";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useCampus } from "../../../hooks/useCampus";
+import { usePreSchool } from "../../../hooks/usePreSchool";
 
 const StudentDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,6 +58,15 @@ const StudentDetail = () => {
   // } = useCampus();
 
   const { classes } = useClasses();
+
+  const {
+    // permission,
+    preSchools,
+    // isLoading,
+    deletePreSchool,
+    activatePreSchool,
+    setActivatePreSchool,
+  } = usePreSchool();
 
   const { data: sessions } = useAcademicSession();
 
@@ -172,6 +182,20 @@ const StudentDetail = () => {
       return true;
     }
   }
+
+  const cls = (classes || []).map((x) => ({
+    value: x?.class_name.toUpperCase(),
+    title: x?.class_name,
+  }));
+
+  const cls2 = (preSchools || []).map((x) => ({
+    value: x?.name.toUpperCase(),
+    title: x?.name,
+  }));
+
+  const classArray = user?.is_preschool === "true" ? cls2 : cls;
+
+  console.log({ user, classes, preSchools, classArray, cls, cls2 });
 
   // console.log({ db: studentData?.dob, gp: getFieldProps("dob") });
   // console.log({
@@ -430,10 +454,7 @@ const StudentDetail = () => {
                 sub_class: "",
               });
             }}
-            options={(classes || []).map((x) => ({
-              value: x?.class_name.toUpperCase(),
-              title: x?.class_name,
-            }))}
+            options={classArray}
           />
           {!!errors.present_class && (
             <p className='error-message'>{errors.present_class}</p>
@@ -449,10 +470,7 @@ const StudentDetail = () => {
             onChange={(e) => {
               handleChange(e);
             }}
-            options={(classes || []).map((x) => ({
-              value: x?.class_name.toUpperCase(),
-              title: x?.class_name,
-            }))}
+            options={classArray}
           />
           {!!errors.class && <p className='error-message'>{errors.class}</p>}
         </Col>

@@ -275,7 +275,7 @@ export const useClasses = () => {
     // subjectsByClassLoading ||
     subjectsByClassLoading2;
 
-  console.log({ classes });
+  // console.log({ classes });
   // console.log({ id });
 
   return {
