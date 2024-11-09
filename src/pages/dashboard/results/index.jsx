@@ -11,6 +11,7 @@ import { useAppContext } from "../../../hooks/useAppContext";
 import { useClasses } from "../../../hooks/useClasses";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useGrading } from "../../../hooks/useGrading";
+import { usePreSchool } from "../../../hooks/usePreSchool";
 
 const Results = () => {
   const { permission, user } = useAppContext("results");
@@ -27,11 +28,21 @@ const Results = () => {
     },
     validation: {
       class_name: {
-        required: (user?.designation_name === "Principal" ||
-          user?.designation_name === "Admin"),
+        required:
+          user?.designation_name === "Principal" ||
+          user?.designation_name === "Admin",
       },
     },
   });
+
+  const {
+    // permission,
+    preSchools,
+    // isLoading,
+    deletePreSchool,
+    activatePreSchool,
+    setActivatePreSchool,
+  } = usePreSchool();
 
   const { classes } = useClasses();
 
@@ -151,6 +162,18 @@ const Results = () => {
     return arr;
   };
 
+  const cls = (classes || []).map((x) => ({
+    value: x?.class_name.toUpperCase(),
+    title: x?.class_name,
+  }));
+
+  const cls2 = (preSchools || []).map((x) => ({
+    value: x?.name.toUpperCase(),
+    title: x?.name,
+  }));
+
+  const classArray = user?.is_preschool === "true" ? cls2 : cls;
+
   console.log({ sessions, user });
 
   return (
@@ -253,10 +276,7 @@ const Results = () => {
               name='class_name'
               hasError={!!errors.class_name}
               onChange={handleChange}
-              options={(classes || [])?.map((x) => ({
-                value: x?.class_name,
-                title: x?.class_name,
-              }))}
+              options={classArray}
             />
             {!!errors.class_name && (
               <p className='error-message'>{errors.class_name}</p>

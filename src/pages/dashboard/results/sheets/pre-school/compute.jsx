@@ -39,6 +39,7 @@ const ComputePreSchoolResult = () => {
     preSchoolCompiledResults,
     preActivities2,
     setPreActivities2,
+    // setActivatePreSchoolByClass,
     // preActivities2,
     // setPreActivities2,
   } = useResults();

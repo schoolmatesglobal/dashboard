@@ -13,6 +13,7 @@ import Button from "../../../components/buttons/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useClasses } from "../../../hooks/useClasses";
+import { usePreSchool } from "../../../hooks/usePreSchool";
 
 const StaffDetail = () => {
   const {
@@ -47,6 +48,15 @@ const StaffDetail = () => {
     // subjects: subjectsByClass,
     // subjectsByClass2,
   } = useClasses();
+
+  const {
+    // permission,
+    preSchools,
+    // isLoading,
+    deletePreSchool,
+    activatePreSchool,
+    setActivatePreSchool,
+  } = usePreSchool();
 
   const findId = () => {
     const find = classes.find((sb) => sb.class_name === inputs.class_assigned);
@@ -130,6 +140,20 @@ const StaffDetail = () => {
 
     await addStaff({ ...data, signature: "", image, password: "12345678" });
   };
+
+  const cls = (classes || []).map((x) => ({
+    value: x?.class_name.toUpperCase(),
+    title: x?.class_name,
+  }));
+
+  const cls2 = (preSchools || []).map((x) => ({
+    value: x?.name.toUpperCase(),
+    title: x?.name,
+  }));
+
+  const classArray = user?.is_preschool === "true" ? cls2 : cls;
+
+  // console.log({ user, classes, preSchools, classArray, cls, cls2 });
 
   useEffect(() => {
     if (staffData) {
@@ -364,10 +388,7 @@ const StaffDetail = () => {
                   // sub_class: "",
                 });
               }}
-              options={(classes || []).map((x) => ({
-                value: x?.class_name,
-                title: x?.class_name,
-              }))}
+              options={classArray}
             />
             {!!errors.class_assigned && (
               <p className='error-message'>{errors.class_assigned}</p>

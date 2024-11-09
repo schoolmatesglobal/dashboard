@@ -387,27 +387,29 @@ export const useResults = () => {
     }
   );
 
+  const cn = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
+
   const {
     data: preSchoolSubjectsByClass,
     isLoading: preSchoolSubjectsByClassLoading,
   } = useQuery(
-    [
-      queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS,
-      state?.creds?.class_name
-        ? state?.creds?.class_name
-        : user?.class_assigned,
-    ],
+    [queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS, cn],
     () =>
       apiServices.getPreSchoolSubjectsByClass(
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned
+        cn
       ),
     {
-      enabled: is_preschool,
+      enabled:
+        is_preschool &&
+        !!state?.creds?.period &&
+        !!state?.creds?.term &&
+        !!state?.creds?.session &&
+        !!cn,
       // select: apiServices.formatData,
       select: (data) => {
         const dt = apiServices.formatData(data);
