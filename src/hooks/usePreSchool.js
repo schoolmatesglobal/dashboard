@@ -6,18 +6,20 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 export const usePreSchool = () => {
-  const { apiServices, permission } = useAppContext("pre-school");
+  const { apiServices, permission, user } = useAppContext("pre-school");
   const [period, setPeriod] = useState({ session: "", term: "", period: "" });
   const [activatePreSchool, setActivatePreSchool] = useState(false);
   const [activatePreSchoolByClass, setActivatePreSchoolByClass] =
     useState(false);
   const { id } = useParams();
 
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
+
   const { data: preSchools, isLoading: preSchoolsLoading } = useQuery(
     [queryKeys.GET_ALL_PRE_SCHOOLS],
     apiServices.getPreSchools,
     {
-      enabled: permission?.read || false,
+      enabled: permission?.read && is_preschool,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
     }
@@ -92,11 +94,13 @@ export const usePreSchool = () => {
       ),
     {
       enabled:
+        is_preschool &&
         permission?.subject &&
         !!preSchool?.name &&
         !!period.period &&
         !!period.session &&
-        !!period.term && activatePreSchoolByClass,
+        !!period.term &&
+        activatePreSchoolByClass,
       // select: apiServices.formatData,
       select: (data) => {
         const pps = apiServices.formatData(data);

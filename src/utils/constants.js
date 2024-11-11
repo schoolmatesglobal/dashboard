@@ -52,7 +52,21 @@ export const backendAPI = (function () {
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
     return url1;
   } else {
-    return url1;
+    return url2;
+  }
+})();
+
+export const isProductionCheck = (function () {
+  if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
+    return false; // Update with your development API URL
+  } else if (
+    window.location.href.includes("https://portal.schoolmateglobal.com")
+  ) {
+    return true;
+  } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
+    return false;
+  } else {
+    return false;
   }
 })();
 
