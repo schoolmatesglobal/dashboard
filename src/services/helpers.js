@@ -1,5 +1,6 @@
 import moment from "moment";
 import { toast } from "react-toastify";
+import { isProduction, isProductionCheck } from "../utils/constants";
 
 class Helpers {
   formatNumberWithCommas(number) {
@@ -12,10 +13,15 @@ class Helpers {
     return formattedNumber;
   }
 
+  // storeToken(token) {
+  //   const d = new Date();
+  //   d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
+  //   document.cookie = `userToken=${token}; expires=${d.toUTCString()}`;
+  // }
   storeToken(token) {
-    const d = new Date();
-    d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
-    document.cookie = `userToken=${token}; expires=${d.toUTCString()}`;
+    // Set Max-Age to 1 year (365 days)
+    const maxAge = 365 * 24 * 60 * 60; // 1 year in seconds
+    document.cookie = `userToken=${token}; Max-Age=${maxAge};`;
   }
 
   getToken() {
@@ -61,17 +67,40 @@ class Helpers {
     });
   };
 
+  // errorHandler(error, message) {
+  //   let res = message || "An error occurred";
+  //   if (error.response) {
+  //     if (error.response.status >= 400 && error.response.status <= 499) {
+  //       res = error.response.data.message;
+  //     }
+  //   } else {
+  //     res = error.message;
+  //   }
+
+  //   // if(res === "")
+
+  //   return toast.error(res);
+  // }
+
   errorHandler(error, message) {
+    const isProduction = isProductionCheck
     let res = message || "An error occurred";
+
     if (error.response) {
-      if (error.response.status >= 400 && error.response.status <= 499) {
+      const statusCode = error.response.status;
+
+      // Handle client-side and server-side errors
+      if (statusCode >= 400 && statusCode <= 499) {
         res = error.response.data.message;
+      }
+
+      // In production, ignore error codes 429 and 500
+      if (isProduction && (statusCode === 429 || statusCode === 500)) {
+        return;
       }
     } else {
       res = error.message;
     }
-
-    // if(res === "")
 
     return toast.error(res);
   }
