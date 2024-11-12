@@ -1,15 +1,18 @@
 {
+  "id": "1",
   "short_name": "SchoolMates",
+  "description": "Elevate Education, Simplify Management",
   "name": "SchoolMates",
   "icons": [
     {
-      "src": "favs.png",
+      "src": "icon.png",
       "type": "image/png",
-      "sizes": "388x388"
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
-  "display": "standalone",
   "theme_color": "#01153b",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait"
 }
