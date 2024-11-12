@@ -50,7 +50,7 @@ export const backendAPI = (function () {
   ) {
     return url2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return url1;
+    return url2;
   } else {
     return url2;
   }
