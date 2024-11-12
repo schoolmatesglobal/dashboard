@@ -2040,7 +2040,6 @@ class APIServies extends Helpers {
         },
       }
     );
-
     return data;
   }
 
@@ -2055,7 +2054,6 @@ class APIServies extends Helpers {
         },
       }
     );
-
     return data;
   }
 
