@@ -14,5 +14,22 @@
   "theme_color": "#01153b",
   "background_color": "#ffffff",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "en",
+  "categories": ["education"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x598",
+      "type": "image/png",
+      "platform": "wide"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "1280x598",
+      "type": "image/png",
+      "platform": "wide"
+    }
+  ]
 }

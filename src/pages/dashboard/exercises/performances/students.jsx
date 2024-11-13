@@ -81,7 +81,9 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
         user?.id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
@@ -93,7 +95,7 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
           return Number(p.total_score);
         });
 
-        console.log({ pp, pp2, data, newP });
+        // console.log({ pp, pp2, data, newP });
 
         return newP;
       },
@@ -148,12 +150,12 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
     }
   }, [subjects]);
 
-  console.log({
-    subject_id,
-    student_id: user?.id,
-    performance,
-    user,
-  });
+  // console.log({
+  //   subject_id,
+  //   student_id: user?.id,
+  //   performance,
+  //   user,
+  // });
 
   return (
     <div>
@@ -194,9 +196,7 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
           <div className='mt-5'>
             <LineChart
               chartTitle={`${
-                performance?.length > 0
-                  ? "Chart for"
-                  : "No Chart Result"
+                performance?.length > 0 ? "Chart for" : "No Chart Result"
               } ${user?.firstname} ${user?.surname}`}
               data={performance}
             />

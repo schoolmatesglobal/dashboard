@@ -206,7 +206,9 @@ const Create = ({
         session
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: activateRetrieveCreated() && permission?.view,
 
       select: (data) => {
@@ -216,7 +218,7 @@ const Create = ({
           (ls) => Number(ls?.staff_id) === Number(user?.id)
         );
 
-        console.log({ data, lsg, filt });
+        // console.log({ data, lsg, filt });
 
         return permission?.create ? filt : lsg;
       },
@@ -608,20 +610,20 @@ const Create = ({
 
   // }, [editLessonNote]);
 
-  console.log({
-    lessonNotes,
-    user,
-    createN,
-    subjectsByTeacher,
-    // subjects,
-    newSubjects,
-    permission,
-    subjects,
-    activateWarning: activateWarning(),
-    file,
-    fileName,
-    classes,
-  });
+  // console.log({
+  //   lessonNotes,
+  //   user,
+  //   createN,
+  //   subjectsByTeacher,
+  //   // subjects,
+  //   newSubjects,
+  //   permission,
+  //   subjects,
+  //   activateWarning: activateWarning(),
+  //   file,
+  //   fileName,
+  //   classes,
+  // });
 
   return (
     <>

@@ -133,34 +133,6 @@ const CbtSubmission = (
     }
   };
 
-  // ///// GET STUDENT BY CLASS
-  // const { data: studentByClass, isLoading: studentByClassLoading } = useQuery(
-  //   [queryKeys.GET_ALL_STUDENTS_BY_CLASS_CBT],
-  //   () => apiServices.getStudentByClass2(user?.class_assigned),
-
-  //   {
-  //     enabled: true,
-  //     // enabled: permission?.myStudents || user?.designation_name === "Principal",
-  //     // select: apiServices.formatData,
-  //     select: (data) => {
-  //       console.log({ pdata: data, state });
-  //       return apiServices.formatData(data)?.map((obj, index) => {
-  //         const newObj = { ...obj };
-  //         newObj.new_id = index + 1;
-  //         return newObj;
-  //       });
-
-  //       // return { ...data, options: f };
-  //     },
-  //     onError(err) {
-  //       errorHandler(err);
-  //     },
-  //   }
-  // );
-
-  // const ids = data?.map((x) => x.student_id);
-  // setIdWithComputedResult(ids);
-
   /////// FETCH ANSWERED CBT /////
   const {
     isLoading: cbtAnswerLoading,
@@ -180,7 +152,9 @@ const CbtSubmission = (
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
 
       enabled: activateRetrieve(),
       // enabled: false,
@@ -199,7 +173,7 @@ const CbtSubmission = (
 
         // setAnsweredObjQ(sorted);
 
-        console.log({ ggk, data, sorted });
+        // console.log({ ggk, data, sorted });
 
         return sorted;
       },
@@ -382,7 +356,7 @@ const CbtSubmission = (
   //   myStudents,
   //   studentByClass,
   // });
-  console.log({ studentByClass, user, answerQ });
+  // console.log({ studentByClass, user, answerQ });
 
   return (
     <div className='results-sheet'>

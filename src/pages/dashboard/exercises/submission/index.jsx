@@ -140,7 +140,9 @@ const Submission = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -166,9 +168,9 @@ const Submission = ({
             }
             return 0;
           });
-          
-          console.log({ ffk, data, sorted });
-          
+
+        // console.log({ ffk, data, sorted });
+
         return sorted;
       },
 
@@ -206,7 +208,9 @@ const Submission = ({
         week
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
 
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
@@ -269,7 +273,9 @@ const Submission = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: activateRetrieve() && permission?.submissions,
       // enabled: false,
 
@@ -293,7 +299,7 @@ const Submission = ({
             return 0;
           });
 
-        console.log({ hhk, data, sorted });
+        // console.log({ hhk, data, sorted });
 
         return sorted ?? [];
       },
@@ -441,7 +447,7 @@ const Submission = ({
     }
   }, [subject, week, student]);
 
-  console.log({ answeredObjQ, answeredTheoQ, submissionTab });
+  // console.log({ answeredObjQ, answeredTheoQ, submissionTab });
 
   return (
     <div>

@@ -192,7 +192,7 @@ const CustomTable = ({
   //   }
   // }, [modalOpen]);
 
-  console.log({ row, rows, enable, enableId });
+  // console.log({ row, rows, enable, enableId });
 
   return (
     <div

@@ -132,17 +132,9 @@ const ComputeElementarySecondHalfResult = () => {
 
   const newSubjects = subjects ?? [];
 
-  // console.log({
-  //   initGetExistingSecondHalfResult,
-  //   activateEndOfTerm,
-  //   abacus,
-  //   additionalCreds,
-  //   skills,
-  //   reports,
-  //   subjects,
-  // });
+
   // console.log({ extraActivities, activities, additionalCreds, maxScores });
-  console.log({ maxScores, status, newSubjects, additionalCreds });
+  // console.log({ maxScores, status, newSubjects, additionalCreds });
 
   return (
     <div className='results-sheet'>

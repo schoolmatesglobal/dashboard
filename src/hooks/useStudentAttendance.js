@@ -21,6 +21,9 @@ export const useStudentAttendance = () => {
       () =>
         apiServices.getStudentAttendance(date.split("-").reverse().join("/")),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: retrieveAttendance && permission?.retrieve,
         onSuccess(data) {
           const ids = [];
@@ -55,7 +58,9 @@ export const useStudentAttendance = () => {
       ),
     {
       enabled: !studentAttendance || studentAttendance?.length === 0,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },

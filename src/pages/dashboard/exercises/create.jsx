@@ -161,14 +161,9 @@ const Create = ({
         subject_id
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
-
-      // enabled: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: activateRetrieveCreated() && permission?.created,
 
       select: (data) => {
@@ -176,7 +171,7 @@ const Create = ({
 
         const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ asg, data, filtAsg });
+        // console.log({ asg, data, filtAsg });
         // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
           return filtAsg?.map((ag, i) => {
@@ -674,22 +669,22 @@ const Create = ({
 
   // }, [editObjectiveAssignment]);
 
-  console.log({
-    state,
-    // unPublishedAssignment,
-    // activateRetrieveCreated: activateRetrieveCreated(),
-    // assignmentCreatedFetching,
-    // assignmentCreatedRefetching,
-    // published,
+  // console.log({
+  //   state,
+  //   // unPublishedAssignment,
+  //   // activateRetrieveCreated: activateRetrieveCreated(),
+  //   // assignmentCreatedFetching,
+  //   // assignmentCreatedRefetching,
+  //   // published,
 
-    // objectiveQ,
-    // theoryQ,
+  //   // objectiveQ,
+  //   // theoryQ,
 
-    // createQ,
-    // subjectsByTeacher,
-    // subjects,
-    // newSubjects,
-  });
+  //   // createQ,
+  //   // subjectsByTeacher,
+  //   // subjects,
+  //   // newSubjects,
+  // });
 
   return (
     <>

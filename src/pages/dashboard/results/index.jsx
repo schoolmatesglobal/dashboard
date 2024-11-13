@@ -174,7 +174,7 @@ const Results = () => {
 
   const classArray = user?.is_preschool === "true" ? cls2 : cls;
 
-  console.log({ sessions, user });
+  // console.log({ sessions, user });
 
   return (
     <div>

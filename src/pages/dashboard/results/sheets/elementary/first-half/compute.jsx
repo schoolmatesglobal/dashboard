@@ -98,27 +98,15 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const allLoading = isLoading || loading1;
 
-  // console.log({
-  //   // staffData,
-  //   inputs,
-  //   max: midTermMax(),
-  //   maxScores,
-  //   user,
-  //   teacherSubjects,
-  //   subjects,
-  //   filteredSubjects,
-  //   // additionalCreds,
-  //   // tc: additionalCreds?.teacher_comment,
-  //   // studentByClass2,
-  // });
 
-  console.log({
-    subjects,
-    status,
-    additionalCreds,
-    checkResultComputed,
-    studentData,
-  });
+
+  // console.log({
+  //   subjects,
+  //   status,
+  //   additionalCreds,
+  //   checkResultComputed,
+  //   studentData,
+  // });
 
   return (
     <div className='results-sheet'>

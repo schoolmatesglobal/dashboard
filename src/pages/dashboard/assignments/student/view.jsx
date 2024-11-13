@@ -107,7 +107,9 @@ const View = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -159,7 +161,9 @@ const View = ({
         week
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,

@@ -19,6 +19,9 @@ export const usePreSchool = () => {
     [queryKeys.GET_ALL_PRE_SCHOOLS],
     apiServices.getPreSchools,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.read && is_preschool,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
@@ -29,6 +32,9 @@ export const usePreSchool = () => {
     [queryKeys.GET_ALL_PRE_SCHOOLS, id],
     () => apiServices.getPreSchool(id),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.read && !!id && activatePreSchool,
       // select: apiServices.formatSingleData,
       select: (data) => {
@@ -60,6 +66,9 @@ export const usePreSchool = () => {
         period.session
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         permission?.subject &&
         !!period.period &&
@@ -93,6 +102,9 @@ export const usePreSchool = () => {
         preSchool?.name
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         is_preschool &&
         permission?.subject &&
@@ -124,6 +136,9 @@ export const usePreSchool = () => {
       [queryKeys.GET_ALL_PRE_SCHOOL_SUBJECTS, id],
       () => apiServices.getPreSchoolSubject(id),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: permission?.subject && !!id,
         select: apiServices.formatData,
         onError: apiServices.errorHandler,

@@ -232,16 +232,16 @@ const PaymentDetail = () => {
     }
   }, [bank]);
 
-  console.log({
-    newBank,
-    filteredInvoice,
-    amount,
-    fp,
-    payment,
-    bank,
-    bankId,
-    inputs,
-  });
+  // console.log({
+  //   newBank,
+  //   filteredInvoice,
+  //   amount,
+  //   fp,
+  //   payment,
+  //   bank,
+  //   bankId,
+  //   inputs,
+  // });
 
   return (
     <DetailView

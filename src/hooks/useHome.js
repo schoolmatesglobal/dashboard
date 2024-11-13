@@ -1,16 +1,30 @@
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useAuthDetails } from "../stores/authDetails";
+import { useState } from "react";
 
 export const useHome = () => {
   const { apiServices, errorHandler, user, updateUser } = useAppContext();
+
+  const [initiateSchool, setInitiateSchool] = useState(true);
+  const [initiatePeriod, setInitiatePeriod] = useState(true);
+  const [initiateClassP, setInitiateClassP] = useState(true);
+  const [initiateSchoolP, setInitiateSchoolP] = useState(true);
+  const [initiateStaffP, setInitiateStaffP] = useState(true);
+  const [initiateStudentP, setInitiateStudentP] = useState(true);
+  const [initiateTeacherP, setInitiateTeacherP] = useState(true);
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const { isLoading: outstandingLoading, data: outstanding } = useQuery(
     [queryKeys.GET_ALL_OUTSTANDING],
     apiServices.getAllOutstanding,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -22,7 +36,9 @@ export const useHome = () => {
     apiServices.getAllExpectedIncome,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -34,7 +50,9 @@ export const useHome = () => {
     apiServices.getAllDiscounts,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -45,7 +63,9 @@ export const useHome = () => {
     apiServices.getAllExpenses,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -56,7 +76,9 @@ export const useHome = () => {
     apiServices.getAllAccountBalances,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -68,7 +90,9 @@ export const useHome = () => {
     apiServices.getAllReceivedIncome,
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -81,7 +105,9 @@ export const useHome = () => {
       apiServices.getAllGraduatedStudent,
       {
         enabled: ["Superadmin", "Account"].includes(user?.designation_name),
-        retry: 3,
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
         },
@@ -92,12 +118,17 @@ export const useHome = () => {
     [queryKeys.GET_SCHOOL],
     apiServices.getSchool,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: initiateSchool,
       onSuccess(data) {
         updateUser({
           ...user,
           school: { ...data },
         });
+        setUserDetails({ ...userDetails, school: { ...data } });
+        setInitiateSchool(false);
       },
       onError(err) {
         errorHandler(err);
@@ -110,10 +141,14 @@ export const useHome = () => {
     [queryKeys.GET_ACADEMIC_PERIOD],
     apiServices.getAcademicPeriod,
     {
-      enabled: ["Teacher", "Student"].includes(user?.designation_name),
-      retry: 3,
+      enabled:
+        initiatePeriod &&
+        ["Teacher", "Student"].includes(user?.designation_name),
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       select: (data) => {
-        console.log({ ddata: data, sd: data?.data });
+        // console.log({ ddata: data, sd: data?.data });
 
         // return data?.data;
         return data?.data[0];
@@ -125,6 +160,13 @@ export const useHome = () => {
           session: data?.session,
           period: data?.period,
         });
+        setUserDetails({
+          ...userDetails,
+          term: data?.term,
+          session: data?.session,
+          period: data?.period,
+        });
+        setInitiatePeriod(false);
       },
       onError(err) {
         errorHandler(err);
@@ -136,13 +178,20 @@ export const useHome = () => {
     [queryKeys.GET_CLASS_POPULATION],
     apiServices.getClassPopulation,
     {
-      enabled: ["Teacher"].includes(user?.designation_name),
-      retry: 3,
+      enabled: initiateClassP && ["Teacher"].includes(user?.designation_name),
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onSuccess(data) {
         updateUser({
           ...user,
           class_population: data,
         });
+        setUserDetails({
+          ...userDetails,
+          class_population: data,
+        });
+        setInitiateClassP(false);
       },
       onError(err) {
         errorHandler(err);
@@ -156,13 +205,23 @@ export const useHome = () => {
       [queryKeys.GET_SCHOOL_POPULATION],
       apiServices.getSchoolPopulation,
       {
-        enabled: ["Principal", "Account"].includes(user?.designation_name),
-        retry: 3,
+        enabled:
+          initiateSchoolP &&
+          ["Principal", "Account"].includes(user?.designation_name),
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
             ...user,
             school_population: data,
           });
+
+          setUserDetails({
+            ...userDetails,
+            school_population: data,
+          });
+          setInitiateSchoolP(false);
         },
         onError(err) {
           errorHandler(err);
@@ -176,12 +235,20 @@ export const useHome = () => {
     apiServices.getStaffPopulation,
     {
       enabled: ["Principal", "Account"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enalbled: initiateStaffP,
       onSuccess(data) {
         updateUser({
           ...user,
-          school_population: data,
+          staff_population: data,
         });
+        setUserDetails({
+          ...userDetails,
+          staff_population: data,
+        });
+        setInitiateStaffP(false);
       },
       onError(err) {
         errorHandler(err);
@@ -195,13 +262,22 @@ export const useHome = () => {
       [queryKeys.GET_STUDENT_POPULATION],
       apiServices.getStudentPopulation,
       {
-        enabled: ["Principal", "Account"].includes(user?.designation_name),
-        retry: 3,
+        enabled:
+          initiateStudentP &&
+          ["Principal", "Account"].includes(user?.designation_name),
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
             ...user,
-            school_population: data,
+            student_population: data,
           });
+          setUserDetails({
+            ...userDetails,
+            student_population: data,
+          });
+          setInitiateStudentP(false);
         },
         onError(err) {
           errorHandler(err);
@@ -215,13 +291,22 @@ export const useHome = () => {
       [queryKeys.GET_TEACHER_POPULATION],
       apiServices.getTeacherPopulation,
       {
-        enabled: ["Principal", "Account"].includes(user?.designation_name),
-        retry: 3,
+        enabled:
+          initiateTeacherP &&
+          ["Principal", "Account"].includes(user?.designation_name),
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
             ...user,
-            school_population: data,
+            teacher_population: data,
           });
+          setUserDetails({
+            ...userDetails,
+            teacher_population: data,
+          });
+          setInitiateTeacherP(false);
         },
         onError(err) {
           errorHandler(err);
@@ -235,7 +320,9 @@ export const useHome = () => {
     apiServices.getTimeTable,
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -256,7 +343,9 @@ export const useHome = () => {
     apiServices.getAcademicCalender,
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -289,6 +378,8 @@ export const useHome = () => {
     staffPopulationLoading ||
     studentPopulationLoading ||
     teacherPopulationLoading;
+
+  console.log({ userDetails });
 
   return {
     user,

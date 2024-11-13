@@ -23,6 +23,9 @@ export const useReporting = () => {
     isLoading: reportsLoading,
     refetch: refetchReports,
   } = useQuery([queryKeys.GET_ALL_REPORTS], apiServices.getReports, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
     select: (data) => {
@@ -39,6 +42,9 @@ export const useReporting = () => {
     [queryKeys.GET_ALL_REPORTS, id],
     () => apiServices.getReport(id),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.read && !!id,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,

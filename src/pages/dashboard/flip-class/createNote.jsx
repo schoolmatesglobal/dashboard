@@ -92,7 +92,7 @@ const CreateNote = ({
     // e.preventDefault();
     if (file) {
       // Send file to database logic here
-      console.log("File to be sent:", file);
+      // console.log("File to be sent:", file);
       // Reset the form
       alert("File uploaded successfully!");
       handleReset();

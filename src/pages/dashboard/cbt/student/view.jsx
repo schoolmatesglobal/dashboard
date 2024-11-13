@@ -149,7 +149,9 @@ const ViewCBT = (
         createQ2?.question_type
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -219,7 +221,7 @@ const ViewCBT = (
         createQ2?.question_type
       ),
     {
-      retry: 3,
+      retry: 1,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -279,7 +281,9 @@ const ViewCBT = (
         week
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,

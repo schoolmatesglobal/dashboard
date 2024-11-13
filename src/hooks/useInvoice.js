@@ -5,25 +5,27 @@ import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 export const useInvoices = () => {
-const { permission, apiServices, user } = useAppContext("accounts");
+  const { permission, apiServices, user } = useAppContext("accounts");
 
-const pdfExportComponent = useRef(null);
+  const pdfExportComponent = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => pdfExportComponent.current,
   });
 
+  const {
+    isLoading: invoicesLoading,
+    data: invoicesList,
+    refetch: getInvoiceRefetch,
+  } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: permission?.myPayment,
+    select: apiServices.formatData,
+  });
 
-  const { isLoading: invoicesLoading, data: invoicesList, refetch: getInvoiceRefetch, } = useQuery(
-    [queryKeys.GET_ALL_INVOICES],
-    apiServices.getInvoices,
-    {
-      enabled: permission?.myPayment,
-      select: apiServices.formatData,
-    }
-  );
-    
-    const isLoading = invoicesLoading
-    
+  const isLoading = invoicesLoading;
+
   return {
     isLoading,
     invoicesList,

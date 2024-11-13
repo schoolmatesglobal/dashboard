@@ -25,7 +25,7 @@ const BankList = () => {
 
   const { bank, deleteBank, handleUpdateBank, isLoading } = useBank();
 
-  console.log({ bank });
+  // console.log({ bank });
 
   return (
     <PageView

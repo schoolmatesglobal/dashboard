@@ -242,7 +242,7 @@ const SubmissionTable = ({
     );
     setPreviewAns(filtered);
     setLoginPrompt(true);
-    console.log({ filtered, previewAns, values, data });
+    // console.log({ filtered, previewAns, values, data });
     // console.log({ filtered });
   };
 
@@ -255,7 +255,7 @@ const SubmissionTable = ({
     }
   };
 
-  console.log({ data, markedQ });
+  // console.log({ data, markedQ });
 
   return (
     <div className='custom-table-wrapper'>

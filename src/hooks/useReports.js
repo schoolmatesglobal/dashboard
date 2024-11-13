@@ -28,7 +28,9 @@ export const useReports = () => {
     () => apiServices.getAllIncomeReports(term, session),
     {
       enabled: enableIncomeQuery,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -46,7 +48,7 @@ export const useReports = () => {
           amount_paid: (
             <>
               &#8358;
-              <Numeral value={item?.amount_paid || "0"} format="0,0.00" />
+              <Numeral value={item?.amount_paid || "0"} format='0,0.00' />
             </>
           ),
         }));
@@ -61,7 +63,9 @@ export const useReports = () => {
     () => apiServices.getAllInvoiceReports(term, session),
     {
       enabled: enableInvoicesQuery,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -79,7 +83,7 @@ export const useReports = () => {
           amount_paid: (
             <>
               &#8358;
-              <Numeral value={item.amount_paid || "0"} format="0,0.00" />
+              <Numeral value={item.amount_paid || "0"} format='0,0.00' />
             </>
           ),
         }));
@@ -92,7 +96,9 @@ export const useReports = () => {
     () => apiServices.getDebtors(term, session),
     {
       enabled: enableDebtorsQuery,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -110,7 +116,7 @@ export const useReports = () => {
           amount_paid: (
             <>
               &#8358;
-              <Numeral value={item.amount_paid || "0"} format="0,0.00" />
+              <Numeral value={item.amount_paid || "0"} format='0,0.00' />
             </>
           ),
         }));
@@ -123,7 +129,9 @@ export const useReports = () => {
     () => apiServices.getCreditors(term, session),
     {
       enabled: enableCreditorsQuery,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -141,7 +149,7 @@ export const useReports = () => {
           amount_paid: (
             <>
               &#8358;
-              <Numeral value={item?.amount_paid || "0"} format="0,0.00" />
+              <Numeral value={item?.amount_paid || "0"} format='0,0.00' />
             </>
           ),
         }));
@@ -154,7 +162,9 @@ export const useReports = () => {
     () => apiServices.getAllExpenseReports(term, session),
     {
       enabled: enableExpensesQuery,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -171,7 +181,7 @@ export const useReports = () => {
           amount: (
             <>
               &#8358;
-              <Numeral value={item.amount || "0"} format="0,0.00" />
+              <Numeral value={item.amount || "0"} format='0,0.00' />
             </>
           ),
         })),

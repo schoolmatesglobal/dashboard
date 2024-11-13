@@ -10,7 +10,9 @@ export const useVendors = () => {
     apiServices.getVendorList,
     {
       enabled: permission?.read || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },

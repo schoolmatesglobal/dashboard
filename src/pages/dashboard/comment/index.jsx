@@ -15,6 +15,9 @@ const Comment = () => {
         apiServices.errorHandler(err);
       },
       select: apiServices.formatData,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
 

@@ -234,7 +234,7 @@ const ElementarySecondHalfSheet = () => {
     textTransform: "uppercase",
   };
 
-  console.log({ studentData, yearlyClassAverage });
+  // console.log({ studentData, yearlyClassAverage });
   // console.log({
   //   removeZeroMidterm: removeZeroMidterm(),
   //   removeZeroFirstAssess: removeZeroFirstAssess(),
@@ -243,7 +243,7 @@ const ElementarySecondHalfSheet = () => {
   //   additionalCreds,
   // });
 
-  console.log({ user, studentByClass2, locationState, principalClassName });
+  // console.log({ user, studentByClass2, locationState, principalClassName });
 
   return (
     <div className='results-sheet'>

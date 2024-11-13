@@ -150,7 +150,9 @@ const CbtPerformances = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve2() && permission?.submissions,
       select: (data) => {
@@ -167,7 +169,7 @@ const CbtPerformances = ({}) => {
 
         // const app4 = app3
 
-        console.log({ app, data });
+        // console.log({ app, data });
 
         return app;
       },
@@ -216,7 +218,9 @@ const CbtPerformances = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -227,7 +231,7 @@ const CbtPerformances = ({}) => {
         // const newP = pp2?.map((p) => {
         //   return Number(p.total_score);
         // });
-        console.log({ pp, data });
+        // console.log({ pp, data });
 
         return pp;
       },
@@ -468,28 +472,28 @@ const CbtPerformances = ({}) => {
     ...studentByClass,
   ];
 
-  console.log({
-    studentByClass,
-    newStudentByClass,
-    student,
-    idWithComputedResult,
-    markedQ,
-    cbtPerformance,
-    // subject_id,
-    // student_id,
-    // cbtPerformance,
-    // allCbtPerformance,
-    // subjectsByTeacher,
-    // myStudents,
-    // state,
-    // studentNames,
-    // dataAll,
-    // dataSingle,
-    // dataSingle2,
-    // showChart,
-    // showChart2,
-    // showCharts: showCharts(),
-  });
+  // console.log({
+  //   studentByClass,
+  //   newStudentByClass,
+  //   student,
+  //   idWithComputedResult,
+  //   markedQ,
+  //   cbtPerformance,
+  //   // subject_id,
+  //   // student_id,
+  //   // cbtPerformance,
+  //   // allCbtPerformance,
+  //   // subjectsByTeacher,
+  //   // myStudents,
+  //   // state,
+  //   // studentNames,
+  //   // dataAll,
+  //   // dataSingle,
+  //   // dataSingle2,
+  //   // showChart,
+  //   // showChart2,
+  //   // showCharts: showCharts(),
+  // });
 
   return (
     <div className='results-sheet'>

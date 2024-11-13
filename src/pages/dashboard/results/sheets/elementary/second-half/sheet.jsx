@@ -283,45 +283,19 @@ const ElementarySecondHalfSheet = () => {
     setStatus(additionalCreds?.status);
   }, [additionalCreds?.status]);
 
-  // const checkResultComputed = (function () {
-  //   if ("results" in additionalCreds) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // })();
-
-  // useEffect(() => {
-  //   setPrincipalClassName(locationState?.creds?.class_name);
-  // }, []);
-
-  // const subjectCount = () => {
-  //   return maxScores.reduce((a, item) => {
-  //     return a + 1;
-  //   });
-  // }
-
-  // console.log({ studentData, checkResultComputed, additionalCreds });
+  
 
   // console.log({
-  //   removeZeroMidterm: removeZeroMidterm(),
-  //   removeZeroFirstAssess: removeZeroFirstAssess(),
+  //   user,
+  //   studentResults,
   //   removeZeroExam: removeZeroExam(),
-  //   studentFirstAssess,
+  //   removeZeroMidterm: removeZeroMidterm(),
   //   additionalCreds,
+  //   studentByClass2,
+  //   studentData,
+  //   locationState,
+  //   principalClassName,
   // });
-
-  console.log({
-    user,
-    studentResults,
-    removeZeroExam: removeZeroExam(),
-    removeZeroMidterm: removeZeroMidterm(),
-    additionalCreds,
-    studentByClass2,
-    studentData,
-    locationState,
-    principalClassName,
-  });
 
   return (
     <div className='results-sheet'>

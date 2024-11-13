@@ -33,6 +33,9 @@ export const useBank = () => {
     isLoading: bankLoading,
     refetch: refetchBank,
   } = useQuery([queryKeys.GET_BANK_LIST], apiServices.getBankList, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: permission?.read,
     onError(err) {
       apiServices.errorHandler(err);
@@ -83,7 +86,7 @@ export const useBank = () => {
           // payments: data?.data?.payments,
         };
       });
-      console.log({ Bdata: data, dt: data?.data, format, format2, newData });
+      // console.log({ Bdata: data, dt: data?.data, format, format2, newData });
 
       return format2;
     },
@@ -119,7 +122,7 @@ export const useBank = () => {
   const isLoading =
     bankLoading || deleteBankLoading || updateBankLoading || createBankLoading;
 
-  console.log({ pa: permission?.read });
+  // console.log({ pa: permission?.read });
 
   return {
     isLoading,

@@ -153,16 +153,16 @@ const ElementaryFirstHalfSheet = () => {
 
   // console.log({ additionalCreds });
 
-  console.log({
-    inputs,
-    studentData,
-    status,
-    studentByClass2,
-    // result,
-    cs: countSubjects(),
-    additionalCreds,
-    checkResultComputed,
-  });
+  // console.log({
+  //   inputs,
+  //   studentData,
+  //   status,
+  //   studentByClass2,
+  //   // result,
+  //   cs: countSubjects(),
+  //   additionalCreds,
+  //   checkResultComputed,
+  // });
 
   return (
     <div className='results-sheet'>

@@ -83,11 +83,15 @@ class Helpers {
   // }
 
   errorHandler(error, message) {
-    const isProduction = isProductionCheck
+    const isProduction = isProductionCheck;
     let res = message || "An error occurred";
 
     if (error.response) {
       const statusCode = error.response.status;
+
+      if (statusCode == 404) {
+        return;
+      }
 
       // Handle client-side and server-side errors
       if (statusCode >= 400 && statusCode <= 499) {
