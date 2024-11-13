@@ -55,7 +55,7 @@ const Payment = () => {
     ];
   };
 
-  console.log({ payment, newPayment: newPayment() });
+  // console.log({ payment, newPayment: newPayment() });
 
   return (
     <PageView

@@ -88,15 +88,15 @@ const BankDetails = () => {
   //   };
   // }
 
-  console.log({
-    bank,
-    id,
-    filteredBank,
-    payments,
-    totalAmtPaid,
-    sortDate,
-    val,
-  });
+  // console.log({
+  //   bank,
+  //   id,
+  //   filteredBank,
+  //   payments,
+  //   totalAmtPaid,
+  //   sortDate,
+  //   val,
+  // });
 
   return (
     <div>

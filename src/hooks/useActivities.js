@@ -19,6 +19,9 @@ export const useActivities = () => {
     refetch: refetchActivities,
   } = useQuery([queryKeys.GET_ACTIVITIES], apiServices.getActivities, {
     // select: apiServices.formatData,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: activate && activateElem,
     select: (data) => {
       // console.log({ dat: data?.data });
@@ -58,6 +61,9 @@ export const useActivities = () => {
     refetch: refetchPreActivities,
   } = useQuery([queryKeys.GET_ACTIVITIES, "2"], apiServices.getPreActivities, {
     // select: apiServices.formatData,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: activate && activatePre,
     select: (data) => {
       // console.log({ dat: data?.data });

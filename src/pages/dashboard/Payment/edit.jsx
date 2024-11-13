@@ -68,6 +68,9 @@ const PaymentEdit = () => {
     () => apiServices.getPaymentById(id),
     {
       enabled: !!id,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // select: apiServices.formatData,
       select: (data) => {
         // console.log({ datap: data });
@@ -222,12 +225,12 @@ const PaymentEdit = () => {
     }
   }, [bank]);
 
-  console.log({
-    newBank,
-    bank,
-    bankId,
-    paymentById,
-  });
+  // console.log({
+  //   newBank,
+  //   bank,
+  //   bankId,
+  //   paymentById,
+  // });
 
   return (
     <DetailView

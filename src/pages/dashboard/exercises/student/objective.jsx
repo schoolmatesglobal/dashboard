@@ -73,7 +73,9 @@ const Objective = ({
         createQ2?.week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,
       select: (data) => {
@@ -86,7 +88,7 @@ const Objective = ({
             dt?.week === createQ2?.week
         );
 
-        console.log({ ssk, sorted, data, student, createQ2 });
+        // console.log({ ssk, sorted, data, student, createQ2 });
 
         if (sorted?.length > 0) {
           // resetLoadObjectiveAnsFxn();
@@ -252,15 +254,15 @@ const Objective = ({
     }
   };
 
-  console.log({
-    objectiveQ,
-    answeredObjectiveQ,
-    answerQuestion,
-    createQ2,
-    subjects,
-    findSubjectId: findSubjectId(),
-    objAnsweredAssignment,
-  });
+  // console.log({
+  //   objectiveQ,
+  //   answeredObjectiveQ,
+  //   answerQuestion,
+  //   createQ2,
+  //   subjects,
+  //   findSubjectId: findSubjectId(),
+  //   objAnsweredAssignment,
+  // });
 
   const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 

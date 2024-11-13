@@ -21,6 +21,9 @@ const ResumptionDate = () => {
         return data?.data?.attributes;
       },
       onError: apiServices.errorHandler,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }
   );
 

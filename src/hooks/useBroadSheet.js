@@ -21,63 +21,6 @@ export const useBroadSheet = () => {
     content: () => pdfExportComponent.current,
   });
 
-  // subject by class
-  // const {
-  //   data: subjectsByClass3,
-  //   isLoading: subjectsByClass3Loading,
-  //   refetch: refetchSubjectsByClass3,
-  // } = useQuery(
-  //   [
-  //     queryKeys.GET_SUBJECTS_BY_CLASS,
-  //     state?.creds?.class_name
-  //       ? state?.creds?.class_name
-  //       : user?.class_assigned,
-  //     "3",
-  //   ],
-  //   () => apiServices.getSubjectByCampus(),
-  //   {
-  //     // enabled: initGetExistingResult && !is_preschool,
-  //     enabled: !is_preschool,
-  //     select: (data) => {
-  //       // console.log({ ffData: data });
-  //       if (data) {
-  //         const res = data?.data[0]?.attributes?.subject;
-
-  //         const uniqueNames = new Set();
-
-  //         const uniqueRes = res.filter((obj) => {
-  //           if (!uniqueNames.has(obj.name)) {
-  //             uniqueNames.add(obj.name);
-  //             return true;
-  //           }
-  //           return false;
-  //         });
-
-  //         const sortedRes = uniqueRes.sort((a, b) => {
-  //           const nameA = a.name.toUpperCase();
-  //           const nameB = b.name.toUpperCase();
-
-  //           if (nameA < nameB) {
-  //             return -1;
-  //           }
-  //           if (nameA > nameB) {
-  //             return 1;
-  //           }
-
-  //           return 0;
-  //         });
-
-  //         // console.log({ res, uniqueRes, sortedRes });
-
-  //         return sortedRes;
-  //         // console.log({ dataSS: data, subj });
-  //       } else {
-  //         return [];
-  //       }
-  //     },
-  //   }
-  // );
-
   const {
     data: broadSheetResults,
     isLoading: broadSheetResultsLoading,
@@ -100,6 +43,9 @@ export const useBroadSheet = () => {
         state?.creds?.session
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: !is_preschool,
       select: (data) => {
         if (data) {

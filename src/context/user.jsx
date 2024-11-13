@@ -45,7 +45,7 @@ const UserProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log({ userk: user,});
+  // console.log({ userk: user,});
 
   return (
     <UserContext.Provider

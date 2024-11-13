@@ -85,6 +85,9 @@ export const useStaff = () => {
     ["GET_DESIGNATIONS_STAFF"],
     apiServices.getDesignation,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
         errorHandler(err);
@@ -97,6 +100,9 @@ export const useStaff = () => {
     ["GET_DESIGNATION_ROLE"],
     apiServices.getRole,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
         errorHandler(err);
@@ -113,14 +119,15 @@ export const useStaff = () => {
     () => apiServices.getAllStaffs(page),
     {
       enabled: permission?.read || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
       select: (data) => {
+        // console.log({ sfdata: data });
 
-        console.log({sfdata: data})
-        
         const f = apiServices.formatData(data).map((staff, i) => {
           const { designation_name } =
             designations?.data?.find((item) => item.id === staff.designation_id)
@@ -150,7 +157,9 @@ export const useStaff = () => {
     () => apiServices.getStaffAttendance(page),
     {
       enabled: permission?.readAttendance || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -172,7 +181,9 @@ export const useStaff = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read || false,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -201,7 +212,9 @@ export const useStaff = () => {
     {
       enabled: permission?.read,
       // enabled: permission?.read || activate,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -311,7 +324,9 @@ export const useStaff = () => {
     [queryKeys.GET_STAFF, id],
     () => apiServices.getStaff(id),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -325,7 +340,9 @@ export const useStaff = () => {
       [queryKeys.GET_STAFF_LOGIN_DETAILS, page],
       () => apiServices.getStaffLoginDetails(page),
       {
-        retry: 3,
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: permission?.staffLoginDetails,
         select: (data) => {
           const f = apiServices.formatData(data)?.map((staff, i) => {

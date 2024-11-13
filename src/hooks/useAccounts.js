@@ -24,6 +24,9 @@ export const useAccounts = () => {
     [queryKeys.GET_FEE_HISTORY],
     apiServices.getStudentFeeHistory,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.feeHistory,
       select: apiServices.formatData,
     }
@@ -33,25 +36,22 @@ export const useAccounts = () => {
     [queryKeys.GET_PREVIOUS_INVOICE],
     apiServices.getStudentPreviousInvoice,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.previousInvoice,
       select: apiServices.formatData,
     }
   );
-
-  // const { isLoading: invoiceLoading, data: invoice } = useQuery(
-  //   [queryKeys.GET_INVOICE],
-  //   apiServices.getStudentInvoice,
-  //   {
-  //     enabled: permission?.myInvoice,
-  //     select: apiServices.formatData,
-  //   }
-  // );
 
   const {
     isLoading: invoicesLoading,
     data: invoicesList,
     refetch: getInvoiceRefetch,
   } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: permission?.myPayment,
     select: apiServices.formatData,
   });
@@ -60,6 +60,9 @@ export const useAccounts = () => {
     [queryKeys.GET_CHART_ACCOUNTS],
     apiServices.getChartAccount,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.myChartAccount,
       select: apiServices.formatData,
     }
@@ -70,6 +73,9 @@ export const useAccounts = () => {
     data: payment,
     refetch: refetchPayment,
   } = useQuery([queryKeys.GET_PAYMENT], apiServices.getPayment, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: permission?.myPayment,
     // select: apiServices.formatData,
     select: (data) => {

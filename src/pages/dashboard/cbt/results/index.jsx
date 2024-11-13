@@ -107,7 +107,9 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
@@ -125,12 +127,8 @@ const CbtResults = ({}) => {
 
         const calculatedData = analyzeQuestions(sorted);
 
-        console.log({ ffk, data, sorted });
-        // if (question_type === "objective") {
-        //   return calculatedData ?? {};
-        // } else {
-        //   return {};
-        // }
+        // console.log({ ffk, data, sorted });
+        
         return calculatedData ?? {};
       },
 
@@ -165,13 +163,15 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
         const bbk = apiServices.formatData(data);
 
-        console.log({ bbk, data });
+        // console.log({ bbk, data });
 
         return bbk ?? [];
       },
@@ -212,7 +212,9 @@ const CbtResults = ({}) => {
       ),
 
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: false,
       // enabled: activateRetrieve() && permission?.submissions,
 
@@ -237,7 +239,7 @@ const CbtResults = ({}) => {
             return 0;
           });
 
-        console.log({ mmk, data, sorted });
+        // console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
 

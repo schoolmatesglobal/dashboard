@@ -49,11 +49,13 @@ const DashboardLayout = () => {
     [queryKeys.GET_COMMUNICATION_BOOK_COUNT],
     () => apiServices.getUnreadCommunicationBookCount(),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: !!id && permission?.view,
 
       select: (data) => {
-        console.log({ datarr: data, dtr: data?.data });
+        // console.log({ datarr: data, dtr: data?.data });
 
         return data?.data || 0;
 

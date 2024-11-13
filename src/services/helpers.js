@@ -83,7 +83,7 @@ class Helpers {
   // }
 
   errorHandler(error, message) {
-    const isProduction = isProductionCheck
+    const isProduction = isProductionCheck;
     let res = message || "An error occurred";
 
     if (error.response) {

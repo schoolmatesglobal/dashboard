@@ -88,6 +88,9 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.attributes,
     }
   );
@@ -99,6 +102,9 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       select: apiServices.formatData,
     }
   );
@@ -110,6 +116,9 @@ export const useResults = () => {
     [queryKeys.GET_MAX_SCORES],
     apiServices.getMaxScores,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: activate,
       // enabled: !is_preschool,
       onError(err) {
@@ -168,13 +177,13 @@ export const useResults = () => {
                 ? dt2?.find((x) => x?.id === user?.id)
                 : dt2[0];
 
-            console.log({
-              dataSS: data,
-              user,
-              dt2,
-              studentInfo,
-              sst2,
-            });
+            // console.log({
+            //   dataSS: data,
+            //   user,
+            //   dt2,
+            //   studentInfo,
+            //   sst2,
+            // });
 
             return studentInfo;
           }
@@ -209,6 +218,9 @@ export const useResults = () => {
       ),
 
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -247,6 +259,7 @@ export const useResults = () => {
       ),
     {
       // enabled: false,
+      retry: 1,
       enabled:
         activateEndOfTerm &&
         initGetExistingSecondHalfResult &&
@@ -373,6 +386,9 @@ export const useResults = () => {
     ],
     () => apiServices.getSubjectByCampus(),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: false,
       // enabled: initGetStudentsByClass && !is_preschool,
       select: apiServices.formatData,
@@ -404,6 +420,9 @@ export const useResults = () => {
         cn
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         is_preschool &&
         !!state?.creds?.period &&
@@ -439,6 +458,9 @@ export const useResults = () => {
         state?.creds?.session
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: is_preschool,
       // select: apiServices.formatData,
       select: (data) => {
@@ -472,6 +494,9 @@ export const useResults = () => {
           session: state?.creds?.session,
         }),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: !is_preschool && state?.creds?.period === "Second Half",
         select: (data) => data?.data,
       }
@@ -493,6 +518,9 @@ export const useResults = () => {
         session: state?.creds?.session,
       }),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: !is_preschool && state?.creds?.period === "Second Half",
     }
   );
@@ -506,6 +534,9 @@ export const useResults = () => {
           session: state?.creds?.session,
         }),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled:
           !is_preschool &&
           Boolean(studentClassName) &&
@@ -529,6 +560,9 @@ export const useResults = () => {
     () => apiServices.getSubjectByCampus(),
     {
       // enabled: initGetExistingResult && !is_preschool,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: initGetSubjects && !is_preschool,
       select: apiServices.formatData,
       onSuccess(data) {
@@ -597,6 +631,9 @@ export const useResults = () => {
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -712,6 +749,9 @@ export const useResults = () => {
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -770,12 +810,9 @@ export const useResults = () => {
         state?.creds?.session
       ),
     {
-      // enabled: false,
-      // enabled:
-      //   initGetExistingResult &&
-      //   !is_preschool &&
-      //   maxScores?.has_two_assessment &&
-      //   inputs.assessment === "second_assesment",
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -889,6 +926,9 @@ export const useResults = () => {
         state?.creds?.session
       ),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -947,6 +987,9 @@ export const useResults = () => {
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -1056,6 +1099,9 @@ export const useResults = () => {
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -1098,6 +1144,9 @@ export const useResults = () => {
     [queryKeys.GET_GRADING],
     apiServices.getGrading,
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: !is_preschool,
       select: apiServices.formatData,
       onError(err) {

@@ -73,7 +73,9 @@ const StudentResults = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
@@ -93,7 +95,7 @@ const StudentResults = ({
 
         const calculatedData = analyzeQuestions(sorted);
 
-        console.log({ ffk, data, sorted });
+        // console.log({ ffk, data, sorted });
         return calculatedData ?? {};
       },
 
@@ -131,7 +133,9 @@ const StudentResults = ({
       ),
 
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
 
@@ -154,7 +158,7 @@ const StudentResults = ({
             return 0;
           });
 
-        console.log({ mmk, data, sorted });
+        // console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
 
@@ -283,12 +287,12 @@ const StudentResults = ({
     });
   }, []);
 
-  console.log({
-    user,
-    markedQ,
-    submittedAssignment,
-    markedAssignmentResults,
-  });
+  // console.log({
+  //   user,
+  //   markedQ,
+  //   submittedAssignment,
+  //   markedAssignmentResults,
+  // });
 
   return (
     <div>

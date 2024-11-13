@@ -64,7 +64,7 @@ const ClassDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classData]);
 
-  console.log({ inputs, classData });
+  // console.log({ inputs, classData });
 
   return (
     <DetailView

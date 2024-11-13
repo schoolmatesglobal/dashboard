@@ -36,7 +36,7 @@ const CreateNoteCard = ({
 
   const { xs, sm, md, lg, xl, xxl } = useMyMediaQuery2();
   
-  console.log({ user });
+  // console.log({ user });
 
 
   return (

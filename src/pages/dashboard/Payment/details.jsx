@@ -45,7 +45,7 @@ const PaymentDetails = () => {
     };
   }
 
-  console.log({ payment, filterPayment: filterPayment(), id });
+  // console.log({ payment, filterPayment: filterPayment(), id });
 
   return (
     <div>

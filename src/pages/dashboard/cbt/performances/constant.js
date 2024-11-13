@@ -23,7 +23,7 @@ export function formatTime2(totalTime, submittedTime) {
       subMinutes !== 1 ? "s" : ""
     }, ${subSeconds} second${subSeconds !== 1 ? "s" : ""}`;
 
-    console.log({ totalMinutesCount, subMinutesCount, differenceMinutes });
+    // console.log({ totalMinutesCount, subMinutesCount, differenceMinutes });
 
     // Return formatted times as an object
     return {

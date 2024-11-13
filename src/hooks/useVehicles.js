@@ -18,7 +18,9 @@ export const useVehicles = () => {
     refetch: refetchVehicles,
   } = useQuery([queryKeys.GET_ALL_VEHICLES], apiServices.getAllVehicles, {
     enabled: permission?.read || false,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -30,7 +32,9 @@ export const useVehicles = () => {
     apiServices.getAllVehicleLogs,
     {
       enabled: permission?.readLogs || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -46,7 +50,9 @@ export const useVehicles = () => {
         permission?.assignedBus ||
         ["Student"].includes(user?.designation_name) ||
         false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -54,10 +60,10 @@ export const useVehicles = () => {
         apiServices.formatData(data)?.map((x) => ({
           ...x,
           conductor_image: (
-            <ProfileImage src={x?.conductor_image} wrapperClassName="mx-auto" />
+            <ProfileImage src={x?.conductor_image} wrapperClassName='mx-auto' />
           ),
           driver_image: (
-            <ProfileImage src={x?.driver_image} wrapperClassName="mx-auto" />
+            <ProfileImage src={x?.driver_image} wrapperClassName='mx-auto' />
           ),
         })),
     }
@@ -69,7 +75,9 @@ export const useVehicles = () => {
         permission?.allAssignedBus ||
         ["Admin"].includes(user?.designation_name) ||
         false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -77,10 +85,10 @@ export const useVehicles = () => {
         apiServices.formatData(data)?.map((x) => ({
           ...x,
           conductor_image: (
-            <ProfileImage src={x?.conductor_image} wrapperClassName="mx-auto" />
+            <ProfileImage src={x?.conductor_image} wrapperClassName='mx-auto' />
           ),
           driver_image: (
-            <ProfileImage src={x?.driver_image} wrapperClassName="mx-auto" />
+            <ProfileImage src={x?.driver_image} wrapperClassName='mx-auto' />
           ),
         })),
     });
@@ -135,7 +143,9 @@ export const useVehicles = () => {
     () => apiServices.getVehicle(id),
     {
       enabled: !!id,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         apiServices.errorHandler(err);
       },

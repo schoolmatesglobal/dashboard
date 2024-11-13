@@ -132,7 +132,9 @@ const Objective = ({
         createQ2?.subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
@@ -496,7 +498,7 @@ const Objective = ({
   //   // state,
   // });
 
-  console.log({ dayLeft, hourLeft, timeLeft, secondleft });
+  // console.log({ dayLeft, hourLeft, timeLeft, secondleft });
 
   return (
     <div className='mt-5'>

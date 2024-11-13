@@ -342,7 +342,7 @@ const CBTPage = () => {
     });
   }, []);
 
-  console.log({ sessions, activeTab, inputs, createQ, ct: activateContinue() });
+  // console.log({ sessions, activeTab, inputs, createQ, ct: activateContinue() });
 
   // useEffect(() => {
   //   if (permission?.view) {

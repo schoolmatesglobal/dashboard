@@ -110,7 +110,9 @@ const Performances = ({ markedQ, setMarkedQ }) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve2() && permission?.submissions,
       select: (data) => {
@@ -127,7 +129,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
 
         // const app4 = app3
 
-        console.log({ app, data, app2 });
+        // console.log({ app, data, app2 });
 
         return app2;
       },
@@ -163,7 +165,9 @@ const Performances = ({ markedQ, setMarkedQ }) => {
         student_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -175,7 +179,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
           return Number(p.total_score);
         });
 
-        console.log({ pp, pp2, data, newP });
+        // console.log({ pp, pp2, data, newP });
 
         return newP;
       },
@@ -251,13 +255,13 @@ const Performances = ({ markedQ, setMarkedQ }) => {
     }
   }, [subjectsByTeacher]);
 
-  console.log({
-    subject_id,
-    student_id,
-    performance,
-    allPerformance,
-    subjectsByTeacher,
-  });
+  // console.log({
+  //   subject_id,
+  //   student_id,
+  //   performance,
+  //   allPerformance,
+  //   subjectsByTeacher,
+  // });
 
   return (
     <div>

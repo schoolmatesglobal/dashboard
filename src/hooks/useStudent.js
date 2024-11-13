@@ -117,12 +117,14 @@ export const useStudent = () => {
     () => apiServices.getAllStudents(page),
     {
       enabled: permission?.read || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
       select: (data) => {
-        console.log({ std: data });
+        // console.log({ std: data });
 
         const format = apiServices.formatData(data)?.map((student, i) => {
           return {
@@ -152,6 +154,9 @@ export const useStudent = () => {
           user?.session
         ),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: permission?.myStudents || false,
         // select: apiServices.formatData,
         select: (data) => {
@@ -184,11 +189,14 @@ export const useStudent = () => {
     () => apiServices.getStudentByClass2(chk),
 
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.myStudents && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
-        console.log({ mystd: data });
+        // console.log({ mystd: data });
         // console.log({ pdata: data, state });
         return apiServices.formatData(data)?.map((obj, index) => {
           const newObj = { ...obj };
@@ -210,7 +218,9 @@ export const useStudent = () => {
       apiServices.getAllStudentDebtors,
       {
         enabled: permission?.readDebtors || false,
-        retry: 3,
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
         },
@@ -247,7 +257,9 @@ export const useStudent = () => {
       apiServices.getAllStudentCreditors,
       {
         enabled: permission?.readCreditors || false,
-        retry: 3,
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
         },
@@ -284,7 +296,9 @@ export const useStudent = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.update || false,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -339,6 +353,9 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_SESSION, session],
     () => apiServices.getStudentBySession(session),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: !!session && permission?.sortSession,
       onError(err) {
         errorHandler(err);
@@ -366,6 +383,9 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_ADMISSION_NUMBER, admissionNumber],
     () => apiServices.getStudentByAdmissionNumber(admissionNumber),
     {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: !!admissionNumber && permission?.sortAdmissionNumber,
       onError(err) {
         errorHandler(err);
@@ -397,6 +417,9 @@ export const useStudent = () => {
       ],
       () => apiServices.getStudentByClass(classes),
       {
+        retry: 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         enabled: !!classes.present_class && permission?.sortStudentByClass,
         onError(err) {
           errorHandler(err);
@@ -485,7 +508,9 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT, id],
     () => apiServices.getStudent(id),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -498,7 +523,9 @@ export const useStudent = () => {
     [queryKeys.GET_GRADUATED_STUDENTS],
     apiServices.getAlumniList,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.alumni,
       select: (data) => {
         return apiServices.formatData(data)?.map((student, i) => {
@@ -524,17 +551,19 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT_LOGIN_DETAILS, page],
     () => apiServices.getStudentLoginDetails(page),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled: permission?.studentLoginDetails,
       select: (data) => {
-        console.log({ ddsData: data });
+        // console.log({ ddsData: data });
         const dt = data?.data?.map((student, i) => {
           return {
             ...student,
             new_id: i + 1,
           };
         });
-        console.log({ ddsData: data, dt });
+        // console.log({ ddsData: data, dt });
         return dt;
       },
       onError(err) {
@@ -542,20 +571,6 @@ export const useStudent = () => {
       },
     }
   );
-
-  // const { isLoading: communicationListLoading, data: communicationList } =
-  //   useQuery(
-  //     [queryKeys.GET_COMMUNICATION_BOOK],
-  //     apiServices.getCommunicationBook,
-  //     {
-  //       retry: 3,
-  //       enabled: permission?.communication ?? false,
-  //       select: apiServices.formatData,
-  //       onError(err) {
-  //         errorHandler(err);
-  //       },
-  //     }
-  //   );
 
   const { mutate: enableStudentStatus, isLoading: enableStudentStatusLoading } =
     useMutation(apiServices.enableStudentStatus, {
@@ -642,7 +657,7 @@ export const useStudent = () => {
     enableStudentStatusLoading ||
     disableStudentStatusLoading;
 
-  console.log({ state, permission });
+  // console.log({ state, permission });
 
   return {
     user,

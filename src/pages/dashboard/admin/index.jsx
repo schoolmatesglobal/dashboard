@@ -21,9 +21,13 @@ import { useFile } from "../../../hooks/useFile";
 import queryKeys from "../../../utils/queryKeys";
 import { Link } from "react-router-dom";
 import AuditCard from "../../../components/cards/audit-card";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const Admin = () => {
   const [importStudentPrompt, setImportStudentPrompt] = useState(false);
+  const [initiateSchool, setInitiateSchool] = useState(true);
+  const [initiatePeriod, setInitiatePeriod] = useState(true);
+
   const {
     user,
     updateUser,
@@ -39,6 +43,9 @@ const Admin = () => {
       getAcademicPeriod,
     },
   } = useAppContext();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const {
     isLoading,
     postAcademicPeriod,
@@ -50,12 +57,17 @@ const Admin = () => {
     [queryKeys.GET_SCHOOL],
     getSchool,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: initiateSchool,
       onSuccess(data) {
         updateUser({
           ...user,
           school: { ...data },
         });
+        setUserDetails({ ...userDetails, school: { ...data } });
+        setInitiateSchool(false);
       },
       onError(err) {
         errorHandler(err);
@@ -68,7 +80,9 @@ const Admin = () => {
     [queryKeys.GET_TIME_TABLE],
     getTimeTable,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -86,7 +100,9 @@ const Admin = () => {
     [queryKeys.GET_ACADEMIC_CALENDER],
     getAcademicCalender,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -123,14 +139,29 @@ const Admin = () => {
     [queryKeys.GET_ACADEMIC_PERIOD],
     getAcademicPeriod,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: initiatePeriod,
+
       onSuccess(data) {
+        // console.log({ acDt: data });
         setInputs({
           ...inputs,
           term: data?.term,
           session: data?.session,
           period: data?.period,
         });
+        setUserDetails({
+          ...userDetails,
+          term: data?.term,
+          session: data?.session,
+          period: data?.period,
+        });
+
+        if (data?.term) {
+          setInitiatePeriod(false);
+        }
       },
       onError(err) {
         errorHandler(err);
@@ -161,7 +192,7 @@ const Admin = () => {
     timetableLoading ||
     academicPeriodLoading;
 
-  console.log({ calendarData });
+  // console.log({ calendarData, userDetails });
 
   return (
     <div className='teachers'>

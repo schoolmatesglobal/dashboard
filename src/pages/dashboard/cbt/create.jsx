@@ -205,12 +205,9 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
 
       // enabled: false,
       enabled:
@@ -228,7 +225,7 @@ const CreateCBT = (
 
         // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ data, cbt });
+        // console.log({ data, cbt });
 
         return cbt ?? {};
       },
@@ -278,7 +275,9 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -293,7 +292,7 @@ const CreateCBT = (
 
         const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ asg, data, filtAsg });
+        // console.log({ asg, data, filtAsg });
         // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
           return filtAsg?.map((ag, i) => {
@@ -815,17 +814,17 @@ const CreateCBT = (
     setKey((prevKey) => prevKey + 1);
   }, [published]);
 
-  console.log({
-    cbtSettings,
-    createQ,
-    objectiveQ,
-    ab: settingsAdded(),
-    subject_id,
-    // subjectsByTeacher,
-    state,
-    // subjects,
-    // newSubjects,
-  });
+  // console.log({
+  //   cbtSettings,
+  //   createQ,
+  //   objectiveQ,
+  //   ab: settingsAdded(),
+  //   subject_id,
+  //   // subjectsByTeacher,
+  //   state,
+  //   // subjects,
+  //   // newSubjects,
+  // });
 
   return (
     <div className=''>

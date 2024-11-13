@@ -67,7 +67,7 @@ const ClockOut = () => {
     };
   }, [isDesktop, isTablet, isMobile]);
 
-  console.log({ id });
+  // console.log({ id });
 
   return (
     <div>

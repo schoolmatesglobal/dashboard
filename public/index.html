@@ -36,10 +36,10 @@
           navigator.serviceWorker
             .register("./serviceworker.js")
             .then((registration) => {
-              console.log("Service worker registered:", registration.scope);
+              // console.log("Service worker registered:", registration.scope);
             })
             .catch((error) => {
-              console.error("Service worker registration failed:", error);
+              // console.error("Service worker registration failed:", error);
             });
         });
       }
