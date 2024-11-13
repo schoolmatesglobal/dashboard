@@ -89,6 +89,10 @@ class Helpers {
     if (error.response) {
       const statusCode = error.response.status;
 
+      if (statusCode == 404) {
+        return;
+      }
+
       // Handle client-side and server-side errors
       if (statusCode >= 400 && statusCode <= 499) {
         res = error.response.data.message;
