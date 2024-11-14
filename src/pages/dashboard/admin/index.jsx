@@ -30,10 +30,12 @@ const Admin = () => {
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
   const [initiateSession, setInitiateSession] = useState(true);
+  const [activatePreschools, setActivatePreschools] = useState(true);
 
   const {
     user,
     updateUser,
+    apiServices,
     apiServices: {
       importStudent,
       errorHandler,
@@ -46,9 +48,13 @@ const Admin = () => {
       getAcademicPeriod,
       getAcademicSessions,
     },
+    permission,
   } = useAppContext();
 
   const { userDetails, setUserDetails } = useAuthDetails();
+
+  const [activateClasses, setActivateClasses] = useState(true);
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const {
     isLoading,
@@ -205,6 +211,42 @@ const Admin = () => {
     }
   );
 
+  const {
+    isLoading: classListLoading,
+    data: classDt,
+    refetch: refetchClasses,
+  } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: activateClasses && !is_preschool,
+    // enabled: activateClasses && !is_preschool,
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ classesData: data });
+      const formatClassList = data?.map((x) => ({
+        ...x,
+        sub_class: x.sub_class.split(",").join(", "),
+      }));
+
+      setUserDetails({
+        ...userDetails,
+        classes:
+          formatClassList?.map((obj, index) => {
+            const newObj = { ...obj };
+            newObj.new_id = index + 1;
+            return newObj;
+          }) ?? [],
+      });
+
+      setActivateClasses(false);
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+    select: apiServices.formatData,
+  });
+
   const { handleImageChange, base64String, fileRef, reset } = useFile([], true);
 
   const { mutate: uploadFile, isLoading: uploadLoading } = useMutation(
@@ -219,6 +261,30 @@ const Admin = () => {
     }
   );
 
+  const { data: preSchools, isLoading: preSchoolsLoading } = useQuery(
+    [queryKeys.GET_ALL_PRE_SCHOOLS],
+    apiServices.getPreSchools,
+    {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: activatePreschools && is_preschool,
+      select: apiServices.formatData,
+      onSuccess(data) {
+        // setClasses(data);
+        console.log({ preschoolData: data });
+
+        setUserDetails({
+          ...userDetails,
+          preschools: data ?? [],
+        });
+
+        setActivatePreschools(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
   const loading =
     isLoading ||
     uploadLoading ||
@@ -226,9 +292,11 @@ const Admin = () => {
     calendarLoading ||
     timetableLoading ||
     academicSessionLoading ||
+    classListLoading ||
+    preSchoolsLoading ||
     academicPeriodLoading;
 
-  console.log({ calendarData, userDetails });
+  console.log({ calendarData, userDetails, permission });
 
   return (
     <div className='teachers'>

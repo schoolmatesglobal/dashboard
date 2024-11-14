@@ -5,6 +5,7 @@ import { useParams, useNavigation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -16,7 +17,12 @@ export const useClasses = () => {
   const [checkedRows, setCheckedRows] = useState([]);
   const [checkedSubjects, setCheckedSubjects] = useState([]);
   const [activateCampus, setActivateCampus] = useState(false);
+  const [activateClasses, setActivateClasses] = useState(true);
   const navigate = useNavigate();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const {
     getFieldProps,
@@ -92,7 +98,10 @@ export const useClasses = () => {
     retry: 1,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    enabled: permission?.read || permission?.readClass,
+    enabled:
+      activateClasses &&
+      !is_preschool &&
+      (permission?.read || permission?.readClass),
     onSuccess(data) {
       setClasses(data);
       const formatClassList = data?.map((x) => ({
@@ -107,6 +116,17 @@ export const useClasses = () => {
           return newObj;
         })
       );
+
+      setUserDetails({
+        ...userDetails,
+        classes: formatClassList?.map((obj, index) => {
+          const newObj = { ...obj };
+          newObj.new_id = index + 1;
+          return newObj;
+        }),
+      });
+
+      setActivateClasses(false);
     },
     onError(err) {
       errorHandler(err);

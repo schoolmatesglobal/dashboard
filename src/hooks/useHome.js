@@ -5,7 +5,8 @@ import { useAuthDetails } from "../stores/authDetails";
 import { useState } from "react";
 
 export const useHome = () => {
-  const { apiServices, errorHandler, user, updateUser } = useAppContext();
+  const { apiServices, errorHandler, user, updateUser, permission } =
+    useAppContext();
 
   const [initiateSession, setInitiateSession] = useState(true);
   const [initiateSchool, setInitiateSchool] = useState(true);
@@ -15,6 +16,10 @@ export const useHome = () => {
   const [initiateStaffP, setInitiateStaffP] = useState(true);
   const [initiateStudentP, setInitiateStudentP] = useState(true);
   const [initiateTeacherP, setInitiateTeacherP] = useState(true);
+
+  const [activateClasses, setActivateClasses] = useState(true);
+  const [activatePreschools, setActivatePreschools] = useState(true);
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -382,6 +387,64 @@ export const useHome = () => {
     }
   );
 
+  const {
+    isLoading: classListLoading,
+    data: classDt,
+    refetch: refetchClasses,
+  } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: activateClasses && !is_preschool,
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ classesData: data });
+      const formatClassList = data?.map((x) => ({
+        ...x,
+        sub_class: x.sub_class.split(",").join(", "),
+      }));
+
+      setUserDetails({
+        ...userDetails,
+        classes: formatClassList?.map((obj, index) => {
+          const newObj = { ...obj };
+          newObj.new_id = index + 1;
+          return newObj;
+        }) ?? [],
+      });
+
+      setActivateClasses(false);
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+    select: apiServices.formatData,
+  });
+
+  const { data: preSchools, isLoading: preSchoolsLoading } = useQuery(
+    [queryKeys.GET_ALL_PRE_SCHOOLS],
+    apiServices.getPreSchools,
+    {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: activatePreschools && is_preschool,
+      select: apiServices.formatData,
+      onSuccess(data) {
+        // setClasses(data);
+        console.log({ preschoolData: data });
+
+        setUserDetails({
+          ...userDetails,
+          preschools: data ?? [],
+        });
+
+        setActivatePreschools(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
   const isLoading =
     outstandingLoading ||
     expectedIncomeLoading ||
@@ -399,9 +462,11 @@ export const useHome = () => {
     schoolPopulationLoading ||
     staffPopulationLoading ||
     studentPopulationLoading ||
+    classListLoading ||
+    preSchoolsLoading ||
     teacherPopulationLoading;
 
-  // console.log({ userDetails, academicPeriod });
+  console.log({ permission, academicPeriod, userDetails });
 
   return {
     user,
