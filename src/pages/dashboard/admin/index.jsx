@@ -22,11 +22,14 @@ import queryKeys from "../../../utils/queryKeys";
 import { Link } from "react-router-dom";
 import AuditCard from "../../../components/cards/audit-card";
 import { useAuthDetails } from "../../../stores/authDetails";
+import Button from "../../../components/buttons/button";
 
 const Admin = () => {
   const [importStudentPrompt, setImportStudentPrompt] = useState(false);
+  const [academicStatus, setAcademicStatus] = useState("Add");
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
+  const [initiateSession, setInitiateSession] = useState(true);
 
   const {
     user,
@@ -41,6 +44,7 @@ const Admin = () => {
       handleSessionChange,
       handleSessionChange2,
       getAcademicPeriod,
+      getAcademicSessions,
     },
   } = useAppContext();
 
@@ -52,6 +56,26 @@ const Admin = () => {
     academicPeriodPrompt,
     setAcademicPeriodPrompt,
   } = useAcademicPeriod();
+
+  const { isLoading: academicSessionLoading } = useQuery(
+    [queryKeys.GET_ACADEMIC_SESSIONS],
+    getAcademicSessions,
+    {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: initiateSession,
+      select: (data) => {
+        // console.log({ datam: data });
+        return data?.data;
+      },
+      onSuccess(data) {
+        setUserDetails({ ...userDetails, sessions: data });
+        setInitiateSession(false);
+      },
+      onError: errorHandler,
+    }
+  );
 
   const { isLoading: schoolLoading } = useQuery(
     [queryKeys.GET_SCHOOL],
@@ -121,16 +145,28 @@ const Admin = () => {
       period: "First Half",
       session: "",
       term: "First Term",
+      period2: "First Half",
+      session2: "2023/2024",
+      term2: "First Term",
     },
     validation: {
       period: {
-        required: true,
+        required: academicStatus === "Add" && true,
       },
       session: {
-        required: true,
+        required: academicStatus === "Add" && true,
       },
       term: {
-        required: true,
+        required: academicStatus === "Add" && true,
+      },
+      period2: {
+        required: academicStatus === "Set" && true,
+      },
+      session2: {
+        required: academicStatus === "Set" && true,
+      },
+      term2: {
+        required: academicStatus === "Set" && true,
       },
     },
   });
@@ -143,9 +179,9 @@ const Admin = () => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       enabled: initiatePeriod,
-
+      select: (data) => data?.data[0],
       onSuccess(data) {
-        // console.log({ acDt: data });
+        console.log({ acDt: data });
         setInputs({
           ...inputs,
           term: data?.term,
@@ -166,7 +202,6 @@ const Admin = () => {
       onError(err) {
         errorHandler(err);
       },
-      select: (data) => data?.data[0],
     }
   );
 
@@ -190,9 +225,10 @@ const Admin = () => {
     schoolLoading ||
     calendarLoading ||
     timetableLoading ||
+    academicSessionLoading ||
     academicPeriodLoading;
 
-  // console.log({ calendarData, userDetails });
+  console.log({ calendarData, userDetails });
 
   return (
     <div className='teachers'>
@@ -282,55 +318,132 @@ const Admin = () => {
         singleButtonProps={{
           type: "button",
           isLoading,
-          disabled: isLoading || !inputs.session,
+          disabled:
+            isLoading ||
+            (academicStatus === "Add" ? !inputs.session : !inputs.session2),
           onClick: () => postAcademicPeriod(inputs),
         }}
         singleButtonText='Continue'
         promptHeader='Post Academic Period'
       >
-        <div className='form-group mb-4'>
-          <AuthSelect
-            label='Period'
-            value={inputs.period}
-            name='period'
-            hasError={!!errors.period}
-            onChange={handleChange}
-            options={[
-              { value: "First Half", title: "First Half/Mid Term" },
-              { value: "Second Half", title: "Second Half/End of Term" },
-            ]}
-          />
-          {!!errors.period && <p className='error-message'>{errors.period}</p>}
+        <div className='d-flex align-items-center justify-content-center gap-3 mb-5'>
+          <Button
+            className='w-auto'
+            variant={`${academicStatus === "Add" ? "" : "outline"}`}
+            onClick={() => setAcademicStatus("Add")}
+          >
+            Add
+          </Button>
+          <Button
+            className='w-auto'
+            variant={`${academicStatus === "Set" ? "" : "outline"}`}
+            onClick={() => setAcademicStatus("Set")}
+          >
+            Set
+          </Button>
         </div>
-        <div className='form-group mb-4'>
-          <AuthSelect
-            label='Term'
-            value={inputs.term}
-            name='term'
-            hasError={!!errors.term}
-            onChange={handleChange}
-            options={[
-              { value: "First Term", title: "First Term" },
-              { value: "Second Term", title: "Second Term" },
-              { value: "Third Term", title: "Third Term" },
-            ]}
-          />
-          {!!errors.term && <p className='error-message'>{errors.term}</p>}
-        </div>
-        <div className='form-group mb-4'>
-          <AuthInput
-            label='Session'
-            placeholder='2021/2022'
-            hasError={!!errors.session}
-            value={inputs.session}
-            onChange={({ target: { value } }) =>
-              handleSessionChange2(value, "session", setFieldValue)
-            }
-          />
-          {!!errors.session && (
-            <p className='error-message'>{errors.session}</p>
-          )}
-        </div>
+        {academicStatus === "Add" && (
+          <div className=''>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Period'
+                value={inputs.period}
+                name='period'
+                hasError={!!errors.period}
+                onChange={handleChange}
+                options={[
+                  { value: "First Half", title: "First Half/Mid Term" },
+                  { value: "Second Half", title: "Second Half/End of Term" },
+                ]}
+              />
+              {!!errors.period && (
+                <p className='error-message'>{errors.period}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Term'
+                value={inputs.term}
+                name='term'
+                hasError={!!errors.term}
+                onChange={handleChange}
+                options={[
+                  { value: "First Term", title: "First Term" },
+                  { value: "Second Term", title: "Second Term" },
+                  { value: "Third Term", title: "Third Term" },
+                ]}
+              />
+              {!!errors.term && <p className='error-message'>{errors.term}</p>}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthInput
+                label='Session'
+                placeholder='2021/2022'
+                hasError={!!errors.session}
+                value={inputs.session}
+                onChange={({ target: { value } }) =>
+                  handleSessionChange2(value, "session", setFieldValue)
+                }
+              />
+              {!!errors.session && (
+                <p className='error-message'>{errors.session}</p>
+              )}
+            </div>
+          </div>
+        )}
+        {academicStatus === "Set" && (
+          <div className=''>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Period'
+                value={inputs.period2}
+                name='period2'
+                hasError={!!errors.period2}
+                onChange={handleChange}
+                options={[
+                  { value: "First Half", title: "First Half/Mid Term" },
+                  { value: "Second Half", title: "Second Half/End of Term" },
+                ]}
+              />
+              {!!errors.period2 && (
+                <p className='error-message'>{errors.period2}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Term'
+                value={inputs.term2}
+                name='term2'
+                hasError={!!errors.term2}
+                onChange={handleChange}
+                options={[
+                  { value: "First Term", title: "First Term" },
+                  { value: "Second Term", title: "Second Term" },
+                  { value: "Third Term", title: "Third Term" },
+                ]}
+              />
+              {!!errors.term2 && (
+                <p className='error-message'>{errors.term2}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Session'
+                value={inputs.session2}
+                name='session2'
+                hasError={!!errors.session2}
+                onChange={handleChange}
+                options={(userDetails?.sessions || [])?.map((session) => ({
+                  value: session?.academic_session,
+                  title: session?.academic_session,
+                }))}
+              />
+              {!!errors.session2 && (
+                <p className='error-message'>{errors.session2}</p>
+              )}
+            </div>
+          </div>
+        )}
       </Prompt>
     </div>
   );

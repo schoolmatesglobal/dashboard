@@ -14,7 +14,8 @@ import PageTitle from "../../../components/common/title";
 import { useHome } from "../../../hooks/useHome";
 
 const Teacher = () => {
-  const { isLoading, timetableData, calendarData, user, academicPeriod } = useHome();
+  const { isLoading, timetableData, calendarData, user, academicPeriod } =
+    useHome();
   const navigate = useNavigate();
 
   // console.log({ userH: user, academicPeriod });

@@ -7,6 +7,7 @@ import { useState } from "react";
 export const useHome = () => {
   const { apiServices, errorHandler, user, updateUser } = useAppContext();
 
+  const [initiateSession, setInitiateSession] = useState(true);
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
   const [initiateClassP, setInitiateClassP] = useState(true);
@@ -137,6 +138,26 @@ export const useHome = () => {
     }
   );
 
+  const { isLoading: academicSessionLoading } = useQuery(
+    [queryKeys.GET_ACADEMIC_SESSIONS],
+    apiServices.getAcademicSessions,
+    {
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: initiateSession,
+      select: (data) => {
+        // console.log({ datam: data });
+        return data?.data;
+      },
+      onSuccess(data) {
+        setUserDetails({ ...userDetails, sessions: data });
+        setInitiateSession(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
   const { isLoading: academicPeriodLoading, data: academicPeriod } = useQuery(
     [queryKeys.GET_ACADEMIC_PERIOD],
     apiServices.getAcademicPeriod,
@@ -148,7 +169,7 @@ export const useHome = () => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       select: (data) => {
-        // console.log({ ddata: data, sd: data?.data });
+        console.log({ acDt: data, acDt2: data?.data });
 
         // return data?.data;
         return data?.data[0];
@@ -370,6 +391,7 @@ export const useHome = () => {
     receivedIncomeLoading ||
     graduatedStudentLoading ||
     academicPeriodLoading ||
+    academicSessionLoading ||
     schoolLoading ||
     classPopulationLoading ||
     timetableLoading ||
@@ -379,7 +401,7 @@ export const useHome = () => {
     studentPopulationLoading ||
     teacherPopulationLoading;
 
-  console.log({ userDetails });
+  // console.log({ userDetails, academicPeriod });
 
   return {
     user,
