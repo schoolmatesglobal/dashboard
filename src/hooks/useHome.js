@@ -5,8 +5,26 @@ import { useAuthDetails } from "../stores/authDetails";
 import { useState } from "react";
 
 export const useHome = () => {
-  const { apiServices, errorHandler, user, updateUser } = useAppContext();
+  const {
+    apiServices,
+    user,
+    updateUser,
+    permission,
+    apiServices: {
+      importStudent,
+      errorHandler,
+      getSchool,
+      getTimeTable,
+      formatData,
+      getAcademicCalender,
+      handleSessionChange,
+      handleSessionChange2,
+      getAcademicPeriod,
+      getAcademicSessions,
+    },
+  } = useAppContext();
 
+  const [initiateSession, setInitiateSession] = useState(true);
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
   const [initiateClassP, setInitiateClassP] = useState(true);
@@ -14,6 +32,11 @@ export const useHome = () => {
   const [initiateStaffP, setInitiateStaffP] = useState(true);
   const [initiateStudentP, setInitiateStudentP] = useState(true);
   const [initiateTeacherP, setInitiateTeacherP] = useState(true);
+
+  const [activateCampuses, setActivateCampuses] = useState(true);
+  const [activateClasses, setActivateClasses] = useState(true);
+  const [activatePreschools, setActivatePreschools] = useState(true);
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -23,7 +46,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -37,7 +60,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -51,7 +74,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -64,7 +87,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -77,7 +100,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -91,7 +114,7 @@ export const useHome = () => {
     {
       enabled: ["Superadmin", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -106,7 +129,7 @@ export const useHome = () => {
       {
         enabled: ["Superadmin", "Account"].includes(user?.designation_name),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
@@ -119,7 +142,7 @@ export const useHome = () => {
     apiServices.getSchool,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initiateSchool,
       onSuccess(data) {
@@ -137,23 +160,42 @@ export const useHome = () => {
     }
   );
 
-  const { isLoading: academicPeriodLoading, data: academicPeriod } = useQuery(
-    [queryKeys.GET_ACADEMIC_PERIOD],
-    apiServices.getAcademicPeriod,
+  const { isLoading: academicSessionLoading } = useQuery(
+    [queryKeys.GET_ACADEMIC_SESSIONS],
+    apiServices.getAcademicSessions,
     {
-      enabled:
-        initiatePeriod &&
-        ["Teacher", "Student"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateSession,
+      select: (data) => {
+        // console.log({ datam: data });
+        return data?.data;
+      },
+      onSuccess(data) {
+        setUserDetails({ ...userDetails, sessions: data });
+        setInitiateSession(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
+  const { isLoading: academicPeriodLoading } = useQuery(
+    [queryKeys.GET_ACADEMIC_PERIOD],
+    getAcademicPeriod,
+    {
+      enabled: initiatePeriod,
+      retry: 1,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       select: (data) => {
-        // console.log({ ddata: data, sd: data?.data });
+        // console.log({ acDt: data, acDt2: data?.data });
 
         // return data?.data;
         return data?.data[0];
       },
       onSuccess(data) {
+        console.log({ acDt3: data });
         updateUser({
           ...user,
           term: data?.term,
@@ -166,7 +208,9 @@ export const useHome = () => {
           session: data?.session,
           period: data?.period,
         });
-        setInitiatePeriod(false);
+        if (data?.term) {
+          setInitiatePeriod(false);
+        }
       },
       onError(err) {
         errorHandler(err);
@@ -180,7 +224,7 @@ export const useHome = () => {
     {
       enabled: initiateClassP && ["Teacher"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onSuccess(data) {
         updateUser({
@@ -209,7 +253,7 @@ export const useHome = () => {
           initiateSchoolP &&
           ["Principal", "Account"].includes(user?.designation_name),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
@@ -236,7 +280,7 @@ export const useHome = () => {
     {
       enabled: ["Principal", "Account"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enalbled: initiateStaffP,
       onSuccess(data) {
@@ -266,7 +310,7 @@ export const useHome = () => {
           initiateStudentP &&
           ["Principal", "Account"].includes(user?.designation_name),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
@@ -295,7 +339,7 @@ export const useHome = () => {
           initiateTeacherP &&
           ["Principal", "Account"].includes(user?.designation_name),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onSuccess(data) {
           updateUser({
@@ -321,7 +365,7 @@ export const useHome = () => {
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -344,7 +388,7 @@ export const useHome = () => {
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -361,6 +405,100 @@ export const useHome = () => {
     }
   );
 
+  const {
+    isLoading: classListLoading,
+    data: classDt,
+    refetch: refetchClasses,
+  } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    enabled: activateClasses && !is_preschool,
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ classesData: data });
+      const formatClassList = data?.map((x) => ({
+        ...x,
+        sub_class: x.sub_class.split(",").join(", "),
+      }));
+
+      setUserDetails({
+        ...userDetails,
+        classes:
+          formatClassList?.map((obj, index) => {
+            const newObj = { ...obj };
+            newObj.new_id = index + 1;
+            return newObj;
+          }) ?? [],
+      });
+
+      setActivateClasses(false);
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+    select: apiServices.formatData,
+  });
+
+  const { data: preSchools, isLoading: preSchoolsLoading } = useQuery(
+    [queryKeys.GET_ALL_PRE_SCHOOLS],
+    apiServices.getPreSchools,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: activatePreschools && is_preschool,
+      select: apiServices.formatData,
+      onSuccess(data) {
+        // setClasses(data);
+        console.log({ preschoolData: data });
+
+        setUserDetails({
+          ...userDetails,
+          preschools: data ?? [],
+        });
+
+        setActivatePreschools(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
+  // Fetch Campus List
+  const {
+    isLoading: campusListLoading,
+    data: campusList,
+    refetch: refetchCampusList,
+  } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
+    enabled: activateCampuses,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    onError(err) {
+      errorHandler(err);
+    },
+    // select: apiServices.formatData,
+    select: (data) => {
+      const f = apiServices.formatData(data)?.map((x) => ({
+        value: x?.name,
+        title: x?.name,
+      }));
+
+      return { ...data, options: f };
+    },
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ campusData: data });
+
+      setUserDetails({
+        ...userDetails,
+        campusList: data,
+      });
+
+      setActivateCampuses(false);
+    },
+  });
+
   const isLoading =
     outstandingLoading ||
     expectedIncomeLoading ||
@@ -370,6 +508,7 @@ export const useHome = () => {
     receivedIncomeLoading ||
     graduatedStudentLoading ||
     academicPeriodLoading ||
+    academicSessionLoading ||
     schoolLoading ||
     classPopulationLoading ||
     timetableLoading ||
@@ -377,13 +516,16 @@ export const useHome = () => {
     schoolPopulationLoading ||
     staffPopulationLoading ||
     studentPopulationLoading ||
+    classListLoading ||
+    preSchoolsLoading ||
+    campusListLoading ||
     teacherPopulationLoading;
 
-  console.log({ userDetails });
+  // console.log({ permission, userDetails });
 
   return {
     user,
-    academicPeriod,
+    academicPeriod: userDetails?.academicPeriod,
     isLoading,
     outstanding,
     expectedIncome,

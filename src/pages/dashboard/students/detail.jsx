@@ -18,9 +18,12 @@ import Prompt from "../../../components/modals/prompt";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useCampus } from "../../../hooks/useCampus";
 import { usePreSchool } from "../../../hooks/usePreSchool";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const StudentDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const {
@@ -57,18 +60,18 @@ const StudentDetail = () => {
   //   // deleteCampus,
   // } = useCampus();
 
-  const { classes } = useClasses();
+  // const { classes } = useClasses();
 
-  const {
-    // permission,
-    preSchools,
-    // isLoading,
-    deletePreSchool,
-    activatePreSchool,
-    setActivatePreSchool,
-  } = usePreSchool();
+  // const {
+  //   // permission,
+  //   preSchools,
+  //   // isLoading,
+  //   deletePreSchool,
+  //   activatePreSchool,
+  //   setActivatePreSchool,
+  // } = usePreSchool();
 
-  const { data: sessions } = useAcademicSession();
+  // const { data: sessions } = useAcademicSession();
 
   const onSubmit = async (data) => {
     const image = isEdit ? (base64String ? base64String : "") : base64String;
@@ -183,19 +186,27 @@ const StudentDetail = () => {
     }
   }
 
-  const cls = (classes || []).map((x) => ({
+  const cls = (userDetails?.classes || []).map((x) => ({
     value: x?.class_name.toUpperCase(),
     title: x?.class_name,
   }));
 
-  const cls2 = (preSchools || []).map((x) => ({
+  const cls2 = (userDetails?.preSchools || []).map((x) => ({
     value: x?.name.toUpperCase(),
     title: x?.name,
   }));
 
   const classArray = user?.is_preschool === "true" ? cls2 : cls;
 
-  console.log({ user, classes, preSchools, classArray, cls, cls2 });
+  console.log({
+    userDetails,
+    user,
+    // classes,
+    // preSchools,
+    classArray,
+    cls,
+    cls2,
+  });
 
   // console.log({ db: studentData?.dob, gp: getFieldProps("dob") });
   // console.log({
@@ -429,7 +440,7 @@ const StudentDetail = () => {
             name='session_admitted'
             hasError={!!errors.session_admitted}
             onChange={handleChange}
-            options={(sessions || [])?.map((session) => ({
+            options={(userDetails?.sessions || [])?.map((session) => ({
               value: session?.academic_session,
               title: session?.academic_session,
             }))}
@@ -505,7 +516,7 @@ const StudentDetail = () => {
             onChange={(e) => {
               handleChange(e);
             }}
-            options={campusList?.options}
+            options={userDetails?.campusList?.options}
           />
           {!!errors.class && <p className='error-message'>{errors.campus}</p>}
         </Col>
