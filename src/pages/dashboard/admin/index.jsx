@@ -69,7 +69,7 @@ const Admin = () => {
     getAcademicSessions,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initiateSession,
       select: (data) => {
@@ -89,7 +89,7 @@ const Admin = () => {
     getSchool,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initiateSchool,
       onSuccess(data) {
@@ -112,7 +112,7 @@ const Admin = () => {
     getTimeTable,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -132,7 +132,7 @@ const Admin = () => {
     getAcademicCalender,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -183,12 +183,17 @@ const Admin = () => {
     getAcademicPeriod,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initiatePeriod,
-      select: (data) => data?.data[0],
+      select: (data) => {
+        // console.log({ acDt: data, acDt2: data?.data });
+
+        // return data?.data;
+        return data?.data[0];
+      },
       onSuccess(data) {
-        console.log({ acDt: data });
+        console.log({ acDt3: data });
         setInputs({
           ...inputs,
           term: data?.term,
@@ -218,7 +223,7 @@ const Admin = () => {
     refetch: refetchClasses,
   } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled: activateClasses && !is_preschool,
     // enabled: activateClasses && !is_preschool,
@@ -267,7 +272,7 @@ const Admin = () => {
     apiServices.getPreSchools,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: activatePreschools && is_preschool,
       select: apiServices.formatData,
@@ -294,7 +299,7 @@ const Admin = () => {
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: activateCampuses,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
