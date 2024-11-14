@@ -516,7 +516,7 @@ const StudentDetail = () => {
             onChange={(e) => {
               handleChange(e);
             }}
-            options={campusList?.options}
+            options={userDetails?.campusList?.options}
           />
           {!!errors.class && <p className='error-message'>{errors.campus}</p>}
         </Col>

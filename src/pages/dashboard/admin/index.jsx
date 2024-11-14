@@ -54,6 +54,7 @@ const Admin = () => {
   const { userDetails, setUserDetails } = useAuthDetails();
 
   const [activateClasses, setActivateClasses] = useState(true);
+  const [activateCampuses, setActivateCampuses] = useState(true);
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const {
@@ -285,6 +286,41 @@ const Admin = () => {
     }
   );
 
+  // Fetch Campus List
+  const {
+    isLoading: campusListLoading,
+    data: campusList,
+    refetch: refetchCampusList,
+  } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
+    enabled: activateCampuses,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    onError(err) {
+      errorHandler(err);
+    },
+    // select: apiServices.formatData,
+    select: (data) => {
+      const f = apiServices.formatData(data)?.map((x) => ({
+        value: x?.name,
+        title: x?.name,
+      }));
+
+      return { ...data, options: f };
+    },
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ campusData: data });
+
+      setUserDetails({
+        ...userDetails,
+        campusList: data,
+      });
+
+      setActivateCampuses(false);
+    },
+  });
+
   const loading =
     isLoading ||
     uploadLoading ||
@@ -294,6 +330,7 @@ const Admin = () => {
     academicSessionLoading ||
     classListLoading ||
     preSchoolsLoading ||
+    campusListLoading ||
     academicPeriodLoading;
 
   console.log({ calendarData, userDetails, permission });

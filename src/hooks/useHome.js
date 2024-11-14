@@ -17,6 +17,7 @@ export const useHome = () => {
   const [initiateStudentP, setInitiateStudentP] = useState(true);
   const [initiateTeacherP, setInitiateTeacherP] = useState(true);
 
+  const [activateCampuses, setActivateCampuses] = useState(true);
   const [activateClasses, setActivateClasses] = useState(true);
   const [activatePreschools, setActivatePreschools] = useState(true);
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
@@ -406,11 +407,12 @@ export const useHome = () => {
 
       setUserDetails({
         ...userDetails,
-        classes: formatClassList?.map((obj, index) => {
-          const newObj = { ...obj };
-          newObj.new_id = index + 1;
-          return newObj;
-        }) ?? [],
+        classes:
+          formatClassList?.map((obj, index) => {
+            const newObj = { ...obj };
+            newObj.new_id = index + 1;
+            return newObj;
+          }) ?? [],
       });
 
       setActivateClasses(false);
@@ -445,6 +447,41 @@ export const useHome = () => {
     }
   );
 
+  // Fetch Campus List
+  const {
+    isLoading: campusListLoading,
+    data: campusList,
+    refetch: refetchCampusList,
+  } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
+    enabled: activateCampuses,
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    onError(err) {
+      errorHandler(err);
+    },
+    // select: apiServices.formatData,
+    select: (data) => {
+      const f = apiServices.formatData(data)?.map((x) => ({
+        value: x?.name,
+        title: x?.name,
+      }));
+
+      return { ...data, options: f };
+    },
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ campusData: data });
+
+      setUserDetails({
+        ...userDetails,
+        campusList: data,
+      });
+
+      setActivateCampuses(false);
+    },
+  });
+
   const isLoading =
     outstandingLoading ||
     expectedIncomeLoading ||
@@ -464,6 +501,7 @@ export const useHome = () => {
     studentPopulationLoading ||
     classListLoading ||
     preSchoolsLoading ||
+    campusListLoading ||
     teacherPopulationLoading;
 
   console.log({ permission, academicPeriod, userDetails });
