@@ -21,6 +21,7 @@ export const useHome = () => {
       handleSessionChange2,
       getAcademicPeriod,
       getAcademicSessions,
+      getCurrentAcademicPeriod,
     },
   } = useAppContext();
 
@@ -32,7 +33,7 @@ export const useHome = () => {
   const [initiateStaffP, setInitiateStaffP] = useState(true);
   const [initiateStudentP, setInitiateStudentP] = useState(true);
   const [initiateTeacherP, setInitiateTeacherP] = useState(true);
-
+  const [initiateCPeriod, setInitiateCPeriod] = useState(true);
   const [activateCampuses, setActivateCampuses] = useState(true);
   const [activateClasses, setActivateClasses] = useState(true);
   const [activatePreschools, setActivatePreschools] = useState(true);
@@ -499,6 +500,49 @@ export const useHome = () => {
     },
   });
 
+  const {
+    isLoading: currentAcademicPeriodLoading,
+    refetch: refetchCurrentAcademicPeriod,
+  } = useQuery(
+    [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
+    getCurrentAcademicPeriod,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateCPeriod,
+      select: (data) => {
+        console.log({ ccDt: data, ccDt2: data?.data });
+
+        // return data?.data;
+        return data?.data;
+      },
+      onSuccess(data) {
+        // console.log({ acDt3: data });
+
+        updateUser({
+          ...user,
+          term: data?.term,
+          session: data?.session,
+          period: data?.period,
+        });
+
+        setUserDetails({
+          ...userDetails,
+          term: data?.term,
+          session: data?.session,
+          period: data?.period,
+        });
+        if (data?.term) {
+          setInitiateCPeriod(false);
+        }
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
+
   const isLoading =
     outstandingLoading ||
     expectedIncomeLoading ||
@@ -507,7 +551,8 @@ export const useHome = () => {
     accountBalanceLoading ||
     receivedIncomeLoading ||
     graduatedStudentLoading ||
-    academicPeriodLoading ||
+    currentAcademicPeriodLoading ||
+    // academicPeriodLoading ||
     academicSessionLoading ||
     schoolLoading ||
     classPopulationLoading ||
