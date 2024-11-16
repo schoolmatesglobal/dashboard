@@ -179,9 +179,16 @@ const Student = () => {
       <PageView
         selectValue={sortBy}
         isLoading={isLoading}
-        extraButton={true}
+        extraButton={["Superadmin"].includes(user?.designation_name)}
         extraButtonTitle='Adn. Setup'
         extraButtonOnclick={() => {
+          setLoadedGen(getAdmissionNoSettings?.auto_generate);
+          setInputs2({
+            ...inputs2,
+            generate_number: getAdmissionNoSettings?.auto_generate,
+            admission_initial: getAdmissionNoSettings?.admission_initial,
+          });
+          setInputValue(getAdmissionNoSettings?.admission_number_initial);
           setAdmSetupPrompt(true);
         }}
         onSearchClear={() => {

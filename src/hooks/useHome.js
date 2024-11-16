@@ -510,7 +510,8 @@ export const useHome = () => {
       retry: 1,
       refetchOnMount: true,
       refetchOnWindowFocus: false,
-      enabled: initiateCPeriod,
+      enabled:
+        initiateCPeriod && !["Superadmin"].includes(user?.designation_name),
       select: (data) => {
         console.log({ ccDt: data, ccDt2: data?.data });
 

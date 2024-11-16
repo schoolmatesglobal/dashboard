@@ -401,10 +401,10 @@ export const useStudent = () => {
     isLoading: postAdmissionNoSettingsLoading,
   } = useMutation(apiServices.postAdmissionNoSettings, {
     onSuccess() {
-      toast.success("Admission No settings has been updated successfully");
       // reset();
       refetchGetAdmissionNoSettings();
       trigger(1000);
+      toast.success("Admission No settings has been updated successfully");
     },
     onError(err) {
       errorHandler(err);
