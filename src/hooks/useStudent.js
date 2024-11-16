@@ -18,10 +18,14 @@ export const useStudent = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("students");
   const [sortedStudents, setSortedStudents] = useState([]);
+  const [admSetupPrompt, setAdmSetupPrompt] = useState(false);
+  const [loadedGen, setLoadedGen] = useState(false);
   const [sorted, setSorted] = useState(false);
   const [indexStatus, setIndexStatus] = useState(
     permission?.read ? "all" : "myStudents"
   );
+  const [loading1, setLoading1] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const [session, setSession] = useState("");
   const [principalClassName, setPrincipalClassName] = useState("");
   const [admissionNumber, setAdmissionNumber] = useState("");
@@ -37,6 +41,8 @@ export const useStudent = () => {
     reset: resetFile,
     fileRef,
   } = useFile();
+
+  const isEdit = !!id;
 
   const {
     getFieldProps,
@@ -74,7 +80,7 @@ export const useStudent = () => {
       surname: { required: true },
       firstname: { required: true },
       middlename: { required: true },
-      admission_number: { required: true },
+      // admission_number: { required: true },
       // genotype: { required: true },
       // blood_group: { required: true },
       gender: { required: true },
@@ -99,10 +105,34 @@ export const useStudent = () => {
     },
   });
 
+  const {
+    inputs: inputs2,
+    setFieldValue: setFieldValue2,
+    getFieldProps: getFieldProps2,
+    handleSubmit: handleSubmit2,
+    errors: errors2,
+    setInputs: setInputs2,
+  } = useForm({
+    defaultValues: {
+      generate_number: false,
+      admission_initial: "",
+    },
+    validation: {
+      admission_initial: { required: true },
+    },
+  });
+
   const reset = () => {
     resetFile();
     resetForm();
   };
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
 
   const handleSortBy = ({ target: { value } }) => {
     setSortBy(value);
@@ -313,6 +343,46 @@ export const useStudent = () => {
     },
   });
 
+  const {
+    isLoading: getAdmissionNoSettingsLoading,
+    data: getAdmissionNoSettings,
+    refetch: refetchGetAdmissionNoSettings,
+  } = useQuery(
+    [queryKeys.GET_ADMISSION_SETTINGS],
+    () => apiServices.getAdmissionNoSettings(user?.sch_id),
+    {
+      enabled: true,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+      select: (data) => {
+        console.log({ gadata: data?.data });
+
+        // const f = apiServices.formatData(data)?.map((x) => ({
+        //   value: x?.name,
+        //   title: x?.name,
+        // }));
+
+        return data?.data;
+      },
+      onSuccess: (data) => {
+        setInputs2({
+          ...inputs2,
+          generate_number: data?.auto_generate,
+          admission_initial: data?.admission_number_initial,
+        });
+        setLoadedGen(data?.auto_generate);
+        setInputValue(data?.admission_number_initial);
+        // console.log({ data });
+        setAdmSetupPrompt(false);
+      },
+    }
+  );
+
   const { mutateAsync: addStudent, isLoading: addStudentLoading } = useMutation(
     apiServices.addStudent,
     {
@@ -325,6 +395,21 @@ export const useStudent = () => {
       },
     }
   );
+
+  const {
+    mutateAsync: postAdmissionNoSettings,
+    isLoading: postAdmissionNoSettingsLoading,
+  } = useMutation(apiServices.postAdmissionNoSettings, {
+    onSuccess() {
+      toast.success("Admission No settings has been updated successfully");
+      // reset();
+      refetchGetAdmissionNoSettings();
+      trigger(1000);
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
 
   const { mutateAsync: updateStudent, isLoading: updateStudentLoading } =
     useMutation(apiServices.updateStudent, {
@@ -514,7 +599,7 @@ export const useStudent = () => {
       onError(err) {
         errorHandler(err);
       },
-      enabled: !!id,
+      enabled: isEdit,
       select: apiServices.formatSingleData,
     }
   );
@@ -655,7 +740,9 @@ export const useStudent = () => {
     postCommunicationBookLoading ||
     campusListLoading ||
     enableStudentStatusLoading ||
-    disableStudentStatusLoading;
+    disableStudentStatusLoading ||
+    getAdmissionNoSettingsLoading ||
+    postAdmissionNoSettingsLoading;
 
   // console.log({ state, permission });
 
@@ -670,7 +757,7 @@ export const useStudent = () => {
     errors,
     setInputs,
     handleChange,
-    isEdit: !!id,
+    isEdit: isEdit,
     handleImageChange,
     filePreview,
     base64String,
@@ -714,5 +801,23 @@ export const useStudent = () => {
     setPrincipalClassName,
     enableStudentStatus,
     disableStudentStatus,
+    getAdmissionNoSettingsLoading,
+    postAdmissionNoSettingsLoading,
+    getAdmissionNoSettings,
+    postAdmissionNoSettings,
+    admSetupPrompt,
+    setAdmSetupPrompt,
+    inputs2,
+    setFieldValue2,
+    getFieldProps2,
+    handleSubmit2,
+    errors2,
+    setInputs2,
+    inputValue,
+    setInputValue,
+    loading1,
+    setLoading1,
+    loadedGen,
+    setLoadedGen,
   };
 };

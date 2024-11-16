@@ -18,6 +18,7 @@ import { useCommunicationBook } from "../hooks/useCommunicationBook";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useNavigate } from "react-router-dom";
+import { useAuthDetails } from "../stores/authDetails";
 
 const DashboardLayout = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -27,16 +28,34 @@ const DashboardLayout = () => {
     toggle: toggleNavbar,
     closeSidebar,
     user,
+    updateUser,
     logout,
     cbtPlaying,
     hideAllBars,
     setHideAllBars,
+    apiServices: {
+      importStudent,
+      errorHandler,
+      getSchool,
+      getTimeTable,
+      formatData,
+      getAcademicCalender,
+      handleSessionChange,
+      handleSessionChange2,
+      getAcademicPeriod,
+      getAcademicSessions,
+      getCurrentAcademicPeriod,
+    },
   } = useAppContext();
   const sidebarRef = useRef(null);
 
   const navigate = useNavigate();
 
   const { permission, apiServices, user: newUser } = useCommunicationBook();
+
+  const [initiateCPeriod, setInitiateCPeriod] = useState(true);
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   // GET COMMUNICATION BOOK COUNTS /////////
   const {

@@ -505,7 +505,7 @@ export const useHome = () => {
     refetch: refetchCurrentAcademicPeriod,
   } = useQuery(
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
-    getCurrentAcademicPeriod,
+    apiServices.getCurrentAcademicPeriod,
     {
       retry: 1,
       refetchOnMount: true,
@@ -565,8 +565,6 @@ export const useHome = () => {
     preSchoolsLoading ||
     campusListLoading ||
     teacherPopulationLoading;
-
-  // console.log({ permission, userDetails });
 
   return {
     user,
