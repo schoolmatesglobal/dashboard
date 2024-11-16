@@ -13,6 +13,8 @@ import Numeral from "react-numeral";
 import { useLocation } from "react-router-dom";
 
 export const useStudent = () => {
+  // const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page") ?? "1");
   const { apiServices, errorHandler, permission, user } =
@@ -389,6 +391,8 @@ export const useStudent = () => {
       onSuccess() {
         toast.success("Student has been added successfully");
         reset();
+        refetchStudents();
+        navigate("/app/students");
       },
       onError(err) {
         errorHandler(err);
@@ -414,7 +418,10 @@ export const useStudent = () => {
   const { mutateAsync: updateStudent, isLoading: updateStudentLoading } =
     useMutation(apiServices.updateStudent, {
       onSuccess() {
+        refetchStudents();
         toast.success("Student has been updated successfully");
+        navigate("/app/students");
+        // navigate
       },
       onError(err) {
         errorHandler(err);
