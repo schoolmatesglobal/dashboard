@@ -160,8 +160,8 @@ const Student = () => {
   }, [state?.status]);
 
   useEffect(() => {
-    if (getAdmissionNoSettings.auto_generate) {
-      setLoadedGen(getAdmissionNoSettings.auto_generate);
+    if (getAdmissionNoSettings?.auto_generate) {
+      setLoadedGen(getAdmissionNoSettings?.auto_generate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getAdmissionNoSettings]);
