@@ -120,11 +120,11 @@ const ScoresDetail = () => {
       </div> */}
       <Row className='mb-0 mb-sm-4'>
         <Col sm='6' className='mb-4 mb-sm-0'>
-          <div className='mb-4 d-flex align-items-center'>
-            <p>Has Two Assessment</p>
+          <div className='mb-4 d-flex align-items-center gap-3'>
             <Input
               type='checkbox'
-              className='ms-3'
+              id='two_assessment_check'
+              className='ms-3 fs-3'
               checked={inputs.has_two_assessment === true}
               // disabled={!!inputs.has_two_assessment}
               onChange={() =>
@@ -135,6 +135,7 @@ const ScoresDetail = () => {
                 )
               }
             />
+            <label htmlFor='two_assessment_check'>Has Two Assessment</label>
           </div>
         </Col>
       </Row>

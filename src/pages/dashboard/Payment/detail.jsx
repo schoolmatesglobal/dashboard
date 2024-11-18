@@ -104,7 +104,10 @@ const PaymentDetail = () => {
   );
 
   const bankId = (function () {
-    return bank?.find((bk) =>  inputs?.account_name?.includes(bk?.bank_name))?.id ?? "";
+    return (
+      bank?.find((bk) => inputs?.account_name?.includes(bk?.bank_name))?.id ??
+      ""
+    );
   })();
 
   const onSubmit = (data) => {
@@ -221,7 +224,7 @@ const PaymentDetail = () => {
   }, [invoicesList, amount]);
 
   useEffect(() => {
-    if (bank?.length > 1) {
+    if (bank?.length > 0) {
       const bk = bank?.map((bk, i) => {
         return {
           title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
@@ -231,6 +234,8 @@ const PaymentDetail = () => {
       setNewBank(bk);
     }
   }, [bank]);
+
+  console.log({ bank, inputs, newBank });
 
   // console.log({
   //   newBank,

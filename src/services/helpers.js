@@ -89,7 +89,7 @@ class Helpers {
     if (error.response) {
       const statusCode = error.response.status;
 
-      if (statusCode == 404) {
+      if (isProduction && statusCode == 404) {
         return;
       }
 

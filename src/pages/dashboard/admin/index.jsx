@@ -4,7 +4,7 @@ import {
   faPeopleLine,
   faTimeline,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-formid";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -29,8 +29,21 @@ const Admin = () => {
   const [academicStatus, setAcademicStatus] = useState("Add");
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
+  const [initiateCPeriod, setInitiateCPeriod] = useState(true);
   const [initiateSession, setInitiateSession] = useState(true);
   const [activatePreschools, setActivatePreschools] = useState(true);
+  const [loading1, setLoading1] = useState(false);
+
+  const [isValid, setIsValid] = useState(true);
+
+  // Function to check if the input matches the "YYYY/YYYY" format
+  const validateAcademicSession = (input) => {
+    const regex = /^\d{4}\/\d{4}$/;
+    const isMatch = regex.test(input);
+
+    // Set the boolean to false if the input does not match the format
+    setIsValid(isMatch);
+  };
 
   const {
     user,
@@ -47,9 +60,23 @@ const Admin = () => {
       handleSessionChange2,
       getAcademicPeriod,
       getAcademicSessions,
+      getCurrentAcademicPeriod,
     },
     permission,
   } = useAppContext();
+
+  function sortByAcademicSession(array) {
+    return array.sort((a, b) => {
+      const [startYearA, endYearA] = a.academic_session.split("/").map(Number);
+      const [startYearB, endYearB] = b.academic_session.split("/").map(Number);
+
+      // Compare start years first, if equal, compare end years
+      if (startYearA === startYearB) {
+        return endYearA - endYearB;
+      }
+      return startYearA - startYearB;
+    });
+  }
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -59,15 +86,14 @@ const Admin = () => {
 
   const {
     isLoading,
-    postAcademicPeriod,
+    // postAcademicPeriod,
     academicPeriodPrompt,
     setAcademicPeriodPrompt,
+    // postCurrentAcademicPeriod,
   } = useAcademicPeriod();
 
-  const { isLoading: academicSessionLoading } = useQuery(
-    [queryKeys.GET_ACADEMIC_SESSIONS],
-    getAcademicSessions,
-    {
+  const { isLoading: academicSessionLoading, refetch: refetchAcademicSession } =
+    useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
       retry: 1,
       refetchOnMount: true,
       refetchOnWindowFocus: false,
@@ -77,12 +103,14 @@ const Admin = () => {
         return data?.data;
       },
       onSuccess(data) {
-        setUserDetails({ ...userDetails, sessions: data });
+        setUserDetails({
+          ...userDetails,
+          sessions: sortByAcademicSession(data),
+        });
         setInitiateSession(false);
       },
       onError: errorHandler,
-    }
-  );
+    });
 
   const { isLoading: schoolLoading } = useQuery(
     [queryKeys.GET_SCHOOL],
@@ -178,27 +206,84 @@ const Admin = () => {
     },
   });
 
-  const { isLoading: academicPeriodLoading } = useQuery(
-    [queryKeys.GET_ACADEMIC_PERIOD],
-    getAcademicPeriod,
+  // const { isLoading: academicPeriodLoading } = useQuery(
+  //   [queryKeys.GET_ACADEMIC_PERIOD],
+  //   getAcademicPeriod,
+  //   {
+  //     retry: 1,
+  //     refetchOnMount: true,
+  //     refetchOnWindowFocus: false,
+  //     enabled: initiatePeriod,
+  //     select: (data) => {
+  //       // console.log({ acDt: data, acDt2: data?.data });
+
+  //       // return data?.data;
+  //       return data?.data[0];
+  //     },
+  //     onSuccess(data) {
+  //       console.log({ acDt3: data });
+
+  //       // setInputs({
+  //       //   ...inputs,
+  //       //   term: data?.term,
+  //       //   session: data?.session,
+  //       //   period: data?.period,
+  //       // });
+  //       // setUserDetails({
+  //       //   ...userDetails,
+  //       //   term: data?.term,
+  //       //   session: data?.session,
+  //       //   period: data?.period,
+  //       // });
+
+  //       if (data?.term) {
+  //         setInitiatePeriod(false);
+  //       }
+  //     },
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //   }
+  // );
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
+
+  const {
+    isLoading: currentAcademicPeriodLoading,
+    refetch: refetchCurrentAcademicPeriod,
+  } = useQuery(
+    [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
+    getCurrentAcademicPeriod,
     {
       retry: 1,
       refetchOnMount: true,
       refetchOnWindowFocus: false,
-      enabled: initiatePeriod,
+      enabled: initiateCPeriod,
       select: (data) => {
-        // console.log({ acDt: data, acDt2: data?.data });
+        console.log({ ccDt: data, ccDt2: data?.data });
 
         // return data?.data;
-        return data?.data[0];
+        return data?.data;
       },
       onSuccess(data) {
-        console.log({ acDt3: data });
-        setInputs({
-          ...inputs,
+        // console.log({ acDt3: data });
+
+        updateUser({
+          ...user,
           term: data?.term,
           session: data?.session,
           period: data?.period,
+        });
+        setInputs({
+          ...inputs,
+          term2: data?.term,
+          session2: data?.session,
+          period2: data?.period,
         });
         setUserDetails({
           ...userDetails,
@@ -206,9 +291,8 @@ const Admin = () => {
           session: data?.session,
           period: data?.period,
         });
-
         if (data?.term) {
-          setInitiatePeriod(false);
+          setInitiateCPeriod(false);
         }
       },
       onError(err) {
@@ -326,6 +410,55 @@ const Admin = () => {
     },
   });
 
+  const { mutate: postAcademicPeriod, isLoading: postAcademicPeriodLoading } =
+    useMutation(apiServices.postAcademicPeriod, {
+      onSuccess() {
+        setInitiateCPeriod(true);
+        setInitiateSession(true);
+        refetchCurrentAcademicPeriod();
+        refetchAcademicSession();
+        trigger(1000);
+        setInputs({
+          ...inputs,
+          period: "First Half",
+          session: "",
+          term: "First Term",
+        });
+        setAcademicPeriodPrompt(false);
+        toast.success("Academic Period has been posted successfully");
+      },
+      onError: apiServices.errorHandler,
+    });
+
+  const { mutate: postCurrentAcademicPeriod, isLoading: postCurrentAPLoading } =
+    useMutation(apiServices.postCurrentAcademicPeriod, {
+      onSuccess() {
+        setInitiateCPeriod(true);
+        refetchCurrentAcademicPeriod();
+        trigger(1000);
+        setInputs({
+          ...inputs,
+          period: "First Half",
+          session: "",
+          term: "First Term",
+        });
+        setAcademicPeriodPrompt(false);
+        toast.success("Current Academic Period has been set successfully");
+      },
+      onError: apiServices.errorHandler,
+    });
+
+  useEffect(() => {
+    validateAcademicSession(inputs?.session);
+  }, [inputs?.session]);
+
+  const postLoading =
+    isLoading ||
+    currentAcademicPeriodLoading ||
+    postAcademicPeriodLoading ||
+    postCurrentAPLoading ||
+    academicSessionLoading;
+
   const loading =
     isLoading ||
     uploadLoading ||
@@ -335,13 +468,15 @@ const Admin = () => {
     academicSessionLoading ||
     classListLoading ||
     preSchoolsLoading ||
+    currentAcademicPeriodLoading ||
     campusListLoading ||
-    academicPeriodLoading;
+    loading1;
+  // academicPeriodLoading;
 
-  console.log({ calendarData, userDetails, permission });
+  console.log({ calendarData, userDetails, permission, isValid });
 
   return (
-    <div className='teachers'>
+    <div className='teachers' key={loading1}>
       <PageTitle>Admin {loading && <Spinner />}</PageTitle>
       <ProfileCard type='admin' />
       <Row className='my-5'>
@@ -427,13 +562,30 @@ const Admin = () => {
         toggle={() => setAcademicPeriodPrompt(!academicPeriodPrompt)}
         singleButtonProps={{
           type: "button",
-          isLoading,
+          isLoading: postLoading,
           disabled:
-            isLoading ||
+            postLoading ||
+            (academicStatus === "Add" ? !inputs?.term : !inputs?.term2) ||
+            (academicStatus === "Add" ? !inputs?.period : !inputs?.period2) ||
+            (academicStatus === "Add" && !isValid) ||
             (academicStatus === "Add" ? !inputs.session : !inputs.session2),
-          onClick: () => postAcademicPeriod(inputs),
+          onClick: () => {
+            academicStatus === "Add"
+              ? postAcademicPeriod({
+                  period: inputs?.period,
+                  session: inputs?.session,
+                  term: inputs?.term,
+                })
+              : postCurrentAcademicPeriod({
+                  period: inputs?.period2,
+                  session: inputs?.session2,
+                  term: inputs?.term2,
+                });
+            // refetchCurrentAcademicPeriod();
+            // setTimeout(() => {}, 1000);
+          },
         }}
-        singleButtonText='Continue'
+        singleButtonText={academicStatus === "Add" ? "Continue" : "Set Current"}
         promptHeader='Post Academic Period'
       >
         <div className='d-flex align-items-center justify-content-center gap-3 mb-5'>

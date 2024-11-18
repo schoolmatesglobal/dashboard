@@ -44,6 +44,7 @@ const PageView = ({
   extraButton,
   extraLink,
   extraButtonTitle,
+  extraButtonOnclick = () => {},
   createLink,
   showIllustration = false,
   hideTable = false,
@@ -85,7 +86,13 @@ const PageView = ({
                 />
                 {extraButton && (
                   <div className='mb-5 d-flex justify-content-end'>
-                    <Button type='button' onClick={() => navigate(extraLink)}>
+                    <Button
+                      type='button'
+                      onClick={() => {
+                        extraLink && navigate(extraLink);
+                        extraButtonOnclick();
+                      }}
+                    >
                       {extraButtonTitle}
                     </Button>
                   </div>

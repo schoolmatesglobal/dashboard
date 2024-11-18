@@ -1291,17 +1291,6 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getAcademicPeriod() {
-    const { data } = await axios.get(`${backendAPI}/getacademicperiod`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${super.getToken()}`,
-      },
-    });
-
-    return data;
-  }
-
   async getClassPopulation() {
     const { data } = await axios.get(`${backendAPI}/classpopulation`, {
       headers: {
@@ -1754,6 +1743,17 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getAcademicPeriod() {
+    const { data } = await axios.get(`${backendAPI}/getacademicperiod`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async postAcademicPeriod(body) {
     const { data } = await axios.post(`${backendAPI}/academicperiod`, body, {
       headers: {
@@ -1761,6 +1761,61 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+
+    return data;
+  }
+
+  async getCurrentAcademicPeriod() {
+    const { data } = await axios.get(`${backendAPI}/current/academicperiod`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+ 
+
+  async postCurrentAcademicPeriod(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/current/academicperiod`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getAdmissionNoSettings(sch_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/admission-number/settings/${sch_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async postAdmissionNoSettings(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/admission-number/settings`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Spinner } from "reactstrap";
 import PageTitle from "../../../components/common/title";
 import HomeCard from "../../../components/cards/home-card";
@@ -7,6 +7,11 @@ import { useHome } from "../../../hooks/useHome";
 import Numeral from "react-numeral";
 import PieChart from "../../../components/charts/pie-chart";
 import AuditCard from "../../../components/cards/audit-card";
+import { useAppContext } from "../../../hooks/useAppContext";
+import { useQuery } from "react-query";
+import queryKeys from "../../../utils/queryKeys";
+import { useAuthDetails } from "../../../stores/authDetails";
+import axios from "axios";
 
 const SuperAdmin = () => {
   const {
@@ -18,6 +23,36 @@ const SuperAdmin = () => {
     accountBalance,
     receivedIncome,
   } = useHome();
+
+  const {
+    apiServices,
+    user,
+    updateUser,
+    permission,
+    apiServices: {
+      importStudent,
+      errorHandler,
+      getSchool,
+      getTimeTable,
+      formatData,
+      getAcademicCalender,
+      handleSessionChange,
+      handleSessionChange2,
+      getAcademicPeriod,
+      getAcademicSessions,
+      getCurrentAcademicPeriod,
+    },
+  } = useAppContext();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
+
+  const [initiateCPeriod, setInitiateCPeriod] = useState(true);
+
+  
+
+
+  console.log({ userDetails,  });
 
   return (
     <div>

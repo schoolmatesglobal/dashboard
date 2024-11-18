@@ -35,7 +35,7 @@ export const usePreSchool = () => {
       retry: 1,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      enabled: permission?.read && !!id && activatePreSchool,
+      enabled: is_preschool && permission?.read && !!id && activatePreSchool,
       // select: apiServices.formatSingleData,
       select: (data) => {
         const pt = apiServices.formatSingleData(data);
@@ -70,6 +70,7 @@ export const usePreSchool = () => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       enabled:
+        is_preschool &&
         permission?.subject &&
         !!period.period &&
         !!period.session &&
