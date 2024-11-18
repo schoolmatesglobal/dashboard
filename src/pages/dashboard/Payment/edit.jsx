@@ -214,7 +214,7 @@ const PaymentEdit = () => {
   }, [paymentById]);
 
   useEffect(() => {
-    if (bank?.length > 1) {
+    if (bank?.length > 0) {
       const bk = bank?.map((bk, i) => {
         return {
           title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
