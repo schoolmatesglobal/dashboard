@@ -58,13 +58,13 @@ export const backendAPI = (function () {
 
 export const isProductionCheck = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return false; // Update with your development API URL
+    return true; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
     return true;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return false;
+    return true;
   } else {
     return false;
   }
