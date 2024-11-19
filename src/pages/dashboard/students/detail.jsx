@@ -201,17 +201,19 @@ const StudentDetail = () => {
     title: x?.class_name,
   }));
 
-  const cls2 = (userDetails?.preSchools || []).map((x) => ({
+  const cls2 = (userDetails?.preschools || []).map((x) => ({
     value: x?.name.toUpperCase(),
     title: x?.name,
   }));
 
-  const classArray = user?.is_preschool === "true" ? cls2 : cls;
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
+
+  const classArray = is_preschool ? cls2 : cls;
 
   console.log({
     userDetails,
-    getAdmissionNoSettings,
-    loadedGen,
+    cls2,
+    cls,
     inputs,
   });
 

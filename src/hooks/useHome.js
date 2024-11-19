@@ -37,6 +37,7 @@ export const useHome = () => {
   const [activateCampuses, setActivateCampuses] = useState(true);
   const [activateClasses, setActivateClasses] = useState(true);
   const [activatePreschools, setActivatePreschools] = useState(true);
+
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const { userDetails, setUserDetails } = useAuthDetails();
@@ -452,7 +453,7 @@ export const useHome = () => {
       select: apiServices.formatData,
       onSuccess(data) {
         // setClasses(data);
-        console.log({ preschoolData: data });
+        // console.log({ preschoolData: data });
 
         setUserDetails({
           ...userDetails,
@@ -460,6 +461,7 @@ export const useHome = () => {
         });
 
         setActivatePreschools(false);
+        
       },
       onError: apiServices.errorHandler,
     }
@@ -566,6 +568,8 @@ export const useHome = () => {
     preSchoolsLoading ||
     campusListLoading ||
     teacherPopulationLoading;
+
+  console.log({ is_preschool, user, userDetails });
 
   return {
     user,
