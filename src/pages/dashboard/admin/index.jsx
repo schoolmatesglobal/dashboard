@@ -358,11 +358,17 @@ const Admin = () => {
       retry: 1,
       refetchOnMount: true,
       refetchOnWindowFocus: false,
+      // enabled: true,
       enabled: activatePreschools && is_preschool,
       select: apiServices.formatData,
+      // select: (data) => {
+      //   const f = apiServices.formatData(data);
+      //   console.log({ preschoolData: data?.data, f });
+
+      //   return data?.data;
+      // },
       onSuccess(data) {
         // setClasses(data);
-        console.log({ preschoolData: data });
 
         setUserDetails({
           ...userDetails,
@@ -473,7 +479,8 @@ const Admin = () => {
     loading1;
   // academicPeriodLoading;
 
-  console.log({ calendarData, userDetails, permission, isValid });
+  // console.log({ calendarData, userDetails, permission, isValid });
+  console.log({ is_preschool, user, userDetails });
 
   return (
     <div className='teachers' key={loading1}>
