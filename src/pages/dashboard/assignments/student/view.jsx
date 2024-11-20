@@ -108,9 +108,9 @@ const View = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -162,9 +162,9 @@ const View = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,

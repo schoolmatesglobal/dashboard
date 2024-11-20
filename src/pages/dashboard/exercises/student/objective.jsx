@@ -74,7 +74,7 @@ const Objective = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,

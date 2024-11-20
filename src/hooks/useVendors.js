@@ -11,7 +11,7 @@ export const useVendors = () => {
     {
       enabled: permission?.read || false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);

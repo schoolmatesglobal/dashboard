@@ -13,7 +13,7 @@ const DressCode = () => {
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);

@@ -133,13 +133,13 @@ const Objective = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // enabled: false,
       select: (data) => {
         const ssk = apiServices.formatData(data);

@@ -111,7 +111,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve2() && permission?.submissions,
@@ -166,7 +166,7 @@ const Performances = ({ markedQ, setMarkedQ }) => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,

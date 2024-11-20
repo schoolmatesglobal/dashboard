@@ -56,7 +56,7 @@ export const useClasses = () => {
     () => apiServices.getSubjectByClass(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!id,
       select: apiServices.formatData,
@@ -75,7 +75,7 @@ export const useClasses = () => {
     () => apiServices.getSubject(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: false,
       // enabled: !!id && onGetSubjectByClass2,
@@ -96,7 +96,7 @@ export const useClasses = () => {
     refetch: refetchClasses,
   } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled:
       activateClasses &&
@@ -140,7 +140,7 @@ export const useClasses = () => {
       () => apiServices.getSubjectByClass2(id),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: !!id,
         // enabled: false,
@@ -208,7 +208,7 @@ export const useClasses = () => {
     {
       // enabled: false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: newClass.present_class && permission?.create,
       onError(err) {
@@ -243,7 +243,7 @@ export const useClasses = () => {
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read && activateCampus,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);

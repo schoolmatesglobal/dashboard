@@ -9,7 +9,7 @@ export const useAcademicSession = () => {
     apiServices.getAcademicSessions,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       select: (data) => {
         // console.log({ datam: data });

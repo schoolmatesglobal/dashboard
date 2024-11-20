@@ -150,7 +150,7 @@ export const useStudent = () => {
     {
       enabled: permission?.read || false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -187,7 +187,7 @@ export const useStudent = () => {
         ),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: permission?.myStudents || false,
         // select: apiServices.formatData,
@@ -222,7 +222,7 @@ export const useStudent = () => {
 
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.myStudents && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
@@ -251,7 +251,7 @@ export const useStudent = () => {
       {
         enabled: permission?.readDebtors || false,
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
@@ -290,7 +290,7 @@ export const useStudent = () => {
       {
         enabled: permission?.readCreditors || false,
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
@@ -329,7 +329,7 @@ export const useStudent = () => {
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.update || false,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
@@ -355,7 +355,7 @@ export const useStudent = () => {
     {
       enabled: true,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -446,7 +446,7 @@ export const useStudent = () => {
     () => apiServices.getStudentBySession(session),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!session && permission?.sortSession,
       onError(err) {
@@ -476,7 +476,7 @@ export const useStudent = () => {
     () => apiServices.getStudentByAdmissionNumber(admissionNumber),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!admissionNumber && permission?.sortAdmissionNumber,
       onError(err) {
@@ -510,7 +510,7 @@ export const useStudent = () => {
       () => apiServices.getStudentByClass(classes),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: !!classes.present_class && permission?.sortStudentByClass,
         onError(err) {
@@ -601,7 +601,7 @@ export const useStudent = () => {
     () => apiServices.getStudent(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -616,7 +616,7 @@ export const useStudent = () => {
     apiServices.getAlumniList,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.alumni,
       select: (data) => {
@@ -644,7 +644,7 @@ export const useStudent = () => {
     () => apiServices.getStudentLoginDetails(page),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.studentLoginDetails,
       select: (data) => {

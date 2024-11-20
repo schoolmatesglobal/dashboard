@@ -82,7 +82,7 @@ const Performances2 = ({ markedQ, setMarkedQ, studentSubjects }) => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),

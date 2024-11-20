@@ -153,7 +153,7 @@ const CbtSubmission = (
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
 
       enabled: activateRetrieve(),

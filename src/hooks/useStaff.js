@@ -86,7 +86,7 @@ export const useStaff = () => {
     apiServices.getDesignation,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
@@ -101,7 +101,7 @@ export const useStaff = () => {
     apiServices.getRole,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
@@ -120,7 +120,7 @@ export const useStaff = () => {
     {
       enabled: permission?.read || false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -158,7 +158,7 @@ export const useStaff = () => {
     {
       enabled: permission?.readAttendance || false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -182,7 +182,7 @@ export const useStaff = () => {
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read || false,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
@@ -213,7 +213,7 @@ export const useStaff = () => {
       enabled: permission?.read,
       // enabled: permission?.read || activate,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -325,7 +325,7 @@ export const useStaff = () => {
     () => apiServices.getStaff(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -341,7 +341,7 @@ export const useStaff = () => {
       () => apiServices.getStaffLoginDetails(page),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: permission?.staffLoginDetails,
         select: (data) => {

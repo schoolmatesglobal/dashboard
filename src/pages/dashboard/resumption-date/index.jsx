@@ -22,7 +22,7 @@ const ResumptionDate = () => {
       },
       onError: apiServices.errorHandler,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
     }
   );

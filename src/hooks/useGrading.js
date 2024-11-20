@@ -30,7 +30,7 @@ export const useGrading = () => {
     {
       // enabled: false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: activate,
       onError(err) {
@@ -67,7 +67,7 @@ export const useGrading = () => {
     refetch: refetchGrading,
   } = useQuery([queryKeys.GET_GRADING], apiServices.getGrading, {
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     select: (data) => {
       // console.log({ data });
@@ -98,7 +98,7 @@ export const useGrading = () => {
     () => apiServices.getSingleGrading(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!id,
       select: apiServices.formatSingleData,

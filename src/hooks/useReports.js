@@ -29,7 +29,7 @@ export const useReports = () => {
     {
       enabled: enableIncomeQuery,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -64,7 +64,7 @@ export const useReports = () => {
     {
       enabled: enableInvoicesQuery,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -97,7 +97,7 @@ export const useReports = () => {
     {
       enabled: enableDebtorsQuery,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -130,7 +130,7 @@ export const useReports = () => {
     {
       enabled: enableCreditorsQuery,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -163,7 +163,7 @@ export const useReports = () => {
     {
       enabled: enableExpensesQuery,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);

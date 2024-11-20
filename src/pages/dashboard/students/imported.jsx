@@ -12,7 +12,7 @@ const ImportedStudents = () => {
     apiServices.getImportedStudents,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       select: (data) =>
         apiServices.formatData(data)?.map((item) => ({

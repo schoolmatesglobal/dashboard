@@ -108,7 +108,7 @@ const CbtResults = ({}) => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
@@ -128,7 +128,7 @@ const CbtResults = ({}) => {
         const calculatedData = analyzeQuestions(sorted);
 
         // console.log({ ffk, data, sorted });
-        
+
         return calculatedData ?? {};
       },
 
@@ -164,7 +164,7 @@ const CbtResults = ({}) => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
@@ -213,7 +213,7 @@ const CbtResults = ({}) => {
 
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: false,
       // enabled: activateRetrieve() && permission?.submissions,

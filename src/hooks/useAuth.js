@@ -18,7 +18,7 @@ export const useAuth = (navigateOnLogin = true) => {
     apiServices.getDesignation,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initiateDesignationQuery,
       onSuccess(data) {
