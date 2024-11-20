@@ -318,10 +318,10 @@ const Theory = ({
             <div className='d-flex flex-column my-5 gap-4'>
               {theoryQ
                 ?.sort((a, b) => {
-                  if (a.question_number < b.question_number) {
+                  if (Number(a.question_number) < Number(b.question_number)) {
                     return -1;
                   }
-                  if (a.question_number > b.question_number) {
+                  if (Number(a.question_number) > Number(b.question_number)) {
                     return 1;
                   }
                   return 0;
