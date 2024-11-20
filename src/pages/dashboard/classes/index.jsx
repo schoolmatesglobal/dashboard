@@ -4,6 +4,7 @@ import { useClasses } from "../../../hooks/useClasses";
 import { getActionOptions, getActionOptions2 } from "./constant";
 import { useNavigate } from "react-router-dom";
 import { useSubject } from "../../../hooks/useSubjects";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const Classes = () => {
   const {
@@ -14,6 +15,8 @@ const Classes = () => {
     setOnGetSubjectByClass2,
   } = useClasses();
   const { user } = useSubject();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const checkForExtraButton = () => {
     if (
@@ -28,7 +31,7 @@ const Classes = () => {
   };
   const navigate = useNavigate();
 
-  // console.log({ user, classes });
+  console.log({ userDetails });
 
   useEffect(() => {
     setOnGetSubjectByClass2(true);
@@ -65,7 +68,8 @@ const Classes = () => {
         //   accessor: "sub_class",
         // },
       ]}
-      data={classes}
+      data={userDetails?.classes}
+      // data={classes}
     />
   );
 };
