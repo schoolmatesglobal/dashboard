@@ -18,7 +18,7 @@ export const useInvoices = () => {
     refetch: getInvoiceRefetch,
   } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled: permission?.myPayment,
     select: apiServices.formatData,

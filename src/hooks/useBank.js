@@ -34,7 +34,7 @@ export const useBank = () => {
     refetch: refetchBank,
   } = useQuery([queryKeys.GET_BANK_LIST], apiServices.getBankList, {
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled: permission?.read,
     onError(err) {

@@ -16,7 +16,7 @@ const Comment = () => {
       },
       select: apiServices.formatData,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
     }
   );

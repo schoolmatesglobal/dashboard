@@ -20,7 +20,7 @@ export const usePreSchool = () => {
     apiServices.getPreSchools,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: permission?.read && is_preschool,
       select: apiServices.formatData,
@@ -33,7 +33,7 @@ export const usePreSchool = () => {
     () => apiServices.getPreSchool(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: is_preschool && permission?.read && !!id && activatePreSchool,
       // select: apiServices.formatSingleData,
@@ -67,7 +67,7 @@ export const usePreSchool = () => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled:
         is_preschool &&
@@ -104,7 +104,7 @@ export const usePreSchool = () => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled:
         is_preschool &&
@@ -138,7 +138,7 @@ export const usePreSchool = () => {
       () => apiServices.getPreSchoolSubject(id),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: permission?.subject && !!id,
         select: apiServices.formatData,

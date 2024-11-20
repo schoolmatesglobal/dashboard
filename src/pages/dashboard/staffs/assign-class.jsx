@@ -62,7 +62,7 @@ const AssignClass = () => {
       {
         enabled: !!findId(),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         select: (data) => {
           const newData = apiServices.formatData(data);

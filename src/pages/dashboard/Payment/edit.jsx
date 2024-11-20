@@ -69,7 +69,7 @@ const PaymentEdit = () => {
     {
       enabled: !!id,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // select: apiServices.formatData,
       select: (data) => {

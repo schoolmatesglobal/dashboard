@@ -25,7 +25,7 @@ export const useSubject = () => {
       // return { ...data, options: f };
     },
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError: apiServices.errorHandler,
   });
@@ -36,7 +36,7 @@ export const useSubject = () => {
     {
       enabled: !!id,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,

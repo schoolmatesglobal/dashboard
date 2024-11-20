@@ -211,7 +211,7 @@ const Create = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: activateRetrieveCreated() && permission?.view,
 

@@ -24,7 +24,7 @@ export const useTransferFund = () => {
     select: apiServices.formatData,
     onError: apiServices.errorHandler,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 
@@ -50,7 +50,7 @@ export const useTransferFund = () => {
     () => apiServices.getFund(id),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!id,
       select: (data) => ({

@@ -19,7 +19,7 @@ export const useVehicles = () => {
   } = useQuery([queryKeys.GET_ALL_VEHICLES], apiServices.getAllVehicles, {
     enabled: permission?.read || false,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
@@ -33,7 +33,7 @@ export const useVehicles = () => {
     {
       enabled: permission?.readLogs || false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -51,7 +51,7 @@ export const useVehicles = () => {
         ["Student"].includes(user?.designation_name) ||
         false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -76,7 +76,7 @@ export const useVehicles = () => {
         ["Admin"].includes(user?.designation_name) ||
         false,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -144,7 +144,7 @@ export const useVehicles = () => {
     {
       enabled: !!id,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         apiServices.errorHandler(err);

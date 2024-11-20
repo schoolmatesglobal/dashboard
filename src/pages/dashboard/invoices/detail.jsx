@@ -74,7 +74,7 @@ const InvoiceDetail = () => {
       },
       select: apiServices.formatData,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
     }
   );
@@ -174,7 +174,7 @@ const InvoiceDetail = () => {
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       enabled: classLoading && !!studentData?.present_class,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // select: apiServices.formatData,
       select: (data) => {
@@ -202,7 +202,7 @@ const InvoiceDetail = () => {
     () => apiServices.getStudent(newId),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         apiServices.errorHandler(err);

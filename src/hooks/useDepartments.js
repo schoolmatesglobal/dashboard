@@ -35,7 +35,7 @@ export const useDepartments = () => {
     {
       enabled: permission?.read,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
@@ -61,7 +61,7 @@ export const useDepartments = () => {
       // enabled: !!id,
       enabled: !!id && !!inputs.department_id,
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);

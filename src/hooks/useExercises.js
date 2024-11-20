@@ -141,7 +141,7 @@ export const useExercises = () => {
     apiServices.getSubjectByTeacher,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled:

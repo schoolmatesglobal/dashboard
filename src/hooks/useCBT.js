@@ -141,7 +141,7 @@ export const useCBT = () => {
 
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!user?.class_assigned,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
@@ -172,7 +172,7 @@ export const useCBT = () => {
     apiServices.getSubjectByTeacher,
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled:

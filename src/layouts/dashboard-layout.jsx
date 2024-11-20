@@ -69,7 +69,7 @@ const DashboardLayout = () => {
     () => apiServices.getUnreadCommunicationBookCount(),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       // enabled: !!id && permission?.view,
 

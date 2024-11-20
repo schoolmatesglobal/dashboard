@@ -26,7 +26,7 @@ export const useStudentAttendance = () => {
         apiServices.getStudentAttendance(date.split("-").reverse().join("/")),
       {
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: retrieveAttendance && permission?.retrieve,
         onSuccess(data) {
@@ -70,7 +70,7 @@ export const useStudentAttendance = () => {
         !!userDetails?.session &&
         (!studentAttendance || studentAttendance?.length === 0),
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);

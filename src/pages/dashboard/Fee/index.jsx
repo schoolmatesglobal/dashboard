@@ -17,7 +17,7 @@ const FeeList = () => {
       apiServices.errorHandler(err);
     },
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     // select: apiServices.formatData,
     select: (data) => {

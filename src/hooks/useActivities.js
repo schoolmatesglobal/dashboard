@@ -20,7 +20,7 @@ export const useActivities = () => {
   } = useQuery([queryKeys.GET_ACTIVITIES], apiServices.getActivities, {
     // select: apiServices.formatData,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled: activate && activateElem,
     select: (data) => {
@@ -62,7 +62,7 @@ export const useActivities = () => {
   } = useQuery([queryKeys.GET_ACTIVITIES, "2"], apiServices.getPreActivities, {
     // select: apiServices.formatData,
     retry: 1,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     enabled: activate && activatePre,
     select: (data) => {

@@ -44,7 +44,7 @@ export const useBroadSheet = () => {
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !is_preschool,
       select: (data) => {
@@ -128,7 +128,7 @@ export const useBroadSheet = () => {
       //   state?.creds?.period === "Second Half",
       // select: apiServices.formatData,
       // refetchOnWindowFocus: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // refetchOnReconnect: false,
       // staleTime: 60000 * 30,
 

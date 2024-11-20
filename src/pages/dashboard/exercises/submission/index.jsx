@@ -141,9 +141,9 @@ const Submission = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -209,7 +209,7 @@ const Submission = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
 
       // enabled: permission?.read || permission?.readClass,
@@ -274,7 +274,7 @@ const Submission = ({
       ),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: activateRetrieve() && permission?.submissions,
       // enabled: false,

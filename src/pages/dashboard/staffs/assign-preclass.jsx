@@ -60,7 +60,7 @@ const AssignPreClass = () => {
       {
         enabled: !!findId(),
         retry: 1,
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
         select: apiServices.formatData,
         onError: apiServices.errorHandler,

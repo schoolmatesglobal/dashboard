@@ -250,7 +250,7 @@ const CommunicationBookPage = () => {
     () => apiServices.getCommunicationBookByClass(classIdValue),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!classIdValue && permission?.view,
 
@@ -318,7 +318,7 @@ const CommunicationBookPage = () => {
     () => apiServices.getClosedCommunicationBookByClass(classIdValue),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!classIdValue && permission?.view,
 
@@ -380,7 +380,7 @@ const CommunicationBookPage = () => {
     () => apiServices.getCommunicationBookReplies(communicationId),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!communicationId && permission?.view,
 
@@ -508,7 +508,7 @@ const CommunicationBookPage = () => {
     () => apiServices.getStaffByClass(user?.class),
     {
       retry: 1,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: !!user?.class && user?.designation_name === "Student",
 
