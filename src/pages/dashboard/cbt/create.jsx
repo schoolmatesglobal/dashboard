@@ -25,6 +25,7 @@ import { useLocation } from "react-router-dom";
 import { parseDuration, toSentenceCase } from "./constant";
 import CreateSettings from "./createSettings";
 import GoBack from "../../../components/common/go-back";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const CreateCBT = (
   {
@@ -59,10 +60,12 @@ const CreateCBT = (
     errorHandler,
     permission,
     user,
-    subjectsByTeacher,
+    // subjectsByTeacher,
   } = useCBT();
 
   const { state } = useLocation();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
   const isTablet = useMediaQuery({
@@ -770,21 +773,21 @@ const CreateCBT = (
     { value: "Art and Craft", title: "Art and Craft", id: "5" },
   ];
 
-  useEffect(() => {
-    if (subjectsByTeacher?.length > 0) {
-      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+  // useEffect(() => {
+  //   if (subjectsByTeacher?.length > 0) {
+  //     const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+  //       const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-        return {
-          value: subId,
-          title: sb?.name,
-        };
-      });
-      setNewSubjects(sbb2);
-    } else {
-      setNewSubjects([]);
-    }
-  }, [subjectsByTeacher]);
+  //       return {
+  //         value: subId,
+  //         title: sb?.name,
+  //       };
+  //     });
+  //     setNewSubjects(sbb2);
+  //   } else {
+  //     setNewSubjects([]);
+  //   }
+  // }, [subjectsByTeacher]);
 
   const settingsAdded = () => {
     if (
@@ -816,6 +819,8 @@ const CreateCBT = (
 
   console.log({
     objectiveQ,
+    // subjectsByTeacher,
+    userDetails,
   });
 
   return (
@@ -839,7 +844,8 @@ const CreateCBT = (
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                options={userDetails?.teacherSubjects}
+                // options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setCreateQ((prev) => {
