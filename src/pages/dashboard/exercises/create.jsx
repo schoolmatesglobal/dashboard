@@ -839,10 +839,10 @@ const Create = ({
             <div className='d-flex flex-column my-5 gap-3'>
               {objectiveQ
                 ?.sort((a, b) => {
-                  if (a.question_number < b.question_number) {
+                  if (Number(a.question_number) < Number(b.question_number)) {
                     return -1;
                   }
-                  if (a.question_number > b.question_number) {
+                  if (Number(a.question_number) > Number(b.question_number)) {
                     return 1;
                   }
                   return 0;
@@ -880,13 +880,13 @@ const Create = ({
           <div className='d-flex flex-column my-5 gap-3'>
             {theoryQ
               ?.sort((a, b) => {
-                if (a.question_number < b.question_number) {
-                  return -1;
-                }
-                if (a.question_number > b.question_number) {
-                  return 1;
-                }
-                return 0;
+                if (Number(a.question_number) < Number(b.question_number)) {
+                    return -1;
+                  }
+                  if (Number(a.question_number) > Number(b.question_number)) {
+                    return 1;
+                  }
+                  return 0;
               })
               ?.map((CQ, index) => {
                 // console.log({ CQ });

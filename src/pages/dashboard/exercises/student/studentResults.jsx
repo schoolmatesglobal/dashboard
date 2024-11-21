@@ -84,10 +84,10 @@ const StudentResults = ({
         const sorted = ffk
           ?.filter((dt) => dt?.subject === subject && dt?.student === student)
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
@@ -149,10 +149,10 @@ const StudentResults = ({
               Number(dt?.student_id) === Number(student_id)
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
