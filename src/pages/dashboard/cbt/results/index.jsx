@@ -51,7 +51,7 @@ const CbtResults = ({}) => {
     studentByClassLoading,
   } = useCBT();
 
-  const { userDetails, setUserDetails } = useAuthDetails();
+  const { userDetails, setUserDetails, subjects } = useAuthDetails();
 
   const [cbtObject, setCbtObject] = useState({});
   const [cbtResult, setCbtResult] = useState([]);
@@ -68,7 +68,7 @@ const CbtResults = ({}) => {
     markedQ;
 
   const [newSubjects, setNewSubjects] = useState([]);
-  const { subjects, isLoading: subjectLoading } = useSubject();
+  // const { isLoading: subjectLoading } = useSubject();
 
   const [showLoading, setShowLoading] = useState(false);
 
@@ -390,9 +390,12 @@ const CbtResults = ({}) => {
   // }, [week, subject, student]);
 
   console.log({
-    // markedQ,
+    markedQ,
     // cbtAnswer,
     cbtObject,
+    subjects,
+    userDetails,
+    // cbtObject,
     // markedAssignmentResults,
     // dt,
     // cbtResult,
@@ -423,11 +426,16 @@ const CbtResults = ({}) => {
                 options={userDetails?.teacherSubjects}
                 value={subject}
                 onChange={({ target: { value } }) => {
-                  const subId = subjects?.find(
-                    (ob) => ob.subject === value
-                  )?.id;
+                  const subId = userDetails?.allSubjects?.find(
+                    (ob) => ob.id === value
+                  );
+                  console.log({ subId });
                   setMarkedQ((prev) => {
-                    return { ...prev, subject_id: subId, subject: value };
+                    return {
+                      ...prev,
+                      subject_id: subId?.id,
+                      subject: subId?.subject,
+                    };
                   });
                 }}
                 placeholder='Select Subject'
@@ -586,7 +594,15 @@ const CbtResults = ({}) => {
                       accessor: "answer_state",
                     },
                   ]}
-                  data={cbtObject?.questions}
+                  data={cbtObject?.questions?.sort((a, b) => {
+                    if (Number(a.question_number) < Number(b.question_number)) {
+                      return -1;
+                    }
+                    if (Number(a.question_number) > Number(b.question_number)) {
+                      return 1;
+                    }
+                    return 0;
+                  })}
                   markedQ={markedQ}
                   result={cbtObject}
                   ResultTab={ResultTab}

@@ -518,7 +518,15 @@ const StudentCBTResults = (
                       accessor: "answer_state",
                     },
                   ]}
-                  data={cbtObject?.questions}
+                  data={cbtObject?.questions?.sort((a, b) => {
+                    if (Number(a.question_number) < Number(b.question_number)) {
+                      return -1;
+                    }
+                    if (Number(a.question_number) > Number(b.question_number)) {
+                      return 1;
+                    }
+                    return 0;
+                  })}
                   markedQ={markedQ}
                   result={cbtObject}
                   ResultTab={ResultTab}
