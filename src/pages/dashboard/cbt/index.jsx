@@ -20,6 +20,7 @@ import { useStudentCBT } from "../../../hooks/useStudentCBT";
 import { useSubject } from "../../../hooks/useSubjects";
 import { useMediaQuery } from "react-responsive";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
+import { useAuthDetails } from "../../../stores/authDetails";
 // import Performances2 from "./performances/students";
 
 const CBTPage = () => {
@@ -113,7 +114,11 @@ const CBTPage = () => {
     setHideAllBars,
   } = useAppContext();
 
-  const { data: sessions } = useAcademicSession();
+  // const { data: sessions } = useAcademicSession();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
+  console.log({ userDetails });
 
   const { inputs, errors, handleChange } = useForm({
     defaultValues: {
@@ -123,7 +128,7 @@ const CBTPage = () => {
       subject: "",
       subjectId: "",
       question_type: "",
-      session: sessions?.length > 0 && sessions[0]?.academic_session,
+      session: userDetails?.sessions?.length > 0 && userDetails?.session,
       class_name: "",
     },
     // validation: {
@@ -335,9 +340,9 @@ const CBTPage = () => {
     setCreateQ((prev) => {
       return {
         ...prev,
-        period: user?.period,
-        term: user?.term,
-        session: user?.session,
+        period: userDetails?.period,
+        term: userDetails?.term,
+        session: userDetails?.session,
       };
     });
   }, []);
@@ -420,7 +425,7 @@ const CBTPage = () => {
                 return { ...prev, session: value };
               });
             }}
-            options={(sessions || [])?.map((session) => ({
+            options={(userDetails?.sessions || [])?.map((session) => ({
               value: session?.academic_session,
               title: session?.academic_session,
             }))}

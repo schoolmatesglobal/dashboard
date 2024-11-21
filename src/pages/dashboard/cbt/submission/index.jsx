@@ -17,6 +17,7 @@ import Objective from "./objective";
 import Button from "../../../../components/buttons/button";
 import StudentsResults from "../../../../components/common/students-results";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const CbtSubmission = (
@@ -69,6 +70,8 @@ const CbtSubmission = (
   } = useCBT();
 
   const { state } = useLocation();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
   const isTablet = useMediaQuery({
@@ -173,7 +176,7 @@ const CbtSubmission = (
 
         // setAnsweredObjQ(sorted);
 
-        // console.log({ ggk, data, sorted });
+        console.log({ ggk, data, sorted });
 
         return sorted;
       },
@@ -380,7 +383,8 @@ const CbtSubmission = (
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                options={userDetails?.teacherSubjects}
+                // options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setAnswerQ((prev) => {

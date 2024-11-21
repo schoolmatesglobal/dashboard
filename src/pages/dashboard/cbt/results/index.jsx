@@ -26,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import { formatTime } from "./constant";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const CbtResults = ({}) => {
   const {
@@ -49,6 +50,8 @@ const CbtResults = ({}) => {
     studentByClass,
     studentByClassLoading,
   } = useCBT();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const [cbtObject, setCbtObject] = useState({});
   const [cbtResult, setCbtResult] = useState([]);
@@ -416,7 +419,8 @@ const CbtResults = ({}) => {
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                // options={newSubjects}
+                options={userDetails?.teacherSubjects}
                 value={subject}
                 onChange={({ target: { value } }) => {
                   const subId = subjects?.find(

@@ -17,6 +17,8 @@ const Teacher = () => {
   const { isLoading, timetableData, calendarData, user, academicPeriod } = useHome();
   const navigate = useNavigate();
 
+  
+
   // console.log({ userH: user, academicPeriod });
 
   return (

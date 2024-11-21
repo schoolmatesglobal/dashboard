@@ -37,6 +37,7 @@ export const useHome = () => {
   const [activateCampuses, setActivateCampuses] = useState(true);
   const [activateClasses, setActivateClasses] = useState(true);
   const [activatePreschools, setActivatePreschools] = useState(true);
+  const [activateSubT, setActivateSubT] = useState(false);
 
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
@@ -83,6 +84,7 @@ export const useHome = () => {
       },
     }
   );
+
   const { isLoading: totalExpenseLoading, data: totalExpense } = useQuery(
     [queryKeys.GET_ALL_TOTAL_EXPENSES],
     apiServices.getAllExpenses,
@@ -96,6 +98,7 @@ export const useHome = () => {
       },
     }
   );
+
   const { isLoading: accountBalanceLoading, data: accountBalance } = useQuery(
     [queryKeys.GET_ALL_ACCOUNT_BALANCE],
     apiServices.getAllAccountBalances,
@@ -197,7 +200,7 @@ export const useHome = () => {
         return data?.data[0];
       },
       onSuccess(data) {
-        console.log({ acDt3: data });
+        // console.log({ acDt3: data });
         updateUser({
           ...user,
           term: data?.term,
@@ -418,7 +421,7 @@ export const useHome = () => {
     enabled: activateClasses && !is_preschool,
     onSuccess(data) {
       // setClasses(data);
-      console.log({ classesData: data });
+      // console.log({ classesData: data });
       const formatClassList = data?.map((x) => ({
         ...x,
         sub_class: x.sub_class.split(",").join(", "),
@@ -461,7 +464,6 @@ export const useHome = () => {
         });
 
         setActivatePreschools(false);
-        
       },
       onError: apiServices.errorHandler,
     }
@@ -491,7 +493,7 @@ export const useHome = () => {
     },
     onSuccess(data) {
       // setClasses(data);
-      console.log({ campusData: data });
+      // console.log({ campusData: data });
 
       setUserDetails({
         ...userDetails,
@@ -515,7 +517,7 @@ export const useHome = () => {
       enabled:
         initiateCPeriod && !["Superadmin"].includes(user?.designation_name),
       select: (data) => {
-        console.log({ ccDt: data, ccDt2: data?.data });
+        // console.log({ ccDt: data, ccDt2: data?.data });
 
         // return data?.data;
         return data?.data;
@@ -546,6 +548,87 @@ export const useHome = () => {
     }
   );
 
+  /// GET SUBJECTS
+  const {
+    isLoading: subjectsLoading,
+    data: subjects,
+    refetch: refetchSubjects,
+  } = useQuery([queryKeys.GET_SUBJECTS], apiServices.getAllSubjects, {
+    // select: apiServices.formatData,
+    select: (data) => {
+      // console.log({ ssdata: data });
+      return apiServices.formatData(data)?.map((obj, index) => {
+        const newObj = { ...obj };
+        newObj.new_id = index + 1;
+        return newObj;
+      });
+
+      // return { ...data, options: f };
+    },
+    onSuccess(data) {
+      setActivateSubT(true);
+      setUserDetails({ ...userDetails, allSubjects: data });
+    },
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    onError: apiServices.errorHandler,
+  });
+
+  ///// GET SUBJECTS BY TEACHER
+  const {
+    isLoading: subjectsByTeacherLoading,
+    refetch: subjectsByTeacherRefetch,
+    data: subjectsByTeacher,
+  } = useQuery(
+    [queryKeys.GET_SUBJECTS_BY_TEACHER],
+    apiServices.getSubjectByTeacher,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // enabled: permission?.read || permission?.readClass,
+      enabled:
+        ["TEACHER"].includes(user?.designation_name?.toUpperCase()) &&
+        activateSubT,
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+      select: (data) => {
+        const Td = apiServices.formatData(data);
+
+        return Td;
+      },
+      onSuccess(data) {
+        // setSubjectsByTeacher(data);
+        const sd = data[0]?.subject;
+        const sbb2 = sd?.map((sb, i) => {
+          const subId = userDetails?.allSubjects?.find(
+            (ob) => ob.subject?.toUpperCase() === sb?.name?.toUpperCase()
+          )?.id;
+
+          return {
+            value: subId,
+            title: sb?.name,
+          };
+        });
+
+        const Td2 = sbb2?.map((sub, index) => {
+          return {
+            value: sub.value,
+            title: sub.title,
+            id: Number(sub.value),
+          };
+        });
+
+        setUserDetails({ ...userDetails, teacherSubjects: Td2 });
+
+        console.log({ Td2, data, sbb2, sd });
+      },
+    }
+  );
+
   const isLoading =
     outstandingLoading ||
     expectedIncomeLoading ||
@@ -567,9 +650,11 @@ export const useHome = () => {
     classListLoading ||
     preSchoolsLoading ||
     campusListLoading ||
+    subjectsLoading ||
+    subjectsByTeacherLoading ||
     teacherPopulationLoading;
 
-  console.log({ is_preschool, user, userDetails });
+  console.log({ is_preschool, user, userDetails, subjects });
 
   return {
     user,

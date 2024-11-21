@@ -37,6 +37,7 @@ import PieCharts from "../../../../components/charts/pie-chart";
 import { formatTime } from "../results/constant";
 import { FaComputer } from "react-icons/fa6";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const CbtPerformances = ({}) => {
   const {
@@ -66,6 +67,8 @@ const CbtPerformances = ({}) => {
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const [newSubjects, setNewSubjects] = useState([]);
 
   const [dataSingle, setDataSingle] = useState([]);
@@ -91,10 +94,10 @@ const CbtPerformances = ({}) => {
     }, 1000);
   };
 
-  const newStudents = [
-    { value: "all students", title: "All Students", id: 999999 },
-    ...myStudents,
-  ];
+  // const newStudents = [
+  //   { value: "all students", title: "All Students", id: 999999 },
+  //   ...myStudents,
+  // ];
 
   const findStudentName = (id) => {
     const studentObj = myStudents?.find((my) => {
@@ -516,7 +519,8 @@ const CbtPerformances = ({}) => {
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                // options={newSubjects}
+                options={userDetails?.teacherSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setMarkedQ((prev) => {
