@@ -49,7 +49,7 @@ export const useAuth = (navigateOnLogin = true) => {
         setInitiateDesignationQuery(true);
       },
       onError(err) {
-        apiServices.errorHandler(err);
+        apiServices.errorHandler2(err);
       },
     }
   );
@@ -62,7 +62,7 @@ export const useAuth = (navigateOnLogin = true) => {
         setInitiateDesignationQuery(true);
       },
       onError(err) {
-        apiServices.errorHandler(err);
+        apiServices.errorHandler2(err);
       },
     }
   );

@@ -52,6 +52,7 @@ const Admin = () => {
     apiServices: {
       importStudent,
       errorHandler,
+      errorHandler2,
       getSchool,
       getTimeTable,
       formatData,
@@ -296,7 +297,7 @@ const Admin = () => {
         }
       },
       onError(err) {
-        errorHandler(err);
+        errorHandler2(err);
       },
     }
   );
