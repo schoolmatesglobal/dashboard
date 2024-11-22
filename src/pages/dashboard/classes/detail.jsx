@@ -9,6 +9,7 @@ import DetailView from "../../../components/views/detail-view";
 import { useClasses } from "../../../hooks/useClasses";
 import AuthSelect from "../../../components/inputs/auth-select";
 import { useCampus } from "../../../hooks/useCampus";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const ClassDetail = () => {
   const {
@@ -64,7 +65,7 @@ const ClassDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classData]);
 
-  // console.log({ inputs, classData });
+  // console.log({ userDetails });
 
   return (
     <DetailView
@@ -129,6 +130,7 @@ const ClassDetail = () => {
               handleChange(e);
             }}
             options={campusList?.options}
+            disabled
           />
           {!!errors.class && <p className='error-message'>{errors.campus}</p>}
         </Col>

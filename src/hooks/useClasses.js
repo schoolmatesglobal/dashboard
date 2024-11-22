@@ -37,7 +37,7 @@ export const useClasses = () => {
     defaultValues: {
       class_name: "",
       sub_class: [],
-      campus: "",
+      campus: userDetails?.campus,
     },
     validation: {
       class_name: {
