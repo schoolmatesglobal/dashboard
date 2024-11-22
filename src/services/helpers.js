@@ -82,12 +82,16 @@ class Helpers {
   //   return toast.error(res);
   // }
 
-  errorHandler(error, message) {
+  errorHandler(error, message, blockAuthError = true) {
     const isProduction = isProductionCheck;
     let res = message || "An error occurred";
 
     if (error.response) {
       const statusCode = error.response.status;
+
+      if (statusCode === 401 && blockAuthError) {
+        return;
+      }
 
       if (isProduction && statusCode == 404) {
         return;

@@ -24,6 +24,7 @@ const LoginPrompt = () => {
 
   return (
     <Prompt
+      backdrop='static'
       isOpen={loginPrompt}
       toggle={toggleLoginPrompt}
       singleButtonProps={{
@@ -32,20 +33,20 @@ const LoginPrompt = () => {
         disabled: isLoading,
         onClick: handleSubmit(onSubmit),
       }}
-      singleButtonText="Continue"
-      promptHeader="Session Expired"
+      singleButtonText='Continue'
+      promptHeader='Session Expired'
     >
-      <div className="form-group">
+      <div className='form-group'>
         <AuthInput
-          type="password"
-          placeholder="Password"
+          type='password'
+          placeholder='Password'
           hasError={!!errors.password}
           value={inputs.password}
-          name="password"
+          name='password'
           onChange={handleChange}
         />
         {!!errors.password && (
-          <p className="error-message">{errors.password}</p>
+          <p className='error-message'>{errors.password}</p>
         )}
       </div>
     </Prompt>
