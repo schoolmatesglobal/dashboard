@@ -113,6 +113,37 @@ class Helpers {
     return toast.error(res);
   }
 
+  errorHandler2(error, message) {
+    const isProduction = isProductionCheck;
+    let res = message || "An error occurred";
+
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      // if (statusCode === 401 && blockAuthError) {
+      //   return;
+      // }
+
+      if (isProduction && statusCode == 404) {
+        return;
+      }
+
+      // Handle client-side and server-side errors
+      if (statusCode >= 400 && statusCode <= 499) {
+        res = error.response.data.message;
+      }
+
+      // In production, ignore error codes 429 and 500
+      if (isProduction && (statusCode === 429 || statusCode === 500)) {
+        return;
+      }
+    } else {
+      res = error.message;
+    }
+
+    return toast.error(res);
+  }
+
   handleSessionChange = (val, name, setFieldValue) => {
     const value = val.replace(/\//g, "");
     if (!value) {

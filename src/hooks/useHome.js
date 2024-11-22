@@ -13,6 +13,7 @@ export const useHome = () => {
     apiServices: {
       importStudent,
       errorHandler,
+      errorHandler2,
       getSchool,
       getTimeTable,
       formatData,
@@ -543,7 +544,7 @@ export const useHome = () => {
         }
       },
       onError(err) {
-        errorHandler(err);
+        errorHandler2(err);
       },
     }
   );
