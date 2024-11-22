@@ -108,6 +108,12 @@ const ProfileCard = ({ type = "super-admin" }) => {
             <h3>Department:</h3>
             <p>{user.department}</p>
           </div>
+          {user?.campus && (
+            <div>
+              <h3>Campus:</h3>
+              <p>{user?.campus}</p>
+            </div>
+          )}
           <div>
             <h3>Address:</h3>
             <p>{user.address}</p>
