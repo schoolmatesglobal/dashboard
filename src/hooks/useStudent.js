@@ -362,7 +362,7 @@ export const useStudent = () => {
       },
       // select: apiServices.formatData,
       select: (data) => {
-        console.log({ gadata: data?.data });
+        // console.log({ gadata: data?.data });
 
         // const f = apiServices.formatData(data)?.map((x) => ({
         //   value: x?.name,
