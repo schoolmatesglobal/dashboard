@@ -29,6 +29,8 @@ const ClassDetail = () => {
     user,
   } = useClasses();
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const {
     // campusList,
     // isLoading,
@@ -39,6 +41,10 @@ const ClassDetail = () => {
 
   useEffect(() => {
     setActivateCampus(true);
+    setInputs({
+      ...inputs,
+      campus: userDetails?.campus,
+    });
   }, []);
 
   const navigate = useNavigate();
@@ -120,20 +126,38 @@ const ClassDetail = () => {
             onChange={(value) => setFieldValue("sub_class", value)}
           />
         </Col> */}
-        <Col sm='6' className='mb-4 mb-sm-0'>
-          <AuthSelect
-            label='Campus'
-            value={inputs.campus}
-            name='campus'
-            hasError={!!errors.campus}
-            onChange={(e) => {
-              handleChange(e);
-            }}
-            options={campusList?.options}
-            disabled
-          />
-          {!!errors.class && <p className='error-message'>{errors.campus}</p>}
-        </Col>
+        {userDetails?.designation_name === "Superadmin" && (
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthSelect
+              label='Campus'
+              value={inputs.campus}
+              name='campus'
+              hasError={!!errors.campus}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              options={userDetails?.campusList?.options}
+              // disabled
+            />
+            {!!errors.class && <p className='error-message'>{errors.campus}</p>}
+          </Col>
+        )}
+        {userDetails?.designation_name !== "Superadmin" && (
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Campus'
+              value={inputs.campus}
+              name='campus'
+              hasError={!!errors.campus}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              options={campusList?.options}
+              disabled
+            />
+            {!!errors.class && <p className='error-message'>{errors.campus}</p>}
+          </Col>
+        )}
       </Row>
       {/* <Row className="mb-0 mb-sm-4">
       </Row> */}

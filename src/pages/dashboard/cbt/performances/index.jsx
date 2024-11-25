@@ -523,8 +523,16 @@ const CbtPerformances = ({}) => {
                 options={userDetails?.teacherSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
+                  const subId = userDetails?.allSubjects?.find(
+                    (ob) => ob.id === value
+                  );
+                  console.log({ subId });
                   setMarkedQ((prev) => {
-                    return { ...prev, subject_id: value };
+                    return {
+                      ...prev,
+                      subject_id: subId?.id,
+                      subject: subId?.subject,
+                    };
                   });
                 }}
                 placeholder='Select Subject'
