@@ -424,7 +424,7 @@ const CbtResults = ({}) => {
                 sort
                 // options={newSubjects}
                 options={userDetails?.teacherSubjects}
-                value={subject}
+                value={subject_id}
                 onChange={({ target: { value } }) => {
                   const subId = userDetails?.allSubjects?.find(
                     (ob) => ob.id === value
