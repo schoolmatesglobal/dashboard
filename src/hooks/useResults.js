@@ -1391,9 +1391,10 @@ export const useResults = () => {
       period: state?.creds?.period,
       term: state?.creds?.term,
       session: state?.creds?.session,
-      result_type: userDetails?.maxScores?.has_two_assessment === 1
-        ? inputs.assessment
-        : "midterm",
+      result_type:
+        userDetails?.maxScores?.has_two_assessment === 1
+          ? inputs.assessment
+          : "midterm",
       results: subjects.map((x) => ({
         subject: x.subject,
         score: x.grade,
@@ -1551,7 +1552,7 @@ export const useResults = () => {
   // ||
   // releaseResultLoading;
 
-  console.log({ grading, userDetails, maxScores });
+  console.log({ grading, userDetails, maxScores, teacherSubjects });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {

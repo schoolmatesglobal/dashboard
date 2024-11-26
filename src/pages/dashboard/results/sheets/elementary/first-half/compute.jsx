@@ -59,6 +59,14 @@ const ComputeElementaryFirstHalfResult = () => {
     }, time);
   }
 
+  function removeDuplicates(array) {
+    return array.filter(
+      (obj, index, self) =>
+        index ===
+        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+    );
+  }
+
   const midTermMax = () => {
     let value;
     if (
@@ -101,8 +109,11 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const allLoading = isLoading || loading1;
 
+  const newSubjects = removeDuplicates(subjects)
+
   console.log({
     subjects,
+    s2: newSubjects,
     status,
     additionalCreds,
     checkResultComputed,
@@ -225,8 +236,8 @@ const ComputeElementaryFirstHalfResult = () => {
 
               <div>
                 <div>
-                  {subjects?.length > 0 &&
-                    subjects?.map((x, key) => (
+                  {newSubjects?.length > 0 &&
+                    newSubjects?.map((x, key) => (
                       <Row key={key} className='my-5 '>
                         <Col sm='6' className='mb- mb-sm-0'>
                           <h5>
@@ -242,7 +253,7 @@ const ComputeElementaryFirstHalfResult = () => {
 
                               if (Number(value) > Number(midTermMax())) return;
 
-                              const fd = subjects.map((s) => ({
+                              const fd = newSubjects.map((s) => ({
                                 ...s,
                                 grade:
                                   s.subject === x.subject ? value : s.grade,

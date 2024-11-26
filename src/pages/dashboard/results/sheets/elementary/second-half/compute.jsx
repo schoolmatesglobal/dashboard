@@ -63,6 +63,14 @@ const ComputeElementarySecondHalfResult = () => {
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
 
+  function removeDuplicates(array) {
+    return array.filter(
+      (obj, index, self) =>
+        index ===
+        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+    );
+  }
+
   const handleSocialChecks = (property, type, value) => {
     if (additionalCreds[property]) {
       const find = additionalCreds[property].find((x) => x.name === type);
@@ -130,8 +138,7 @@ const ComputeElementarySecondHalfResult = () => {
 
   const allLoading = isLoading || loading1 || skillLoading || reportLoading;
 
-  const newSubjects = subjects ?? [];
-
+  const newSubjects = removeDuplicates(subjects) ?? [];
 
   // console.log({ extraActivities, activities, additionalCreds, maxScores });
   // console.log({ maxScores, status, newSubjects, additionalCreds });
