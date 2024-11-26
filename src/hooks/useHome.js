@@ -30,6 +30,7 @@ export const useHome = () => {
   const [initiateSchool, setInitiateSchool] = useState(true);
   const [initiatePeriod, setInitiatePeriod] = useState(true);
   const [initiateClassP, setInitiateClassP] = useState(true);
+  const [initiateGrade, setInitiateGrade] = useState(true);
   const [initiateSchoolP, setInitiateSchoolP] = useState(true);
   const [initiateStaffP, setInitiateStaffP] = useState(true);
   const [initiateStudentP, setInitiateStudentP] = useState(true);
@@ -163,6 +164,35 @@ export const useHome = () => {
         errorHandler(err);
       },
       select: (data) => data?.data[0].attributes,
+    }
+  );
+
+  const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
+    [queryKeys.GET_MAX_SCORES],
+    apiServices.getMaxScores,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateGrade,
+      // enabled: !is_preschool,
+      onError(err) {
+        errorHandler(err);
+      },
+      select: (data) => {
+        const dt = data?.data;
+        console.log({ scoreData: data, dt });
+        // console.log({ datam: data });
+        return dt;
+      },
+      onSuccess: (data) => {
+        setUserDetails({
+          ...userDetails,
+          maxScores: data,
+        });
+        setInitiateGrade(false);
+        // return data?.data[0]?.attributes;
+      },
     }
   );
 
@@ -653,6 +683,7 @@ export const useHome = () => {
     campusListLoading ||
     subjectsLoading ||
     subjectsByTeacherLoading ||
+    maxScoresLoading ||
     teacherPopulationLoading;
 
   console.log({ is_preschool, user, userDetails, subjects });

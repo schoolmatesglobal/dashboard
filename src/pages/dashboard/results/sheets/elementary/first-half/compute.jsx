@@ -11,6 +11,7 @@ import StudentsResults from "../../../../../../components/common/students-result
 import { useStudent } from "../../../../../../hooks/useStudent";
 import AuthSelect from "../../../../../../components/inputs/auth-select";
 import GoBack from "../../../../../../components/common/go-back";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ComputeElementaryFirstHalfResult = () => {
   const { user } = useAppContext("results");
@@ -45,6 +46,8 @@ const ComputeElementaryFirstHalfResult = () => {
     studentByClass2,
   } = useResults();
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
@@ -59,17 +62,17 @@ const ComputeElementaryFirstHalfResult = () => {
   const midTermMax = () => {
     let value;
     if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "first_assesment"
     ) {
-      value = maxScores?.first_assessment;
+      value = userDetails?.maxScores?.first_assessment;
     } else if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "second_assesment"
     ) {
-      value = maxScores?.second_assessment;
-    } else if (!maxScores?.has_two_assessment) {
-      value = maxScores?.midterm;
+      value = userDetails?.maxScores?.second_assessment;
+    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+      value = userDetails?.maxScores?.midterm;
     }
     return value;
   };
@@ -98,15 +101,13 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const allLoading = isLoading || loading1;
 
-
-
-  // console.log({
-  //   subjects,
-  //   status,
-  //   additionalCreds,
-  //   checkResultComputed,
-  //   studentData,
-  // });
+  console.log({
+    subjects,
+    status,
+    additionalCreds,
+    checkResultComputed,
+    studentData,
+  });
 
   return (
     <div className='results-sheet'>
@@ -197,7 +198,7 @@ const ComputeElementaryFirstHalfResult = () => {
                     <span>marks</span> {`)`}
                   </PageTitle>
                 )}
-                {maxScores?.has_two_assessment && (
+                {userDetails?.maxScores?.has_two_assessment === 1 && (
                   <div className='form-group mb-4' style={{ width: "300px" }}>
                     <AuthSelect
                       label='Assessment'
