@@ -1552,7 +1552,7 @@ export const useResults = () => {
   // ||
   // releaseResultLoading;
 
-  console.log({ grading, userDetails, maxScores, teacherSubjects });
+  // console.log({ grading, userDetails, maxScores, teacherSubjects });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {

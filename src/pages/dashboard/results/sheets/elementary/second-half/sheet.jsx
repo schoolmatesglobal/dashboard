@@ -684,7 +684,8 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {additionalCreds?.times_absent ?? "--"}
+                          {additionalCreds?.school_opened -
+                            additionalCreds?.times_present ?? "--"}
                         </h4>
                       </div>
                       <div className='table-data'>
@@ -1280,135 +1281,127 @@ const ElementarySecondHalfSheet = () => {
                 }
 
                 {/* Abacus */}
-                {!user?.campus?.includes("College") && (
-                  <div
-                    className='table-head'
-                    // style={{
-                    //   background: "#9c0f0f000",
-                    // }}
-                  >
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div
+                      className='table-head'
+                      // style={{
+                      //   background: "#9c0f0f000",
+                      // }}
                     >
-                      Abacus
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table text-center'>
-                    <div className='table-row'>
-                      {/* <div className='table-data'></div> */}
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Excellent
-                        </p>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Abacus
+                      </h3>
+                    </div>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div className='first-half-result-table text-center'>
+                      <div className='table-row'>
+                        {/* <div className='table-data'></div> */}
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Excellent
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Good
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Fair
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Need Improvement
+                          </p>
+                        </div>
                       </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
+                      <div className='table-row'>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Excellent" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Good" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Fair" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name ===
+                              "Need Improvement" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className='table-row'>
-                      {/* <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "15px",
-                      lineHeight: "16px",
-                    }}
-                  >
-                    Abacus
-                  </h4>
-                </div> */}
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Excellent" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Good" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Fair" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name ===
-                            "Need Improvement" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* academic rating */}
                 {
