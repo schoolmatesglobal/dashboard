@@ -7,10 +7,14 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { mergeAndOverrideArrays } from "../pages/dashboard/results/constant";
 import { useForm } from "react-formid";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useResults = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("results");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const [openPrompt, setOpenPrompt] = useState(false);
   const [selectedComment, setSelectedComment] = useState("");
   const [studentRes, setStudentRes] = useState([]);
@@ -125,7 +129,7 @@ export const useResults = () => {
         errorHandler(err);
       },
       select: (data) => {
-        // console.log({ scoreData: data });
+        console.log({ scoreData: data });
         return data?.data?.attributes;
         // return data?.data[0]?.attributes;
       },
@@ -637,7 +641,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         inputs.assessment === "first_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -755,7 +759,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -811,12 +815,12 @@ export const useResults = () => {
       ),
     {
       retry: 1,
-      refetchOnMount: true,
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         inputs.assessment === "second_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -932,7 +936,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -993,7 +997,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        !maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -1105,7 +1109,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        !maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -1162,7 +1166,7 @@ export const useResults = () => {
       onSuccess() {
         toast.success("Result has been computed successfully");
         if (
-          maxScores?.has_two_assessment &&
+          userDetails?.maxScores?.has_two_assessment === 1 &&
           inputs.assessment === "first_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1170,7 +1174,7 @@ export const useResults = () => {
           trigger(500);
           // refetchFirstAssess2();
         } else if (
-          maxScores?.has_two_assessment &&
+          userDetails?.maxScores?.has_two_assessment === 1 &&
           inputs.assessment === "second_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1201,7 +1205,7 @@ export const useResults = () => {
       {
         onSuccess() {
           if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1210,7 +1214,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1245,7 +1249,7 @@ export const useResults = () => {
         onSuccess() {
           toast.success("Result has been withheld successfully");
           if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1254,7 +1258,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1282,7 +1286,9 @@ export const useResults = () => {
         refetchMidtermResult();
         toast.success(
           `${
-            maxScores?.has_two_assessment ? toastValue : "Mid Term"
+            userDetails?.maxScores?.has_two_assessment === 1
+              ? toastValue
+              : "Mid Term"
           } Result has been computed successfully`
         );
       },
@@ -1385,9 +1391,10 @@ export const useResults = () => {
       period: state?.creds?.period,
       term: state?.creds?.term,
       session: state?.creds?.session,
-      result_type: maxScores?.has_two_assessment
-        ? inputs.assessment
-        : "midterm",
+      result_type:
+        userDetails?.maxScores?.has_two_assessment === 1
+          ? inputs.assessment
+          : "midterm",
       results: subjects.map((x) => ({
         subject: x.subject,
         score: x.grade,
@@ -1545,7 +1552,7 @@ export const useResults = () => {
   // ||
   // releaseResultLoading;
 
-  console.log({ grading });
+  console.log({ grading, userDetails, maxScores, teacherSubjects });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {

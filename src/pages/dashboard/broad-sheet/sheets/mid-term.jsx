@@ -11,6 +11,7 @@ import moment from "moment";
 import { useResults } from "../../../../hooks/useResults";
 import Prompt from "../../../../components/modals/prompt";
 import AuthSelect from "../../../../components/inputs/auth-select";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const MidTerm = ({ isCompute = false }) => {
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ const MidTerm = ({ isCompute = false }) => {
     setInitGetExistingResult,
   } = useResults();
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const getAddSubjectSelectOptions = () => {
     const mapSubjects = subjectsByClass?.map((x) => ({
       title: x.subject,
@@ -52,9 +55,9 @@ const MidTerm = ({ isCompute = false }) => {
   };
 
   return (
-    <div className="results-sheet">
+    <div className='results-sheet'>
       {user?.designation_name !== "Student" && (
-        <div className="students-wrapper">
+        <div className='students-wrapper'>
           {studentByClassAndSession?.map((x) => (
             <div
               key={x.id}
@@ -62,7 +65,7 @@ const MidTerm = ({ isCompute = false }) => {
                 setStudentData(x);
                 setInitGetExistingResult(true);
               }}
-              className="student"
+              className='student'
             >
               <div
                 className={`loader ${isLoading ? "is-loading" : ""} ${
@@ -71,7 +74,7 @@ const MidTerm = ({ isCompute = false }) => {
               >
                 <ProfileImage src={x?.image} alt={x.firstname} />
                 {idWithComputedResult.includes(x.id) ? (
-                  <div className="computed" />
+                  <div className='computed' />
                 ) : null}
               </div>
               <div>
@@ -85,7 +88,7 @@ const MidTerm = ({ isCompute = false }) => {
 
       <PageSheet>
         {!isCompute && (
-          <div className="mb-3">
+          <div className='mb-3'>
             <Button
               onClick={() => {
                 if (pdfExportComponent.current) {
@@ -98,28 +101,28 @@ const MidTerm = ({ isCompute = false }) => {
           </div>
         )}
 
-        <div ref={pdfExportComponent} className="first-level-results-sheet">
-          <div className="school-details">
-            <div className="image">
-              <img src={user?.school?.schlogo} alt="school" />
+        <div ref={pdfExportComponent} className='first-level-results-sheet'>
+          <div className='school-details'>
+            <div className='image'>
+              <img src={user?.school?.schlogo} alt='school' />
             </div>
-            <h3 className="name">{user?.school?.schname}</h3>
-            <p className="address">{user?.school?.schaddr}</p>
-            <p className="tel">Tel: {user?.school?.schphone}</p>
-            <p className="email">Email: {user?.school?.schemail}</p>
-            <p className="web">Website: {user?.school?.schwebsite}</p>
-            <h4 className="title">
+            <h3 className='name'>{user?.school?.schname}</h3>
+            <p className='address'>{user?.school?.schaddr}</p>
+            <p className='tel'>Tel: {user?.school?.schphone}</p>
+            <p className='email'>Email: {user?.school?.schemail}</p>
+            <p className='web'>Website: {user?.school?.schwebsite}</p>
+            <h4 className='title'>
               {locationState?.creds?.term} MID-TERM REPORT{" "}
               {locationState?.creds?.session} SESSION
             </h4>
           </div>
-          <div className="student-details">
+          <div className='student-details'>
             <Row>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Name:</h5>
                   <input
-                    type="text"
+                    type='text'
                     value={`${studentData?.firstname} ${studentData?.surname} ${studentData?.middlename}`}
                     disabled
                     onChange={() => null}
@@ -129,10 +132,10 @@ const MidTerm = ({ isCompute = false }) => {
             </Row>
             <Row>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Class:</h5>
                   <input
-                    type="text"
+                    type='text'
                     value={`${studentData?.present_class} ${studentData?.sub_class}`}
                     disabled
                     onChange={() => null}
@@ -140,10 +143,10 @@ const MidTerm = ({ isCompute = false }) => {
                 </div>
               </Col>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Gender:</h5>
                   <input
-                    type="text"
+                    type='text'
                     value={studentData?.gender}
                     disabled
                     onChange={() => null}
@@ -153,10 +156,10 @@ const MidTerm = ({ isCompute = false }) => {
             </Row>
             <Row>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Date:</h5>
                   <input
-                    type="text"
+                    type='text'
                     value={moment(new Date()).format("DD/MM/YYYY")}
                     disabled
                     onChange={() => null}
@@ -165,16 +168,16 @@ const MidTerm = ({ isCompute = false }) => {
               </Col>
             </Row>
           </div>
-          <div className="results-table-wrapper">
+          <div className='results-table-wrapper'>
             <table>
               <thead>
                 <tr>
                   <th>
-                    <div className="d-flex align-items-center">
+                    <div className='d-flex align-items-center'>
                       SUBJECTS
                       {isCompute && (
                         <Button
-                          className="ms-3"
+                          className='ms-3'
                           onClick={() => setOpenPrompt(true)}
                         >
                           &#43; Add
@@ -186,18 +189,18 @@ const MidTerm = ({ isCompute = false }) => {
                 </tr>
                 <tr>
                   <th>MARKS OBTAINABLE</th>
-                  <th>{maxScores?.midterm} MARKS</th>
+                  <th>{userDetails?.maxScores?.midterm} MARKS</th>
                 </tr>
               </thead>
               <tbody>
                 {subjects?.map((x, index) => (
                   <tr key={index}>
                     <td>
-                      <div className="d-flex align-items-center">
+                      <div className='d-flex align-items-center'>
                         {isCompute && (
                           <Button
-                            variant="danger"
-                            className="me-3"
+                            variant='danger'
+                            className='me-3'
                             onClick={() => removeSubject(x.subject)}
                           >
                             &#8722;
@@ -208,14 +211,17 @@ const MidTerm = ({ isCompute = false }) => {
                     </td>
                     <td>
                       <input
-                        type="text"
+                        type='text'
                         value={x.grade}
-                        className="form-control"
+                        className='form-control'
                         disabled={!isCompute}
                         onChange={({ target: { value } }) => {
                           if (Number.isNaN(Number(value))) return;
 
-                          if (Number(value) > Number(maxScores?.midterm))
+                          if (
+                            Number(value) >
+                            Number(userDetails?.maxScores?.midterm)
+                          )
                             return;
 
                           const fd = subjects.map((s) => ({
@@ -238,12 +244,12 @@ const MidTerm = ({ isCompute = false }) => {
               </tfoot>
             </table>
           </div>
-          <div className="results-remark">
+          <div className='results-remark'>
             <table>
               <tbody>
                 <tr>
                   <td>Name:</td>
-                  <td className="text-capitalize">Ogene Onyinye</td>
+                  <td className='text-capitalize'>Ogene Onyinye</td>
                   <td>Sign:</td>
                   <td></td>
                   <td>Date:</td>
@@ -254,7 +260,7 @@ const MidTerm = ({ isCompute = false }) => {
                 </tr>
                 <tr>
                   <td>Name:</td>
-                  <td className="text-capitalize">
+                  <td className='text-capitalize'>
                     {user?.firstname} {user?.surname}
                   </td>
                   <td>Sign:</td>
@@ -266,7 +272,7 @@ const MidTerm = ({ isCompute = false }) => {
             </table>
           </div>
           {isCompute && (
-            <div className="mt-3 d-flex justify-content-end">
+            <div className='mt-3 d-flex justify-content-end'>
               <ButtonGroup
                 options={[
                   {
@@ -295,8 +301,8 @@ const MidTerm = ({ isCompute = false }) => {
             disabled: false,
             onClick: () => setOpenPrompt(false),
           }}
-          singleButtonText="OK"
-          promptHeader="Add Subject"
+          singleButtonText='OK'
+          promptHeader='Add Subject'
         >
           <AuthSelect
             advanced

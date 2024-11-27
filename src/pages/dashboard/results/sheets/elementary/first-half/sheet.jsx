@@ -13,6 +13,7 @@ import GoBack from "../../../../../../components/common/go-back";
 import { HiOutlineDocumentPlus } from "react-icons/hi2";
 import { PiWarningCircleFill } from "react-icons/pi";
 import ButtonGroup from "../../../../../../components/buttons/button-group";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ElementaryFirstHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -41,6 +42,8 @@ const ElementaryFirstHalfSheet = () => {
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   // const { studentByClass2 } = useStudent();
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
@@ -48,33 +51,33 @@ const ElementaryFirstHalfSheet = () => {
   const midTermMax = () => {
     let value;
     if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "first_assesment"
     ) {
-      value = maxScores?.first_assessment;
+      value = userDetails?.maxScores?.first_assessment;
     } else if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "second_assesment"
     ) {
-      value = maxScores?.second_assessment;
-    } else if (!maxScores?.has_two_assessment) {
-      value = maxScores?.midterm;
+      value = userDetails?.maxScores?.second_assessment;
+    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+      value = userDetails?.maxScores?.midterm;
     }
     return value;
   };
   const assessmentType = () => {
     let value;
     if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "first_assesment"
     ) {
       value = "First Assessment";
     } else if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "second_assesment"
     ) {
       value = "Second Assessment";
-    } else if (!maxScores?.has_two_assessment) {
+    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
       value = "First Assessment";
     }
     return value;
@@ -232,7 +235,7 @@ const ElementaryFirstHalfSheet = () => {
             )}
           </div>
 
-          {maxScores?.has_two_assessment && (
+          {userDetails?.maxScores?.has_two_assessment === 1 && (
             <div className='form-group mb-4' style={{ width: "300px" }}>
               <AuthSelect
                 label='Assessment'
