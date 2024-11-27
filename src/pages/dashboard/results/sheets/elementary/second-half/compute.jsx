@@ -143,7 +143,7 @@ const ComputeElementarySecondHalfResult = () => {
 
   const newSubjects = removeDuplicates(subjects) ?? [];
 
-  // console.log({ extraActivities, activities, additionalCreds, maxScores });
+  console.log({ abacus });
   // console.log({ maxScores, status, newSubjects, additionalCreds });
 
   return (
@@ -271,7 +271,10 @@ const ComputeElementarySecondHalfResult = () => {
                       onChange={({ target: { value } }) => {
                         if (Number.isNaN(Number(value))) return;
 
-                        if (Number(value) > Number(userDetails?.maxScores?.exam)) return;
+                        if (
+                          Number(value) > Number(userDetails?.maxScores?.exam)
+                        )
+                          return;
 
                         const fd = subjects.map((s) => ({
                           ...s,

@@ -25,6 +25,8 @@ const ResultHeader = ({ user, studentImage, changeTableStyle }) => {
                 borderRadius: "50%",
                 marginBottom: "0px",
                 border: "6px solid green",
+                objectFit: "contain",
+                objectPosition: "center",
               }}
             />
           )}
@@ -35,7 +37,17 @@ const ResultHeader = ({ user, studentImage, changeTableStyle }) => {
         style={{ marginTop: `${studentImage ? "-140px" : "0px"}` }}
       >
         {user?.school?.schlogo && (
-          <img src={user?.school?.schlogo} alt='school' />
+          <img
+            src={user?.school?.schlogo}
+            alt='school'
+            style={{
+              width: "100%",
+              height: "143px",
+              marginBottom: "0px",
+              objectFit: "contain",
+              objectPosition: "center",
+            }}
+          />
         )}
       </div>
       <div className='text'>

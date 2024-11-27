@@ -55,6 +55,14 @@ const ElementarySecondHalfSheet = () => {
   } = useResults();
 
   const { principalClassName, setPrincipalClassName } = useStudent();
+
+  function removeDuplicates(array) {
+    return array?.filter(
+      (obj, index, self) =>
+        index ===
+        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+    );
+  }
   // useState
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
@@ -127,7 +135,7 @@ const ElementarySecondHalfSheet = () => {
     return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
   };
 
-  const studentResults = additionalCreds?.results ?? [];
+  const studentResults = removeDuplicates(additionalCreds?.results) ?? [];
 
   const removeZeroExam = () => {
     return studentResults?.filter((fa) => fa.score != 0);
@@ -283,19 +291,13 @@ const ElementarySecondHalfSheet = () => {
     setStatus(additionalCreds?.status);
   }, [additionalCreds?.status]);
 
-  
-
-  // console.log({
-  //   user,
-  //   studentResults,
-  //   removeZeroExam: removeZeroExam(),
-  //   removeZeroMidterm: removeZeroMidterm(),
-  //   additionalCreds,
-  //   studentByClass2,
-  //   studentData,
-  //   locationState,
-  //   principalClassName,
-  // });
+  console.log({
+    // user,
+    studentResults,
+    // activities,
+    extraActivities,
+    additionalCreds,
+  });
 
   return (
     <div className='results-sheet'>
@@ -483,7 +485,7 @@ const ElementarySecondHalfSheet = () => {
                     CLASS
                   </h4>
                 </div>
-                <div className='table-data' style={{ width: "25%" }}>
+                <div className='table-data' style={{ width: "20%" }}>
                   <h4
                     style={{
                       color: "green",
@@ -503,7 +505,7 @@ const ElementarySecondHalfSheet = () => {
                     style={{
                       fontSize: "15px",
                       lineHeight: "16px",
-                      whiteSpace: "nowrap",
+                      whiteSpace: "wrap",
                     }}
                   >
                     {studentData?.firstname} {studentData?.surname}{" "}
@@ -537,13 +539,13 @@ const ElementarySecondHalfSheet = () => {
                     style={{
                       fontSize: "15px",
                       lineHeight: "16px",
-                      whiteSpace: "nowrap",
+                      whiteSpace: "wrap",
                     }}
                   >
                     {studentData?.present_class} {studentData?.sub_class}
                   </h4>
                 </div>
-                <div className='table-data' style={{ width: "25%" }}>
+                <div className='table-data' style={{ width: "20%" }}>
                   <h4
                     style={{
                       fontSize: "15px",
@@ -682,7 +684,8 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {additionalCreds?.times_absent ?? "--"}
+                          {additionalCreds?.school_opened -
+                            additionalCreds?.times_present ?? "--"}
                         </h4>
                       </div>
                       <div className='table-data'>
@@ -1278,135 +1281,127 @@ const ElementarySecondHalfSheet = () => {
                 }
 
                 {/* Abacus */}
-                {!user?.campus?.includes("College") && (
-                  <div
-                    className='table-head'
-                    // style={{
-                    //   background: "#9c0f0f000",
-                    // }}
-                  >
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div
+                      className='table-head'
+                      // style={{
+                      //   background: "#9c0f0f000",
+                      // }}
                     >
-                      Abacus
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table text-center'>
-                    <div className='table-row'>
-                      {/* <div className='table-data'></div> */}
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Excellent
-                        </p>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Abacus
+                      </h3>
+                    </div>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div className='first-half-result-table text-center'>
+                      <div className='table-row'>
+                        {/* <div className='table-data'></div> */}
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Excellent
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Good
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Fair
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Need Improvement
+                          </p>
+                        </div>
                       </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
+                      <div className='table-row'>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Excellent" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Good" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Fair" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name ===
+                              "Need Improvement" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className='table-row'>
-                      {/* <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "15px",
-                      lineHeight: "16px",
-                    }}
-                  >
-                    Abacus
-                  </h4>
-                </div> */}
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Excellent" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Good" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Fair" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name ===
-                            "Need Improvement" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* academic rating */}
                 {
@@ -2001,198 +1996,70 @@ const ElementarySecondHalfSheet = () => {
                 )}
 
                 {/* pupil's monitoring Data */}
-                {!user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "20px",
-                      }}
-                    >
-                      Pupil's monitoring data
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table skills-table'>
-                    <div className='table-row'>
-                      <div className='table-data'></div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Excellent
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
-                      </div>
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "20px",
+                        }}
+                      >
+                        Pupil's monitoring data
+                      </h3>
                     </div>
-                    {additionalCreds?.pupil_report?.map((skill, key) => (
-                      <div className='table-row' key={key}>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='first-half-result-table skills-table'>
+                      <div className='table-row'>
+                        <div className='table-data'></div>
                         <div className='table-data'>
-                          <h4
+                          <p
                             style={{
                               fontSize: "15px",
                               lineHeight: "16px",
+                              fontWeight: "bold",
                             }}
                           >
-                            {skill?.name}
-                          </h4>
-                        </div>
-                        <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 5 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                            Excellent
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 4 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Good
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 3 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Fair
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) < 3 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Need Improvement
                           </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-                {/* <div className='table-data'> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* </div> */}
-
-                {/* Psychomotor Performance */}
-                {!user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Psychomotor Performance
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table skills-table'>
-                    <div className='table-row'>
-                      <div className='table-data'></div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Excellent
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
-                      </div>
-                    </div>
-                    {additionalCreds?.psychomotor_performance?.map(
-                      (skill, key) => (
+                      {additionalCreds?.pupil_report?.map((skill, key) => (
                         <div className='table-row' key={key}>
                           <div className='table-data'>
                             <h4
@@ -2249,10 +2116,142 @@ const ElementarySecondHalfSheet = () => {
                             </p>
                           </div>
                         </div>
-                      )
-                    )}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                {/* <div className='table-data'> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* </div> */}
+
+                {/* Psychomotor Performance */}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Psychomotor Performance
+                      </h3>
+                    </div>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='first-half-result-table skills-table'>
+                      <div className='table-row'>
+                        <div className='table-data'></div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Excellent
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Good
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Fair
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Need Improvement
+                          </p>
+                        </div>
+                      </div>
+                      {additionalCreds?.psychomotor_performance?.map(
+                        (skill, key) => (
+                          <div className='table-row' key={key}>
+                            <div className='table-data'>
+                              <h4
+                                style={{
+                                  fontSize: "15px",
+                                  lineHeight: "16px",
+                                }}
+                              >
+                                {skill?.name}
+                              </h4>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 5 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 4 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 3 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) < 3 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
@@ -2262,324 +2261,328 @@ const ElementarySecondHalfSheet = () => {
                 {/* </div> */}
 
                 {/* Psychomotor Performance for college*/}
-                {user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Psychomotor Development
-                    </h3>
-                  </div>
-                )}
-                {user?.campus?.includes("College") && (
-                  <div className='' style={{ display: "flex" }}>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
-                            <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.psychomotor_performance
-                            ?.slice(
-                              0,
-                              Math.round(
-                                additionalCreds?.psychomotor_performance
-                                  ?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
-                              <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
-                              >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
-                                >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Psychomotor Development
+                      </h3>
                     </div>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
+                  )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='' style={{ display: "flex" }}>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
                             <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
+                              className='table-row'
+                              style={{ display: "flex" }}
                             >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.psychomotor_performance
-                            ?.slice(
-                              Math.round(
-                                additionalCreds?.psychomotor_performance
-                                  ?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
                               <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
                               >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
                                 >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
+                                  SCORES
+                                </p>
                               </div>
-                            ))}
-                        </div>
-                      )}
+                            </div>
+                            {additionalCreds?.psychomotor_performance
+                              ?.slice(
+                                0,
+                                Math.round(
+                                  additionalCreds?.psychomotor_performance
+                                    ?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
+                            <div
+                              className='table-row'
+                              style={{ display: "flex" }}
+                            >
+                              <div
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
+                              >
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  SCORES
+                                </p>
+                              </div>
+                            </div>
+                            {additionalCreds?.psychomotor_performance
+                              ?.slice(
+                                Math.round(
+                                  additionalCreds?.psychomotor_performance
+                                    ?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Affective Development for college*/}
-                {user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Affective Development
-                    </h3>
-                  </div>
-                )}
-                {user?.campus?.includes("College") && (
-                  <div className='' style={{ display: "flex" }}>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
-                            <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.pupil_report
-                            ?.slice(
-                              0,
-                              Math.round(
-                                additionalCreds?.pupil_report?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
-                              <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
-                              >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
-                                >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Affective Development
+                      </h3>
                     </div>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
+                  )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='' style={{ display: "flex" }}>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
                             <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
+                              className='table-row'
+                              style={{ display: "flex" }}
                             >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.pupil_report
-                            ?.slice(
-                              Math.round(
-                                additionalCreds?.pupil_report?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
                               <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
                               >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
                                 >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
+                                  SCORES
+                                </p>
                               </div>
-                            ))}
-                        </div>
-                      )}
+                            </div>
+                            {additionalCreds?.pupil_report
+                              ?.slice(
+                                0,
+                                Math.round(
+                                  additionalCreds?.pupil_report?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
+                            <div
+                              className='table-row'
+                              style={{ display: "flex" }}
+                            >
+                              <div
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
+                              >
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  SCORES
+                                </p>
+                              </div>
+                            </div>
+                            {additionalCreds?.pupil_report
+                              ?.slice(
+                                Math.round(
+                                  additionalCreds?.pupil_report?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
@@ -2589,7 +2592,7 @@ const ElementarySecondHalfSheet = () => {
                 {/* </div> */}
 
                 {/* Extra curricular activities */}
-                {
+                {extraActivities?.length > 0 && (
                   <div className='table-head'>
                     <h3
                       style={{
@@ -2600,9 +2603,9 @@ const ElementarySecondHalfSheet = () => {
                       Extra Curricular Activities
                     </h3>
                   </div>
-                }
+                )}
 
-                {
+                {extraActivities?.length > 0 && (
                   <div
                     style={{
                       display: "grid",
@@ -2653,7 +2656,7 @@ const ElementarySecondHalfSheet = () => {
                       </div>
                     ))}
                   </div>
-                }
+                )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
