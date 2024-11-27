@@ -13,6 +13,7 @@ import { useStudent } from "../../../../../../hooks/useStudent";
 import { useActivities } from "../../../../../../hooks/useActivities";
 import { useReporting } from "../../../../../../hooks/useReporting";
 import GoBack from "../../../../../../components/common/go-back";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ComputeElementarySecondHalfResult = () => {
   const { user } = useAppContext("results");
@@ -62,6 +63,8 @@ const ComputeElementarySecondHalfResult = () => {
 
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   function removeDuplicates(array) {
     return array.filter(
@@ -249,7 +252,7 @@ const ComputeElementarySecondHalfResult = () => {
         <hr className='my-5' />
 
         <PageTitle>
-          Evaluation Report - {`(${maxScores?.exam}`}
+          Evaluation Report - {`(${userDetails?.maxScores?.exam}`}
           <span>marks</span> {`)`}
         </PageTitle>
         <div>
@@ -268,7 +271,10 @@ const ComputeElementarySecondHalfResult = () => {
                       onChange={({ target: { value } }) => {
                         if (Number.isNaN(Number(value))) return;
 
-                        if (Number(value) > Number(maxScores?.exam)) return;
+                        if (
+                          Number(value) > Number(userDetails?.maxScores?.exam)
+                        )
+                          return;
 
                         const fd = subjects.map((s) => ({
                           ...s,
