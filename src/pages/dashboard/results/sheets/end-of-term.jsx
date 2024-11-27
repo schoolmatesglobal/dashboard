@@ -14,6 +14,7 @@ import moment from "moment";
 import AuthSelect from "../../../../components/inputs/auth-select";
 import { useState } from "react";
 import { useSkills } from "../../../../hooks/useSkills";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const AffectiveDispositionTableRow = ({
   isCompute,
@@ -89,6 +90,8 @@ const EndOfTerm = ({ isCompute = false }) => {
   } = useResults();
 
   const isLoading = skillLoading || resultLoading;
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const getAddSubjectSelectOptions = () => {
     const mapSubjects = subjectsByClass?.map((x) => ({
@@ -350,9 +353,9 @@ const EndOfTerm = ({ isCompute = false }) => {
                 </tr>
                 <tr>
                   <th>MAXIMUM SCORES</th>
-                  <th>{maxScores?.midterm}</th>
-                  <th>{maxScores?.exam}</th>
-                  <th>{maxScores?.total}</th>
+                  <th>{userDetails?.maxScores?.midterm}</th>
+                  <th>{userDetails?.maxScores?.exam}</th>
+                  <th>{userDetails?.maxScores?.total}</th>
                   {!isCompute && <th>EXCELLENT</th>}
                 </tr>
                 <tr>
@@ -393,7 +396,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                         onChange={({ target: { value } }) => {
                           if (Number.isNaN(Number(value))) return;
 
-                          if (Number(value) > Number(maxScores?.exam)) return;
+                          if (Number(value) > Number(userDetails?.maxScores?.exam)) return;
 
                           const fd = subjects.map((su) => ({
                             ...su,

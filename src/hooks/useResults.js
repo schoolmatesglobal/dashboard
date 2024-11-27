@@ -1477,8 +1477,8 @@ export const useResults = () => {
       if (
         !additionalCreds ||
         !teacherComment ||
-        !hosComment ||
-        extraActivities?.length === 0
+        !hosComment 
+        // extraActivities?.length === 0
         // !performanceRemark ||
         // !additionalCreds?.affective_disposition[0]?.score ||
         // !additionalCreds?.affective_disposition[1]?.score ||
