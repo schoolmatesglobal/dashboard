@@ -11,6 +11,7 @@ import moment from "moment";
 import { useResults } from "../../../../hooks/useResults";
 import Prompt from "../../../../components/modals/prompt";
 import AuthSelect from "../../../../components/inputs/auth-select";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const MidTerm = ({ isCompute = false }) => {
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ const MidTerm = ({ isCompute = false }) => {
     createMidTermResult,
     setInitGetExistingResult,
   } = useResults();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const getAddSubjectSelectOptions = () => {
     const mapSubjects = subjectsByClass?.map((x) => ({
@@ -186,7 +189,7 @@ const MidTerm = ({ isCompute = false }) => {
                 </tr>
                 <tr>
                   <th>MARKS OBTAINABLE</th>
-                  <th>{maxScores?.midterm} MARKS</th>
+                  <th>{userDetails?.maxScores?.midterm} MARKS</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,7 +218,7 @@ const MidTerm = ({ isCompute = false }) => {
                         onChange={({ target: { value } }) => {
                           if (Number.isNaN(Number(value))) return;
 
-                          if (Number(value) > Number(maxScores?.midterm))
+                          if (Number(value) > Number(userDetails?.maxScores?.midterm))
                             return;
 
                           const fd = subjects.map((s) => ({

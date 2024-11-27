@@ -271,10 +271,7 @@ const ComputeElementarySecondHalfResult = () => {
                       onChange={({ target: { value } }) => {
                         if (Number.isNaN(Number(value))) return;
 
-                        if (
-                          Number(value) > Number(userDetails?.maxScores?.exam)
-                        )
-                          return;
+                        if (Number(value) > Number(userDetails?.maxScores?.exam)) return;
 
                         const fd = subjects.map((s) => ({
                           ...s,
