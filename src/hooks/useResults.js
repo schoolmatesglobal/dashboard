@@ -88,11 +88,11 @@ export const useResults = () => {
   const findId = () => {
     const cs = userDetails.class_assigned?.toUpperCase();
 
-    const find = userDetails?.classes.find(
+    const find = userDetails?.classes?.find(
       (sb) => sb.class_name?.toUpperCase() === cs
     );
     if (find?.id) {
-      return find.id;
+      return find?.id;
     } else {
       return "";
     }
