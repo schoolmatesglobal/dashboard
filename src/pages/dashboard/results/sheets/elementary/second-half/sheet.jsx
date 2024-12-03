@@ -15,6 +15,8 @@ import { useGrading } from "../../../../../../hooks/useGrading";
 import GoBack from "../../../../../../components/common/go-back";
 import { PiWarningCircleFill } from "react-icons/pi";
 import ButtonGroup from "../../../../../../components/buttons/button-group";
+import { removeDuplicates, removeDuplicates2 } from "../../../constant";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ElementarySecondHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -23,6 +25,8 @@ const ElementarySecondHalfSheet = () => {
 
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const { isLoading: gradingLoading, grading: resultGrading } = useGrading();
 
@@ -57,13 +61,16 @@ const ElementarySecondHalfSheet = () => {
 
   const { principalClassName, setPrincipalClassName } = useStudent();
 
-  function removeDuplicates(array) {
-    return array?.filter(
-      (obj, index, self) =>
-        index ===
-        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
-    );
-  }
+  // function removeDuplicates(array) {
+  //   return (
+  //     array?.length > 0 &&
+  //     array?.filter(
+  //       (obj, index, self) =>
+  //         index ===
+  //         self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+  //     )
+  //   );
+  // }
   // useState
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
@@ -136,10 +143,12 @@ const ElementarySecondHalfSheet = () => {
     return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
   };
 
-  const studentResults = removeDuplicates(additionalCreds?.results) ?? [];
+  const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
 
   const removeZeroExam = () => {
-    return studentResults?.filter((fa) => fa.score != 0);
+    return studentResults?.length > 0
+      ? studentResults?.filter((fa) => fa.score != 0)
+      : [];
   };
 
   //   const removeZeroExam = () => {
@@ -159,7 +168,9 @@ const ElementarySecondHalfSheet = () => {
 
   const principalCheck = "Elementary" || "Montessori";
 
-  const totalScore = maxScores?.has_two_assessment
+  const hasTwoAssessment = userDetails?.maxScores?.has_two_assessment === 1;
+
+  const totalScore = hasTwoAssessment
     ? removeZeroExam()?.reduce((accumulator, s) => {
         const firstAssessmentScore =
           Number(
@@ -191,11 +202,11 @@ const ElementarySecondHalfSheet = () => {
         }, 0)
         .toFixed(2);
 
-  const getTotalScore = () => {
-    maxScores.reduce((a, item) => {
-      return a + Number(item["Total Score"]);
-    });
-  };
+  // const getTotalScore = () => {
+  //   maxScores.reduce((a, item) => {
+  //     return a + Number(item["Total Score"]);
+  //   });
+  // };
 
   const checkResultComputed = (function () {
     if (user?.designation_name === "Student") {
@@ -294,11 +305,15 @@ const ElementarySecondHalfSheet = () => {
 
   console.log({
     // user,
+    // maxScores,
+    userDetails,
     studentResults,
     subjectsByClass,
     // activities,
     extraActivities,
     additionalCreds,
+    removeZeroExam: removeZeroExam(),
+    removeZeroMidterm: removeZeroMidterm(),
   });
 
   return (
@@ -735,7 +750,7 @@ const ElementarySecondHalfSheet = () => {
                         className='table-data'
                         style={{ width: "25%" }}
                       ></div>
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -751,7 +766,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -767,7 +782,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {!maxScores?.has_two_assessment && (
+                      {!hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -853,7 +868,7 @@ const ElementarySecondHalfSheet = () => {
                           Max Score Obtainable
                         </h4>
                       </div>
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -864,11 +879,11 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.first_assessment ?? "--"}
+                            {userDetails?.maxScores?.first_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -879,11 +894,11 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.second_assessment ?? "--"}
+                            {userDetails?.maxScores?.second_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
-                      {!maxScores?.has_two_assessment && (
+                      {!hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -894,7 +909,7 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.midterm ?? "--"}
+                            {userDetails?.maxScores?.midterm ?? "--"}
                           </h4>
                         </div>
                       )}
@@ -908,7 +923,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {maxScores?.exam ?? "--"}
+                          {userDetails?.maxScores?.exam ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -921,7 +936,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {maxScores?.total ?? "--"}
+                          {userDetails?.maxScores?.total ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -968,7 +983,7 @@ const ElementarySecondHalfSheet = () => {
                         (x) => x.subject === s.subject
                       )?.score;
 
-                      const totalScores = maxScores?.has_two_assessment
+                      const totalScores = hasTwoAssessment
                         ? (
                             Number(fAssess ?? 0) +
                             Number(sAssess ?? 0) +
@@ -1006,7 +1021,8 @@ const ElementarySecondHalfSheet = () => {
                                   {s?.subject ?? "--"}
                                 </p>
                               </div>
-                              {maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment ===
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1022,7 +1038,8 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment ===
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1038,7 +1055,8 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {!maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment !==
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1050,7 +1068,7 @@ const ElementarySecondHalfSheet = () => {
                                       fontWeight: "bold",
                                     }}
                                   >
-                                    {mAssess}
+                                    {parseInt(mAssess, 10)}
                                   </p>
                                 </div>
                               )}
@@ -1065,7 +1083,7 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {s.score}
+                                  {parseInt(s.score, 0)}
                                 </p>
                               </div>
                               <div
@@ -1093,7 +1111,8 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {maxScores?.has_two_assessment
+                                  {userDetails?.maxScores
+                                    ?.has_two_assessment === 1
                                     ? getScoreRemark(totalScores)?.grade
                                     : getScoreRemark(totalScores)?.grade}
                                 </p>
@@ -1109,7 +1128,8 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {maxScores?.has_two_assessment
+                                  {userDetails?.maxScores
+                                    ?.has_two_assessment === 1
                                     ? getScoreRemark(
                                         Number(
                                           studentFirstAssess?.find(

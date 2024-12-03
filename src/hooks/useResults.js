@@ -142,7 +142,7 @@ export const useResults = () => {
         errorHandler(err);
       },
       select: (data) => {
-        console.log({ scoreData: data });
+        // console.log({ scoreData: data });
         return data?.data?.attributes;
         // return data?.data[0]?.attributes;
       },
@@ -350,7 +350,6 @@ export const useResults = () => {
           });
 
           setSubjects(mergeSubjectAndResult2() ?? []);
-          // setSubjects(studentResult);
 
           setTeacherComment(res?.teacher_comment);
           setHosComment(res?.hos_comment);
@@ -364,7 +363,6 @@ export const useResults = () => {
           //   //   grade: x.score,
           //   // }));
 
-          //   setSubjects(mergeSubjectAndResult2());
           //   setInitGetExistingResult(true);
           // } else {
           //   setInitGetExistingResult(true);
@@ -380,7 +378,6 @@ export const useResults = () => {
           setTeacherComment("");
           setHosComment("");
           setAbacus("");
-          // setSubjects([]);
 
           // setInitGetExistingResult(true);
           setAddMidResultAsLast(true);
@@ -390,22 +387,22 @@ export const useResults = () => {
   );
 
   const { isLoading: subjectsByClassLoading3, data: subjectsByClass3 } =
-  useQuery(
-    [queryKeys.GET_SUBJECTS_BY_CLASS2, findId()],
-    () => apiServices.getSubjectByClass2(findId()),
-    {
-      enabled: !!findId(),
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      select: (data) => {
-        const newData = apiServices.formatData(data);
-        return newData;
-        // console.log({ data, newData });
-      },
-      onError: apiServices.errorHandler,
-    }
-  );
+    useQuery(
+      [queryKeys.GET_SUBJECTS_BY_CLASS2, findId()],
+      () => apiServices.getSubjectByClass2(findId()),
+      {
+        enabled: !!findId(),
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        select: (data) => {
+          const newData = apiServices.formatData(data);
+          return newData;
+          // console.log({ data, newData });
+        },
+        onError: apiServices.errorHandler,
+      }
+    );
 
   // subject by class
   const {
@@ -430,10 +427,6 @@ export const useResults = () => {
       onSuccess(data) {
         // console.log({ data });
         const subjectsWithGrade = data?.map((x) => ({ ...x, grade: "0" }));
-
-        // if (subjects.length === 0) setSubjects(subjectsWithGrade);
-        // setInitGetStudentsByClass(false);
-        // console.log({ data, initGetStudentsByClass, subjectsWithGrade });
       },
     }
   );
@@ -599,11 +592,14 @@ export const useResults = () => {
       refetchOnMount: true,
       refetchOnWindowFocus: false,
       enabled: initGetSubjects && !is_preschool,
-      select: apiServices.formatData,
+      select(data) {
+        console.log({ kdata2: data });
+        return apiServices.formatData(data);
+      },
       onSuccess(data) {
+        // console.log({ kdata: data });
         setInitGetSubjects(false);
         if (data?.length > 0) {
-          // console.log({ allsub: data });
           const subj = data[0]?.subject?.map((x) => ({
             subject: x.name,
             score: "0",
@@ -624,6 +620,8 @@ export const useResults = () => {
 
           const filteredSubj =
             user?.teacher_type === "class teacher" ? subj : fss;
+
+          console.log({ allsub: data, filteredSubj });
 
           setFilteredSubjects(filteredSubj);
 
@@ -1030,7 +1028,10 @@ export const useResults = () => {
         !is_preschool &&
         userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "First Half",
-      select: apiServices.formatData,
+      select(data) {
+        console.log({ kdata: data });
+        return apiServices.formatData(data);
+      },
       onSuccess(data) {
         // console.log({ dataS: data });
         setInitGetSubjects(false);
@@ -1038,7 +1039,7 @@ export const useResults = () => {
 
         // console.log({ mres: data });
         // setInitGetSubjects(false);
-        if (data.length > 0) {
+        if (data?.length > 0) {
           const ids = data?.map((x) => x.student_id);
 
           setIdWithComputedResult(ids);
@@ -1584,7 +1585,12 @@ export const useResults = () => {
   // ||
   // releaseResultLoading;
 
-  console.log({ userDetails, teacherSubjects, findId: findId(), subjectsByClass3 });
+  console.log({
+    userDetails,
+    teacherSubjects,
+    findId: findId(),
+    subjectsByClass3,
+  });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {
