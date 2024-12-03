@@ -201,6 +201,7 @@ export const useStudent = () => {
         retry: 1,
         refetchOnMount: true,
         refetchOnWindowFocus: false,
+        // refetchInterval: 10000,
         enabled: permission?.myStudents || false,
         // select: apiServices.formatData,
         select: (data) => {
