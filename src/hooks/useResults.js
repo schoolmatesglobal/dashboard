@@ -85,6 +85,19 @@ export const useResults = () => {
 
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
+  const findId = () => {
+    const cs = userDetails.class_assigned?.toUpperCase();
+
+    const find = userDetails?.classes.find(
+      (sb) => sb.class_name?.toUpperCase() === cs
+    );
+    if (find?.id) {
+      return find.id;
+    } else {
+      return "";
+    }
+  };
+
   const { data: academicDate, isLoading: academicDateLoading } = useQuery(
     [queryKeys.GET_ACADEMIC_DATE],
     apiServices.getResumptionDate,
@@ -373,6 +386,24 @@ export const useResults = () => {
           setAddMidResultAsLast(true);
         }
       },
+    }
+  );
+
+  const { isLoading: subjectsByClassLoading3, data: subjectsByClass3 } =
+  useQuery(
+    [queryKeys.GET_SUBJECTS_BY_CLASS2, findId()],
+    () => apiServices.getSubjectByClass2(findId()),
+    {
+      enabled: !!findId(),
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const newData = apiServices.formatData(data);
+        return newData;
+        // console.log({ data, newData });
+      },
+      onError: apiServices.errorHandler,
     }
   );
 
@@ -1477,7 +1508,7 @@ export const useResults = () => {
       if (
         !additionalCreds ||
         !teacherComment ||
-        !hosComment 
+        !hosComment
         // extraActivities?.length === 0
         // !performanceRemark ||
         // !additionalCreds?.affective_disposition[0]?.score ||
@@ -1548,11 +1579,12 @@ export const useResults = () => {
     addEndOfTermResultLoading ||
     firstAssessResultLoading2 ||
     addMidTermResultLoading ||
+    subjectsByClassLoading3 ||
     loading1;
   // ||
   // releaseResultLoading;
 
-  // console.log({ grading, userDetails, maxScores, teacherSubjects });
+  console.log({ userDetails, teacherSubjects, findId: findId(), subjectsByClass3 });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {
@@ -1634,6 +1666,7 @@ export const useResults = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
+    subjectsByClass3,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,

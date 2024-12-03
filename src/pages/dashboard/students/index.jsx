@@ -112,7 +112,7 @@ const Student = () => {
     debtors: studentDebtors,
     myStudents: studentByClass2,
     alumni: graduatedStudents,
-    loginDetails: studentLoginDetailsStudents,
+    loginDetails: studentLoginDetailsStudents?.data,
     communication: communicationList,
   };
 
@@ -167,11 +167,13 @@ const Student = () => {
   }, [getAdmissionNoSettings]);
 
   console.log({
-    user,
-    inputValue,
-    ipl: inputValue?.length,
-    loadedGen,
-    getAdmissionNoSettings,
+    // user,
+    // inputValue,
+    // ipl: inputValue?.length,
+    // loadedGen,
+    // getAdmissionNoSettings,
+    studentLoginDetailsStudents,
+    students
   });
 
   return (

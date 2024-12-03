@@ -156,17 +156,29 @@ export const useStudent = () => {
         errorHandler(err);
       },
       select: (data) => {
-        // console.log({ std: data });
-
         const format = apiServices.formatData(data)?.map((student, i) => {
+          const cp = () => {
+            if (data?.pagination?.current_page === 1) {
+              return i + 1;
+            } else {
+              return (
+                (data?.pagination?.current_page - 1) *
+                  data?.pagination?.per_page +
+                i +
+                1
+              );
+            }
+          };
           return {
             ...student,
-            new_id: i + 1,
+            new_id: cp(),
             image: (
               <ProfileImage src={student?.image} wrapperClassName='mx-auto' />
             ),
           };
         });
+
+        console.log({ std: data, format });
 
         return { ...data, data: format };
       },
@@ -648,15 +660,30 @@ export const useStudent = () => {
       refetchOnWindowFocus: false,
       enabled: permission?.studentLoginDetails,
       select: (data) => {
-        // console.log({ ddsData: data });
-        const dt = data?.data?.map((student, i) => {
-          return {
-            ...student,
-            new_id: i + 1,
-          };
-        });
+        const dt2 = {
+          ...data,
+          data: data?.data?.map((student, i) => {
+            const cp = () => {
+              if (data?.pagination?.current_page === 1) {
+                return i + 1;
+              } else {
+                return (
+                  (data?.pagination?.current_page - 1) *
+                    data?.pagination?.per_page +
+                  i +
+                  1
+                );
+              }
+            };
+            return {
+              ...student,
+              new_id: cp(),
+            };
+          }),
+        };
+        // console.log({ ddsData: data, dt2 });
         // console.log({ ddsData: data, dt });
-        return dt;
+        return dt2;
       },
       onError(err) {
         errorHandler(err);
