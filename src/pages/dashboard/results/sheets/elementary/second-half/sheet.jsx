@@ -52,6 +52,7 @@ const ElementarySecondHalfSheet = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
+    subjectsByClass,
   } = useResults();
 
   const { principalClassName, setPrincipalClassName } = useStudent();
@@ -294,6 +295,7 @@ const ElementarySecondHalfSheet = () => {
   console.log({
     // user,
     studentResults,
+    subjectsByClass,
     // activities,
     extraActivities,
     additionalCreds,

@@ -36,7 +36,7 @@ const ElementaryFirstHalfSheet = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
-    // studentByClass,
+    studentByClass,
   } = useResults();
 
   const [loading1, setLoading1] = useState(false);

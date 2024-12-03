@@ -310,7 +310,7 @@ export const useClasses = () => {
     // subjectsByClassLoading ||
     subjectsByClassLoading2;
 
-  console.log({ userDetails });
+  console.log({ userDetails, subjectsByClass2, id });
   // console.log({ id });
 
   return {

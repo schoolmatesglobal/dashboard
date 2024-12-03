@@ -43,7 +43,10 @@ const AssignClass = () => {
   });
 
   const findId = () => {
-    const find = classes.find((sb) => sb.class_name === inputs.class_assigned);
+    const find = classes.find(
+      (sb) =>
+        sb.class_name?.toUpperCase() === inputs.class_assigned?.toUpperCase()
+    );
     if (find) {
       return find.id;
     } else {
