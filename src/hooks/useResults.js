@@ -213,6 +213,8 @@ export const useResults = () => {
             if (!data) return;
             setStudentData(data);
             setEnableStudentToggle(false);
+            setActivateEndOfTerm(true);
+            setInitGetExistingSecondHalfResult(true);
           }
           state?.creds?.period === "First Half"
             ? setInitGetExistingResult(true)
