@@ -145,6 +145,7 @@ const ComputeElementarySecondHalfResult = () => {
   })();
 
   const allLoading = isLoading || loading1 || skillLoading || reportLoading;
+  const allLoading2 = isLoading || loading1 || skillLoading || reportLoading;
 
   const newSubjects = removeDuplicates(subjects) ?? [];
 
@@ -171,7 +172,6 @@ const ComputeElementarySecondHalfResult = () => {
         </div>
       )} */}
 
-      
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}
@@ -220,9 +220,22 @@ const ComputeElementarySecondHalfResult = () => {
           }}
           cancelLink='/app/results/preschool'
           // doubleSubmitOnclick={()=> }
-          pageTitle={`${studentData?.firstname || "Student"}'s Result (${
-            status ? status : status === "" ? "Not-Released" : "Not-Computed"
-          })`}
+          pageTitle={
+            <p className='fs-2 fw-bold '>
+              {`${studentData?.firstname || "Student"}'s Result (${
+                status
+                  ? status
+                  : status === ""
+                  ? "Not-Released"
+                  : "Not-Computed"
+              })`}
+              {allLoading && (
+                <span className='px-3 '>
+                  <Spinner color='#20c200' size='md' />
+                </span>
+              )}
+            </p>
+          }
           onFormSubmit={(e) => {
             e.preventDefault();
             createEndOfTermResult();
@@ -305,6 +318,7 @@ const ComputeElementarySecondHalfResult = () => {
                           const fd = subjects.map((s) => ({
                             ...s,
                             grade: s.subject === x.subject ? value : s.grade,
+                            score: s.subject === x.subject ? value : s.grade,
                           }));
 
                           setSubjects(fd);
