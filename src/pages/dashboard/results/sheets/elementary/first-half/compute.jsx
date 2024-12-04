@@ -60,10 +60,13 @@ const ComputeElementaryFirstHalfResult = () => {
   }
 
   function removeDuplicates(array) {
-    return array.filter(
-      (obj, index, self) =>
-        index ===
-        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+    return (
+      array?.length > 0 &&
+      array?.filter(
+        (obj, index, self) =>
+          index ===
+          self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+      )
     );
   }
 

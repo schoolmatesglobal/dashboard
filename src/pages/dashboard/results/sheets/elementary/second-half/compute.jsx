@@ -69,10 +69,13 @@ const ComputeElementarySecondHalfResult = () => {
   const { userDetails, setUserDetails } = useAuthDetails();
 
   function removeDuplicates(array) {
-    return array.filter(
-      (obj, index, self) =>
-        index ===
-        self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+    return (
+      array?.length > 0 &&
+      array?.filter(
+        (obj, index, self) =>
+          index ===
+          self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+      )
     );
   }
 
@@ -145,7 +148,14 @@ const ComputeElementarySecondHalfResult = () => {
 
   const newSubjects = removeDuplicates(subjects) ?? [];
 
-  console.log({ abacus, newSubjects, subjectsByClass, subjectsByClass2 });
+  console.log({
+    abacus,
+    newSubjects,
+    subjectsByClass,
+    subjectsByClass2,
+    subjects,
+    userDetails,
+  });
   // console.log({ maxScores, status, newSubjects, additionalCreds });
 
   return (
@@ -160,6 +170,8 @@ const ComputeElementarySecondHalfResult = () => {
           <Spinner />
         </div>
       )} */}
+
+      
       {user?.designation_name !== "Student" && (
         <StudentsResults
           studentByClassAndSession={studentByClass2}

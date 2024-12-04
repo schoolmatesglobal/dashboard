@@ -40,8 +40,6 @@ const Results = () => {
     preSchools,
     // isLoading,
     deletePreSchool,
-    activatePreSchool,
-    setActivatePreSchool,
   } = usePreSchool();
 
   const { classes } = useClasses();

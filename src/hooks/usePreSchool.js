@@ -7,7 +7,11 @@ import { useParams } from "react-router-dom";
 
 export const usePreSchool = () => {
   const { apiServices, permission, user } = useAppContext("pre-school");
-  const [period, setPeriod] = useState({ session: "", term: "", period: "" });
+  const [period, setPeriod] = useState({
+    session: "2024/2025",
+    term: "First Term",
+    period: "First Half",
+  });
   const [activatePreSchool, setActivatePreSchool] = useState(false);
   const [activatePreSchoolByClass, setActivatePreSchoolByClass] =
     useState(false);
@@ -20,7 +24,7 @@ export const usePreSchool = () => {
     apiServices.getPreSchools,
     {
       retry: 1,
-      refetchOnMount: true,
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
       enabled: permission?.read && is_preschool,
       select: apiServices.formatData,
@@ -28,14 +32,23 @@ export const usePreSchool = () => {
     }
   );
 
+  const cs = is_preschool && permission?.read && !!id && activatePreSchool;
+
+  const ch = cs ?? false;
+
   const { data: preSchool, isLoading: preSchoolLoading } = useQuery(
     [queryKeys.GET_ALL_PRE_SCHOOLS, id],
     () => apiServices.getPreSchool(id),
     {
       retry: 1,
-      refetchOnMount: true,
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
-      enabled: is_preschool && permission?.read && !!id && activatePreSchool,
+      enabled: ch,
+      // enabled:
+      //   is_preschool &&
+      //   permission?.read &&
+      //   id !== undefined &&
+      //   activatePreSchool,
       // select: apiServices.formatSingleData,
       select: (data) => {
         const pt = apiServices.formatSingleData(data);
@@ -47,6 +60,15 @@ export const usePreSchool = () => {
       onError: apiServices.errorHandler,
     }
   );
+
+  const chk =
+    is_preschool &&
+    permission?.subject &&
+    period.period !== "" &&
+    period.session !== "" &&
+    period.term !== "";
+
+  const chk2 = chk ?? false;
 
   const {
     data: preSchoolSubjects,
@@ -61,20 +83,15 @@ export const usePreSchool = () => {
     ],
     () =>
       apiServices.getPreSchoolSubjects(
-        period.period,
-        period.term,
-        period.session
+        period.period ?? "",
+        period.term ?? "",
+        period.session ?? ""
       ),
     {
+      enabled: chk2,
       retry: 1,
-      refetchOnMount: true,
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
-      enabled:
-        is_preschool &&
-        permission?.subject &&
-        !!period.period &&
-        !!period.session &&
-        !!period.term,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
     }
@@ -239,7 +256,7 @@ export const usePreSchool = () => {
   //   ? preSchoolSubjectsByClass
   //   : [];
 
-  // console.log({ activatePreSchool });
+  console.log({ period, pt: !!period.term, id, chk, chk2, ch });
 
   return {
     createPreSchool,
