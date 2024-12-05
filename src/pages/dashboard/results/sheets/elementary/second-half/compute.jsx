@@ -156,8 +156,10 @@ const ComputeElementarySecondHalfResult = () => {
     subjectsByClass2,
     subjects,
     userDetails,
+    extraActivities,
+    activities,
   });
-  // console.log({ maxScores, status, newSubjects, additionalCreds });
+  console.log({ reports, skills, user });
 
   return (
     <div className='results-sheet'>
@@ -335,18 +337,18 @@ const ComputeElementarySecondHalfResult = () => {
               <Fragment key={index}>
                 {index !== 0 && <hr className='my-5' />}
                 <PageTitle>
-                  {report.report_type === "PUPIL REPORT" &&
+                  {report?.report_type === "PUPIL REPORT" &&
                   user?.campus?.includes("College")
                     ? "AFFECTIVE DEVELOPMENT"
                     : report.report_type}
                 </PageTitle>
                 <div>
                   <div>
-                    {report.attribute.map((attr, i) => (
+                    {report?.attribute?.map((attr, i) => (
                       <Row key={i} className='my-5'>
                         <Col sm='6' className='mb-4 mb-sm-0'>
                           <h5>
-                            {i + 1}. {attr.name}:{/* {i + 1}. {attr}: */}
+                            {i + 1}. {attr?.name}:{/* {i + 1}. {attr}: */}
                           </h5>
                         </Col>
                         <Col sm='6' className='mb-1 mb-sm-0'>
