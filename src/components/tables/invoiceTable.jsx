@@ -81,7 +81,7 @@ const InvoiceTable = ({
     if (checkedRows.length === data.length) {
       setCheckedRows([]);
     } else {
-      const dataIds = data.map((x) => x.id);
+      const dataIds = data?.map((x) => x.id);
       setCheckedRows(dataIds);
     }
   };
@@ -122,7 +122,7 @@ const InvoiceTable = ({
                     <th>
                       <Input
                         type='checkbox'
-                        checked={checkedRows.length === memoisedData.length}
+                        checked={checkedRows?.length === memoisedData?.length}
                         onChange={checkAllBoxes}
                       />
                     </th>

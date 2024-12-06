@@ -3027,7 +3027,8 @@ const ElementarySecondHalfSheet = () => {
                         lineHeight: "16px",
                       }}
                     >
-                      {additionalCreds?.dos ?? "----"}
+                      {additionalCreds?.hos_fullname ?? "----"}
+                      {/* {additionalCreds?.dos ?? "----"} */}
                     </h3>
                   </div>
                 }
