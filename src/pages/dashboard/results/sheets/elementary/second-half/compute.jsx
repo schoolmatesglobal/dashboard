@@ -159,7 +159,7 @@ const ComputeElementarySecondHalfResult = () => {
     extraActivities,
     activities,
   });
-  console.log({ reports, skills, user });
+  // console.log({ reports, skills, user, userDetails });
 
   return (
     <div className='results-sheet'>
