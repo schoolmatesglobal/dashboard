@@ -281,7 +281,7 @@ const MidTerm = ({ isCompute = false }) => {
                     title: "Save",
                     type: "submit",
                     isLoading: isLoading,
-                    disabled: isLoading || subjects.length === 0,
+                    disabled: isLoading || subjects?.length === 0,
                     onClick: createMidTermResult,
                   },
                 ]}

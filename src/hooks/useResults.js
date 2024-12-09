@@ -1316,15 +1316,46 @@ export const useResults = () => {
   const { mutateAsync: addMidTermResult, isLoading: addMidTermResultLoading } =
     useMutation(apiServices.addMidTermResult, {
       onSuccess() {
-        trigger(500);
-        refetchMidtermResult();
-        toast.success(
-          `${
-            userDetails?.maxScores?.has_two_assessment === 1
-              ? toastValue
-              : "Mid Term"
-          } Result has been computed successfully`
-        );
+        // trigger(500);
+        // if(userDetails?.maxScores?.has_two_assessment === 1){
+        //   refetchSecondAssess();
+        //   refetchFirstAssess();
+        // }
+        if (
+          userDetails?.maxScores?.has_two_assessment === 1 &&
+          inputs.assessment === "first_assesment" &&
+          state?.creds?.period === "First Half"
+        ) {
+          refetchFirstAssess();
+          trigger(500);
+          toast.success(
+            `${
+              userDetails?.maxScores?.has_two_assessment === 1
+                ? toastValue
+                : "Mid Term"
+            } Result has been computed successfully`
+          );
+          // refetchFirstAssess2();
+        } else if (
+          userDetails?.maxScores?.has_two_assessment === 1 &&
+          inputs.assessment === "second_assesment" &&
+          state?.creds?.period === "First Half"
+        ) {
+          refetchSecondAssess();
+          trigger(500);
+          toast.success(
+            `${
+              userDetails?.maxScores?.has_two_assessment === 1
+                ? toastValue
+                : "Mid Term"
+            } Result has been computed successfully`
+          );
+          // refetchFirstAssess2();
+        } else {
+          refetchMidtermResult();
+          trigger(500);
+          toast.success(`Mid Term Result has been computed successfully`);
+        }
       },
       onError(err) {
         apiServices.errorHandler(err);
