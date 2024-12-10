@@ -1,6 +1,6 @@
 import { faEye, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageView from "../../../components/views/table-view";
 import { ResultIcon } from "../../../assets/svgs";
 import Prompt from "../../../components/modals/prompt";
@@ -12,18 +12,20 @@ import { useClasses } from "../../../hooks/useClasses";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useGrading } from "../../../hooks/useGrading";
 import { usePreSchool } from "../../../hooks/usePreSchool";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const Results = () => {
   const { permission, user } = useAppContext("results");
   const [promptStatus, setPromptStatus] = useState("compute");
   const [loginPrompt, setLoginPrompt] = useState(false);
+  const { userDetails, setUserDetails } = useAuthDetails();
   const navigate = useNavigate();
-  const { inputs, errors, handleChange } = useForm({
+  const { inputs, errors, handleChange, setInputs } = useForm({
     defaultValues: {
       assessment: "First Assessment",
       period: "First Half",
       term: "First Term",
-      session: "2020/2021",
+      session: userDetails?.session,
       class_name: "",
     },
     validation: {
@@ -172,7 +174,17 @@ const Results = () => {
 
   const classArray = user?.is_preschool === "true" ? cls2 : cls;
 
-  console.log({ sessions, user });
+  useEffect(() => {
+    setInputs({
+      ...inputs,
+      session: userDetails?.session,
+      assessment: "First Assessment",
+      period: "First Half",
+      term: "First Term",
+    });
+  }, []);
+
+  console.log({ sessions, user, userDetails });
 
   return (
     <div>

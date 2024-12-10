@@ -1,6 +1,6 @@
 import { faEye, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageView from "../../../components/views/table-view";
 import { BroadSheetIcon } from "../../../assets/svgs";
 import Prompt from "../../../components/modals/prompt";
@@ -11,18 +11,20 @@ import { useAppContext } from "../../../hooks/useAppContext";
 import { useClasses } from "../../../hooks/useClasses";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useGrading } from "../../../hooks/useGrading";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const BroadSheet = () => {
   const { permission, user } = useAppContext("results");
   const [promptStatus, setPromptStatus] = useState("compute");
   const [loginPrompt, setLoginPrompt] = useState(false);
   const navigate = useNavigate();
-  const { inputs, errors, handleChange } = useForm({
+  const { userDetails, setUserDetails } = useAuthDetails();
+  const { inputs, errors, handleChange, setInputs } = useForm({
     defaultValues: {
       assessment: "First Assessment",
       period: "First Half",
       term: "First Term",
-      session: "2020/2021",
+      session: userDetails?.session,
       class_name: "",
     },
     validation: {
@@ -72,6 +74,8 @@ const BroadSheet = () => {
         break;
     }
   };
+
+  
 
   // const showViewResult = () => {
   //   const isClassTeacher = user?.teacher_type === "class teacher";
@@ -181,6 +185,16 @@ const BroadSheet = () => {
 
     return arr;
   };
+
+  useEffect(() => {
+    setInputs({
+      ...inputs,
+      session: userDetails?.session,
+      assessment: "First Assessment",
+      period: "First Half",
+      term: "First Term",
+    });
+  }, []);
 
   // console.log({ showViewResult: showViewResult(), user });
 

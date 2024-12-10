@@ -73,6 +73,10 @@ const ElementarySecondHalfSheet = () => {
   // }
   // useState
 
+  function roundToNearestTen(num) {
+    return Math?.round(num);
+  }
+
   const [changeTableStyle, setChangeTableStyle] = useState(false);
 
   const getTotalYearlyScores = () => {
@@ -167,7 +171,7 @@ const ElementarySecondHalfSheet = () => {
   // };
 
   const principalCheck = "Elementary" || "Montessori";
-
+  
   const hasTwoAssessment = userDetails?.maxScores?.has_two_assessment === 1;
 
   const totalScore = hasTwoAssessment
@@ -1293,7 +1297,11 @@ const ElementarySecondHalfSheet = () => {
                           {/* {classAverage?.["Grade"]} */}
                           {
                             getScoreRemark(
-                              (totalScore / removeZeroExam()?.length).toFixed(2)
+                              roundToNearestTen(
+                                (totalScore / removeZeroExam()?.length).toFixed(
+                                  2
+                                )
+                              )
                             )?.remark
                           }
                         </p>
