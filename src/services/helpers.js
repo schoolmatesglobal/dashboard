@@ -124,7 +124,7 @@ class Helpers {
       //   return;
       // }
 
-      if (isProduction && statusCode == 404) {
+      if (isProduction && statusCode === 404) {
         return;
       }
 

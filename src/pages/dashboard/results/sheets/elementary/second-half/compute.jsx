@@ -134,7 +134,7 @@ const ComputeElementarySecondHalfResult = () => {
   useEffect(() => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status]);
+  }, [additionalCreds?.status, studentData]);
 
   const checkResultComputed = (function () {
     if ("results" in additionalCreds) {

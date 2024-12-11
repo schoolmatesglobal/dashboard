@@ -80,8 +80,6 @@ export const useResults = () => {
       grade: "0",
     }));
 
-    
-
   // console.log({ user });
   // console.log({ initGetStudentsByClass, subjects });
 
@@ -343,7 +341,7 @@ export const useResults = () => {
             });
           };
 
-          // console.log({ studentResult, res });
+          console.log({ data, studentResult, res });
 
           setAdditionalCreds({
             ...additionalCreds,
@@ -597,7 +595,7 @@ export const useResults = () => {
       refetchOnWindowFocus: false,
       enabled: initGetSubjects && !is_preschool,
       select(data) {
-        console.log({ kdata2: data });
+        // console.log({ kdata2: data });
         return apiServices.formatData(data);
       },
       onSuccess(data) {
@@ -625,7 +623,7 @@ export const useResults = () => {
           const filteredSubj =
             user?.teacher_type === "class teacher" ? subj : fss;
 
-          console.log({ allsub: data, filteredSubj });
+          // console.log({ allsub: data, filteredSubj });
 
           setFilteredSubjects(filteredSubj);
 
@@ -918,6 +916,8 @@ export const useResults = () => {
             });
           };
 
+          // console.log({ res2: res, studentResult });
+
           if (state?.creds?.period === "First Half") {
             setAdditionalCreds({
               ...additionalCreds,
@@ -1033,7 +1033,7 @@ export const useResults = () => {
         userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "First Half",
       select(data) {
-        console.log({ kdata: data });
+        // console.log({ kdata: data });
         return apiServices.formatData(data);
       },
       onSuccess(data) {
@@ -1062,7 +1062,7 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          // console.log({ dataM: data, ids, studentResult });
+          console.log({ dataM: data, ids, studentResult });
 
           setStudentTwoAssess(studentResult);
 
@@ -1153,6 +1153,7 @@ export const useResults = () => {
         // setInitGetSubjects(false);
         // setInitGetExistingResult(false);
         // setInitGetSubjects(false);
+
         if (data.length > 0) {
           const ids = data?.map((x) => x.student_id);
 
@@ -1171,6 +1172,16 @@ export const useResults = () => {
             score: x.score,
             grade: x.score,
           }));
+
+          setAdditionalCreds({
+            ...additionalCreds,
+            ...res,
+            status: res?.status,
+
+            // ...res,
+          });
+
+          console.log({ pdata: data, res, studentResult, studentData });
 
           // console.log({ dataM: data, ids, studentResult });
 
@@ -1620,12 +1631,12 @@ export const useResults = () => {
   // ||
   // releaseResultLoading;
 
-  console.log({
-    userDetails,
-    teacherSubjects,
-    findId: findId(),
-    subjectsByClass3,
-  });
+  // console.log({
+  //   userDetails,
+  //   teacherSubjects,
+  //   findId: findId(),
+  //   subjectsByClass3,
+  // });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {

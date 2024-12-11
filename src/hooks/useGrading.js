@@ -31,7 +31,7 @@ export const useGrading = () => {
       errorHandler(err);
     },
     select: (data) => {
-      console.log({ scoreData: data?.data?.attributes, data });
+      // console.log({ scoreData: data?.data?.attributes, data });
       return data?.data?.attributes;
     },
     onSuccess(data) {
