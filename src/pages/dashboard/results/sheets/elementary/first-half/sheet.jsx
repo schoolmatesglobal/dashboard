@@ -152,7 +152,7 @@ const ElementaryFirstHalfSheet = () => {
   useEffect(() => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status]);
+  }, [additionalCreds?.status, studentData]);
 
   // console.log({ additionalCreds });
 

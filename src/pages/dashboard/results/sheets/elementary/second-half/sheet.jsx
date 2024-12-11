@@ -171,7 +171,7 @@ const ElementarySecondHalfSheet = () => {
   // };
 
   const principalCheck = "Elementary" || "Montessori";
-  
+
   const hasTwoAssessment = userDetails?.maxScores?.has_two_assessment === 1;
 
   const totalScore = hasTwoAssessment
@@ -302,22 +302,31 @@ const ElementarySecondHalfSheet = () => {
 
   const allLoading = isLoading || loading1;
 
+  const calcClassAverage =
+    (totalScore / studentByClass2?.length) * removeZeroExam()?.length;
+
   useEffect(() => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status]);
+  }, [additionalCreds?.status, studentData]);
 
   console.log({
     // user,
     // maxScores,
-    userDetails,
-    studentResults,
-    subjectsByClass,
-    // activities,
-    extraActivities,
+
+    // status,
+    // calcClassAverage,
+    // studentData,
     additionalCreds,
-    removeZeroExam: removeZeroExam(),
-    removeZeroMidterm: removeZeroMidterm(),
+
+    // studentByClass2,
+    // userDetails,
+    // studentResults,
+    // subjectsByClass,
+    // activities,
+    // extraActivities,
+    // removeZeroExam: removeZeroExam(),
+    // removeZeroMidterm: removeZeroMidterm(),
   });
 
   return (
