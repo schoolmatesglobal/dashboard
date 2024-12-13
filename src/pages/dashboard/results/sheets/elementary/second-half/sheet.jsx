@@ -138,13 +138,27 @@ const ElementarySecondHalfSheet = () => {
   const [cumTotalScore, setCumTotalScore] = useState([]);
 
   const removeZeroFirstAssess = () => {
-    return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentFirstAssess?.length > 0) {
+      return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
   const removeZeroSecondAssess = () => {
-    return studentSecondAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentSecondAssess?.length > 0) {
+      return studentSecondAssess?.filter(
+        (fa) => fa.score != 0 && fa.grade != 0
+      );
+    } else {
+      return [];
+    }
   };
   const removeZeroMidterm = () => {
-    return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentMidterm?.length > 0) {
+      return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
 
   const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
@@ -1014,7 +1028,9 @@ const ElementarySecondHalfSheet = () => {
                       //   return;
                       // }
 
-                      console.log({ mAssess });
+                      {
+                        /* console.log({ mAssess }); */
+                      }
 
                       return (
                         <div className='' key={index}>

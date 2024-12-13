@@ -1149,7 +1149,7 @@ export const useResults = () => {
         state?.creds?.period === "Second Half",
       select(data) {
         const kt = apiServices.formatData(data);
-        console.log({ kdata: data, kt });
+        console.log({ kdata3: data, kt });
         return kt;
       },
       onSuccess(data) {
