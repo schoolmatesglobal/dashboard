@@ -29,7 +29,7 @@ export const useReporting = () => {
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
     select: (data) => {
-      console.log({ Rdata: data });
+      // console.log({ Rdata: data });
       return data?.data?.map((x, i) => ({
         id: x.id,
         new_id: i + 1,

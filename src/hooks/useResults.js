@@ -1062,7 +1062,7 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          console.log({ dataM: data, ids, studentResult });
+          // console.log({ dataM: data, ids, studentResult });
 
           setStudentTwoAssess(studentResult);
 
@@ -1164,7 +1164,7 @@ export const useResults = () => {
               x.student_id === studentData?.id &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
-              x.period === "First Half"
+              x.period === "Second Half"
           );
 
           const studentResult = res?.results?.map((x) => ({
@@ -1181,9 +1181,55 @@ export const useResults = () => {
             // ...res,
           });
 
-          console.log({ pdata: data, res, studentResult, studentData });
-
           // console.log({ dataM: data, ids, studentResult });
+          const mergeSubjectAndResult2 = () => {
+            if (
+              !filteredSubjects ||
+              !studentResult ||
+              filteredSubjects.length === 0 ||
+              studentResult.length === 0
+            ) {
+              return filteredSubjects;
+            }
+
+            return filteredSubjects.map((subject) => {
+              const result = studentResult.find(
+                (r) => r.subject === subject.subject
+              );
+
+              if (result) {
+                return {
+                  subject: result.subject,
+                  score: result.score,
+                  grade: result.grade,
+                };
+              } else {
+                return {
+                  subject: subject.subject,
+                  score: subject.score,
+                  grade: subject.grade,
+                };
+              }
+            });
+          };
+
+          if (state?.creds?.period === "Second Half") {
+            setAdditionalCreds({
+              ...additionalCreds,
+              ...res,
+            });
+          }
+
+          console.log({
+            pdata: data,
+            idWithComputedResult,
+            res,
+            studentResult,
+            studentData,
+            mergeSubjectAndResult2: mergeSubjectAndResult2(),
+          });
+
+          setSubjects(mergeSubjectAndResult2() ?? []);
 
           setStudentMidterm(studentResult);
         }
@@ -1719,6 +1765,7 @@ export const useResults = () => {
     withholdResultLoading,
     studentByClass2,
     subjectsByClass3,
+    setIdWithComputedResult,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,
