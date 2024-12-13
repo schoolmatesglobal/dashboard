@@ -59,12 +59,15 @@ const ComputeElementarySecondHalfResult = () => {
     studentByClass2,
     subjectsByClass,
     subjectsByClass2,
+    midtermResult,
+    setIdWithComputedResult,
   } = useResults();
 
   // const { studentByClass2 } = useStudent();
 
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
+  const [subject3, setSubject3] = useState([]);
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -121,21 +124,6 @@ const ComputeElementarySecondHalfResult = () => {
 
   const { activities } = useActivities();
 
-  useEffect(() => {
-    // setActivateEndOfTerm(true);
-    setTimeout(() => {
-      setActivateEndOfTerm(false);
-    }, 2000);
-    // setTeacherComment(additionalCreds?.teacher_comment);
-    // setHosComment(additionalCreds?.hos_comment);
-    // setPerformanceRemark(additionalCreds?.performance_remark);
-  }, [initGetExistingSecondHalfResult]);
-
-  useEffect(() => {
-    // setTeacherComment(additionalCreds?.teacher_comment);
-    setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status, studentData]);
-
   const checkResultComputed = (function () {
     if ("results" in additionalCreds) {
       return true;
@@ -149,16 +137,46 @@ const ComputeElementarySecondHalfResult = () => {
 
   const newSubjects = removeDuplicates(subjects) ?? [];
 
-  console.log({
-    abacus,
-    newSubjects,
-    subjectsByClass,
-    subjectsByClass2,
-    subjects,
-    userDetails,
-    extraActivities,
-    activities,
-  });
+  useEffect(() => {
+    // setActivateEndOfTerm(true);
+    setTimeout(() => {
+      setActivateEndOfTerm(false);
+    }, 2000);
+    // setTeacherComment(additionalCreds?.teacher_comment);
+    // setHosComment(additionalCreds?.hos_comment);
+    // setPerformanceRemark(additionalCreds?.performance_remark);
+  }, [initGetExistingSecondHalfResult]);
+
+  useEffect(() => {
+    // setTeacherComment(additionalCreds?.teacher_comment);
+    setStatus(additionalCreds?.status);
+    // if (idWithComputedResult?.length > 0) {
+    //   setSubject3(removeDuplicates(midtermResult?.mergeSubjectAndResult2));
+    // } else {
+    //   setSubject3(removeDuplicates(subjects));
+    // }
+  }, [additionalCreds?.status, studentData]);
+
+  // useEffect(() => {
+  //   if (idWithComputedResult?.length > 0) {
+  //     setSubject3(removeDuplicates(midtermResult?.mergeSubjectAndResult2));
+  //   } else {
+  //     setSubject3(removeDuplicates(subjects));
+  //   }
+  // }, [studentData]);
+
+  // console.log({
+  //   // abacus,
+  //   // midtermResult,
+  //   // idWithComputedResult,
+  //   // // newSubjects,
+  //   // // subjectsByClass,
+  //   // // subjectsByClass2,
+  //   // subjects,
+  //   // userDetails,
+  //   // extraActivities,
+  //   // activities,
+  // });
   // console.log({ reports, skills, user, userDetails });
 
   return (
@@ -178,6 +196,7 @@ const ComputeElementarySecondHalfResult = () => {
         <StudentsResults
           studentByClassAndSession={studentByClass2}
           onProfileSelect={(x) => {
+            setIdWithComputedResult([]);
             setStudentData(x);
             // setHosComment("");
             // setTeacherComment("");
