@@ -1147,7 +1147,11 @@ export const useResults = () => {
         !is_preschool &&
         userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "Second Half",
-      select: apiServices.formatData,
+      select(data) {
+        const kt = apiServices.formatData(data);
+        console.log({ kdata: data, kt });
+        return kt;
+      },
       onSuccess(data) {
         // console.log({ dataS: data });
         // setInitGetSubjects(false);
@@ -1163,8 +1167,8 @@ export const useResults = () => {
             (x) =>
               x.student_id === studentData?.id &&
               x.term === state?.creds?.term &&
-              state?.creds?.session === x.session &&
-              x.period === "Second Half"
+              state?.creds?.session === x.session
+            // x.period === "Second Half"
           );
 
           const studentResult = res?.results?.map((x) => ({
@@ -1213,6 +1217,13 @@ export const useResults = () => {
             });
           };
 
+          // console.log({
+          //   dataM: data,
+          //   ids,
+          //   studentResult,
+          //   mergeSubjectAndResult2: mergeSubjectAndResult2(),
+          // });
+
           if (state?.creds?.period === "Second Half") {
             setAdditionalCreds({
               ...additionalCreds,
@@ -1220,18 +1231,18 @@ export const useResults = () => {
             });
           }
 
-          console.log({
-            pdata: data,
-            idWithComputedResult,
-            res,
-            studentResult,
-            studentData,
-            mergeSubjectAndResult2: mergeSubjectAndResult2(),
-          });
-
           setSubjects(mergeSubjectAndResult2() ?? []);
 
-          setStudentMidterm(studentResult);
+          setStudentMidterm(mergeSubjectAndResult2());
+          // console.log({
+          //   pdata: data,
+          //   idWithComputedResult,
+          //   res,
+          //   studentResult,
+          //   studentData,
+          //   studentMidterm,
+          //   mergeSubjectAndResult3: mergeSubjectAndResult2(),
+          // });
         }
       },
     }
