@@ -311,13 +311,16 @@ const ElementarySecondHalfSheet = () => {
   }, [additionalCreds?.status, studentData]);
 
   console.log({
+    studentMidterm,
     // user,
     // maxScores,
 
     // status,
     // calcClassAverage,
     // studentData,
-    additionalCreds,
+    removeZeroMidterm: removeZeroMidterm(),
+    // additionalCreds,
+    // studentMidterm,
 
     // studentByClass2,
     // userDetails,
@@ -1011,7 +1014,7 @@ const ElementarySecondHalfSheet = () => {
                       //   return;
                       // }
 
-                      // console.log({ cumtotal });
+                      console.log({ mAssess });
 
                       return (
                         <div className='' key={index}>
