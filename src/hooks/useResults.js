@@ -1233,7 +1233,7 @@ export const useResults = () => {
 
           setSubjects(mergeSubjectAndResult2() ?? []);
 
-          setStudentMidterm(mergeSubjectAndResult2());
+          setStudentMidterm(mergeSubjectAndResult2() ?? []);
           // console.log({
           //   pdata: data,
           //   idWithComputedResult,
