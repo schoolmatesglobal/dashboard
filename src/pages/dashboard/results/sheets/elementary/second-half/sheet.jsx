@@ -333,7 +333,8 @@ const ElementarySecondHalfSheet = () => {
     // calcClassAverage,
     // studentData,
     removeZeroMidterm: removeZeroMidterm(),
-    // additionalCreds,
+    userDetails,
+    additionalCreds,
     // studentMidterm,
 
     // studentByClass2,

@@ -178,7 +178,7 @@ export const useStudent = () => {
           };
         });
 
-        console.log({ std: data, format });
+        // console.log({ std: data, format });
 
         return { ...data, data: format };
       },

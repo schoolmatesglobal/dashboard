@@ -65,6 +65,18 @@ export const useResults = () => {
     content: () => pdfExportComponent.current,
   });
 
+  const studentId = () => {
+    if (user?.designation_id === "7") {
+      return user?.id;
+    } else {
+      return studentData?.id;
+    }
+  };
+
+  const className = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
+
   const { inputs, handleChange } = useForm({
     defaultValues: {
       assessment: "first_assesment",
@@ -186,6 +198,12 @@ export const useResults = () => {
         select: (data) => {
           const dt2 = apiServices.formatData(data);
 
+          console.log({
+            dataSS: data,
+            user,
+            dt2,
+          });
+
           if (dt2?.length > 0) {
             const sst2 = dt2?.find((x) => x?.id === user?.id) ?? {};
 
@@ -194,13 +212,10 @@ export const useResults = () => {
                 ? dt2?.find((x) => x?.id === user?.id)
                 : dt2[0];
 
-            // console.log({
-            //   dataSS: data,
-            //   user,
-            //   dt2,
-            //   studentInfo,
-            //   sst2,
-            // });
+            console.log({
+              studentInfo,
+              sst2,
+            });
 
             return studentInfo;
           }
@@ -266,13 +281,13 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_STUDENT_END_OF_TERM_RESULTS,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getEndOfTermResults(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -299,7 +314,7 @@ export const useResults = () => {
           setIdWithComputedResult(ids);
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               state?.creds?.period === x.period
@@ -511,14 +526,14 @@ export const useResults = () => {
     useQuery(
       [
         queryKeys.GET_RESULT_CUMMULATIVE_SCORES,
-        studentData?.id,
+        studentId(),
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
       ],
       () =>
         apiServices.getCummulativeScores({
-          student_id: studentData?.id,
+          student_id: studentId(),
           period: state?.creds?.period,
           term: state?.creds?.term,
           session: state?.creds?.session,
@@ -536,14 +551,14 @@ export const useResults = () => {
     [
       queryKeys.GET_YEARLY_CLASS_AVERAGE,
       studentClassName,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getClassAverage({
         class_name: studentClassName,
-        student_id: studentData?.id,
+        student_id: studentId(),
         term: state?.creds?.term,
         session: state?.creds?.session,
       }),
@@ -654,13 +669,13 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -689,7 +704,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -771,14 +786,14 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -805,7 +820,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -834,13 +849,13 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -869,7 +884,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -951,14 +966,14 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -985,7 +1000,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1012,13 +1027,15 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentData?.id,
+      studentId(),
+      // studentData?.id,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getMidTermResult(
-        studentData?.id,
+        studentId(),
+        // studentData?.id,
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -1050,7 +1067,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1126,14 +1143,14 @@ export const useResults = () => {
   const { data: midtermResult2, isLoading: midtermResultLoading2 } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getMidTermResult(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
@@ -1165,7 +1182,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session
             // x.period === "Second Half"
@@ -1302,7 +1319,7 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentData?.id,
+              student_id: studentId(),
             },
           ],
         }),
@@ -1345,7 +1362,7 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentData?.id,
+              student_id: studentId(),
             },
           ],
         }),
@@ -1519,7 +1536,7 @@ export const useResults = () => {
 
   const computeMidTermResult = () => {
     const dataToSend = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1553,7 +1570,7 @@ export const useResults = () => {
 
   const createEndOfTermResult = () => {
     const dataToSend = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1583,7 +1600,7 @@ export const useResults = () => {
     };
 
     const dataToSend2 = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1634,7 +1651,7 @@ export const useResults = () => {
 
   // const createEndOfTermResult = () => {
   //   const dataToSend = {
-  //     student_id: studentData?.id,
+  //     student_id: studentId(),
   //     student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
   //     admission_number: studentData.admission_number,
   //     class_name: studentClassName,
@@ -1659,6 +1676,8 @@ export const useResults = () => {
 
   //   addResult(dataToSend);
   // };
+
+  console.log({ state, studentData, user, studentId: studentId(), className });
 
   const isLoading =
     academicDateLoading ||
