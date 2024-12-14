@@ -1029,9 +1029,7 @@ const ElementarySecondHalfSheet = () => {
                       //   return;
                       // }
 
-                      {
-                        /* console.log({ mAssess }); */
-                      }
+                     
 
                       return (
                         <div className='' key={index}>
