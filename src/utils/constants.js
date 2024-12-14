@@ -31,27 +31,22 @@ import {
   faSquarePollHorizontal,
   faSquarePollVertical,
   faBookBookmark,
-  faQrcode,
   faEnvelopeOpenText,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
-// const url1 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
-const url1 = "https://staging.sapsms.com/api";
-const url2 = "https://dashboard.sapsms.com/api";
-// const url = "https://goshenpillarsportal.schoolmateglobal.com/esc/api"
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return url1; // Update with your development API URL
+    return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return url2;
+    return "https://dashboard.sapsms.com/api";
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return url1;
+    return "https://staging.sapsms.com/api";
   } else {
-    return url1;
+    return "https://staging.sapsms.com/api";
   }
 })();
 
@@ -124,7 +119,6 @@ export const dashboardSideBarLinks = {
       title: "Skills",
       icon: faBalanceScale,
     },
-
     {
       to: "/app/reporting",
       title: "Reports",
@@ -159,11 +153,6 @@ export const dashboardSideBarLinks = {
       to: "/app/activities2",
       title: "Extra_Curricular",
       icon: faPersonSwimming,
-    },
-    {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
     },
     {
       to: "/app/vehicles",
@@ -216,11 +205,6 @@ export const dashboardSideBarLinks = {
       icon: faGraduationCap,
     },
     {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
-    },
-    {
       to: "/app/vehicles",
       title: "Vehicles",
       icon: faTruck,
@@ -236,11 +220,6 @@ export const dashboardSideBarLinks = {
       to: "/app/teachers",
       title: "Home",
       icon: faHome,
-    },
-    {
-      to: "/app/scan-codes",
-      title: "Scan",
-      icon: faQrcode,
     },
     {
       to: "/app/attendance",
@@ -305,11 +284,6 @@ export const dashboardSideBarLinks = {
       to: "/app/results",
       title: "Results",
       icon: faBuildingColumns,
-    },
-    {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
     },
     {
       to: "/app/broadsheet",
