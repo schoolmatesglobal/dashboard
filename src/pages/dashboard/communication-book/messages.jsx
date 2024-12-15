@@ -142,11 +142,13 @@ const CommunicationMessages = () => {
     [queryKeys.GET_COMMUNICATION_BOOK_REPLIES],
     () => apiServices.getCommunicationBookReplies(id),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!id && permission?.view,
 
       select: (data) => {
-        console.log({ datarr: data, dtr: data?.data });
+        // console.log({ datarr: data, dtr: data?.data });
 
         if (data?.data?.length > 0) {
           const dt = data?.data?.map((dt, i) => {
@@ -197,7 +199,7 @@ const CommunicationMessages = () => {
           //     Number(da?.receiver?.id) === Number(user?.id)
           // );
 
-          console.log({ ddt, dt });
+          // console.log({ ddt, dt });
 
           return user?.designation_name === "Student" ? ddt : dt;
         } else {
@@ -503,20 +505,20 @@ const CommunicationMessages = () => {
     }
   }, []);
 
-  console.log({
-    id,
-    replyMessages,
-    state,
-    showScrollIcon,
-    userDesignation,
-    user,
-    messageDeleteId,
-    selectedMessage2,
-    file,
-    fileName,
-    base64String,
-    conversations,
-  });
+  // console.log({
+  //   id,
+  //   replyMessages,
+  //   state,
+  //   showScrollIcon,
+  //   userDesignation,
+  //   user,
+  //   messageDeleteId,
+  //   selectedMessage2,
+  //   file,
+  //   fileName,
+  //   base64String,
+  //   conversations,
+  // });
 
   // navigate(`${state.pathname}/edit/${id}`)
 

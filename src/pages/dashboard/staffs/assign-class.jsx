@@ -43,7 +43,10 @@ const AssignClass = () => {
   });
 
   const findId = () => {
-    const find = classes.find((sb) => sb.class_name === inputs.class_assigned);
+    const find = classes.find(
+      (sb) =>
+        sb.class_name?.toUpperCase() === inputs.class_assigned?.toUpperCase()
+    );
     if (find) {
       return find.id;
     } else {
@@ -61,13 +64,15 @@ const AssignClass = () => {
       () => apiServices.getSubjectByClass2(findId()),
       {
         enabled: !!findId(),
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         select: (data) => {
           const newData = apiServices.formatData(data);
           return newData;
           // console.log({ data, newData });
         },
         onError: apiServices.errorHandler,
-    
       }
     );
 
@@ -170,9 +175,8 @@ const AssignClass = () => {
 
         setCheckedSubjects(dataIds);
       }
-
     }
-  }, [staffData,  subjectsByClass3]);
+  }, [staffData, subjectsByClass3]);
 
   const isLoading =
     promoteIsLoading ||
@@ -180,16 +184,16 @@ const AssignClass = () => {
     subjectIsLoading ||
     subjectsByClassLoading3;
 
-  console.log({
-    staffData,
-    currentSubjects,
-    checkedSubjects,
-    subjects,
-    subjectsByClass3,
-    //   // subjects,
-    //   // checkedSubjects,
-    // assignSubjectValue: assignSubjectValue(),
-  });
+  // console.log({
+  //   staffData,
+  //   currentSubjects,
+  //   checkedSubjects,
+  //   subjects,
+  //   subjectsByClass3,
+  //   //   // subjects,
+  //   //   // checkedSubjects,
+  //   // assignSubjectValue: assignSubjectValue(),
+  // });
 
   return (
     <DetailView

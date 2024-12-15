@@ -73,7 +73,9 @@ const Objective = ({
         createQ2?.week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,
       select: (data) => {
@@ -252,15 +254,15 @@ const Objective = ({
     }
   };
 
-  console.log({
-    objectiveQ,
-    answeredObjectiveQ,
-    answerQuestion,
-    createQ2,
-    subjects,
-    findSubjectId: findSubjectId(),
-    objAnsweredAssignment,
-  });
+  // console.log({
+  //   objectiveQ,
+  //   answeredObjectiveQ,
+  //   answerQuestion,
+  //   createQ2,
+  //   subjects,
+  //   findSubjectId: findSubjectId(),
+  //   objAnsweredAssignment,
+  // });
 
   const allLoading = assignmentLoading || answeredObjAssignmentLoading;
 
@@ -315,10 +317,10 @@ const Objective = ({
             <div className='d-flex flex-column my-5 gap-4'>
               {objectiveQ
                 ?.sort((a, b) => {
-                  if (a.question_number < b.question_number) {
+                  if (Number(a.question_number) < Number(b.question_number)) {
                     return -1;
                   }
-                  if (a.question_number > b.question_number) {
+                  if (Number(a.question_number) > Number(b.question_number)) {
                     return 1;
                   }
                   return 0;

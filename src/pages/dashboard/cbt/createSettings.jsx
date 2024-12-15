@@ -280,7 +280,7 @@ const CreateSettings = ({
     setObjMark(objScore);
   }, [objectiveQ]);
 
-  console.log({ hourcbt });
+  // console.log({ hourcbt });
 
   // console.log({ total_mark, theory_total_mark, total_question, question_mark });
   // console.log({

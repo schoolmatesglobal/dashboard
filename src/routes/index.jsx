@@ -125,6 +125,9 @@ import ScanCodes from "../pages/dashboard/scan-codes";
 import ScanDetail from "../pages/dashboard/scan-codes/scan/clock-in";
 import ClockIn from "../pages/dashboard/scan-codes/scan/clock-in";
 import ClockOut from "../pages/dashboard/scan-codes/scan/clock-out";
+import BankDetails from "../pages/dashboard/bank/details";
+import FlipClass from "../pages/dashboard/flip-class";
+import Exercises from "../pages/dashboard/exercises";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -160,6 +163,14 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='assignments'>
               <Assignments />
+            </Guard>
+          }
+        />
+        <Route
+          path='exercises'
+          element={
+            <Guard routeName='exercises'>
+              <Exercises />
             </Guard>
           }
         />
@@ -831,6 +842,14 @@ const CustomRoutes = () => {
           }
         />
         <Route
+          path='bank/details/:id'
+          element={
+            <Guard routeName='bank'>
+              <BankDetails />
+            </Guard>
+          }
+        />
+        <Route
           path='bank/edit/:id'
           element={
             <Guard routeName='bank' action={["update"]}>
@@ -905,6 +924,15 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='lesson-note'>
               <LessonNote />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='flip-class'
+          element={
+            <Guard routeName='flip-class'>
+              <FlipClass />
             </Guard>
           }
         />

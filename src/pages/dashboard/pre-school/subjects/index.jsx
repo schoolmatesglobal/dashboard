@@ -6,15 +6,17 @@ import { ResultIcon } from "../../../../assets/svgs";
 import { useForm } from "react-formid";
 import { useAcademicSession } from "../../../../hooks/useAcademicSession";
 import { usePreSchool } from "../../../../hooks/usePreSchool";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const PreSchoolSubject = () => {
   const [prompt, setPrompt] = useState(false);
   const [hideTable, setHideTable] = useState(true);
+  const { userDetails, setUserDetails } = useAuthDetails();
   const { inputs, errors, handleChange } = useForm({
     defaultValues: {
       period: "First Half",
       term: "First Term",
-      session: "2020/2021",
+      session: userDetails?.session,
     },
     validation: {
       period: {
@@ -93,14 +95,14 @@ const PreSchoolSubject = () => {
             setPeriod(inputs);
           },
         }}
-        singleButtonText="Continue"
-        promptHeader="Academic Period"
+        singleButtonText='Continue'
+        promptHeader='Academic Period'
       >
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Period"
+            label='Period'
             value={inputs.period}
-            name="period"
+            name='period'
             hasError={!!errors.period}
             onChange={handleChange}
             options={[
@@ -108,13 +110,13 @@ const PreSchoolSubject = () => {
               { value: "Second Half", title: "Second Half/End of Term" },
             ]}
           />
-          {!!errors.period && <p className="error-message">{errors.period}</p>}
+          {!!errors.period && <p className='error-message'>{errors.period}</p>}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Term"
+            label='Term'
             value={inputs.term}
-            name="term"
+            name='term'
             hasError={!!errors.term}
             onChange={handleChange}
             options={[
@@ -123,13 +125,13 @@ const PreSchoolSubject = () => {
               { value: "Third Term", title: "Third Term" },
             ]}
           />
-          {!!errors.term && <p className="error-message">{errors.term}</p>}
+          {!!errors.term && <p className='error-message'>{errors.term}</p>}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Session"
+            label='Session'
             value={inputs.session}
-            name="session"
+            name='session'
             hasError={!!errors.session}
             onChange={handleChange}
             options={(sessions || [])?.map((session) => ({
@@ -138,7 +140,7 @@ const PreSchoolSubject = () => {
             }))}
           />
           {!!errors.session && (
-            <p className="error-message">{errors.session}</p>
+            <p className='error-message'>{errors.session}</p>
           )}
         </div>
       </Prompt>

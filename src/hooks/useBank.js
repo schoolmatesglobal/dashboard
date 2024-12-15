@@ -6,6 +6,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { formatCurrency } from "../pages/dashboard/bank/constant";
+import dayjs from "dayjs";
 
 export const useBank = () => {
   const { permission, apiServices, user } = useAppContext("bank");
@@ -32,23 +33,62 @@ export const useBank = () => {
     isLoading: bankLoading,
     refetch: refetchBank,
   } = useQuery([queryKeys.GET_BANK_LIST], apiServices.getBankList, {
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     enabled: permission?.read,
     onError(err) {
       apiServices.errorHandler(err);
     },
     select: (data) => {
+      const newData = data?.data?.map((item) => {
+        const newPy = item?.payments?.map((it, i) => {
+          return {
+            ...it,
+            date: dayjs(it?.date).format("D MMM YYYY h:mm A"),
+            amount_paid: formatCurrency(it?.amount_paid),
+            amount_paid2: it?.amount_paid,
+            total_amount: formatCurrency(it?.total_amount),
+            total_amount2: it?.total_amount,
+            amount_due: formatCurrency(it?.amount_due),
+            amount_due2: it?.amount_due,
+            sn: i + 1,
+          };
+        });
+        return {
+          ...item,
+          attributes: {
+            ...item.attributes,
+            payments: newPy,
+          },
+          id: item.id,
+        };
+      });
+
       const format = apiServices.formatData(data)?.map((bank, i) => {
         return {
           ...bank,
           opening_balance2: formatCurrency(bank?.opening_balance),
 
           sn: i + 1,
+          // payments: data?.data?.payments,
         };
       });
 
-      console.log({ Bdata: data, format });
+      const format2 = newData?.map((bank, i) => {
+        const bk = bank?.attributes;
+        return {
+          ...bk,
+          opening_balance2: formatCurrency(bk?.opening_balance),
 
-      return format;
+          sn: i + 1,
+          id: bank?.id,
+          // payments: data?.data?.payments,
+        };
+      });
+      // console.log({ Bdata: data, dt: data?.data, format, format2, newData });
+
+      return format2;
     },
   });
 
@@ -82,7 +122,7 @@ export const useBank = () => {
   const isLoading =
     bankLoading || deleteBankLoading || updateBankLoading || createBankLoading;
 
-  console.log({ pa: permission?.read });
+  // console.log({ pa: permission?.read });
 
   return {
     isLoading,

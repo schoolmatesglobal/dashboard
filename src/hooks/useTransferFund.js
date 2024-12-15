@@ -23,6 +23,9 @@ export const useTransferFund = () => {
   } = useQuery([queryKeys.GET_FUNDS], apiServices.getFunds, {
     select: apiServices.formatData,
     onError: apiServices.errorHandler,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 
   const { mutate: deleteTransferFund, isLoading: deleteTransferLoading } =
@@ -46,6 +49,9 @@ export const useTransferFund = () => {
     [queryKeys.GET_FUNDS, id],
     () => apiServices.getFund(id),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!id,
       select: (data) => ({
         ...data?.data[0]?.attributes,

@@ -101,21 +101,21 @@ const InvoiceFees = () => {
 
   // const payedAmount = filterPayment()[filterPayment?.length - 1];
 
-  console.log({
-    bank,
-    payedAmount,
-    calcAmount,
-    changeTableStyle,
-    invoicesList,
-    invoicesLoading,
-    filteredInvoice,
-    filteredFee,
-    fp,
-    fp2: fp[fp?.length - 1]?.sum_amount,
-    // filterPayment: fp(),
-    // flength: fp()?.length,
-    payment,
-  });
+  // console.log({
+  //   bank,
+  //   payedAmount,
+  //   calcAmount,
+  //   changeTableStyle,
+  //   invoicesList,
+  //   invoicesLoading,
+  //   filteredInvoice,
+  //   filteredFee,
+  //   fp,
+  //   fp2: fp[fp?.length - 1]?.sum_amount,
+  //   // filterPayment: fp(),
+  //   // flength: fp()?.length,
+  //   payment,
+  // });
 
   return (
     // <PageView

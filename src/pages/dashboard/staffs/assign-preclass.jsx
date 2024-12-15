@@ -59,6 +59,9 @@ const AssignPreClass = () => {
       () => apiServices.getSubjectByClass2(findId()),
       {
         enabled: !!findId(),
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         select: apiServices.formatData,
         onError: apiServices.errorHandler,
       }

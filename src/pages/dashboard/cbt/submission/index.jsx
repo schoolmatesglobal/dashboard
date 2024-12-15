@@ -17,6 +17,7 @@ import Objective from "./objective";
 import Button from "../../../../components/buttons/button";
 import StudentsResults from "../../../../components/common/students-results";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const CbtSubmission = (
@@ -69,6 +70,8 @@ const CbtSubmission = (
   } = useCBT();
 
   const { state } = useLocation();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
   const isTablet = useMediaQuery({
@@ -133,34 +136,6 @@ const CbtSubmission = (
     }
   };
 
-  // ///// GET STUDENT BY CLASS
-  // const { data: studentByClass, isLoading: studentByClassLoading } = useQuery(
-  //   [queryKeys.GET_ALL_STUDENTS_BY_CLASS_CBT],
-  //   () => apiServices.getStudentByClass2(user?.class_assigned),
-
-  //   {
-  //     enabled: true,
-  //     // enabled: permission?.myStudents || user?.designation_name === "Principal",
-  //     // select: apiServices.formatData,
-  //     select: (data) => {
-  //       console.log({ pdata: data, state });
-  //       return apiServices.formatData(data)?.map((obj, index) => {
-  //         const newObj = { ...obj };
-  //         newObj.new_id = index + 1;
-  //         return newObj;
-  //       });
-
-  //       // return { ...data, options: f };
-  //     },
-  //     onError(err) {
-  //       errorHandler(err);
-  //     },
-  //   }
-  // );
-
-  // const ids = data?.map((x) => x.student_id);
-  // setIdWithComputedResult(ids);
-
   /////// FETCH ANSWERED CBT /////
   const {
     isLoading: cbtAnswerLoading,
@@ -180,7 +155,9 @@ const CbtSubmission = (
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
 
       enabled: activateRetrieve(),
       // enabled: false,
@@ -188,10 +165,10 @@ const CbtSubmission = (
         const ggk = apiServices.formatData(data);
 
         const sorted = ggk?.sort((a, b) => {
-          if (a.question_number < b.question_number) {
+          if (Number(a.question_number) < Number(b.question_number)) {
             return -1;
           }
-          if (a.question_number > b.question_number) {
+          if (Number(a.question_number) > Number(b.question_number)) {
             return 1;
           }
           return 0;
@@ -382,7 +359,7 @@ const CbtSubmission = (
   //   myStudents,
   //   studentByClass,
   // });
-  console.log({ studentByClass, user, answerQ });
+  // console.log({ studentByClass, user, answerQ });
 
   return (
     <div className='results-sheet'>
@@ -406,7 +383,8 @@ const CbtSubmission = (
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                options={userDetails?.teacherSubjects}
+                // options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setAnswerQ((prev) => {

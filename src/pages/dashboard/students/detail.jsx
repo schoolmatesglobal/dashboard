@@ -17,9 +17,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Prompt from "../../../components/modals/prompt";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useCampus } from "../../../hooks/useCampus";
+import { usePreSchool } from "../../../hooks/usePreSchool";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const StudentDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const {
@@ -46,6 +50,9 @@ const StudentDetail = () => {
     campusList,
     permission,
     user,
+    getAdmissionNoSettings,
+    loadedGen,
+    setLoadedGen,
   } = useStudent();
 
   // const {
@@ -56,9 +63,18 @@ const StudentDetail = () => {
   //   // deleteCampus,
   // } = useCampus();
 
-  const { classes } = useClasses();
+  // const { classes } = useClasses();
 
-  const { data: sessions } = useAcademicSession();
+  // const {
+  //   // permission,
+  //   preSchools,
+  //   // isLoading,
+  //   deletePreSchool,
+  //   activatePreSchool,
+  //   setActivatePreSchool,
+  // } = usePreSchool();
+
+  // const { data: sessions } = useAcademicSession();
 
   const onSubmit = async (data) => {
     const image = isEdit ? (base64String ? base64String : "") : base64String;
@@ -163,7 +179,14 @@ const StudentDetail = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentData]);
+  }, [studentData, loadedGen]);
+
+  useEffect(() => {
+    if (getAdmissionNoSettings?.auto_generate) {
+      setLoadedGen(getAdmissionNoSettings?.auto_generate);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getAdmissionNoSettings]);
 
   function showGraduateButton() {
     if (user?.designation_id === "4") {
@@ -172,6 +195,27 @@ const StudentDetail = () => {
       return true;
     }
   }
+
+  const cls = (userDetails?.classes || []).map((x) => ({
+    value: x?.class_name.toUpperCase(),
+    title: x?.class_name,
+  }));
+
+  const cls2 = (userDetails?.preschools || []).map((x) => ({
+    value: x?.name.toUpperCase(),
+    title: x?.name,
+  }));
+
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
+
+  const classArray = is_preschool ? cls2 : cls;
+
+  console.log({
+    userDetails,
+    cls2,
+    cls,
+    inputs,
+  });
 
   // console.log({ db: studentData?.dob, gp: getFieldProps("dob") });
   // console.log({
@@ -268,17 +312,47 @@ const StudentDetail = () => {
         </Col>
       </Row>
       <Row className='mb-0 mb-sm-4'>
-        <Col sm='6' className='mb-4 mb-sm-0'>
-          <AuthInput
-            label='Admission Number'
-            required
-            hasError={!!errors.admission_number}
-            {...getFieldProps("admission_number")}
-          />
-          {!!errors.admission_number && (
-            <p className='error-message'>{errors.admission_number}</p>
-          )}
-        </Col>
+        {isEdit && (
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Admission Number'
+              required
+              hasError={!!errors.admission_number}
+              {...getFieldProps("admission_number")}
+            />
+            {!!errors.admission_number && (
+              <p className='error-message'>{errors.admission_number}</p>
+            )}
+          </Col>
+        )}
+        {!isEdit && loadedGen && (
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Admission Number'
+              required
+              readOnly
+              hasError={!!errors.admission_number}
+              defaultValue='auto-generated'
+              // {...getFieldProps("admission_number")}
+            />
+            {!!errors.admission_number && (
+              <p className='error-message'>{errors.admission_number}</p>
+            )}
+          </Col>
+        )}
+        {!isEdit && !loadedGen && (
+          <Col sm='6' className='mb-4 mb-sm-0'>
+            <AuthInput
+              label='Admission Number'
+              required
+              hasError={!!errors.admission_number}
+              {...getFieldProps("admission_number")}
+            />
+            {!!errors.admission_number && (
+              <p className='error-message'>{errors.admission_number}</p>
+            )}
+          </Col>
+        )}
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
             isPhone
@@ -405,7 +479,7 @@ const StudentDetail = () => {
             name='session_admitted'
             hasError={!!errors.session_admitted}
             onChange={handleChange}
-            options={(sessions || [])?.map((session) => ({
+            options={(userDetails?.sessions || [])?.map((session) => ({
               value: session?.academic_session,
               title: session?.academic_session,
             }))}
@@ -430,10 +504,7 @@ const StudentDetail = () => {
                 sub_class: "",
               });
             }}
-            options={(classes || []).map((x) => ({
-              value: x?.class_name.toUpperCase(),
-              title: x?.class_name,
-            }))}
+            options={classArray}
           />
           {!!errors.present_class && (
             <p className='error-message'>{errors.present_class}</p>
@@ -449,10 +520,7 @@ const StudentDetail = () => {
             onChange={(e) => {
               handleChange(e);
             }}
-            options={(classes || []).map((x) => ({
-              value: x?.class_name.toUpperCase(),
-              title: x?.class_name,
-            }))}
+            options={classArray}
           />
           {!!errors.class && <p className='error-message'>{errors.class}</p>}
         </Col>
@@ -487,7 +555,7 @@ const StudentDetail = () => {
             onChange={(e) => {
               handleChange(e);
             }}
-            options={campusList?.options}
+            options={userDetails?.campusList?.options}
           />
           {!!errors.class && <p className='error-message'>{errors.campus}</p>}
         </Col>

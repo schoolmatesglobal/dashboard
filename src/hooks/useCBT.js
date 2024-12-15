@@ -134,13 +134,15 @@ export const useCBT = () => {
     };
   });
 
-  
   ///// GET STUDENT BY CLASS
   const { data: studentByClass, isLoading: studentByClassLoading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS_CBT],
     () => apiServices.getStudentByClass2(user?.class_assigned),
 
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!user?.class_assigned,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -169,7 +171,9 @@ export const useCBT = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,
@@ -292,6 +296,6 @@ export const useCBT = () => {
     setResultTab,
 
     studentByClass,
-studentByClassLoading,
+    studentByClassLoading,
   };
 };

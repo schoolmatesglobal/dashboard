@@ -89,7 +89,9 @@ const Results = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -156,7 +158,9 @@ const Results = ({
       ),
 
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
 
@@ -172,16 +176,16 @@ const Results = ({
             // dt?.week === week
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
           });
 
-        console.log({ mmk, data, sorted });
+        // console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
 
@@ -341,7 +345,6 @@ const Results = ({
   }, [subjectsByTeacher]);
 
   useEffect(() => {
-   
     if (markedAssignmentResults?.questions?.length >= 1) {
       setResultTab("2");
     } else {
@@ -349,11 +352,11 @@ const Results = ({
     }
   }, [week, subject, student]);
 
-  console.log({
-    markedQ,
-    submittedAssignment,
-    markedAssignmentResults,
-  });
+  // console.log({
+  //   markedQ,
+  //   submittedAssignment,
+  //   markedAssignmentResults,
+  // });
 
   return (
     <div>

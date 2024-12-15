@@ -3,16 +3,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const GoBack = ({ onGoBack }) => {
+const GoBack = ({ onGoBack, title = "Go Back" }) => {
   const navigate = useNavigate();
   return (
-    <div className="mb-5">
+    <div className='mb-5'>
       <button
-        type="button"
-        className="btn go-back-button"
+        type='button'
+        className='btn go-back-button'
         onClick={() => (onGoBack ? onGoBack() : navigate(-1))}
       >
-        <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Go Back
+        <FontAwesomeIcon icon={faArrowLeft} className='me-2' />{" "}
+        {title}
       </button>
     </div>
   );

@@ -73,19 +73,11 @@ const InvoiceDetail = () => {
         apiServices.errorHandler(err);
       },
       select: apiServices.formatData,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
     }
   );
-
-  // const {
-  //   data: Invoice,
-  //   isLoading: invoiceLoading,
-  //   refetch: getInvoiceRefetch,
-  // } = useQuery(["GET_INVOICE"], apiServices.getInvoices, {
-  //   onError(err) {
-  //     apiServices.errorHandler(err);
-  //   },
-  //   select: apiServices.formatData,
-  // });
 
   function feesDemo2() {
     const ff = Fee?.map((f, i) => {
@@ -181,6 +173,9 @@ const InvoiceDetail = () => {
     {
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       enabled: classLoading && !!studentData?.present_class,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // select: apiServices.formatData,
       select: (data) => {
         const filtered = apiServices
@@ -206,7 +201,9 @@ const InvoiceDetail = () => {
     ["GET_STUDENT2", newId],
     () => apiServices.getStudent(newId),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         apiServices.errorHandler(err);
       },
@@ -300,11 +297,11 @@ const InvoiceDetail = () => {
       });
     }
 
-    console.log({
-      ...data,
-      fee: [...fees],
-      // discount_amount,
-    });
+    // console.log({
+    //   ...data,
+    //   fee: [...fees],
+    //   // discount_amount,
+    // });
   };
 
   useEffect(() => {
@@ -329,26 +326,26 @@ const InvoiceDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newId]);
 
-  console.log({
-    // studentData,
-    filteredInvoice2,
-    date: inputs?.due_date,
-    filteredInvoice,
-    invoicesList,
-    // defaultAmount: defaultAmount(),
-    // feeError,
-    // feetype,
-    // discount,
-    // amount,
-    fees,
-    fees2,
-    // feesDemo,
-    user,
-    // studentByClass2,
-    // newId,
-    singleStudent,
-    invoiceId,
-  });
+  // console.log({
+  //   // studentData,
+  //   filteredInvoice2,
+  //   date: inputs?.due_date,
+  //   filteredInvoice,
+  //   invoicesList,
+  //   // defaultAmount: defaultAmount(),
+  //   // feeError,
+  //   // feetype,
+  //   // discount,
+  //   // amount,
+  //   fees,
+  //   fees2,
+  //   // feesDemo,
+  //   user,
+  //   // studentByClass2,
+  //   // newId,
+  //   singleStudent,
+  //   invoiceId,
+  // });
 
   return (
     <div className='results-sheet'>

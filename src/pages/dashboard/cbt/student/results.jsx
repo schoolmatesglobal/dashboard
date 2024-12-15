@@ -49,7 +49,7 @@ const StudentCBTResults = (
     setResultTab,
   } = useCBT();
 
-  const {studentSubjects} = useStudentCBT()
+  const { studentSubjects } = useStudentCBT();
 
   const [cbtObject, setCbtObject] = useState({});
 
@@ -103,17 +103,19 @@ const StudentCBTResults = (
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
         const ffk = apiServices.formatData(data);
 
         const sorted = ffk?.sort((a, b) => {
-          if (a.question_number < b.question_number) {
+          if (Number(a.question_number) < Number(b.question_number)) {
             return -1;
           }
-          if (a.question_number > b.question_number) {
+          if (Number(a.question_number) > Number(b.question_number)) {
             return 1;
           }
           return 0;
@@ -121,12 +123,8 @@ const StudentCBTResults = (
 
         const calculatedData = analyzeQuestions(sorted);
 
-        console.log({ ffk, data, sorted });
-        // if (question_type === "objective") {
-        //   return calculatedData ?? {};
-        // } else {
-        //   return {};
-        // }
+        // console.log({ ffk, data, sorted });
+
         return calculatedData ?? {};
       },
 
@@ -166,7 +164,9 @@ const StudentCBTResults = (
       ),
 
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       // enabled: activateRetrieve(),
       enabled: false,
@@ -181,16 +181,16 @@ const StudentCBTResults = (
               Number(dt?.student_id) === Number(student_id)
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
           });
 
-        console.log({ mmk, data, sorted });
+        // console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
 
@@ -344,13 +344,13 @@ const StudentCBTResults = (
     // setAnsweredTheoQ(submittedTheoAssignment);
   }, [subject, student_id]);
 
-  console.log({
-    user,
-    markedQ,
-    cbtAnswer,
-    cbtObject,
-    markedAssignmentResults,
-  });
+  // console.log({
+  //   user,
+  //   markedQ,
+  //   cbtAnswer,
+  //   cbtObject,
+  //   markedAssignmentResults,
+  // });
 
   return (
     <div>
@@ -392,7 +392,7 @@ const StudentCBTResults = (
                 wrapperClassName='w-100'
                 // label="Subject"
               />
-               <AuthSelect
+              <AuthSelect
                 sort
                 options={questionType}
                 value={question_type}
@@ -446,7 +446,7 @@ const StudentCBTResults = (
             cbtObject?.questions?.length > 0 &&
             ResultTab === "1" && (
               <div className='my-5'>
-                 <div className='d-flex mb-5 flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
+                <div className='d-flex mb-5 flex-column gap-3 gap-md-3 flex-md-row justify-content-md-between'>
                   <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
                     <div className=' bg-info bg-opacity-10 py-4 px-4 d-flex flex-column justify-content-center align-items-center gap-3'>
@@ -458,7 +458,6 @@ const StudentCBTResults = (
                       <p className='fs-3 fw-bold'>Student Score</p>
                       <p className='fs-1 fw-bold'>{cbtObject?.score}</p>
                     </div>
-                   
                   </div>
                   <div className='d-flex justify-content-center align-items-center gap-3 w-100 '>
                     {/* total marks */}
@@ -519,7 +518,15 @@ const StudentCBTResults = (
                       accessor: "answer_state",
                     },
                   ]}
-                  data={cbtObject?.questions}
+                  data={cbtObject?.questions?.sort((a, b) => {
+                    if (Number(a.question_number) < Number(b.question_number)) {
+                      return -1;
+                    }
+                    if (Number(a.question_number) > Number(b.question_number)) {
+                      return 1;
+                    }
+                    return 0;
+                  })}
                   markedQ={markedQ}
                   result={cbtObject}
                   ResultTab={ResultTab}

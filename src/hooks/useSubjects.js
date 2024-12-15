@@ -24,6 +24,9 @@ export const useSubject = () => {
 
       // return { ...data, options: f };
     },
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     onError: apiServices.errorHandler,
   });
 
@@ -32,6 +35,9 @@ export const useSubject = () => {
     () => apiServices.getSubject(id),
     {
       enabled: !!id,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,
     }

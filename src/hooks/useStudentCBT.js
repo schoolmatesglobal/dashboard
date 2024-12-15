@@ -92,7 +92,9 @@ export const useStudentCBT = () => {
     [queryKeys.GET_SUBJECTS_BY_STUDENT],
     () => apiServices.getSubjectByClass(className),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view || permission?.results,
       // enabled: true,

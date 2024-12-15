@@ -158,8 +158,10 @@ const Create = ({
         week
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -656,21 +658,21 @@ const Create = ({
 
   // }, [editObjectiveAssignment]);
 
-  console.log({
-    // unPublishedAssignment,
-    // activateRetrieveCreated: activateRetrieveCreated(),
-    // assignmentCreatedFetching,
-    // assignmentCreatedRefetching,
-    // published,
+  // console.log({
+  //   // unPublishedAssignment,
+  //   // activateRetrieveCreated: activateRetrieveCreated(),
+  //   // assignmentCreatedFetching,
+  //   // assignmentCreatedRefetching,
+  //   // published,
 
-    // objectiveQ,
-    // theoryQ,
+  //   // objectiveQ,
+  //   // theoryQ,
 
-    createQ,
-    subjectsByTeacher,
-    // subjects,
-    // newSubjects,
-  });
+  //   createQ,
+  //   subjectsByTeacher,
+  //   // subjects,
+  //   // newSubjects,
+  // });
 
   return (
     <>

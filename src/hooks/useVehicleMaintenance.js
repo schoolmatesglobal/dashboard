@@ -23,7 +23,9 @@ export const useVehicleMaintenance = () => {
     () => apiServices.getVehicle(id),
     {
       enabled: !!id,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         apiServices.errorHandler(err);
       },
@@ -36,7 +38,9 @@ export const useVehicleMaintenance = () => {
       [queryKeys.GET_ALL_VEHICLE_MAINTENANCE],
       apiServices.getAllVehicleMaintenance,
       {
-        retry: 3,
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         onError(err) {
           apiServices.errorHandler(err);
         },
@@ -51,7 +55,14 @@ export const useVehicleMaintenance = () => {
     });
   };
 
-  const isLoading = postMaintenanceLoading || vehicleDataLoading || vehicleMaintenanceLoading;
+  const isLoading =
+    postMaintenanceLoading || vehicleDataLoading || vehicleMaintenanceLoading;
 
-  return { postMaintenance, isLoading, vehicleData, vehicleMaintenance, isEdit: !!id };
+  return {
+    postMaintenance,
+    isLoading,
+    vehicleData,
+    vehicleMaintenance,
+    isEdit: !!id,
+  };
 };

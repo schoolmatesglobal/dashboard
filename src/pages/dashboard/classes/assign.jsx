@@ -95,19 +95,17 @@ const AssignElementaryClass = () => {
     setOnGetSubjectByClass2(true);
   }, []);
 
-  
-
-  // console.log({
-  //   // checkedSubjects,
-  //   // subjects,
-  //   // subjectsByClass2,
-  //   // sub: promoteStudentsValue(),
-  //   // id,
-  //   // dt: convertSubjectsArray(),
-  //   subjectData2,
-  //   onGetSubjectByClass2,
-  //   // id,
-  // });
+  console.log({
+    // checkedSubjects,
+    // subjects,
+    subjectsByClass2,
+    // sub: promoteStudentsValue(),
+    // id,
+    // dt: convertSubjectsArray(),
+    // subjectData2,
+    onGetSubjectByClass2,
+    // id,
+  });
 
   return (
     <div>

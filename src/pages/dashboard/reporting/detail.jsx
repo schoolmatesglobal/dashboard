@@ -104,7 +104,7 @@ const ReportingDetail = () => {
             <AuthInput
               type='text'
               placeholder='Enter Attributes Here...'
-              value={input.name}
+              value={input?.name}
               name='firstname'
               onChange={({ target: { value } }) => {
                 const format = inputs.attribute.map((x, k) => {

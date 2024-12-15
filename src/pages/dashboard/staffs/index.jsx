@@ -21,7 +21,8 @@ const Staff = () => {
   } = useStaff();
 
   const checkForExtraButton = () => {
-    if (user?.department === "Admin") {
+    if (user?.designation_id === "1") {
+    // if (user?.department === "Admin") {
       return true;
     } else {
       return false;
@@ -192,7 +193,7 @@ const Staff = () => {
     return arr.length ? arr : undefined;
   };
 
-  // console.log({ sd: staffsData?.data });
+  console.log({ user });
   // console.log({ sd: staffsData?.data });
 
   return (

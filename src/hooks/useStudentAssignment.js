@@ -4,7 +4,6 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 
 export const useStudentAssignments = () => {
-
   const [objectiveQ2, setObjectiveQ2] = useState([]);
   const [theoryQ2, setTheoryQ2] = useState([]);
   const [answeredObjectiveQ, setAnsweredObjectiveQ] = useState([]);
@@ -68,7 +67,9 @@ export const useStudentAssignments = () => {
     [queryKeys.GET_SUBJECTS_BY_STUDENT],
     () => apiServices.getSubjectByClass(className),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view || permission?.results,
       // enabled: true,
@@ -139,6 +140,6 @@ export const useStudentAssignments = () => {
     setTheorySubmitted,
 
     ResultTab,
-setResultTab,
+    setResultTab,
   };
 };

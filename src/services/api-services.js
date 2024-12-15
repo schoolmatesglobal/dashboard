@@ -1291,17 +1291,6 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getAcademicPeriod() {
-    const { data } = await axios.get(`${backendAPI}/getacademicperiod`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${super.getToken()}`,
-      },
-    });
-
-    return data;
-  }
-
   async getClassPopulation() {
     const { data } = await axios.get(`${backendAPI}/classpopulation`, {
       headers: {
@@ -1754,6 +1743,17 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getAcademicPeriod() {
+    const { data } = await axios.get(`${backendAPI}/getacademicperiod`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+
   async postAcademicPeriod(body) {
     const { data } = await axios.post(`${backendAPI}/academicperiod`, body, {
       headers: {
@@ -1761,6 +1761,61 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+
+    return data;
+  }
+
+  async getCurrentAcademicPeriod() {
+    const { data } = await axios.get(`${backendAPI}/current/academicperiod`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
+    return data;
+  }
+ 
+
+  async postCurrentAcademicPeriod(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/current/academicperiod`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getAdmissionNoSettings(sch_id) {
+    const { data } = await axios.get(
+      `${backendAPI}/admission-number/settings/${sch_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async postAdmissionNoSettings(body) {
+    const { data } = await axios.post(
+      `${backendAPI}/admission-number/settings`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }
@@ -2040,7 +2095,6 @@ class APIServies extends Helpers {
         },
       }
     );
-
     return data;
   }
 
@@ -2055,7 +2109,6 @@ class APIServies extends Helpers {
         },
       }
     );
-
     return data;
   }
 
@@ -2239,12 +2292,51 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async getAssessment(
+    period,
+    term,
+    session,
+    flip_class_id,
+    question_type,
+    week,
+    subject_id
+  ) {
+    // const tempBackend =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.get(
+      `${backendAPI}/v2/flipclass/${period}/${term}/${session}/${flip_class_id}/${question_type}/${week}/${subject_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 
   async addObjectiveAssignment(body) {
     // const backendAPI =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.post(
       `${backendAPI}/objective-assignment`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async addObjectiveAssessment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/v2/flipclass/assessment/add-obj`,
       body,
       {
         headers: {
@@ -2268,7 +2360,39 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async addTheoryAssessment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/v2/flipclass/assessment/add-theory`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   async submitObjectiveAssignment(body) {
+    // const backendAPI =
+    //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
+    const { data } = await axios.post(
+      `${backendAPI}/objective-assignment-answer`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async submitObjectiveAssessment(body) {
     // const backendAPI =
     //   "https://earlyspringschoolportal.schoolmateglobal.com/esc/api";
     const { data } = await axios.post(
@@ -2460,10 +2584,38 @@ class APIServies extends Helpers {
 
     return data;
   }
+  async editObjectiveAssessment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/edit-obj`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
 
   async publishAssignment(body) {
     const { data } = await axios.patch(
       `${backendAPI}/publish/assignment`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+  async publishAssessment(body) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/publish`,
       body,
       {
         headers: {
@@ -2504,6 +2656,21 @@ class APIServies extends Helpers {
 
     return data;
   }
+
+  async editTheoryAssessment({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/assessment/edit-theory`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
   async deleteAssignment(id) {
     const { data } = await axios.delete(`${backendAPI}/assignment/${id}`, {
       headers: {
@@ -2511,6 +2678,20 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+
+    return data;
+  }
+
+  async deleteAssessment(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/flipclass/assessment/delete/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
 
     return data;
   }
@@ -2918,6 +3099,87 @@ class APIServies extends Helpers {
   async unApproveLessonNote({ id }) {
     const { data } = await axios.patch(
       `${backendAPI}/v2/lessonnote/unapprove/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async addFlipClass(body) {
+    const { data } = await axios.post(`${backendAPI}/v2/flipclass/add`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+
+  async getFlipClassByClass(class_id, subject_id, week, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/flipclass/${class_id}/${subject_id}/${week}/${term}/${session}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async deleteFlipClass(id) {
+    const { data } = await axios.delete(
+      `${backendAPI}/v2/flipclass/remove/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async editLFlipClass({ id, body }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/edit/${id}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async approveLFlipClass({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/approve/${id}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+    return data;
+  }
+
+  async unApproveLFlipClass({ id }) {
+    const { data } = await axios.patch(
+      `${backendAPI}/v2/flipclass/unapprove/${id}`,
       {},
       {
         headers: {

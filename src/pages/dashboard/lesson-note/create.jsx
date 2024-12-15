@@ -206,7 +206,9 @@ const Create = ({
         session
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: activateRetrieveCreated() && permission?.view,
 
       select: (data) => {
@@ -216,7 +218,7 @@ const Create = ({
           (ls) => Number(ls?.staff_id) === Number(user?.id)
         );
 
-        console.log({ data, lsg, filt });
+        // console.log({ data, lsg, filt });
 
         return permission?.create ? filt : lsg;
       },
@@ -322,8 +324,6 @@ const Create = ({
     }
   );
 
-  
-
   //// DELETE LESSON NOTE ////
   const { mutateAsync: deleteLessonNote, isLoading: deleteLessonNoteLoading } =
     useMutation(() => apiServices.deleteLessonNote(editLessonNoteId), {
@@ -370,8 +370,6 @@ const Create = ({
       isLoading: approveLessonNoteLoading,
     },
   ];
-
-
 
   const deleteButtons = [
     {
@@ -469,8 +467,6 @@ const Create = ({
       //     : false,
     },
   ];
-
- 
 
   const allLoading =
     showLoading ||
@@ -614,20 +610,20 @@ const Create = ({
 
   // }, [editLessonNote]);
 
-  console.log({
-    lessonNotes,
-    user,
-    createN,
-    subjectsByTeacher,
-    // subjects,
-    newSubjects,
-    permission,
-    subjects,
-    activateWarning: activateWarning(),
-    file,
-    fileName,
-    classes,
-  });
+  // console.log({
+  //   lessonNotes,
+  //   user,
+  //   createN,
+  //   subjectsByTeacher,
+  //   // subjects,
+  //   newSubjects,
+  //   permission,
+  //   subjects,
+  //   activateWarning: activateWarning(),
+  //   file,
+  //   fileName,
+  //   classes,
+  // });
 
   return (
     <>
@@ -808,7 +804,12 @@ const Create = ({
             (activateWarning() || lessonNotes?.length === 0) && (
               <div className={styles.placeholder_container}>
                 <HiOutlineDocumentPlus className={styles.icon} />
-                <p className='fs-1 fw-bold mt-3'>Create Lesson Note</p>
+                {permission?.create && (
+                  <p className='fs-1 fw-bold mt-3'>Create Class Note</p>
+                )}
+                {!permission?.create && (
+                  <p className='fs-1 fw-bold mt-3'>No Class Note</p>
+                )}
               </div>
             )}
 

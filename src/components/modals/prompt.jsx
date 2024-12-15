@@ -13,9 +13,17 @@ const Prompt = ({
   hasGroupedButtons = false,
   promptHeader = "",
   showFooter = true,
+  keyboard = false,
+  backdrop = true,
 }) => {
   return (
-    <Modal centered isOpen={isOpen} toggle={toggle}>
+    <Modal
+      backdrop={backdrop}
+      keyboard={keyboard}
+      centered
+      isOpen={isOpen}
+      toggle={toggle}
+    >
       {promptHeader && (
         <ModalHeader>
           <p className='fs-3 fw-bold text-center w-100'>{promptHeader}</p>

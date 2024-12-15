@@ -132,12 +132,14 @@ const Objective = ({
         createQ2?.subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && permission?.student_results,
       // refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
-      // refetchOnMount: false,
+      // refetchOnMount: true,
       // enabled: false,
       select: (data) => {
         const ssk = apiServices.formatData(data);
@@ -496,7 +498,7 @@ const Objective = ({
   //   // state,
   // });
 
-  console.log({ dayLeft, hourLeft, timeLeft, secondleft });
+  // console.log({ dayLeft, hourLeft, timeLeft, secondleft });
 
   return (
     <div className='mt-5'>
@@ -654,10 +656,14 @@ const Objective = ({
                 <div className='d-flex flex-column my-5 gap-4'>
                   {objectiveQ
                     ?.sort((a, b) => {
-                      if (a.question_number < b.question_number) {
+                      if (
+                        Number(a.question_number) < Number(b.question_number)
+                      ) {
                         return -1;
                       }
-                      if (a.question_number > b.question_number) {
+                      if (
+                        Number(a.question_number) > Number(b.question_number)
+                      ) {
                         return 1;
                       }
                       return 0;
@@ -912,10 +918,14 @@ const Objective = ({
                 >
                   {answeredObjectiveQ
                     ?.sort((a, b) => {
-                      if (a.question_number < b.question_number) {
+                      if (
+                        Number(a.question_number) < Number(b.question_number)
+                      ) {
                         return -1;
                       }
-                      if (a.question_number > b.question_number) {
+                      if (
+                        Number(a.question_number) > Number(b.question_number)
+                      ) {
                         return 1;
                       }
                       return 0;

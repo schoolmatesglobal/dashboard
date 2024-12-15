@@ -173,7 +173,7 @@ export const useLessonNote = () => {
       // Fetch the file from the URL
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       // Convert the response to a Blob
@@ -182,13 +182,12 @@ export const useLessonNote = () => {
       // Convert the Blob to a Base64 string
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64 = reader.result.split(',')[1]; // Remove the prefix "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,"
+        const base64 = reader.result.split(",")[1]; // Remove the prefix "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,"
         setBase64String(base64);
       };
       reader.readAsDataURL(blob); // This will trigger the onloadend event
-
     } catch (error) {
-      console.error('Error fetching or converting the file:', error);
+      console.error("Error fetching or converting the file:", error);
     }
   };
 
@@ -213,7 +212,9 @@ export const useLessonNote = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,

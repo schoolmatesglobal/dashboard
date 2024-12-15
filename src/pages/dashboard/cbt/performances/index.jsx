@@ -37,6 +37,7 @@ import PieCharts from "../../../../components/charts/pie-chart";
 import { formatTime } from "../results/constant";
 import { FaComputer } from "react-icons/fa6";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const CbtPerformances = ({}) => {
   const {
@@ -66,6 +67,8 @@ const CbtPerformances = ({}) => {
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const [newSubjects, setNewSubjects] = useState([]);
 
   const [dataSingle, setDataSingle] = useState([]);
@@ -91,10 +94,10 @@ const CbtPerformances = ({}) => {
     }, 1000);
   };
 
-  const newStudents = [
-    { value: "all students", title: "All Students", id: 999999 },
-    ...myStudents,
-  ];
+  // const newStudents = [
+  //   { value: "all students", title: "All Students", id: 999999 },
+  //   ...myStudents,
+  // ];
 
   const findStudentName = (id) => {
     const studentObj = myStudents?.find((my) => {
@@ -150,7 +153,9 @@ const CbtPerformances = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve2() && permission?.submissions,
       select: (data) => {
@@ -167,7 +172,7 @@ const CbtPerformances = ({}) => {
 
         // const app4 = app3
 
-        console.log({ app, data });
+        // console.log({ app, data });
 
         return app;
       },
@@ -216,7 +221,9 @@ const CbtPerformances = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -227,7 +234,7 @@ const CbtPerformances = ({}) => {
         // const newP = pp2?.map((p) => {
         //   return Number(p.total_score);
         // });
-        console.log({ pp, data });
+        // console.log({ pp, data });
 
         return pp;
       },
@@ -468,28 +475,28 @@ const CbtPerformances = ({}) => {
     ...studentByClass,
   ];
 
-  console.log({
-    studentByClass,
-    newStudentByClass,
-    student,
-    idWithComputedResult,
-    markedQ,
-    cbtPerformance,
-    // subject_id,
-    // student_id,
-    // cbtPerformance,
-    // allCbtPerformance,
-    // subjectsByTeacher,
-    // myStudents,
-    // state,
-    // studentNames,
-    // dataAll,
-    // dataSingle,
-    // dataSingle2,
-    // showChart,
-    // showChart2,
-    // showCharts: showCharts(),
-  });
+  // console.log({
+  //   studentByClass,
+  //   newStudentByClass,
+  //   student,
+  //   idWithComputedResult,
+  //   markedQ,
+  //   cbtPerformance,
+  //   // subject_id,
+  //   // student_id,
+  //   // cbtPerformance,
+  //   // allCbtPerformance,
+  //   // subjectsByTeacher,
+  //   // myStudents,
+  //   // state,
+  //   // studentNames,
+  //   // dataAll,
+  //   // dataSingle,
+  //   // dataSingle2,
+  //   // showChart,
+  //   // showChart2,
+  //   // showCharts: showCharts(),
+  // });
 
   return (
     <div className='results-sheet'>
@@ -512,11 +519,20 @@ const CbtPerformances = ({}) => {
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                // options={newSubjects}
+                options={userDetails?.teacherSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
+                  const subId = userDetails?.allSubjects?.find(
+                    (ob) => ob.id === value
+                  );
+                  console.log({ subId });
                   setMarkedQ((prev) => {
-                    return { ...prev, subject_id: value };
+                    return {
+                      ...prev,
+                      subject_id: subId?.id,
+                      subject: subId?.subject,
+                    };
                   });
                 }}
                 placeholder='Select Subject'

@@ -4,7 +4,7 @@ import {
   faPeopleLine,
   faTimeline,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-formid";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -21,15 +21,39 @@ import { useFile } from "../../../hooks/useFile";
 import queryKeys from "../../../utils/queryKeys";
 import { Link } from "react-router-dom";
 import AuditCard from "../../../components/cards/audit-card";
+import { useAuthDetails } from "../../../stores/authDetails";
+import Button from "../../../components/buttons/button";
 
 const Admin = () => {
   const [importStudentPrompt, setImportStudentPrompt] = useState(false);
+  const [academicStatus, setAcademicStatus] = useState("Add");
+  const [initiateSchool, setInitiateSchool] = useState(true);
+  const [initiateGrade, setInitiateGrade] = useState(true);
+  const [initiatePeriod, setInitiatePeriod] = useState(true);
+  const [initiateCPeriod, setInitiateCPeriod] = useState(true);
+  const [initiateSession, setInitiateSession] = useState(true);
+  const [activatePreschools, setActivatePreschools] = useState(true);
+  const [loading1, setLoading1] = useState(false);
+
+  const [isValid, setIsValid] = useState(true);
+
+  // Function to check if the input matches the "YYYY/YYYY" format
+  const validateAcademicSession = (input) => {
+    const regex = /^\d{4}\/\d{4}$/;
+    const isMatch = regex.test(input);
+
+    // Set the boolean to false if the input does not match the format
+    setIsValid(isMatch);
+  };
+
   const {
     user,
     updateUser,
+    apiServices,
     apiServices: {
       importStudent,
       errorHandler,
+      errorHandler2,
       getSchool,
       getTimeTable,
       formatData,
@@ -37,25 +61,103 @@ const Admin = () => {
       handleSessionChange,
       handleSessionChange2,
       getAcademicPeriod,
+      getAcademicSessions,
+      getCurrentAcademicPeriod,
     },
+    permission,
   } = useAppContext();
+
+  function sortByAcademicSession(array) {
+    return array.sort((a, b) => {
+      const [startYearA, endYearA] = a.academic_session.split("/").map(Number);
+      const [startYearB, endYearB] = b.academic_session.split("/").map(Number);
+
+      // Compare start years first, if equal, compare end years
+      if (startYearA === startYearB) {
+        return endYearA - endYearB;
+      }
+      return startYearA - startYearB;
+    });
+  }
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
+  const [activateClasses, setActivateClasses] = useState(true);
+  const [activateCampuses, setActivateCampuses] = useState(true);
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
+
   const {
     isLoading,
-    postAcademicPeriod,
+    // postAcademicPeriod,
     academicPeriodPrompt,
     setAcademicPeriodPrompt,
+    // postCurrentAcademicPeriod,
   } = useAcademicPeriod();
+
+  const { isLoading: academicSessionLoading, refetch: refetchAcademicSession } =
+    useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateSession,
+      select: (data) => {
+        // console.log({ datam: data });
+        return data?.data;
+      },
+      onSuccess(data) {
+        setUserDetails({
+          ...userDetails,
+          sessions: sortByAcademicSession(data),
+        });
+        setInitiateSession(false);
+      },
+      onError: errorHandler,
+    });
+
+  const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
+    [queryKeys.GET_MAX_SCORES],
+    apiServices.getMaxScores,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateGrade,
+      // enabled: !is_preschool,
+      onError(err) {
+        errorHandler(err);
+      },
+      select: (data) => {
+        const dt = data?.data;
+        console.log({ scoreData: data, dt });
+        // console.log({ datam: data });
+        return dt;
+      },
+      onSuccess: (data) => {
+        setUserDetails({
+          ...userDetails,
+          maxScores: data,
+        });
+        setInitiateGrade(false);
+        // return data?.data[0]?.attributes;
+      },
+    }
+  );
 
   const { isLoading: schoolLoading } = useQuery(
     [queryKeys.GET_SCHOOL],
     getSchool,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateSchool,
       onSuccess(data) {
         updateUser({
           ...user,
           school: { ...data },
         });
+        setUserDetails({ ...userDetails, school: { ...data } });
+        setInitiateSchool(false);
       },
       onError(err) {
         errorHandler(err);
@@ -68,7 +170,9 @@ const Admin = () => {
     [queryKeys.GET_TIME_TABLE],
     getTimeTable,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -86,7 +190,9 @@ const Admin = () => {
     [queryKeys.GET_ACADEMIC_CALENDER],
     getAcademicCalender,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -105,39 +211,162 @@ const Admin = () => {
       period: "First Half",
       session: "",
       term: "First Term",
+      period2: "First Half",
+      session2: "2023/2024",
+      term2: "First Term",
     },
     validation: {
       period: {
-        required: true,
+        required: academicStatus === "Add" && true,
       },
       session: {
-        required: true,
+        required: academicStatus === "Add" && true,
       },
       term: {
-        required: true,
+        required: academicStatus === "Add" && true,
+      },
+      period2: {
+        required: academicStatus === "Set" && true,
+      },
+      session2: {
+        required: academicStatus === "Set" && true,
+      },
+      term2: {
+        required: academicStatus === "Set" && true,
       },
     },
   });
 
-  const { isLoading: academicPeriodLoading } = useQuery(
-    [queryKeys.GET_ACADEMIC_PERIOD],
-    getAcademicPeriod,
+  // const { isLoading: academicPeriodLoading } = useQuery(
+  //   [queryKeys.GET_ACADEMIC_PERIOD],
+  //   getAcademicPeriod,
+  //   {
+  //     retry: 1,
+  //     refetchOnMount: true,
+  //     refetchOnWindowFocus: false,
+  //     enabled: initiatePeriod,
+  //     select: (data) => {
+  //       // console.log({ acDt: data, acDt2: data?.data });
+
+  //       // return data?.data;
+  //       return data?.data[0];
+  //     },
+  //     onSuccess(data) {
+  //       console.log({ acDt3: data });
+
+  //       // setInputs({
+  //       //   ...inputs,
+  //       //   term: data?.term,
+  //       //   session: data?.session,
+  //       //   period: data?.period,
+  //       // });
+  //       // setUserDetails({
+  //       //   ...userDetails,
+  //       //   term: data?.term,
+  //       //   session: data?.session,
+  //       //   period: data?.period,
+  //       // });
+
+  //       if (data?.term) {
+  //         setInitiatePeriod(false);
+  //       }
+  //     },
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //   }
+  // );
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
+
+  const {
+    isLoading: currentAcademicPeriodLoading,
+    refetch: refetchCurrentAcademicPeriod,
+  } = useQuery(
+    [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
+    getCurrentAcademicPeriod,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled: initiateCPeriod,
+      select: (data) => {
+        console.log({ ccDt: data, ccDt2: data?.data });
+
+        // return data?.data;
+        return data?.data;
+      },
       onSuccess(data) {
-        setInputs({
-          ...inputs,
+        // console.log({ acDt3: data });
+
+        updateUser({
+          ...user,
           term: data?.term,
           session: data?.session,
           period: data?.period,
         });
+        setInputs({
+          ...inputs,
+          term2: data?.term,
+          session2: data?.session,
+          period2: data?.period,
+        });
+        setUserDetails({
+          ...userDetails,
+          term: data?.term,
+          session: data?.session,
+          period: data?.period,
+        });
+        if (data?.term) {
+          setInitiateCPeriod(false);
+        }
       },
       onError(err) {
-        errorHandler(err);
+        errorHandler2(err);
       },
-      select: (data) => data?.data[0],
     }
   );
+
+  const {
+    isLoading: classListLoading,
+    data: classDt,
+    refetch: refetchClasses,
+  } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    enabled: activateClasses && !is_preschool,
+    // enabled: activateClasses && !is_preschool,
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ classesData: data });
+      const formatClassList = data?.map((x) => ({
+        ...x,
+        sub_class: x.sub_class.split(",").join(", "),
+      }));
+
+      setUserDetails({
+        ...userDetails,
+        classes:
+          formatClassList?.map((obj, index) => {
+            const newObj = { ...obj };
+            newObj.new_id = index + 1;
+            return newObj;
+          }) ?? [],
+      });
+
+      setActivateClasses(false);
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+    select: apiServices.formatData,
+  });
 
   const { handleImageChange, base64String, fileRef, reset } = useFile([], true);
 
@@ -153,18 +382,140 @@ const Admin = () => {
     }
   );
 
+  const { data: preSchools, isLoading: preSchoolsLoading } = useQuery(
+    [queryKeys.GET_ALL_PRE_SCHOOLS],
+    apiServices.getPreSchools,
+    {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // enabled: true,
+      enabled: activatePreschools && is_preschool,
+      select: apiServices.formatData,
+      // select: (data) => {
+      //   const f = apiServices.formatData(data);
+      //   console.log({ preschoolData: data?.data, f });
+
+      //   return data?.data;
+      // },
+      onSuccess(data) {
+        // setClasses(data);
+
+        setUserDetails({
+          ...userDetails,
+          preschools: data ?? [],
+        });
+
+        setActivatePreschools(false);
+      },
+      onError: apiServices.errorHandler,
+    }
+  );
+
+  // Fetch Campus List
+  const {
+    isLoading: campusListLoading,
+    data: campusList,
+    refetch: refetchCampusList,
+  } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
+    enabled: activateCampuses,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    onError(err) {
+      errorHandler(err);
+    },
+    // select: apiServices.formatData,
+    select: (data) => {
+      const f = apiServices.formatData(data)?.map((x) => ({
+        value: x?.name,
+        title: x?.name,
+      }));
+
+      return { ...data, options: f };
+    },
+    onSuccess(data) {
+      // setClasses(data);
+      console.log({ campusData: data });
+
+      setUserDetails({
+        ...userDetails,
+        campusList: data,
+      });
+
+      setActivateCampuses(false);
+    },
+  });
+
+  const { mutate: postAcademicPeriod, isLoading: postAcademicPeriodLoading } =
+    useMutation(apiServices.postAcademicPeriod, {
+      onSuccess() {
+        setInitiateCPeriod(true);
+        setInitiateSession(true);
+        refetchCurrentAcademicPeriod();
+        refetchAcademicSession();
+        trigger(1000);
+        setInputs({
+          ...inputs,
+          period: "First Half",
+          session: "",
+          term: "First Term",
+        });
+        setAcademicPeriodPrompt(false);
+        toast.success("Academic Period has been posted successfully");
+      },
+      onError: apiServices.errorHandler,
+    });
+
+  const { mutate: postCurrentAcademicPeriod, isLoading: postCurrentAPLoading } =
+    useMutation(apiServices.postCurrentAcademicPeriod, {
+      onSuccess() {
+        setInitiateCPeriod(true);
+        refetchCurrentAcademicPeriod();
+        trigger(1000);
+        setInputs({
+          ...inputs,
+          period: "First Half",
+          session: "",
+          term: "First Term",
+        });
+        setAcademicPeriodPrompt(false);
+        toast.success("Current Academic Period has been set successfully");
+      },
+      onError: apiServices.errorHandler,
+    });
+
+  useEffect(() => {
+    validateAcademicSession(inputs?.session);
+  }, [inputs?.session]);
+
+  const postLoading =
+    isLoading ||
+    currentAcademicPeriodLoading ||
+    postAcademicPeriodLoading ||
+    postCurrentAPLoading ||
+    academicSessionLoading;
+
   const loading =
     isLoading ||
     uploadLoading ||
     schoolLoading ||
     calendarLoading ||
     timetableLoading ||
-    academicPeriodLoading;
+    academicSessionLoading ||
+    classListLoading ||
+    preSchoolsLoading ||
+    currentAcademicPeriodLoading ||
+    campusListLoading ||
+    maxScoresLoading ||
+    loading1;
+  // academicPeriodLoading;
 
-  console.log({ calendarData });
+  // console.log({ calendarData, userDetails, permission, isValid });
+  console.log({ is_preschool, user, userDetails });
 
   return (
-    <div className='teachers'>
+    <div className='teachers' key={loading1}>
       <PageTitle>Admin {loading && <Spinner />}</PageTitle>
       <ProfileCard type='admin' />
       <Row className='my-5'>
@@ -250,56 +601,150 @@ const Admin = () => {
         toggle={() => setAcademicPeriodPrompt(!academicPeriodPrompt)}
         singleButtonProps={{
           type: "button",
-          isLoading,
-          disabled: isLoading || !inputs.session,
-          onClick: () => postAcademicPeriod(inputs),
+          isLoading: postLoading,
+          disabled:
+            postLoading ||
+            (academicStatus === "Add" ? !inputs?.term : !inputs?.term2) ||
+            (academicStatus === "Add" ? !inputs?.period : !inputs?.period2) ||
+            (academicStatus === "Add" && !isValid) ||
+            (academicStatus === "Add" ? !inputs.session : !inputs.session2),
+          onClick: () => {
+            academicStatus === "Add"
+              ? postAcademicPeriod({
+                  period: inputs?.period,
+                  session: inputs?.session,
+                  term: inputs?.term,
+                })
+              : postCurrentAcademicPeriod({
+                  period: inputs?.period2,
+                  session: inputs?.session2,
+                  term: inputs?.term2,
+                });
+            // refetchCurrentAcademicPeriod();
+            // setTimeout(() => {}, 1000);
+          },
         }}
-        singleButtonText='Continue'
+        singleButtonText={academicStatus === "Add" ? "Continue" : "Set Current"}
         promptHeader='Post Academic Period'
       >
-        <div className='form-group mb-4'>
-          <AuthSelect
-            label='Period'
-            value={inputs.period}
-            name='period'
-            hasError={!!errors.period}
-            onChange={handleChange}
-            options={[
-              { value: "First Half", title: "First Half/Mid Term" },
-              { value: "Second Half", title: "Second Half/End of Term" },
-            ]}
-          />
-          {!!errors.period && <p className='error-message'>{errors.period}</p>}
+        <div className='d-flex align-items-center justify-content-center gap-3 mb-5'>
+          <Button
+            className='w-auto'
+            variant={`${academicStatus === "Add" ? "" : "outline"}`}
+            onClick={() => setAcademicStatus("Add")}
+          >
+            Add
+          </Button>
+          <Button
+            className='w-auto'
+            variant={`${academicStatus === "Set" ? "" : "outline"}`}
+            onClick={() => setAcademicStatus("Set")}
+          >
+            Set
+          </Button>
         </div>
-        <div className='form-group mb-4'>
-          <AuthSelect
-            label='Term'
-            value={inputs.term}
-            name='term'
-            hasError={!!errors.term}
-            onChange={handleChange}
-            options={[
-              { value: "First Term", title: "First Term" },
-              { value: "Second Term", title: "Second Term" },
-              { value: "Third Term", title: "Third Term" },
-            ]}
-          />
-          {!!errors.term && <p className='error-message'>{errors.term}</p>}
-        </div>
-        <div className='form-group mb-4'>
-          <AuthInput
-            label='Session'
-            placeholder='2021/2022'
-            hasError={!!errors.session}
-            value={inputs.session}
-            onChange={({ target: { value } }) =>
-              handleSessionChange2(value, "session", setFieldValue)
-            }
-          />
-          {!!errors.session && (
-            <p className='error-message'>{errors.session}</p>
-          )}
-        </div>
+        {academicStatus === "Add" && (
+          <div className=''>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Period'
+                value={inputs.period}
+                name='period'
+                hasError={!!errors.period}
+                onChange={handleChange}
+                options={[
+                  { value: "First Half", title: "First Half/Mid Term" },
+                  { value: "Second Half", title: "Second Half/End of Term" },
+                ]}
+              />
+              {!!errors.period && (
+                <p className='error-message'>{errors.period}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Term'
+                value={inputs.term}
+                name='term'
+                hasError={!!errors.term}
+                onChange={handleChange}
+                options={[
+                  { value: "First Term", title: "First Term" },
+                  { value: "Second Term", title: "Second Term" },
+                  { value: "Third Term", title: "Third Term" },
+                ]}
+              />
+              {!!errors.term && <p className='error-message'>{errors.term}</p>}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthInput
+                label='Session'
+                placeholder='2021/2022'
+                hasError={!!errors.session}
+                value={inputs.session}
+                onChange={({ target: { value } }) =>
+                  handleSessionChange2(value, "session", setFieldValue)
+                }
+              />
+              {!!errors.session && (
+                <p className='error-message'>{errors.session}</p>
+              )}
+            </div>
+          </div>
+        )}
+        {academicStatus === "Set" && (
+          <div className=''>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Period'
+                value={inputs.period2}
+                name='period2'
+                hasError={!!errors.period2}
+                onChange={handleChange}
+                options={[
+                  { value: "First Half", title: "First Half/Mid Term" },
+                  { value: "Second Half", title: "Second Half/End of Term" },
+                ]}
+              />
+              {!!errors.period2 && (
+                <p className='error-message'>{errors.period2}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Term'
+                value={inputs.term2}
+                name='term2'
+                hasError={!!errors.term2}
+                onChange={handleChange}
+                options={[
+                  { value: "First Term", title: "First Term" },
+                  { value: "Second Term", title: "Second Term" },
+                  { value: "Third Term", title: "Third Term" },
+                ]}
+              />
+              {!!errors.term2 && (
+                <p className='error-message'>{errors.term2}</p>
+              )}
+            </div>
+            <div className='form-group mb-4'>
+              <AuthSelect
+                label='Session'
+                value={inputs.session2}
+                name='session2'
+                hasError={!!errors.session2}
+                onChange={handleChange}
+                options={(userDetails?.sessions || [])?.map((session) => ({
+                  value: session?.academic_session,
+                  title: session?.academic_session,
+                }))}
+              />
+              {!!errors.session2 && (
+                <p className='error-message'>{errors.session2}</p>
+              )}
+            </div>
+          </div>
+        )}
       </Prompt>
     </div>
   );

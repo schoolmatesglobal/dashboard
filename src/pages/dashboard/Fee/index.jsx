@@ -16,6 +16,9 @@ const FeeList = () => {
     onError(err) {
       apiServices.errorHandler(err);
     },
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     // select: apiServices.formatData,
     select: (data) => {
       const format = apiServices.formatData(data)?.map((student, i) => {
@@ -40,7 +43,6 @@ const FeeList = () => {
       onError: apiServices.errorHandler,
     }
   );
-
 
   // console.log({ Fee });
 

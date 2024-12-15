@@ -6,12 +6,12 @@ import { roleMap } from "../../utils/constants";
 const ProfileCard = ({ type = "super-admin" }) => {
   const { user } = useAppContext();
   return (
-    <div className="profile-card-wrapper">
-      <div className="profile-card-image">
-        <img src={user.image || defaultImage} alt="" />
+    <div className='profile-card-wrapper'>
+      <div className='profile-card-image'>
+        <img src={user.image || defaultImage} alt='' />
       </div>
       {type === "teacher" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -43,7 +43,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
         </div>
       )}
       {type === "super-admin" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -77,7 +77,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
         </div>
       )}
       {type === "principal" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -108,6 +108,12 @@ const ProfileCard = ({ type = "super-admin" }) => {
             <h3>Department:</h3>
             <p>{user.department}</p>
           </div>
+          {user?.campus && (
+            <div>
+              <h3>Campus:</h3>
+              <p>{user?.campus}</p>
+            </div>
+          )}
           <div>
             <h3>Address:</h3>
             <p>{user.address}</p>
@@ -116,7 +122,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
       )}
 
       {type === "student-home" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -136,6 +142,10 @@ const ProfileCard = ({ type = "super-admin" }) => {
             <p>{user?.admission_number}</p>
           </div>
           <div>
+            <h3>Campus:</h3>
+            <p>{user?.campus}</p>
+          </div>
+          <div>
             <h3>Gender:</h3>
             <p>{user?.gender}</p>
           </div>
@@ -146,7 +156,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
         </div>
       )}
       {type === "admin" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -172,6 +182,10 @@ const ProfileCard = ({ type = "super-admin" }) => {
           <div>
             <h3>Department:</h3>
             <p>{user.department}</p>
+          </div>
+          <div>
+            <h3>Campus:</h3>
+            <p>{user?.campus}</p>
           </div>
           <div>
             <h3>Address:</h3>
@@ -180,7 +194,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
         </div>
       )}
       {type === "account" && (
-        <div className="profile-card-content">
+        <div className='profile-card-content'>
           <div>
             <h3>Full Name:</h3>
             <p>
@@ -206,6 +220,10 @@ const ProfileCard = ({ type = "super-admin" }) => {
           <div>
             <h3>Department:</h3>
             <p>{user.department}</p>
+          </div>
+          <div>
+            <h3>Campus:</h3>
+            <p>{user?.campus}</p>
           </div>
           <div>
             <h3>Address:</h3>

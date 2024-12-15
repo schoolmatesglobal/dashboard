@@ -149,8 +149,10 @@ const ViewCBT = (
         createQ2?.question_type
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -219,8 +221,8 @@ const ViewCBT = (
         createQ2?.question_type
       ),
     {
-      retry: 3,
-      refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       refetchInterval: false,
@@ -279,8 +281,10 @@ const ViewCBT = (
         week
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -413,14 +417,9 @@ const ViewCBT = (
     setKey((prevKey) => prevKey + 1);
   }, [subject_id, question_type]);
 
-  // console.log({
-  //   studentSubjects,
-  //   createQ2,
-  //   state,
-  //   subjects,
-  //   objectiveQ2,
-  //   subject_id,
-  // });
+  console.log({
+    studentSubjects,
+  });
 
   return (
     <PageSheet>

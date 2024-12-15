@@ -3,10 +3,14 @@ import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useStudentAttendance = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("attendance");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const [date, setDate] = useState(
     apiServices.formatDate(new Date(), "YY-MM-DD")
   );
@@ -21,6 +25,9 @@ export const useStudentAttendance = () => {
       () =>
         apiServices.getStudentAttendance(date.split("-").reverse().join("/")),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         enabled: retrieveAttendance && permission?.retrieve,
         onSuccess(data) {
           const ids = [];
@@ -47,15 +54,24 @@ export const useStudentAttendance = () => {
     );
 
   const { isLoading: studentListLoading, data: students } = useQuery(
-    [queryKeys.GET_STUDENTS_BY_ATTENDANCE, user?.class_assigned, user?.session],
+    [
+      queryKeys.GET_STUDENTS_BY_ATTENDANCE,
+      userDetails?.class_assigned,
+      userDetails?.session,
+    ],
     () =>
       apiServices.getStudentByClassAndSession(
-        user?.class_assigned,
-        user?.session
+        userDetails?.class_assigned,
+        userDetails?.session
       ),
     {
-      enabled: !studentAttendance || studentAttendance?.length === 0,
-      retry: 3,
+      enabled:
+        !!userDetails?.class_assigned &&
+        !!userDetails?.session &&
+        (!studentAttendance || studentAttendance?.length === 0),
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -99,6 +115,8 @@ export const useStudentAttendance = () => {
 
     addStudentAttendanceAsync(data);
   };
+
+  console.log({ userDetails });
 
   const isLoading = studentAttendanceLoading || studentListLoading;
 

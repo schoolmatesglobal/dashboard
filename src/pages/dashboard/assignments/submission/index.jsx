@@ -140,8 +140,10 @@ const Submission = ({
         week
       ),
     {
-      retry: 3,
-      // refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -158,17 +160,17 @@ const Submission = ({
             // dt?.week === week
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
           });
-          
-          console.log({ ffk, data, sorted });
-          
+
+        console.log({ ffk, data, sorted });
+
         return sorted;
       },
 
@@ -206,7 +208,9 @@ const Submission = ({
         week
       ),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
 
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
@@ -220,10 +224,10 @@ const Submission = ({
             // dt?.week === week
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
@@ -269,7 +273,9 @@ const Submission = ({
         week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: activateRetrieve() && permission?.submissions,
       // enabled: false,
 
@@ -284,16 +290,16 @@ const Submission = ({
               dt?.week === week
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
           });
 
-        console.log({ hhk, data, sorted });
+        // console.log({ hhk, data, sorted });
 
         return sorted ?? [];
       },
@@ -441,7 +447,7 @@ const Submission = ({
     }
   }, [subject, week, student]);
 
-  console.log({ answeredObjQ, answeredTheoQ, submissionTab });
+  // console.log({ answeredObjQ, answeredTheoQ, submissionTab });
 
   return (
     <div>

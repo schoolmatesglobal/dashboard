@@ -18,7 +18,7 @@ const ScanCodes = () => {
     // },
   ];
 
-  console.log({ skills });
+  // console.log({ skills });
 
   return (
     <PageView

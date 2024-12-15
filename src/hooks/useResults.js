@@ -7,10 +7,14 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { mergeAndOverrideArrays } from "../pages/dashboard/results/constant";
 import { useForm } from "react-formid";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useResults = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("results");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const [openPrompt, setOpenPrompt] = useState(false);
   const [selectedComment, setSelectedComment] = useState("");
   const [studentRes, setStudentRes] = useState([]);
@@ -61,6 +65,18 @@ export const useResults = () => {
     content: () => pdfExportComponent.current,
   });
 
+  const studentId = () => {
+    if (user?.designation_id === "7") {
+      return user?.id;
+    } else {
+      return studentData?.id;
+    }
+  };
+
+  const className = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
+
   const { inputs, handleChange } = useForm({
     defaultValues: {
       assessment: "first_assesment",
@@ -81,6 +97,19 @@ export const useResults = () => {
 
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
+  const findId = () => {
+    const cs = userDetails.class_assigned?.toUpperCase();
+
+    const find = userDetails?.classes?.find(
+      (sb) => sb.class_name?.toUpperCase() === cs
+    );
+    if (find?.id) {
+      return find?.id;
+    } else {
+      return "";
+    }
+  };
+
   const { data: academicDate, isLoading: academicDateLoading } = useQuery(
     [queryKeys.GET_ACADEMIC_DATE],
     apiServices.getResumptionDate,
@@ -88,6 +117,9 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.attributes,
     }
   );
@@ -99,6 +131,9 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       select: apiServices.formatData,
     }
   );
@@ -110,6 +145,9 @@ export const useResults = () => {
     [queryKeys.GET_MAX_SCORES],
     apiServices.getMaxScores,
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: activate,
       // enabled: !is_preschool,
       onError(err) {
@@ -160,6 +198,12 @@ export const useResults = () => {
         select: (data) => {
           const dt2 = apiServices.formatData(data);
 
+          console.log({
+            dataSS: data,
+            user,
+            dt2,
+          });
+
           if (dt2?.length > 0) {
             const sst2 = dt2?.find((x) => x?.id === user?.id) ?? {};
 
@@ -169,9 +213,6 @@ export const useResults = () => {
                 : dt2[0];
 
             console.log({
-              dataSS: data,
-              user,
-              dt2,
               studentInfo,
               sst2,
             });
@@ -187,6 +228,8 @@ export const useResults = () => {
             if (!data) return;
             setStudentData(data);
             setEnableStudentToggle(false);
+            setActivateEndOfTerm(true);
+            setInitGetExistingSecondHalfResult(true);
           }
           state?.creds?.period === "First Half"
             ? setInitGetExistingResult(true)
@@ -209,6 +252,9 @@ export const useResults = () => {
       ),
 
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.view && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -235,18 +281,19 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_STUDENT_END_OF_TERM_RESULTS,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getEndOfTermResults(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
+      retry: 1,
       enabled:
         activateEndOfTerm &&
         initGetExistingSecondHalfResult &&
@@ -254,7 +301,7 @@ export const useResults = () => {
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchOnReconnect: false,
       // staleTime: 60000 * 30,
 
@@ -267,7 +314,7 @@ export const useResults = () => {
           setIdWithComputedResult(ids);
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               state?.creds?.period === x.period
@@ -309,7 +356,7 @@ export const useResults = () => {
             });
           };
 
-          // console.log({ studentResult, res });
+          console.log({ data, studentResult, res });
 
           setAdditionalCreds({
             ...additionalCreds,
@@ -320,7 +367,6 @@ export const useResults = () => {
           });
 
           setSubjects(mergeSubjectAndResult2() ?? []);
-          // setSubjects(studentResult);
 
           setTeacherComment(res?.teacher_comment);
           setHosComment(res?.hos_comment);
@@ -334,7 +380,6 @@ export const useResults = () => {
           //   //   grade: x.score,
           //   // }));
 
-          //   setSubjects(mergeSubjectAndResult2());
           //   setInitGetExistingResult(true);
           // } else {
           //   setInitGetExistingResult(true);
@@ -350,7 +395,6 @@ export const useResults = () => {
           setTeacherComment("");
           setHosComment("");
           setAbacus("");
-          // setSubjects([]);
 
           // setInitGetExistingResult(true);
           setAddMidResultAsLast(true);
@@ -358,6 +402,24 @@ export const useResults = () => {
       },
     }
   );
+
+  const { isLoading: subjectsByClassLoading3, data: subjectsByClass3 } =
+    useQuery(
+      [queryKeys.GET_SUBJECTS_BY_CLASS2, findId()],
+      () => apiServices.getSubjectByClass2(findId()),
+      {
+        enabled: !!findId(),
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        select: (data) => {
+          const newData = apiServices.formatData(data);
+          return newData;
+          // console.log({ data, newData });
+        },
+        onError: apiServices.errorHandler,
+      }
+    );
 
   // subject by class
   const {
@@ -373,41 +435,45 @@ export const useResults = () => {
     ],
     () => apiServices.getSubjectByCampus(),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: false,
       // enabled: initGetStudentsByClass && !is_preschool,
       select: apiServices.formatData,
       onSuccess(data) {
         // console.log({ data });
         const subjectsWithGrade = data?.map((x) => ({ ...x, grade: "0" }));
-
-        // if (subjects.length === 0) setSubjects(subjectsWithGrade);
-        // setInitGetStudentsByClass(false);
-        // console.log({ data, initGetStudentsByClass, subjectsWithGrade });
       },
     }
   );
+
+  const cn = state?.creds?.class_name
+    ? state?.creds?.class_name
+    : user?.class_assigned;
 
   const {
     data: preSchoolSubjectsByClass,
     isLoading: preSchoolSubjectsByClassLoading,
   } = useQuery(
-    [
-      queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS,
-      state?.creds?.class_name
-        ? state?.creds?.class_name
-        : user?.class_assigned,
-    ],
+    [queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS, cn],
     () =>
       apiServices.getPreSchoolSubjectsByClass(
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned
+        cn
       ),
     {
-      enabled: is_preschool,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      enabled:
+        is_preschool &&
+        !!state?.creds?.period &&
+        !!state?.creds?.term &&
+        !!state?.creds?.session &&
+        !!cn,
       // select: apiServices.formatData,
       select: (data) => {
         const dt = apiServices.formatData(data);
@@ -437,6 +503,9 @@ export const useResults = () => {
         state?.creds?.session
       ),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: is_preschool,
       // select: apiServices.formatData,
       select: (data) => {
@@ -457,19 +526,22 @@ export const useResults = () => {
     useQuery(
       [
         queryKeys.GET_RESULT_CUMMULATIVE_SCORES,
-        studentData?.id,
+        studentId(),
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
       ],
       () =>
         apiServices.getCummulativeScores({
-          student_id: studentData?.id,
+          student_id: studentId(),
           period: state?.creds?.period,
           term: state?.creds?.term,
           session: state?.creds?.session,
         }),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         enabled: !is_preschool && state?.creds?.period === "Second Half",
         select: (data) => data?.data,
       }
@@ -479,18 +551,21 @@ export const useResults = () => {
     [
       queryKeys.GET_YEARLY_CLASS_AVERAGE,
       studentClassName,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getClassAverage({
         class_name: studentClassName,
-        student_id: studentData?.id,
+        student_id: studentId(),
         term: state?.creds?.term,
         session: state?.creds?.session,
       }),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !is_preschool && state?.creds?.period === "Second Half",
     }
   );
@@ -504,6 +579,9 @@ export const useResults = () => {
           session: state?.creds?.session,
         }),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         enabled:
           !is_preschool &&
           Boolean(studentClassName) &&
@@ -527,12 +605,18 @@ export const useResults = () => {
     () => apiServices.getSubjectByCampus(),
     {
       // enabled: initGetExistingResult && !is_preschool,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: initGetSubjects && !is_preschool,
-      select: apiServices.formatData,
+      select(data) {
+        // console.log({ kdata2: data });
+        return apiServices.formatData(data);
+      },
       onSuccess(data) {
+        // console.log({ kdata: data });
         setInitGetSubjects(false);
         if (data?.length > 0) {
-          // console.log({ allsub: data });
           const subj = data[0]?.subject?.map((x) => ({
             subject: x.name,
             score: "0",
@@ -553,6 +637,8 @@ export const useResults = () => {
 
           const filteredSubj =
             user?.teacher_type === "class teacher" ? subj : fss;
+
+          // console.log({ allsub: data, filteredSubj });
 
           setFilteredSubjects(filteredSubj);
 
@@ -583,22 +669,25 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         inputs.assessment === "first_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -615,7 +704,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -697,23 +786,26 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -728,7 +820,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -757,27 +849,24 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
-      // enabled: false,
-      // enabled:
-      //   initGetExistingResult &&
-      //   !is_preschool &&
-      //   maxScores?.has_two_assessment &&
-      //   inputs.assessment === "second_assesment",
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         inputs.assessment === "second_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -795,7 +884,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -842,6 +931,8 @@ export const useResults = () => {
             });
           };
 
+          // console.log({ res2: res, studentResult });
+
           if (state?.creds?.period === "First Half") {
             setAdditionalCreds({
               ...additionalCreds,
@@ -875,22 +966,25 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 1 &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -906,7 +1000,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -933,24 +1027,32 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentData?.id,
+      studentId(),
+      // studentData?.id,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getMidTermResult(
-        studentData?.id,
+        studentId(),
+        // studentData?.id,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        !maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "First Half",
-      select: apiServices.formatData,
+      select(data) {
+        // console.log({ kdata: data });
+        return apiServices.formatData(data);
+      },
       onSuccess(data) {
         // console.log({ dataS: data });
         setInitGetSubjects(false);
@@ -958,14 +1060,14 @@ export const useResults = () => {
 
         // console.log({ mres: data });
         // setInitGetSubjects(false);
-        if (data.length > 0) {
+        if (data?.length > 0) {
           const ids = data?.map((x) => x.student_id);
 
           setIdWithComputedResult(ids);
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1041,30 +1143,38 @@ export const useResults = () => {
   const { data: midtermResult2, isLoading: midtermResultLoading2 } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentData?.id,
+      studentId(),
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getMidTermResult(
-        studentData?.id,
+        studentId(),
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        !maxScores?.has_two_assessment &&
+        userDetails?.maxScores?.has_two_assessment === 0 &&
         state?.creds?.period === "Second Half",
-      select: apiServices.formatData,
+      select(data) {
+        const kt = apiServices.formatData(data);
+        console.log({ kdata3: data, kt });
+        return kt;
+      },
       onSuccess(data) {
         // console.log({ dataS: data });
         // setInitGetSubjects(false);
         // setInitGetExistingResult(false);
         // setInitGetSubjects(false);
+
         if (data.length > 0) {
           const ids = data?.map((x) => x.student_id);
 
@@ -1072,10 +1182,10 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentData?.id &&
+              x.student_id === studentId() &&
               x.term === state?.creds?.term &&
-              state?.creds?.session === x.session &&
-              x.period === "First Half"
+              state?.creds?.session === x.session
+            // x.period === "Second Half"
           );
 
           const studentResult = res?.results?.map((x) => ({
@@ -1084,9 +1194,72 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          // console.log({ dataM: data, ids, studentResult });
+          setAdditionalCreds({
+            ...additionalCreds,
+            ...res,
+            status: res?.status,
 
-          setStudentMidterm(studentResult);
+            // ...res,
+          });
+
+          // console.log({ dataM: data, ids, studentResult });
+          const mergeSubjectAndResult2 = () => {
+            if (
+              !filteredSubjects ||
+              !studentResult ||
+              filteredSubjects.length === 0 ||
+              studentResult.length === 0
+            ) {
+              return filteredSubjects;
+            }
+
+            return filteredSubjects.map((subject) => {
+              const result = studentResult.find(
+                (r) => r.subject === subject.subject
+              );
+
+              if (result) {
+                return {
+                  subject: result.subject,
+                  score: result.score,
+                  grade: result.grade,
+                };
+              } else {
+                return {
+                  subject: subject.subject,
+                  score: subject.score,
+                  grade: subject.grade,
+                };
+              }
+            });
+          };
+
+          // console.log({
+          //   dataM: data,
+          //   ids,
+          //   studentResult,
+          //   mergeSubjectAndResult2: mergeSubjectAndResult2(),
+          // });
+
+          if (state?.creds?.period === "Second Half") {
+            setAdditionalCreds({
+              ...additionalCreds,
+              ...res,
+            });
+          }
+
+          setSubjects(mergeSubjectAndResult2() ?? []);
+
+          setStudentMidterm(mergeSubjectAndResult2() ?? []);
+          // console.log({
+          //   pdata: data,
+          //   idWithComputedResult,
+          //   res,
+          //   studentResult,
+          //   studentData,
+          //   studentMidterm,
+          //   mergeSubjectAndResult3: mergeSubjectAndResult2(),
+          // });
         }
       },
     }
@@ -1096,6 +1269,9 @@ export const useResults = () => {
     [queryKeys.GET_GRADING],
     apiServices.getGrading,
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !is_preschool,
       select: apiServices.formatData,
       onError(err) {
@@ -1111,7 +1287,7 @@ export const useResults = () => {
       onSuccess() {
         toast.success("Result has been computed successfully");
         if (
-          maxScores?.has_two_assessment &&
+          userDetails?.maxScores?.has_two_assessment === 1 &&
           inputs.assessment === "first_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1119,7 +1295,7 @@ export const useResults = () => {
           trigger(500);
           // refetchFirstAssess2();
         } else if (
-          maxScores?.has_two_assessment &&
+          userDetails?.maxScores?.has_two_assessment === 1 &&
           inputs.assessment === "second_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1143,14 +1319,14 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentData?.id,
+              student_id: studentId(),
             },
           ],
         }),
       {
         onSuccess() {
           if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1159,7 +1335,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1186,7 +1362,7 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentData?.id,
+              student_id: studentId(),
             },
           ],
         }),
@@ -1194,7 +1370,7 @@ export const useResults = () => {
         onSuccess() {
           toast.success("Result has been withheld successfully");
           if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1203,7 +1379,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            maxScores?.has_two_assessment &&
+            userDetails?.maxScores?.has_two_assessment === 1 &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1227,13 +1403,46 @@ export const useResults = () => {
   const { mutateAsync: addMidTermResult, isLoading: addMidTermResultLoading } =
     useMutation(apiServices.addMidTermResult, {
       onSuccess() {
-        trigger(500);
-        refetchMidtermResult();
-        toast.success(
-          `${
-            maxScores?.has_two_assessment ? toastValue : "Mid Term"
-          } Result has been computed successfully`
-        );
+        // trigger(500);
+        // if(userDetails?.maxScores?.has_two_assessment === 1){
+        //   refetchSecondAssess();
+        //   refetchFirstAssess();
+        // }
+        if (
+          userDetails?.maxScores?.has_two_assessment === 1 &&
+          inputs.assessment === "first_assesment" &&
+          state?.creds?.period === "First Half"
+        ) {
+          refetchFirstAssess();
+          trigger(500);
+          toast.success(
+            `${
+              userDetails?.maxScores?.has_two_assessment === 1
+                ? toastValue
+                : "Mid Term"
+            } Result has been computed successfully`
+          );
+          // refetchFirstAssess2();
+        } else if (
+          userDetails?.maxScores?.has_two_assessment === 1 &&
+          inputs.assessment === "second_assesment" &&
+          state?.creds?.period === "First Half"
+        ) {
+          refetchSecondAssess();
+          trigger(500);
+          toast.success(
+            `${
+              userDetails?.maxScores?.has_two_assessment === 1
+                ? toastValue
+                : "Mid Term"
+            } Result has been computed successfully`
+          );
+          // refetchFirstAssess2();
+        } else {
+          refetchMidtermResult();
+          trigger(500);
+          toast.success(`Mid Term Result has been computed successfully`);
+        }
       },
       onError(err) {
         apiServices.errorHandler(err);
@@ -1327,16 +1536,17 @@ export const useResults = () => {
 
   const computeMidTermResult = () => {
     const dataToSend = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
       period: state?.creds?.period,
       term: state?.creds?.term,
       session: state?.creds?.session,
-      result_type: maxScores?.has_two_assessment
-        ? inputs.assessment
-        : "midterm",
+      result_type:
+        userDetails?.maxScores?.has_two_assessment === 1
+          ? inputs.assessment
+          : "midterm",
       results: subjects.map((x) => ({
         subject: x.subject,
         score: x.grade,
@@ -1360,7 +1570,7 @@ export const useResults = () => {
 
   const createEndOfTermResult = () => {
     const dataToSend = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1390,7 +1600,7 @@ export const useResults = () => {
     };
 
     const dataToSend2 = {
-      student_id: studentData?.id,
+      student_id: studentId(),
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1419,8 +1629,8 @@ export const useResults = () => {
       if (
         !additionalCreds ||
         !teacherComment ||
-        !hosComment ||
-        extraActivities?.length === 0
+        !hosComment
+        // extraActivities?.length === 0
         // !performanceRemark ||
         // !additionalCreds?.affective_disposition[0]?.score ||
         // !additionalCreds?.affective_disposition[1]?.score ||
@@ -1441,7 +1651,7 @@ export const useResults = () => {
 
   // const createEndOfTermResult = () => {
   //   const dataToSend = {
-  //     student_id: studentData?.id,
+  //     student_id: studentId(),
   //     student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
   //     admission_number: studentData.admission_number,
   //     class_name: studentClassName,
@@ -1467,6 +1677,8 @@ export const useResults = () => {
   //   addResult(dataToSend);
   // };
 
+  console.log({ state, studentData, user, studentId: studentId(), className });
+
   const isLoading =
     academicDateLoading ||
     maxScoresLoading ||
@@ -1490,11 +1702,17 @@ export const useResults = () => {
     addEndOfTermResultLoading ||
     firstAssessResultLoading2 ||
     addMidTermResultLoading ||
+    subjectsByClassLoading3 ||
     loading1;
   // ||
   // releaseResultLoading;
 
-  console.log({ grading });
+  // console.log({
+  //   userDetails,
+  //   teacherSubjects,
+  //   findId: findId(),
+  //   subjectsByClass3,
+  // });
   // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
 
   return {
@@ -1576,6 +1794,8 @@ export const useResults = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
+    subjectsByClass3,
+    setIdWithComputedResult,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,

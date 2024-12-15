@@ -99,7 +99,7 @@ const PieCharts = ({ value, colour, unit, data, data2 }) => {
           className='mt-5'
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={color[index % color.length]} />
+            <Cell key={`cell-${index}`} fill={color[index % color?.length]} />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />

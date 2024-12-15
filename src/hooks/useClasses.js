@@ -5,6 +5,7 @@ import { useParams, useNavigation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -16,7 +17,12 @@ export const useClasses = () => {
   const [checkedRows, setCheckedRows] = useState([]);
   const [checkedSubjects, setCheckedSubjects] = useState([]);
   const [activateCampus, setActivateCampus] = useState(false);
+  const [activateClasses, setActivateClasses] = useState(true);
   const navigate = useNavigate();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
+
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const {
     getFieldProps,
@@ -31,7 +37,7 @@ export const useClasses = () => {
     defaultValues: {
       class_name: "",
       sub_class: [],
-      campus: "",
+      campus: userDetails?.campus,
     },
     validation: {
       class_name: {
@@ -49,6 +55,9 @@ export const useClasses = () => {
     [queryKeys.GET_SUBJECTS, id],
     () => apiServices.getSubjectByClass(id),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!id,
       select: apiServices.formatData,
 
@@ -65,6 +74,9 @@ export const useClasses = () => {
     [queryKeys.GET_SUBJECTS2, id],
     () => apiServices.getSubject(id),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: false,
       // enabled: !!id && onGetSubjectByClass2,
       // select: apiServices.formatSingleData,
@@ -83,8 +95,13 @@ export const useClasses = () => {
     data: classDt,
     refetch: refetchClasses,
   } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
-    retry: 3,
-    enabled: permission?.read || permission?.readClass,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    enabled:
+      activateClasses &&
+      !is_preschool &&
+      (permission?.read || permission?.readClass),
     onSuccess(data) {
       setClasses(data);
       const formatClassList = data?.map((x) => ({
@@ -99,6 +116,17 @@ export const useClasses = () => {
           return newObj;
         })
       );
+
+      setUserDetails({
+        ...userDetails,
+        classes: formatClassList?.map((obj, index) => {
+          const newObj = { ...obj };
+          newObj.new_id = index + 1;
+          return newObj;
+        }),
+      });
+
+      setActivateClasses(false);
     },
     onError(err) {
       errorHandler(err);
@@ -111,6 +139,9 @@ export const useClasses = () => {
       [queryKeys.GET_SUBJECTS_BY_CLASS2, id],
       () => apiServices.getSubjectByClass2(id),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         enabled: !!id,
         // enabled: false,
         // enabled: !!id && onGetSubjectByClass2,
@@ -130,7 +161,6 @@ export const useClasses = () => {
         onError: apiServices.errorHandler,
       }
     );
-
 
   const {
     isLoading: addSubjectsToClassLoading,
@@ -177,6 +207,9 @@ export const useClasses = () => {
     () => apiServices.getStudentByClass(newClass),
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: newClass.present_class && permission?.create,
       onError(err) {
         errorHandler(err);
@@ -209,7 +242,9 @@ export const useClasses = () => {
     // refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read && activateCampus,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -275,7 +310,7 @@ export const useClasses = () => {
     // subjectsByClassLoading ||
     subjectsByClassLoading2;
 
-  console.log({ classes });
+  console.log({ userDetails, subjectsByClass2, id });
   // console.log({ id });
 
   return {

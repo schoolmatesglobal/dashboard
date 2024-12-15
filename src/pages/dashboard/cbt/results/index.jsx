@@ -26,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import { formatTime } from "./constant";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const CbtResults = ({}) => {
   const {
@@ -50,6 +51,8 @@ const CbtResults = ({}) => {
     studentByClassLoading,
   } = useCBT();
 
+  const { userDetails, setUserDetails, subjects } = useAuthDetails();
+
   const [cbtObject, setCbtObject] = useState({});
   const [cbtResult, setCbtResult] = useState([]);
 
@@ -65,7 +68,7 @@ const CbtResults = ({}) => {
     markedQ;
 
   const [newSubjects, setNewSubjects] = useState([]);
-  const { subjects, isLoading: subjectLoading } = useSubject();
+  // const { isLoading: subjectLoading } = useSubject();
 
   const [showLoading, setShowLoading] = useState(false);
 
@@ -107,17 +110,19 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
         const ffk = apiServices.formatData(data);
 
         const sorted = ffk?.sort((a, b) => {
-          if (a.question_number < b.question_number) {
+          if (Number(a.question_number) < Number(b.question_number)) {
             return -1;
           }
-          if (a.question_number > b.question_number) {
+          if (Number(a.question_number) > Number(b.question_number)) {
             return 1;
           }
           return 0;
@@ -125,12 +130,8 @@ const CbtResults = ({}) => {
 
         const calculatedData = analyzeQuestions(sorted);
 
-        console.log({ ffk, data, sorted });
-        // if (question_type === "objective") {
-        //   return calculatedData ?? {};
-        // } else {
-        //   return {};
-        // }
+        // console.log({ ffk, data, sorted });
+
         return calculatedData ?? {};
       },
 
@@ -165,13 +166,15 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
         const bbk = apiServices.formatData(data);
 
-        console.log({ bbk, data });
+        // console.log({ bbk, data });
 
         return bbk ?? [];
       },
@@ -212,7 +215,9 @@ const CbtResults = ({}) => {
       ),
 
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: false,
       // enabled: activateRetrieve() && permission?.submissions,
 
@@ -228,16 +233,16 @@ const CbtResults = ({}) => {
             // dt?.week === week
           )
           ?.sort((a, b) => {
-            if (a.question_number < b.question_number) {
+            if (Number(a.question_number) < Number(b.question_number)) {
               return -1;
             }
-            if (a.question_number > b.question_number) {
+            if (Number(a.question_number) > Number(b.question_number)) {
               return 1;
             }
             return 0;
           });
 
-        console.log({ mmk, data, sorted });
+        // console.log({ mmk, data, sorted });
 
         const computedTeacherMark = addSumMark(sorted);
 
@@ -385,9 +390,12 @@ const CbtResults = ({}) => {
   // }, [week, subject, student]);
 
   console.log({
-    // markedQ,
+    markedQ,
     // cbtAnswer,
     cbtObject,
+    subjects,
+    userDetails,
+    // cbtObject,
     // markedAssignmentResults,
     // dt,
     // cbtResult,
@@ -414,14 +422,20 @@ const CbtResults = ({}) => {
             >
               <AuthSelect
                 sort
-                options={newSubjects}
-                value={subject}
+                // options={newSubjects}
+                options={userDetails?.teacherSubjects}
+                value={subject_id}
                 onChange={({ target: { value } }) => {
-                  const subId = subjects?.find(
-                    (ob) => ob.subject === value
-                  )?.id;
+                  const subId = userDetails?.allSubjects?.find(
+                    (ob) => ob.id === value
+                  );
+                  console.log({ subId });
                   setMarkedQ((prev) => {
-                    return { ...prev, subject_id: subId, subject: value };
+                    return {
+                      ...prev,
+                      subject_id: subId?.id,
+                      subject: subId?.subject,
+                    };
                   });
                 }}
                 placeholder='Select Subject'
@@ -580,7 +594,15 @@ const CbtResults = ({}) => {
                       accessor: "answer_state",
                     },
                   ]}
-                  data={cbtObject?.questions}
+                  data={cbtObject?.questions?.sort((a, b) => {
+                    if (Number(a.question_number) < Number(b.question_number)) {
+                      return -1;
+                    }
+                    if (Number(a.question_number) > Number(b.question_number)) {
+                      return 1;
+                    }
+                    return 0;
+                  })}
                   markedQ={markedQ}
                   result={cbtObject}
                   ResultTab={ResultTab}

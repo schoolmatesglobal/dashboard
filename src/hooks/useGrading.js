@@ -3,10 +3,13 @@ import { toast } from "react-toastify";
 import { useAppContext } from "./useAppContext";
 import queryKeys from "../utils/queryKeys";
 import { useParams } from "react-router-dom";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useGrading = () => {
   const { apiServices, permission, errorHandler, user } = useAppContext();
   const { id } = useParams();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const activate =
     user?.designation_name === "Admin" || "Teacher" ? true : false;
@@ -14,29 +17,39 @@ export const useGrading = () => {
   // console.log({ activate });
   // const activate = user?.designation_id === "1";
 
+  const {
+    data: scores,
+    isLoading: scoresLoading,
+    refetch: refetchScores,
+  } = useQuery([queryKeys.GET_SCORES], apiServices.getMaxScores, {
+    // enabled: false,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    enabled: activate,
+    onError(err) {
+      errorHandler(err);
+    },
+    select: (data) => {
+      // console.log({ scoreData: data?.data?.attributes, data });
+      return data?.data?.attributes;
+    },
+    onSuccess(data) {
+      setUserDetails({
+        ...userDetails,
+        gradeScores: "",
+      });
+    },
+  });
+
   const { mutate: addScores, isLoading: addScoresLoading } = useMutation(
     apiServices.addMaxScores,
     {
       onSuccess() {
+        refetchScores();
         toast.success("Scores has been uploaded");
       },
       onError: apiServices.errorHandler,
-    }
-  );
-
-  const { data: scores, isLoading: scoresLoading } = useQuery(
-    [queryKeys.GET_SCORES],
-    apiServices.getMaxScores,
-    {
-      // enabled: false,
-      enabled: activate,
-      onError(err) {
-        errorHandler(err);
-      },
-      select: (data) => {
-        // console.log({ scoreData: data?.data?.attributes });
-        return data?.data?.attributes;
-      },
     }
   );
 
@@ -63,6 +76,9 @@ export const useGrading = () => {
     isLoading: gradingLoading,
     refetch: refetchGrading,
   } = useQuery([queryKeys.GET_GRADING], apiServices.getGrading, {
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     select: (data) => {
       // console.log({ data });
       return apiServices.formatData(data)?.map((obj, index) => {
@@ -91,6 +107,9 @@ export const useGrading = () => {
     [queryKeys.GET_GRADING, id],
     () => apiServices.getSingleGrading(id),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!id,
       select: apiServices.formatSingleData,
       onError(err) {

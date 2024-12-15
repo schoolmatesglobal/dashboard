@@ -103,6 +103,13 @@ const PaymentDetail = () => {
     }
   );
 
+  const bankId = (function () {
+    return (
+      bank?.find((bk) => inputs?.account_name?.includes(bk?.bank_name))?.id ??
+      ""
+    );
+  })();
+
   const onSubmit = (data) => {
     if (
       inputs.payment_method === "Physical Cash" &&
@@ -135,6 +142,7 @@ const PaymentDetail = () => {
       createPayment({
         student_id: filteredInvoice?.student_id,
         invoice_id: filteredInvoice?.id,
+        bank_id: Number(bankId),
         bank_name: "none",
         account_name: "none",
         student_fullname: filteredInvoice?.fullname,
@@ -147,6 +155,7 @@ const PaymentDetail = () => {
       createPayment({
         student_id: filteredInvoice?.student_id,
         invoice_id: filteredInvoice?.id,
+        bank_id: Number(bankId),
         bank_name: data?.account_name,
         account_name: data?.account_name,
         student_fullname: filteredInvoice?.fullname,
@@ -215,7 +224,7 @@ const PaymentDetail = () => {
   }, [invoicesList, amount]);
 
   useEffect(() => {
-    if (bank?.length > 1) {
+    if (bank?.length > 0) {
       const bk = bank?.map((bk, i) => {
         return {
           title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
@@ -226,14 +235,18 @@ const PaymentDetail = () => {
     }
   }, [bank]);
 
-  console.log({
-    newBank,
-    filteredInvoice,
-    amount,
-    fp,
-    payment,
-    bank,
-  });
+  console.log({ bank, inputs, newBank });
+
+  // console.log({
+  //   newBank,
+  //   filteredInvoice,
+  //   amount,
+  //   fp,
+  //   payment,
+  //   bank,
+  //   bankId,
+  //   inputs,
+  // });
 
   return (
     <DetailView

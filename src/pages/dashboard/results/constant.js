@@ -1,7 +1,7 @@
 export function removeDuplicates(array) {
   const uniqueSubjects = [];
 
-  array.forEach((subject) => {
+  array?.forEach((subject) => {
     // Check if there's already an object with the same name, category, and topic
     const isDuplicate = uniqueSubjects.some((uniqueSubject) => {
       return (
@@ -19,20 +19,41 @@ export function removeDuplicates(array) {
 
   return uniqueSubjects;
 }
+export function removeDuplicates2(array) {
+  const uniqueSubjects = [];
 
+  array?.forEach((subject) => {
+    // Check if there's already an object with the same name, category, and topic
+    const isDuplicate = uniqueSubjects.some((uniqueSubject) => {
+      return (
+        uniqueSubject.subject === subject.subject
+        // uniqueSubject.category === subject.category &&
+        // JSON.stringify(uniqueSubject.topic) === JSON.stringify(subject.topic)
+      );
+    });
 
-export function updateSubjects(subjects, results) {
-  results.forEach(result => {
-      const subjectToUpdate = subjects.find(subject => subject.subject === result.subject);
-
-      if (subjectToUpdate) {
-          // Update the subject's score and grade
-          subjectToUpdate.score = result.score;
-          subjectToUpdate.grade = result.grade;
-      }
+    // If not a duplicate, add it to the uniqueSubjects array
+    if (!isDuplicate) {
+      uniqueSubjects.push(subject);
+    }
   });
+
+  return uniqueSubjects;
 }
 
+export function updateSubjects(subjects, results) {
+  results.forEach((result) => {
+    const subjectToUpdate = subjects.find(
+      (subject) => subject.subject === result.subject
+    );
+
+    if (subjectToUpdate) {
+      // Update the subject's score and grade
+      subjectToUpdate.score = result.score;
+      subjectToUpdate.grade = result.grade;
+    }
+  });
+}
 
 export function mergeAndOverrideArrays(arr1, arr2) {
   const mergedArray = [...arr1];

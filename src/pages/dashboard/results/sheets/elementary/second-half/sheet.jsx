@@ -15,6 +15,8 @@ import { useGrading } from "../../../../../../hooks/useGrading";
 import GoBack from "../../../../../../components/common/go-back";
 import { PiWarningCircleFill } from "react-icons/pi";
 import ButtonGroup from "../../../../../../components/buttons/button-group";
+import { removeDuplicates, removeDuplicates2 } from "../../../constant";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ElementarySecondHalfSheet = () => {
   const { user } = useAppContext("results");
@@ -23,6 +25,8 @@ const ElementarySecondHalfSheet = () => {
 
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const { isLoading: gradingLoading, grading: resultGrading } = useGrading();
 
@@ -52,10 +56,26 @@ const ElementarySecondHalfSheet = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
+    subjectsByClass,
   } = useResults();
 
   const { principalClassName, setPrincipalClassName } = useStudent();
+
+  // function removeDuplicates(array) {
+  //   return (
+  //     array?.length > 0 &&
+  //     array?.filter(
+  //       (obj, index, self) =>
+  //         index ===
+  //         self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+  //     )
+  //   );
+  // }
   // useState
+
+  function roundToNearestTen(num) {
+    return Math?.round(num);
+  }
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
 
@@ -118,19 +138,35 @@ const ElementarySecondHalfSheet = () => {
   const [cumTotalScore, setCumTotalScore] = useState([]);
 
   const removeZeroFirstAssess = () => {
-    return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentFirstAssess?.length > 0) {
+      return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
   const removeZeroSecondAssess = () => {
-    return studentSecondAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentSecondAssess?.length > 0) {
+      return studentSecondAssess?.filter(
+        (fa) => fa.score != 0 && fa.grade != 0
+      );
+    } else {
+      return [];
+    }
   };
   const removeZeroMidterm = () => {
-    return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentMidterm?.length > 0) {
+      return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
 
-  const studentResults = additionalCreds?.results ?? [];
+  const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
 
   const removeZeroExam = () => {
-    return studentResults?.filter((fa) => fa.score != 0);
+    return studentResults?.length > 0
+      ? studentResults?.filter((fa) => fa.score != 0)
+      : [];
   };
 
   //   const removeZeroExam = () => {
@@ -150,7 +186,9 @@ const ElementarySecondHalfSheet = () => {
 
   const principalCheck = "Elementary" || "Montessori";
 
-  const totalScore = maxScores?.has_two_assessment
+  const hasTwoAssessment = userDetails?.maxScores?.has_two_assessment === 1;
+
+  const totalScore = hasTwoAssessment
     ? removeZeroExam()?.reduce((accumulator, s) => {
         const firstAssessmentScore =
           Number(
@@ -182,11 +220,11 @@ const ElementarySecondHalfSheet = () => {
         }, 0)
         .toFixed(2);
 
-  const getTotalScore = () => {
-    maxScores.reduce((a, item) => {
-      return a + Number(item["Total Score"]);
-    });
-  };
+  // const getTotalScore = () => {
+  //   maxScores.reduce((a, item) => {
+  //     return a + Number(item["Total Score"]);
+  //   });
+  // };
 
   const checkResultComputed = (function () {
     if (user?.designation_name === "Student") {
@@ -278,49 +316,35 @@ const ElementarySecondHalfSheet = () => {
 
   const allLoading = isLoading || loading1;
 
+  const calcClassAverage =
+    (totalScore / studentByClass2?.length) * removeZeroExam()?.length;
+
   useEffect(() => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status]);
-
-  // const checkResultComputed = (function () {
-  //   if ("results" in additionalCreds) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // })();
-
-  // useEffect(() => {
-  //   setPrincipalClassName(locationState?.creds?.class_name);
-  // }, []);
-
-  // const subjectCount = () => {
-  //   return maxScores.reduce((a, item) => {
-  //     return a + 1;
-  //   });
-  // }
-
-  // console.log({ studentData, checkResultComputed, additionalCreds });
-
-  // console.log({
-  //   removeZeroMidterm: removeZeroMidterm(),
-  //   removeZeroFirstAssess: removeZeroFirstAssess(),
-  //   removeZeroExam: removeZeroExam(),
-  //   studentFirstAssess,
-  //   additionalCreds,
-  // });
+  }, [additionalCreds?.status, studentData]);
 
   console.log({
-    user,
-    studentResults,
-    removeZeroExam: removeZeroExam(),
+    studentMidterm,
+    // user,
+    // maxScores,
+
+    // status,
+    // calcClassAverage,
+    // studentData,
     removeZeroMidterm: removeZeroMidterm(),
+    userDetails,
     additionalCreds,
-    studentByClass2,
-    studentData,
-    locationState,
-    principalClassName,
+    // studentMidterm,
+
+    // studentByClass2,
+    // userDetails,
+    // studentResults,
+    // subjectsByClass,
+    // activities,
+    // extraActivities,
+    // removeZeroExam: removeZeroExam(),
+    // removeZeroMidterm: removeZeroMidterm(),
   });
 
   return (
@@ -509,7 +533,7 @@ const ElementarySecondHalfSheet = () => {
                     CLASS
                   </h4>
                 </div>
-                <div className='table-data' style={{ width: "25%" }}>
+                <div className='table-data' style={{ width: "20%" }}>
                   <h4
                     style={{
                       color: "green",
@@ -529,7 +553,7 @@ const ElementarySecondHalfSheet = () => {
                     style={{
                       fontSize: "15px",
                       lineHeight: "16px",
-                      whiteSpace: "nowrap",
+                      whiteSpace: "wrap",
                     }}
                   >
                     {studentData?.firstname} {studentData?.surname}{" "}
@@ -563,13 +587,13 @@ const ElementarySecondHalfSheet = () => {
                     style={{
                       fontSize: "15px",
                       lineHeight: "16px",
-                      whiteSpace: "nowrap",
+                      whiteSpace: "wrap",
                     }}
                   >
                     {studentData?.present_class} {studentData?.sub_class}
                   </h4>
                 </div>
-                <div className='table-data' style={{ width: "25%" }}>
+                <div className='table-data' style={{ width: "20%" }}>
                   <h4
                     style={{
                       fontSize: "15px",
@@ -708,7 +732,8 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {additionalCreds?.times_absent ?? "--"}
+                          {additionalCreds?.school_opened -
+                            additionalCreds?.times_present ?? "--"}
                         </h4>
                       </div>
                       <div className='table-data'>
@@ -756,7 +781,7 @@ const ElementarySecondHalfSheet = () => {
                         className='table-data'
                         style={{ width: "25%" }}
                       ></div>
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -772,7 +797,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -788,7 +813,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {!maxScores?.has_two_assessment && (
+                      {!hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -874,7 +899,7 @@ const ElementarySecondHalfSheet = () => {
                           Max Score Obtainable
                         </h4>
                       </div>
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -885,11 +910,11 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.first_assessment ?? "--"}
+                            {userDetails?.maxScores?.first_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
-                      {maxScores?.has_two_assessment && (
+                      {hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -900,11 +925,11 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.second_assessment ?? "--"}
+                            {userDetails?.maxScores?.second_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
-                      {!maxScores?.has_two_assessment && (
+                      {!hasTwoAssessment && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -915,7 +940,7 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {maxScores?.midterm ?? "--"}
+                            {userDetails?.maxScores?.midterm ?? "--"}
                           </h4>
                         </div>
                       )}
@@ -929,7 +954,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {maxScores?.exam ?? "--"}
+                          {userDetails?.maxScores?.exam ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -942,7 +967,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {maxScores?.total ?? "--"}
+                          {userDetails?.maxScores?.total ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -989,7 +1014,7 @@ const ElementarySecondHalfSheet = () => {
                         (x) => x.subject === s.subject
                       )?.score;
 
-                      const totalScores = maxScores?.has_two_assessment
+                      const totalScores = hasTwoAssessment
                         ? (
                             Number(fAssess ?? 0) +
                             Number(sAssess ?? 0) +
@@ -1004,7 +1029,7 @@ const ElementarySecondHalfSheet = () => {
                       //   return;
                       // }
 
-                      // console.log({ cumtotal });
+                     
 
                       return (
                         <div className='' key={index}>
@@ -1027,7 +1052,8 @@ const ElementarySecondHalfSheet = () => {
                                   {s?.subject ?? "--"}
                                 </p>
                               </div>
-                              {maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment ===
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1043,7 +1069,8 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment ===
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1059,7 +1086,8 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {!maxScores?.has_two_assessment && (
+                              {userDetails?.maxScores?.has_two_assessment !==
+                                1 && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1071,7 +1099,7 @@ const ElementarySecondHalfSheet = () => {
                                       fontWeight: "bold",
                                     }}
                                   >
-                                    {mAssess}
+                                    {parseInt(mAssess, 10)}
                                   </p>
                                 </div>
                               )}
@@ -1086,7 +1114,7 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {s.score}
+                                  {parseInt(s.score, 0)}
                                 </p>
                               </div>
                               <div
@@ -1114,7 +1142,8 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {maxScores?.has_two_assessment
+                                  {userDetails?.maxScores
+                                    ?.has_two_assessment === 1
                                     ? getScoreRemark(totalScores)?.grade
                                     : getScoreRemark(totalScores)?.grade}
                                 </p>
@@ -1130,7 +1159,8 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {maxScores?.has_two_assessment
+                                  {userDetails?.maxScores
+                                    ?.has_two_assessment === 1
                                     ? getScoreRemark(
                                         Number(
                                           studentFirstAssess?.find(
@@ -1294,7 +1324,11 @@ const ElementarySecondHalfSheet = () => {
                           {/* {classAverage?.["Grade"]} */}
                           {
                             getScoreRemark(
-                              (totalScore / removeZeroExam()?.length).toFixed(2)
+                              roundToNearestTen(
+                                (totalScore / removeZeroExam()?.length).toFixed(
+                                  2
+                                )
+                              )
                             )?.remark
                           }
                         </p>
@@ -1304,135 +1338,127 @@ const ElementarySecondHalfSheet = () => {
                 }
 
                 {/* Abacus */}
-                {!user?.campus?.includes("College") && (
-                  <div
-                    className='table-head'
-                    // style={{
-                    //   background: "#9c0f0f000",
-                    // }}
-                  >
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div
+                      className='table-head'
+                      // style={{
+                      //   background: "#9c0f0f000",
+                      // }}
                     >
-                      Abacus
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table text-center'>
-                    <div className='table-row'>
-                      {/* <div className='table-data'></div> */}
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Excellent
-                        </p>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Abacus
+                      </h3>
+                    </div>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.abacus?.name && (
+                    <div className='first-half-result-table text-center'>
+                      <div className='table-row'>
+                        {/* <div className='table-data'></div> */}
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Excellent
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Good
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Fair
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Need Improvement
+                          </p>
+                        </div>
                       </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
+                      <div className='table-row'>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Excellent" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Good" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name === "Fair" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p>
+                            {additionalCreds?.abacus?.name ===
+                              "Need Improvement" && (
+                              <FontAwesomeIcon
+                                icon={faCheck}
+                                color='green'
+                                style={{ fontSize: "24px" }}
+                              />
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className='table-row'>
-                      {/* <div className='table-data'>
-                  <h4
-                    style={{
-                      fontSize: "15px",
-                      lineHeight: "16px",
-                    }}
-                  >
-                    Abacus
-                  </h4>
-                </div> */}
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Excellent" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Good" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name === "Fair" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p>
-                          {additionalCreds?.abacus?.name ===
-                            "Need Improvement" && (
-                            <FontAwesomeIcon
-                              icon={faCheck}
-                              color='green'
-                              style={{ fontSize: "24px" }}
-                            />
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* academic rating */}
                 {
@@ -2027,198 +2053,70 @@ const ElementarySecondHalfSheet = () => {
                 )}
 
                 {/* pupil's monitoring Data */}
-                {!user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "20px",
-                      }}
-                    >
-                      Pupil's monitoring data
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table skills-table'>
-                    <div className='table-row'>
-                      <div className='table-data'></div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Excellent
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
-                      </div>
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "20px",
+                        }}
+                      >
+                        Pupil's monitoring data
+                      </h3>
                     </div>
-                    {additionalCreds?.pupil_report?.map((skill, key) => (
-                      <div className='table-row' key={key}>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='first-half-result-table skills-table'>
+                      <div className='table-row'>
+                        <div className='table-data'></div>
                         <div className='table-data'>
-                          <h4
+                          <p
                             style={{
                               fontSize: "15px",
                               lineHeight: "16px",
+                              fontWeight: "bold",
                             }}
                           >
-                            {skill?.name}
-                          </h4>
-                        </div>
-                        <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 5 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                            Excellent
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 4 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Good
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) === 3 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Fair
                           </p>
                         </div>
                         <div className='table-data'>
-                          <p>
-                            {Number(skill?.score) < 3 && (
-                              <FontAwesomeIcon
-                                icon={faCheck}
-                                color='green'
-                                style={{ fontSize: "24px" }}
-                              />
-                            )}
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Need Improvement
                           </p>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-                {/* <div className='table-data'> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* </div> */}
-
-                {/* Psychomotor Performance */}
-                {!user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Psychomotor Performance
-                    </h3>
-                  </div>
-                )}
-                {!user?.campus?.includes("College") && (
-                  <div className='first-half-result-table skills-table'>
-                    <div className='table-row'>
-                      <div className='table-data'></div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Excellent
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Good
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Fair
-                        </p>
-                      </div>
-                      <div className='table-data'>
-                        <p
-                          style={{
-                            fontSize: "15px",
-                            lineHeight: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Need Improvement
-                        </p>
-                      </div>
-                    </div>
-                    {additionalCreds?.psychomotor_performance?.map(
-                      (skill, key) => (
+                      {additionalCreds?.pupil_report?.map((skill, key) => (
                         <div className='table-row' key={key}>
                           <div className='table-data'>
                             <h4
@@ -2275,10 +2173,142 @@ const ElementarySecondHalfSheet = () => {
                             </p>
                           </div>
                         </div>
-                      )
-                    )}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                {/* <div className='table-data'> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* <br /> */}
+                {/* </div> */}
+
+                {/* Psychomotor Performance */}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Psychomotor Performance
+                      </h3>
+                    </div>
+                  )}
+                {!user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='first-half-result-table skills-table'>
+                      <div className='table-row'>
+                        <div className='table-data'></div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Excellent
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Good
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Fair
+                          </p>
+                        </div>
+                        <div className='table-data'>
+                          <p
+                            style={{
+                              fontSize: "15px",
+                              lineHeight: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Need Improvement
+                          </p>
+                        </div>
+                      </div>
+                      {additionalCreds?.psychomotor_performance?.map(
+                        (skill, key) => (
+                          <div className='table-row' key={key}>
+                            <div className='table-data'>
+                              <h4
+                                style={{
+                                  fontSize: "15px",
+                                  lineHeight: "16px",
+                                }}
+                              >
+                                {skill?.name}
+                              </h4>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 5 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 4 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) === 3 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                            <div className='table-data'>
+                              <p>
+                                {Number(skill?.score) < 3 && (
+                                  <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color='green'
+                                    style={{ fontSize: "24px" }}
+                                  />
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
@@ -2288,324 +2318,328 @@ const ElementarySecondHalfSheet = () => {
                 {/* </div> */}
 
                 {/* Psychomotor Performance for college*/}
-                {user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Psychomotor Development
-                    </h3>
-                  </div>
-                )}
-                {user?.campus?.includes("College") && (
-                  <div className='' style={{ display: "flex" }}>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
-                            <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.psychomotor_performance
-                            ?.slice(
-                              0,
-                              Math.round(
-                                additionalCreds?.psychomotor_performance
-                                  ?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
-                              <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
-                              >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
-                                >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Psychomotor Development
+                      </h3>
                     </div>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
+                  )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.psychomotor_performance?.length > 0 && (
+                    <div className='' style={{ display: "flex" }}>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
                             <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
+                              className='table-row'
+                              style={{ display: "flex" }}
                             >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.psychomotor_performance
-                            ?.slice(
-                              Math.round(
-                                additionalCreds?.psychomotor_performance
-                                  ?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
                               <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
                               >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
                                 >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
+                                  SCORES
+                                </p>
                               </div>
-                            ))}
-                        </div>
-                      )}
+                            </div>
+                            {additionalCreds?.psychomotor_performance
+                              ?.slice(
+                                0,
+                                Math.round(
+                                  additionalCreds?.psychomotor_performance
+                                    ?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
+                            <div
+                              className='table-row'
+                              style={{ display: "flex" }}
+                            >
+                              <div
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
+                              >
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  SCORES
+                                </p>
+                              </div>
+                            </div>
+                            {additionalCreds?.psychomotor_performance
+                              ?.slice(
+                                Math.round(
+                                  additionalCreds?.psychomotor_performance
+                                    ?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Affective Development for college*/}
-                {user?.campus?.includes("College") && (
-                  <div className='table-head'>
-                    <h3
-                      style={{
-                        fontSize: "18px",
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Affective Development
-                    </h3>
-                  </div>
-                )}
-                {user?.campus?.includes("College") && (
-                  <div className='' style={{ display: "flex" }}>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
-                            <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.pupil_report
-                            ?.slice(
-                              0,
-                              Math.round(
-                                additionalCreds?.pupil_report?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
-                              <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
-                              >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
-                                >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='table-head'>
+                      <h3
+                        style={{
+                          fontSize: "18px",
+                          lineHeight: "16px",
+                        }}
+                      >
+                        Affective Development
+                      </h3>
                     </div>
-                    <div className='' style={{ flex: "1", width: "100%" }}>
-                      {user?.campus?.includes("College") && (
-                        <div className=''>
-                          <div
-                            className='table-row'
-                            style={{ display: "flex" }}
-                          >
+                  )}
+                {user?.campus?.includes("College") &&
+                  additionalCreds?.pupil_report?.length > 0 && (
+                    <div className='' style={{ display: "flex" }}>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
                             <div
-                              className='table-data'
-                              style={{ flex: "2.5" }}
-                            ></div>
-                            <div
-                              className='table-data'
-                              style={{ textAlign: "center", flex: "1" }}
+                              className='table-row'
+                              style={{ display: "flex" }}
                             >
-                              <p
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                SCORES
-                              </p>
-                            </div>
-                          </div>
-                          {additionalCreds?.pupil_report
-                            ?.slice(
-                              Math.round(
-                                additionalCreds?.pupil_report?.length / 2
-                              )
-                            )
-                            ?.map((skill, key) => (
                               <div
-                                className='table-row'
-                                key={key}
-                                style={{ display: "flex" }}
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
                               >
-                                <div
-                                  className='table-data'
-                                  style={{ flex: "2.5" }}
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
                                 >
-                                  <h4
-                                    style={{
-                                      fontSize: "15px",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.name}
-                                  </h4>
-                                </div>
-                                <div
-                                  className='table-data'
-                                  style={{ textAlign: "center", flex: "1" }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "15px",
-                                      fontWeight: "600",
-                                      lineHeight: "16px",
-                                    }}
-                                  >
-                                    {skill?.score}
-                                  </p>
-                                </div>
+                                  SCORES
+                                </p>
                               </div>
-                            ))}
-                        </div>
-                      )}
+                            </div>
+                            {additionalCreds?.pupil_report
+                              ?.slice(
+                                0,
+                                Math.round(
+                                  additionalCreds?.pupil_report?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className='' style={{ flex: "1", width: "100%" }}>
+                        {user?.campus?.includes("College") && (
+                          <div className=''>
+                            <div
+                              className='table-row'
+                              style={{ display: "flex" }}
+                            >
+                              <div
+                                className='table-data'
+                                style={{ flex: "2.5" }}
+                              ></div>
+                              <div
+                                className='table-data'
+                                style={{ textAlign: "center", flex: "1" }}
+                              >
+                                <p
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  SCORES
+                                </p>
+                              </div>
+                            </div>
+                            {additionalCreds?.pupil_report
+                              ?.slice(
+                                Math.round(
+                                  additionalCreds?.pupil_report?.length / 2
+                                )
+                              )
+                              ?.map((skill, key) => (
+                                <div
+                                  className='table-row'
+                                  key={key}
+                                  style={{ display: "flex" }}
+                                >
+                                  <div
+                                    className='table-data'
+                                    style={{ flex: "2.5" }}
+                                  >
+                                    <h4
+                                      style={{
+                                        fontSize: "15px",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.name}
+                                    </h4>
+                                  </div>
+                                  <div
+                                    className='table-data'
+                                    style={{ textAlign: "center", flex: "1" }}
+                                  >
+                                    <p
+                                      style={{
+                                        fontSize: "15px",
+                                        fontWeight: "600",
+                                        lineHeight: "16px",
+                                      }}
+                                    >
+                                      {skill?.score}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
@@ -2615,7 +2649,7 @@ const ElementarySecondHalfSheet = () => {
                 {/* </div> */}
 
                 {/* Extra curricular activities */}
-                {
+                {extraActivities?.length > 0 && (
                   <div className='table-head'>
                     <h3
                       style={{
@@ -2626,9 +2660,9 @@ const ElementarySecondHalfSheet = () => {
                       Extra Curricular Activities
                     </h3>
                   </div>
-                }
+                )}
 
-                {
+                {extraActivities?.length > 0 && (
                   <div
                     style={{
                       display: "grid",
@@ -2679,7 +2713,7 @@ const ElementarySecondHalfSheet = () => {
                       </div>
                     ))}
                   </div>
-                }
+                )}
 
                 {/* <div className='table-data'> */}
                 {/* <br /> */}
@@ -3028,6 +3062,7 @@ const ElementarySecondHalfSheet = () => {
                         lineHeight: "16px",
                       }}
                     >
+                      {/* {additionalCreds?.hos_fullname ?? "----"} */}
                       {additionalCreds?.dos ?? "----"}
                     </h3>
                   </div>

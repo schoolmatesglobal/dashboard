@@ -23,6 +23,9 @@ export const useSkills = () => {
     isLoading: skillsLoading,
     refetch: refetchSkills,
   } = useQuery([queryKeys.GET_ALL_SKILLS], apiServices.getSkills, {
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
     select: (data) =>
@@ -33,6 +36,9 @@ export const useSkills = () => {
     [queryKeys.GET_ALL_SKILLS, id],
     () => apiServices.getSkill(id),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.read && !!id,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,

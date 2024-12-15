@@ -11,13 +11,16 @@ const ImportedStudents = () => {
     [queryKeys.GET_IMPORTED_STUDENTS],
     apiServices.getImportedStudents,
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       select: (data) =>
         apiServices.formatData(data)?.map((item) => ({
           ...item,
           file: (
             <Link
               to={item.file}
-              className="text-decoration-none text-success"
+              className='text-decoration-none text-success'
               download
             >
               Download File

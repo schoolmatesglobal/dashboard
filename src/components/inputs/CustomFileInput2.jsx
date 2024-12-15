@@ -24,7 +24,7 @@ const CustomFileInput2 = ({
   const wordCt = xs ? 12 : sm ? 13 : md ? 18 : lg ? 23 : 23;
 
   const trimString = (str) => {
-    return str.length > wordCt ? `${str.slice(0, wordCt)}...` : str;
+    return str?.length > wordCt ? `${str.slice(0, wordCt)}...` : str;
   };
 
   const warningMessage =

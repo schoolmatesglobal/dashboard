@@ -259,23 +259,23 @@ const Invoices = () => {
     setAllData(nl);
   }, [invoicesList, payment]);
 
-  console.log({
-    allData,
-    session,
-    sorted,
-    admissionNumber,
-    classes2,
-    sortBy,
-    newListByClass,
-    // onSearch: onSearch(),
-    classes,
-    indexStatus,
-    data,
-    invoicesList,
-    newList,
-    payment,
-    newPayment,
-  });
+  // console.log({
+  //   allData,
+  //   session,
+  //   sorted,
+  //   admissionNumber,
+  //   classes2,
+  //   sortBy,
+  //   newListByClass,
+  //   // onSearch: onSearch(),
+  //   classes,
+  //   indexStatus,
+  //   data,
+  //   invoicesList,
+  //   newList,
+  //   payment,
+  //   newPayment,
+  // });
 
   return (
     <PageView

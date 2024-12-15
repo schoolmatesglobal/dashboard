@@ -34,7 +34,9 @@ export const useDepartments = () => {
     apiServices.getAllDepartmentList,
     {
       enabled: permission?.read,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
@@ -58,7 +60,9 @@ export const useDepartments = () => {
       //
       // enabled: !!id,
       enabled: !!id && !!inputs.department_id,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },

@@ -4,18 +4,35 @@ import PageView from "../../../components/views/table-view";
 import { useAppContext } from "../../../hooks/useAppContext";
 import queryKeys from "../../../utils/queryKeys";
 import { useBank } from "../../../hooks/useBank";
+import { useNavigate } from "react-router-dom";
 
 const BankList = () => {
   const { apiServices, permission } = useAppContext();
 
+  const navigate = useNavigate();
+
+  const getActionOptions = () => {
+    
+    const arr = [];
+
+    return [
+      {
+        title: "Views Details",
+        onClick: (id) => navigate(`/app/bank/details/${id}`),
+      },
+    ];
+  };
+
   const { bank, deleteBank, handleUpdateBank, isLoading } = useBank();
 
-  // console.log({ bank });
+  console.log({ bank });
 
   return (
     <PageView
       canCreate={permission?.create}
       isLoading={isLoading}
+      rowHasAction={true}
+      action={getActionOptions({ navigate })}
       onDelete={deleteBank}
       rowHasUpdate={true}
       rowHasDelete={true}

@@ -119,7 +119,9 @@ const StudentCbtPerformances = ({}) => {
         subject_id
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
       select: (data) => {
@@ -130,7 +132,7 @@ const StudentCbtPerformances = ({}) => {
         // const newP = pp2?.map((p) => {
         //   return Number(p.total_score);
         // });
-        console.log({ pp, data });
+        // console.log({ pp, data });
 
         return pp;
       },
@@ -290,12 +292,12 @@ const StudentCbtPerformances = ({}) => {
     }
   };
 
-  console.log({
-    subject_id,
-    student_id: user?.id,
-    performance,
-    user,
-  });
+  // console.log({
+  //   subject_id,
+  //   student_id: user?.id,
+  //   performance,
+  //   user,
+  // });
 
   return (
     <div>
@@ -343,7 +345,6 @@ const StudentCbtPerformances = ({}) => {
             </div>
           </div>
 
-          
           {allLoading && (
             <div className={styles.spinner_container}>
               <Spinner /> <p className='fs-3'>Loading...</p>

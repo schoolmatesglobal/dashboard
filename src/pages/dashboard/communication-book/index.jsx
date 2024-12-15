@@ -249,7 +249,9 @@ const CommunicationBookPage = () => {
     [queryKeys.GET_COMMUNICATION_BOOK],
     () => apiServices.getCommunicationBookByClass(classIdValue),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!classIdValue && permission?.view,
 
       select: (data) => {
@@ -272,7 +274,7 @@ const CommunicationBookPage = () => {
                 )
             );
 
-          console.log({ data, dt });
+          // console.log({ data, dt });
           return dt ?? [];
         }
 
@@ -315,7 +317,9 @@ const CommunicationBookPage = () => {
     [queryKeys.GET_CLOSED_COMMUNICATION_BOOK],
     () => apiServices.getClosedCommunicationBookByClass(classIdValue),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!classIdValue && permission?.view,
 
       select: (data) => {
@@ -338,7 +342,7 @@ const CommunicationBookPage = () => {
               )
           );
 
-        console.log({ cdata: data, cdt });
+        // console.log({ cdata: data, cdt });
 
         if (cdt?.length > 0) {
           return cdt;
@@ -375,11 +379,13 @@ const CommunicationBookPage = () => {
     [queryKeys.GET_COMMUNICATION_BOOK_REPLIES],
     () => apiServices.getCommunicationBookReplies(communicationId),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!communicationId && permission?.view,
 
       select: (data) => {
-        console.log({ datarr: data, dtr: data?.data });
+        // console.log({ datarr: data, dtr: data?.data });
 
         if (data?.data?.length > 0) {
           const ddt = data?.data?.map((dt, i) => {
@@ -398,7 +404,7 @@ const CommunicationBookPage = () => {
             };
           });
 
-          console.log({ ddt });
+          // console.log({ ddt });
 
           return ddt;
         } else {
@@ -501,7 +507,9 @@ const CommunicationBookPage = () => {
     [queryKeys.GET_STAFF_BY_CLASS],
     () => apiServices.getStaffByClass(user?.class),
     {
-      retry: 2,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!user?.class && user?.designation_name === "Student",
 
       select: (data) => {
@@ -585,13 +593,13 @@ const CommunicationBookPage = () => {
         // const filt = csg?.filter(
         //   (ls) => Number(ls?.staff_id) === Number(user?.id)
         // );
-        console.log({
-          datast: data?.data,
-          data,
-          ct,
-          staffsId,
-          newStaffsByClass: newStaffsByClass(),
-        });
+        // console.log({
+        //   datast: data?.data,
+        //   data,
+        //   ct,
+        //   staffsId,
+        //   newStaffsByClass: newStaffsByClass(),
+        // });
 
         if (ct) {
           return newStaffsByClass();
@@ -1108,7 +1116,7 @@ const CommunicationBookPage = () => {
 
   useEffect(() => {
     const handleScrollEvent = (to, element) => {
-      console.log("end", to, element);
+      // console.log("end", to, element);
       setActiveSection(to);
     };
 
@@ -1128,35 +1136,35 @@ const CommunicationBookPage = () => {
 
   //   const allLoading = studentByClassLoading || isRefetchingStudentByClass;
 
-  console.log({
-    // communicationId,
-    // openMessage,
-    // newStudentByClass: newStudentByClass(),
-    // studentByClass,
-    // studentsId,
-    // msg,
-    // messages,
-    // openTickets,
-    classIdValue,
-    academicPeriod,
-    classId,
-    classes,
-    classSelected,
-    selectedStudent,
-    closedTickets,
-    message,
-    title,
-    showStudentRow: showStudentRow(),
-    // selectedMessage,
-    // selectedMessage2,
-    // replyMessages,
-    // ticketTab,
-    // history,
-    user,
-    allLoading,
-    location,
-    status,
-  });
+  // console.log({
+  //   // communicationId,
+  //   // openMessage,
+  //   // newStudentByClass: newStudentByClass(),
+  //   // studentByClass,
+  //   // studentsId,
+  //   // msg,
+  //   // messages,
+  //   // openTickets,
+  //   classIdValue,
+  //   academicPeriod,
+  //   classId,
+  //   classes,
+  //   classSelected,
+  //   selectedStudent,
+  //   closedTickets,
+  //   message,
+  //   title,
+  //   showStudentRow: showStudentRow(),
+  //   // selectedMessage,
+  //   // selectedMessage2,
+  //   // replyMessages,
+  //   // ticketTab,
+  //   // history,
+  //   user,
+  //   allLoading,
+  //   location,
+  //   status,
+  // });
 
   return (
     <div className='results-sheet'>

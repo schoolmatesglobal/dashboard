@@ -7,10 +7,12 @@ import { useStudent } from "./useStudent";
 
 import useLocalStorage from "use-local-storage";
 import { useLocation } from "react-router-dom";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const useCommunicationBook = () => {
+  const { userDetails, setUserDetails } = useAuthDetails();
 
-   const { state } = useLocation();
+  const { state } = useLocation();
 
   const [activeTab, setActiveTab] = useState("1");
   const [submissionTab, setSubmissionTab] = useState("1");
@@ -28,7 +30,9 @@ export const useCommunicationBook = () => {
   const [answeredObjResults, setAnsweredObjResults] = useState([]);
   const [answeredTheoryResults, setAnsweredTheoryResults] = useState([]);
   const [objMark, setObjMark] = useState(0);
-  const [classSelected, setClassSelected] = useState(state?.classSelected || "");
+  const [classSelected, setClassSelected] = useState(
+    state?.classSelected || ""
+  );
 
   const [answerQ, setAnswerQ] = useState({
     question_type: "",
@@ -243,42 +247,8 @@ export const useCommunicationBook = () => {
     }
   };
 
-  console.log({ classValue: classValue(), classSelected, className });
+  // console.log({ userDetails });
 
-  ///// GET ACADEMIC PERIOD
-  const {
-    data: academicPeriod,
-    isLoading: academicPeriodLoading,
-    refetch: refetchAcademicPeriod,
-    isRefetching: isRefetchingAcademicPeriod,
-  } = useQuery(
-    [queryKeys.GET_ACADEMIC_PERIOD2],
-    () => apiServices.getAcademicPeriod(),
-
-    {
-      // enabled: false,
-      // enabled: !!className,
-      // enabled: permission?.myStudents || user?.designation_name === "Principal",
-      // select: apiServices.formatData,
-      select: (data) => {
-        const ppr = data?.data;
-        console.log({ Adata: data, ppr });
-        // return (
-        //   apiServices.formatData(data)?.map((obj, index) => {
-        //     const newObj = { ...obj };
-        //     newObj.new_id = index + 1;
-        //     return newObj;
-        //   }) ?? []
-        // );
-        if (ppr?.length > 0) {
-          return ppr[0];
-        }
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-    }
-  );
   ///// GET STUDENT BY CLASS
   const {
     data: studentByClass,
@@ -291,6 +261,9 @@ export const useCommunicationBook = () => {
 
     {
       // enabled: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!className && !!classValue(),
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -321,7 +294,9 @@ export const useCommunicationBook = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,
@@ -349,7 +324,7 @@ export const useCommunicationBook = () => {
     }
   );
 
-  console.log({ classValue: classValue() });
+  // console.log({ classValue: classValue() });
 
   return {
     activeTab,
@@ -473,7 +448,13 @@ export const useCommunicationBook = () => {
 
     className,
     setClassName,
-    academicPeriod,
-    academicPeriodLoading,
+    academicPeriod: {
+      period: userDetails?.period,
+      term: userDetails?.term,
+      session: userDetails?.session,
+      campus: userDetails?.campus,
+      sch_id: userDetails?.sch_id,
+    },
+    // academicPeriodLoading,
   };
 };

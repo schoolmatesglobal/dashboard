@@ -16,7 +16,7 @@ const Subjects = () => {
     }
   };
 
-  console.log({ subjects });
+  // console.log({ subjects });
 
   return (
     <PageView

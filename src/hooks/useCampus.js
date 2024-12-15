@@ -72,7 +72,9 @@ export const useCampus = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read || false,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -93,7 +95,9 @@ export const useCampus = () => {
     [queryKeys.GET_CAMPUS, id],
     () => apiServices.getCampus(id),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },

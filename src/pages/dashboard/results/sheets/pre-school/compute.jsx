@@ -39,6 +39,7 @@ const ComputePreSchoolResult = () => {
     preSchoolCompiledResults,
     preActivities2,
     setPreActivities2,
+    // setActivatePreSchoolByClass,
     // preActivities2,
     // setPreActivities2,
   } = useResults();
@@ -192,7 +193,7 @@ const ComputePreSchoolResult = () => {
       });
       setHosComment(result()?.hos_comment);
       setTeacherComment(result()?.teacher_comment);
-      setPreActivities2(result()?.extra_curricular_activities || [])
+      setPreActivities2(result()?.extra_curricular_activities || []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newResult]);

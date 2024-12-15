@@ -68,6 +68,9 @@ const PaymentEdit = () => {
     () => apiServices.getPaymentById(id),
     {
       enabled: !!id,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // select: apiServices.formatData,
       select: (data) => {
         // console.log({ datap: data });
@@ -120,6 +123,13 @@ const PaymentEdit = () => {
     }
   );
 
+  const bankId = (function () {
+    return (
+      bank?.find((bk) => inputs?.account_name?.includes(bk?.bank_name))?.id ??
+      ""
+    );
+  })();
+
   const onSubmit = (data) => {
     if (
       !inputs?.amount_paid ||
@@ -159,7 +169,8 @@ const PaymentEdit = () => {
 
     handleUpdatePayment({
       id: paymentById?.id,
-      total_amount: amount,
+      // total_amount: amount,
+      bank_id: Number(bankId),
       bank_name: data?.account_name,
       account_name: data?.account_name,
       payment_method: data?.payment_method,
@@ -203,7 +214,7 @@ const PaymentEdit = () => {
   }, [paymentById]);
 
   useEffect(() => {
-    if (bank?.length > 1) {
+    if (bank?.length > 0) {
       const bk = bank?.map((bk, i) => {
         return {
           title: `${bk?.bank_name} - ${bk?.account_number} (${bk?.account_name})`,
@@ -214,10 +225,12 @@ const PaymentEdit = () => {
     }
   }, [bank]);
 
-  console.log({
-    newBank,
-    bank,
-  });
+  // console.log({
+  //   newBank,
+  //   bank,
+  //   bankId,
+  //   paymentById,
+  // });
 
   return (
     <DetailView

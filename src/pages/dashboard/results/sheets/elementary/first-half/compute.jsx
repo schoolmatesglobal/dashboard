@@ -11,6 +11,7 @@ import StudentsResults from "../../../../../../components/common/students-result
 import { useStudent } from "../../../../../../hooks/useStudent";
 import AuthSelect from "../../../../../../components/inputs/auth-select";
 import GoBack from "../../../../../../components/common/go-back";
+import { useAuthDetails } from "../../../../../../stores/authDetails";
 
 const ComputeElementaryFirstHalfResult = () => {
   const { user } = useAppContext("results");
@@ -45,6 +46,8 @@ const ComputeElementaryFirstHalfResult = () => {
     studentByClass2,
   } = useResults();
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
@@ -56,20 +59,31 @@ const ComputeElementaryFirstHalfResult = () => {
     }, time);
   }
 
+  function removeDuplicates(array) {
+    return (
+      array?.length > 0 &&
+      array?.filter(
+        (obj, index, self) =>
+          index ===
+          self.findIndex((o) => JSON.stringify(o) === JSON.stringify(obj))
+      )
+    );
+  }
+
   const midTermMax = () => {
     let value;
     if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "first_assesment"
     ) {
-      value = maxScores?.first_assessment;
+      value = userDetails?.maxScores?.first_assessment;
     } else if (
-      maxScores?.has_two_assessment &&
+      userDetails?.maxScores?.has_two_assessment === 1 &&
       inputs.assessment === "second_assesment"
     ) {
-      value = maxScores?.second_assessment;
-    } else if (!maxScores?.has_two_assessment) {
-      value = maxScores?.midterm;
+      value = userDetails?.maxScores?.second_assessment;
+    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+      value = userDetails?.maxScores?.midterm;
     }
     return value;
   };
@@ -82,7 +96,7 @@ const ComputeElementaryFirstHalfResult = () => {
   useEffect(() => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status]);
+  }, [additionalCreds?.status, studentData]);
 
   // useEffect(() => {
 
@@ -98,22 +112,11 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const allLoading = isLoading || loading1;
 
-  // console.log({
-  //   // staffData,
-  //   inputs,
-  //   max: midTermMax(),
-  //   maxScores,
-  //   user,
-  //   teacherSubjects,
-  //   subjects,
-  //   filteredSubjects,
-  //   // additionalCreds,
-  //   // tc: additionalCreds?.teacher_comment,
-  //   // studentByClass2,
-  // });
+  const newSubjects = removeDuplicates(subjects)
 
   console.log({
     subjects,
+    s2: newSubjects,
     status,
     additionalCreds,
     checkResultComputed,
@@ -209,7 +212,7 @@ const ComputeElementaryFirstHalfResult = () => {
                     <span>marks</span> {`)`}
                   </PageTitle>
                 )}
-                {maxScores?.has_two_assessment && (
+                {userDetails?.maxScores?.has_two_assessment === 1 && (
                   <div className='form-group mb-4' style={{ width: "300px" }}>
                     <AuthSelect
                       label='Assessment'
@@ -236,8 +239,8 @@ const ComputeElementaryFirstHalfResult = () => {
 
               <div>
                 <div>
-                  {subjects?.length > 0 &&
-                    subjects?.map((x, key) => (
+                  {newSubjects?.length > 0 &&
+                    newSubjects?.map((x, key) => (
                       <Row key={key} className='my-5 '>
                         <Col sm='6' className='mb- mb-sm-0'>
                           <h5>
@@ -253,7 +256,7 @@ const ComputeElementaryFirstHalfResult = () => {
 
                               if (Number(value) > Number(midTermMax())) return;
 
-                              const fd = subjects.map((s) => ({
+                              const fd = newSubjects.map((s) => ({
                                 ...s,
                                 grade:
                                   s.subject === x.subject ? value : s.grade,

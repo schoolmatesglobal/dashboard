@@ -13,15 +13,21 @@ import Numeral from "react-numeral";
 import { useLocation } from "react-router-dom";
 
 export const useStudent = () => {
+  // const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page") ?? "1");
   const { apiServices, errorHandler, permission, user } =
     useAppContext("students");
   const [sortedStudents, setSortedStudents] = useState([]);
+  const [admSetupPrompt, setAdmSetupPrompt] = useState(false);
+  const [loadedGen, setLoadedGen] = useState(false);
   const [sorted, setSorted] = useState(false);
   const [indexStatus, setIndexStatus] = useState(
     permission?.read ? "all" : "myStudents"
   );
+  const [loading1, setLoading1] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const [session, setSession] = useState("");
   const [principalClassName, setPrincipalClassName] = useState("");
   const [admissionNumber, setAdmissionNumber] = useState("");
@@ -37,6 +43,8 @@ export const useStudent = () => {
     reset: resetFile,
     fileRef,
   } = useFile();
+
+  const isEdit = !!id;
 
   const {
     getFieldProps,
@@ -74,7 +82,7 @@ export const useStudent = () => {
       surname: { required: true },
       firstname: { required: true },
       middlename: { required: true },
-      admission_number: { required: true },
+      // admission_number: { required: true },
       // genotype: { required: true },
       // blood_group: { required: true },
       gender: { required: true },
@@ -99,10 +107,34 @@ export const useStudent = () => {
     },
   });
 
+  const {
+    inputs: inputs2,
+    setFieldValue: setFieldValue2,
+    getFieldProps: getFieldProps2,
+    handleSubmit: handleSubmit2,
+    errors: errors2,
+    setInputs: setInputs2,
+  } = useForm({
+    defaultValues: {
+      generate_number: false,
+      admission_initial: "",
+    },
+    validation: {
+      admission_initial: { required: true },
+    },
+  });
+
   const reset = () => {
     resetFile();
     resetForm();
   };
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
 
   const handleSortBy = ({ target: { value } }) => {
     setSortBy(value);
@@ -117,22 +149,35 @@ export const useStudent = () => {
     () => apiServices.getAllStudents(page),
     {
       enabled: permission?.read || false,
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
       select: (data) => {
-        console.log({ std: data });
-
         const format = apiServices.formatData(data)?.map((student, i) => {
+          const cp = () => {
+            if (data?.pagination?.current_page === 1) {
+              return i + 1;
+            } else {
+              return (
+                (data?.pagination?.current_page - 1) *
+                  data?.pagination?.per_page +
+                i +
+                1
+              );
+            }
+          };
           return {
             ...student,
-            new_id: i + 1,
+            new_id: cp(),
             image: (
               <ProfileImage src={student?.image} wrapperClassName='mx-auto' />
             ),
           };
         });
+
 
         return { ...data, data: format };
       },
@@ -152,6 +197,10 @@ export const useStudent = () => {
           user?.session
         ),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        // refetchInterval: 10000,
         enabled: permission?.myStudents || false,
         // select: apiServices.formatData,
         select: (data) => {
@@ -184,11 +233,14 @@ export const useStudent = () => {
     () => apiServices.getStudentByClass2(chk),
 
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.myStudents && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
-        console.log({ mystd: data });
+        // console.log({ mystd: data });
         // console.log({ pdata: data, state });
         return apiServices.formatData(data)?.map((obj, index) => {
           const newObj = { ...obj };
@@ -210,7 +262,9 @@ export const useStudent = () => {
       apiServices.getAllStudentDebtors,
       {
         enabled: permission?.readDebtors || false,
-        retry: 3,
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
         },
@@ -247,7 +301,9 @@ export const useStudent = () => {
       apiServices.getAllStudentCreditors,
       {
         enabled: permission?.readCreditors || false,
-        retry: 3,
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         onError(err) {
           errorHandler(err);
         },
@@ -284,7 +340,9 @@ export const useStudent = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.update || false,
-    retry: 3,
+    retry: 1,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     onError(err) {
       errorHandler(err);
     },
@@ -299,12 +357,54 @@ export const useStudent = () => {
     },
   });
 
+  const {
+    isLoading: getAdmissionNoSettingsLoading,
+    data: getAdmissionNoSettings,
+    refetch: refetchGetAdmissionNoSettings,
+  } = useQuery(
+    [queryKeys.GET_ADMISSION_SETTINGS],
+    () => apiServices.getAdmissionNoSettings(user?.sch_id),
+    {
+      enabled: true,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+      select: (data) => {
+        // console.log({ gadata: data?.data });
+
+        // const f = apiServices.formatData(data)?.map((x) => ({
+        //   value: x?.name,
+        //   title: x?.name,
+        // }));
+
+        return data?.data;
+      },
+      onSuccess: (data) => {
+        setInputs2({
+          ...inputs2,
+          generate_number: data?.auto_generate,
+          admission_initial: data?.admission_number_initial,
+        });
+        setLoadedGen(data?.auto_generate);
+        setInputValue(data?.admission_number_initial);
+        // console.log({ data });
+        setAdmSetupPrompt(false);
+      },
+    }
+  );
+
   const { mutateAsync: addStudent, isLoading: addStudentLoading } = useMutation(
     apiServices.addStudent,
     {
       onSuccess() {
         toast.success("Student has been added successfully");
         reset();
+        refetchStudents();
+        navigate("/app/students");
       },
       onError(err) {
         errorHandler(err);
@@ -312,10 +412,28 @@ export const useStudent = () => {
     }
   );
 
+  const {
+    mutateAsync: postAdmissionNoSettings,
+    isLoading: postAdmissionNoSettingsLoading,
+  } = useMutation(apiServices.postAdmissionNoSettings, {
+    onSuccess() {
+      // reset();
+      refetchGetAdmissionNoSettings();
+      trigger(1000);
+      toast.success("Admission No settings has been updated successfully");
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
   const { mutateAsync: updateStudent, isLoading: updateStudentLoading } =
     useMutation(apiServices.updateStudent, {
       onSuccess() {
+        refetchStudents();
         toast.success("Student has been updated successfully");
+        navigate("/app/students");
+        // navigate
       },
       onError(err) {
         errorHandler(err);
@@ -339,6 +457,9 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_SESSION, session],
     () => apiServices.getStudentBySession(session),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!session && permission?.sortSession,
       onError(err) {
         errorHandler(err);
@@ -366,6 +487,9 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_ADMISSION_NUMBER, admissionNumber],
     () => apiServices.getStudentByAdmissionNumber(admissionNumber),
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: !!admissionNumber && permission?.sortAdmissionNumber,
       onError(err) {
         errorHandler(err);
@@ -397,6 +521,9 @@ export const useStudent = () => {
       ],
       () => apiServices.getStudentByClass(classes),
       {
+        retry: 1,
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
         enabled: !!classes.present_class && permission?.sortStudentByClass,
         onError(err) {
           errorHandler(err);
@@ -485,11 +612,13 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT, id],
     () => apiServices.getStudent(id),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },
-      enabled: !!id,
+      enabled: isEdit,
       select: apiServices.formatSingleData,
     }
   );
@@ -498,7 +627,9 @@ export const useStudent = () => {
     [queryKeys.GET_GRADUATED_STUDENTS],
     apiServices.getAlumniList,
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.alumni,
       select: (data) => {
         return apiServices.formatData(data)?.map((student, i) => {
@@ -524,38 +655,41 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT_LOGIN_DETAILS, page],
     () => apiServices.getStudentLoginDetails(page),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       enabled: permission?.studentLoginDetails,
       select: (data) => {
-        console.log({ ddsData: data });
-        const dt = data?.data?.map((student, i) => {
-          return {
-            ...student,
-            new_id: i + 1,
-          };
-        });
-        console.log({ ddsData: data, dt });
-        return dt;
+        const dt2 = {
+          ...data,
+          data: data?.data?.map((student, i) => {
+            const cp = () => {
+              if (data?.pagination?.current_page === 1) {
+                return i + 1;
+              } else {
+                return (
+                  (data?.pagination?.current_page - 1) *
+                    data?.pagination?.per_page +
+                  i +
+                  1
+                );
+              }
+            };
+            return {
+              ...student,
+              new_id: cp(),
+            };
+          }),
+        };
+        // console.log({ ddsData: data, dt2 });
+        // console.log({ ddsData: data, dt });
+        return dt2;
       },
       onError(err) {
         errorHandler(err);
       },
     }
   );
-
-  // const { isLoading: communicationListLoading, data: communicationList } =
-  //   useQuery(
-  //     [queryKeys.GET_COMMUNICATION_BOOK],
-  //     apiServices.getCommunicationBook,
-  //     {
-  //       retry: 3,
-  //       enabled: permission?.communication ?? false,
-  //       select: apiServices.formatData,
-  //       onError(err) {
-  //         errorHandler(err);
-  //       },
-  //     }
-  //   );
 
   const { mutate: enableStudentStatus, isLoading: enableStudentStatusLoading } =
     useMutation(apiServices.enableStudentStatus, {
@@ -640,9 +774,11 @@ export const useStudent = () => {
     postCommunicationBookLoading ||
     campusListLoading ||
     enableStudentStatusLoading ||
-    disableStudentStatusLoading;
+    disableStudentStatusLoading ||
+    getAdmissionNoSettingsLoading ||
+    postAdmissionNoSettingsLoading;
 
-  console.log({ state, permission });
+  // console.log({ state, permission });
 
   return {
     user,
@@ -655,7 +791,7 @@ export const useStudent = () => {
     errors,
     setInputs,
     handleChange,
-    isEdit: !!id,
+    isEdit: isEdit,
     handleImageChange,
     filePreview,
     base64String,
@@ -699,5 +835,23 @@ export const useStudent = () => {
     setPrincipalClassName,
     enableStudentStatus,
     disableStudentStatus,
+    getAdmissionNoSettingsLoading,
+    postAdmissionNoSettingsLoading,
+    getAdmissionNoSettings,
+    postAdmissionNoSettings,
+    admSetupPrompt,
+    setAdmSetupPrompt,
+    inputs2,
+    setFieldValue2,
+    getFieldProps2,
+    handleSubmit2,
+    errors2,
+    setInputs2,
+    inputValue,
+    setInputValue,
+    loading1,
+    setLoading1,
+    loadedGen,
+    setLoadedGen,
   };
 };

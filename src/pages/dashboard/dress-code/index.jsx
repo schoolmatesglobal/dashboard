@@ -12,7 +12,9 @@ const DressCode = () => {
     apiServices.getDressCode,
     {
       enabled: ["Teacher", "Student"].includes(user?.designation_name),
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       onError(err) {
         errorHandler(err);
       },

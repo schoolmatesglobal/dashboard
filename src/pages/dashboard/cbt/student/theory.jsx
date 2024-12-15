@@ -67,7 +67,9 @@ const Theory = ({
         createQ2?.week
       ),
     {
-      retry: 3,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,
@@ -81,7 +83,7 @@ const Theory = ({
             dt?.week === createQ2?.week
         );
 
-        console.log({ ggk, sorted, data, student, createQ2 });
+        // console.log({ ggk, sorted, data, student, createQ2 });
 
         if (sorted?.length > 0) {
           // resetLoadObjectiveAnsFxn();
@@ -142,7 +144,7 @@ const Theory = ({
     const theo = theoryAnsweredAssignment?.find(
       (ob) => ob.question === question
     );
-    console.log({ theo });
+    // console.log({ theo });
     if (theo) {
       return theo?.answer;
     } else {
@@ -255,13 +257,13 @@ const Theory = ({
   }
 
   // console.log({ answeredTheoryQ });
-  console.log({
-    theoryQ,
-    answeredTheoryQ,
-    theoryAnsweredAssignment,
-    theorySubmitted,
-    findSubjectId: findSubjectId(),
-  });
+  // console.log({
+  //   theoryQ,
+  //   answeredTheoryQ,
+  //   theoryAnsweredAssignment,
+  //   theorySubmitted,
+  //   findSubjectId: findSubjectId(),
+  // });
   // console.log({ theoryQ });
 
   return (
@@ -316,10 +318,10 @@ const Theory = ({
             <div className='d-flex flex-column my-5 gap-4'>
               {theoryQ
                 ?.sort((a, b) => {
-                  if (a.question_number < b.question_number) {
+                  if (Number(a.question_number) < Number(b.question_number)) {
                     return -1;
                   }
-                  if (a.question_number > b.question_number) {
+                  if (Number(a.question_number) > Number(b.question_number)) {
                     return 1;
                   }
                   return 0;

@@ -14,6 +14,7 @@ import moment from "moment";
 import AuthSelect from "../../../../components/inputs/auth-select";
 import { useState } from "react";
 import { useSkills } from "../../../../hooks/useSkills";
+import { useAuthDetails } from "../../../../stores/authDetails";
 
 const AffectiveDispositionTableRow = ({
   isCompute,
@@ -33,12 +34,12 @@ const AffectiveDispositionTableRow = ({
             <td key={index}>
               {isCompute ? (
                 <input
-                  type="radio"
+                  type='radio'
                   checked={index === value}
                   onChange={() => onChange(index)}
                 />
               ) : index === value ? (
-                <FontAwesomeIcon icon={faCheck} color="green" />
+                <FontAwesomeIcon icon={faCheck} color='green' />
               ) : null}
             </td>
           );
@@ -88,6 +89,8 @@ const EndOfTerm = ({ isCompute = false }) => {
     getScoreRemark,
   } = useResults();
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const isLoading = skillLoading || resultLoading;
 
   const getAddSubjectSelectOptions = () => {
@@ -131,9 +134,9 @@ const EndOfTerm = ({ isCompute = false }) => {
   };
 
   return (
-    <div className="results-sheet">
+    <div className='results-sheet'>
       {user?.designation_name !== "Student" && (
-        <div className="students-wrapper">
+        <div className='students-wrapper'>
           {studentByClassAndSession?.map((x) => (
             <div
               key={x.id}
@@ -141,7 +144,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                 setStudentData(x);
                 setInitGetExistingSecondHalfResult(true);
               }}
-              className="student"
+              className='student'
             >
               <div
                 className={`loader ${isLoading ? "is-loading" : ""} ${
@@ -150,7 +153,7 @@ const EndOfTerm = ({ isCompute = false }) => {
               >
                 <ProfileImage src={x?.image} alt={x.firstname} />
                 {idWithComputedResult.includes(x.id) && (
-                  <div className="computed" />
+                  <div className='computed' />
                 )}
               </div>
               <div>
@@ -163,7 +166,7 @@ const EndOfTerm = ({ isCompute = false }) => {
       )}
       <PageSheet>
         {!isCompute && (
-          <div className="mb-3">
+          <div className='mb-3'>
             <Button
               onClick={() => {
                 if (pdfExportComponent.current) {
@@ -178,41 +181,41 @@ const EndOfTerm = ({ isCompute = false }) => {
 
         <div
           ref={pdfExportComponent}
-          className="first-level-results-sheet end-term"
+          className='first-level-results-sheet end-term'
         >
-          <div className="school-details">
+          <div className='school-details'>
             <div>
-              <div className="image">
+              <div className='image'>
                 {user?.school?.schlogo && (
-                  <img src={user?.school?.schlogo} alt="school" />
+                  <img src={user?.school?.schlogo} alt='school' />
                 )}
               </div>
-              <div className="text">
-                <h3 className="name">{user?.school?.schname}</h3>
+              <div className='text'>
+                <h3 className='name'>{user?.school?.schname}</h3>
                 {user?.school?.schnmotto && (
-                  <p className="motto">({user?.school?.schnmotto})</p>
+                  <p className='motto'>({user?.school?.schnmotto})</p>
                 )}
 
-                <p className="address">{user?.school?.schaddr}</p>
-                <p className="tel">Tel: {user?.school?.schphone}</p>
-                <p className="email">Email: {user?.school?.schemail}</p>
-                <p className="web">Website: {user?.school?.schwebsite}</p>
+                <p className='address'>{user?.school?.schaddr}</p>
+                <p className='tel'>Tel: {user?.school?.schphone}</p>
+                <p className='email'>Email: {user?.school?.schemail}</p>
+                <p className='web'>Website: {user?.school?.schwebsite}</p>
               </div>
-              <div className="image">
+              <div className='image'>
                 {studentData?.image && (
-                  <img src={studentData?.image} alt="student" />
+                  <img src={studentData?.image} alt='student' />
                 )}
               </div>
             </div>
-            <h4 className="title">
+            <h4 className='title'>
               {locationState?.creds?.term} END OF TERM REPORT{" "}
               {locationState?.creds?.session} SESSION
             </h4>
           </div>
-          <div className="student-details">
+          <div className='student-details'>
             <Row>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Pupil's Name:</h5>
                   <h5>
                     {studentData?.firstname} {studentData?.surname}{" "}
@@ -223,19 +226,19 @@ const EndOfTerm = ({ isCompute = false }) => {
             </Row>
             <Row>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Admission No:</h5>
                   <h5>{studentData?.admission_number}</h5>
                 </div>
               </Col>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Date of Birth:</h5>
                   <h5>{studentData?.dob}</h5>
                 </div>
               </Col>
               <Col>
-                <div className="detail">
+                <div className='detail'>
                   <h5>Class: </h5>
                   <h5>
                     {studentData?.present_class} {studentData?.sub_class}
@@ -244,9 +247,9 @@ const EndOfTerm = ({ isCompute = false }) => {
               </Col>
             </Row>
           </div>
-          <div className="attendance-wrapper">
-            <h4 className="title">1. Attendance Record</h4>
-            <div className="table-wrapper">
+          <div className='attendance-wrapper'>
+            <h4 className='title'>1. Attendance Record</h4>
+            <div className='table-wrapper'>
               <Row>
                 <Col>
                   <Table>
@@ -255,9 +258,9 @@ const EndOfTerm = ({ isCompute = false }) => {
                         <td>No. of Times School Opened</td>
                         <td>
                           <input
-                            type="text"
+                            type='text'
                             value={additionalCreds?.school_opened ?? "0"}
-                            className="form-control"
+                            className='form-control'
                             disabled={!isCompute}
                             onChange={({ target: { value } }) => {
                               if (Number.isNaN(Number(value))) return;
@@ -273,9 +276,9 @@ const EndOfTerm = ({ isCompute = false }) => {
                         <td>No. of Times Present</td>
                         <td>
                           <input
-                            type="text"
+                            type='text'
                             value={additionalCreds?.times_present ?? "0"}
-                            className="form-control"
+                            className='form-control'
                             disabled={!isCompute}
                             onChange={({ target: { value } }) => {
                               if (Number.isNaN(Number(value))) return;
@@ -291,9 +294,9 @@ const EndOfTerm = ({ isCompute = false }) => {
                         <td>No. of Times Absent</td>
                         <td>
                           <input
-                            type="text"
+                            type='text'
                             value={additionalCreds?.times_absent ?? "0"}
-                            className="form-control"
+                            className='form-control'
                             disabled={!isCompute}
                             onChange={({ target: { value } }) => {
                               if (Number.isNaN(Number(value))) return;
@@ -325,17 +328,17 @@ const EndOfTerm = ({ isCompute = false }) => {
               </Row>
             </div>
           </div>
-          <div className="results-table-wrapper">
-            <h4 className="title">2. COGNITIVE PERFORMANCE</h4>
+          <div className='results-table-wrapper'>
+            <h4 className='title'>2. COGNITIVE PERFORMANCE</h4>
             <Table>
               <thead>
                 <tr>
                   <th>
-                    <div className="d-flex align-items-center">
+                    <div className='d-flex align-items-center'>
                       SUBJECTS
                       {isCompute && (
                         <Button
-                          className="ms-3"
+                          className='ms-3'
                           onClick={() => setOpenSubjectPrompt(true)}
                         >
                           &#43; Add
@@ -350,9 +353,9 @@ const EndOfTerm = ({ isCompute = false }) => {
                 </tr>
                 <tr>
                   <th>MAXIMUM SCORES</th>
-                  <th>{maxScores?.midterm}</th>
-                  <th>{maxScores?.exam}</th>
-                  <th>{maxScores?.total}</th>
+                  <th>{userDetails?.maxScores?.midterm}</th>
+                  <th>{userDetails?.maxScores?.exam}</th>
+                  <th>{userDetails?.maxScores?.total}</th>
                   {!isCompute && <th>EXCELLENT</th>}
                 </tr>
                 <tr>
@@ -367,11 +370,11 @@ const EndOfTerm = ({ isCompute = false }) => {
                 {subjects?.map((s, index) => (
                   <tr key={index}>
                     <td>
-                      <div className="d-flex align-items-center">
+                      <div className='d-flex align-items-center'>
                         {isCompute && (
                           <Button
-                            variant="danger"
-                            className="me-3"
+                            variant='danger'
+                            className='me-3'
                             onClick={() => removeSubject(s.subject)}
                           >
                             &#8722;
@@ -386,14 +389,14 @@ const EndOfTerm = ({ isCompute = false }) => {
                     </td>
                     <td>
                       <input
-                        type="text"
+                        type='text'
                         value={s.grade}
-                        className="form-control"
+                        className='form-control'
                         disabled={!isCompute}
                         onChange={({ target: { value } }) => {
                           if (Number.isNaN(Number(value))) return;
 
-                          if (Number(value) > Number(maxScores?.exam)) return;
+                          if (Number(value) > Number(userDetails?.maxScores?.exam)) return;
 
                           const fd = subjects.map((su) => ({
                             ...su,
@@ -466,15 +469,15 @@ const EndOfTerm = ({ isCompute = false }) => {
               </tfoot>
             </Table>
           </div>
-          <div className="mb-5 socials-wrapper">
+          <div className='mb-5 socials-wrapper'>
             <Row>
               <Col>
-                <h4 className="title">3. AFFECTIVE DISPOSITION</h4>
+                <h4 className='title'>3. AFFECTIVE DISPOSITION</h4>
                 <Table>
                   <thead>
                     <tr>
                       <th>Behaviours</th>
-                      <th colSpan="5">Remarks</th>
+                      <th colSpan='5'>Remarks</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -488,7 +491,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     </tr>
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Attentiveness"
+                      title='Attentiveness'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("attentiveness")
@@ -504,7 +507,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Cooperation with others"
+                      title='Cooperation with others'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("coorperation")
@@ -520,7 +523,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Emotional Stability"
+                      title='Emotional Stability'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("emotionalStability")
@@ -536,7 +539,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Helping others"
+                      title='Helping others'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("helpingOthers")
@@ -552,7 +555,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Honesty"
+                      title='Honesty'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("honesty")
@@ -568,7 +571,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Leadership"
+                      title='Leadership'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("leadership")
@@ -584,7 +587,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Neatness"
+                      title='Neatness'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("neatness")
@@ -600,7 +603,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Perseverance"
+                      title='Perseverance'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("perseverance")
@@ -616,7 +619,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Politeness"
+                      title='Politeness'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("politeness")
@@ -632,7 +635,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Punctuality"
+                      title='Punctuality'
                       value={
                         additionalCreds?.affective_disposition?.find((x) =>
                           Object.keys(x).includes("punctuality")
@@ -650,12 +653,12 @@ const EndOfTerm = ({ isCompute = false }) => {
                 </Table>
               </Col>
               <Col>
-                <h4 className="title">4. PSYCHOMOTOR SKILLS</h4>
+                <h4 className='title'>4. PSYCHOMOTOR SKILLS</h4>
                 <Table>
                   <thead>
                     <tr>
                       <th>Behaviours</th>
-                      <th colSpan="5">Remarks</th>
+                      <th colSpan='5'>Remarks</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -669,7 +672,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     </tr>
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Handling Tools"
+                      title='Handling Tools'
                       value={
                         additionalCreds?.psychomotor_skills?.find((x) =>
                           Object.keys(x).includes("handlingTools")
@@ -685,7 +688,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Games"
+                      title='Games'
                       value={
                         additionalCreds?.psychomotor_skills?.find((x) =>
                           Object.keys(x).includes("games")
@@ -701,7 +704,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Music"
+                      title='Music'
                       value={
                         additionalCreds?.psychomotor_skills?.find((x) =>
                           Object.keys(x).includes("music")
@@ -717,7 +720,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Sports"
+                      title='Sports'
                       value={
                         additionalCreds?.psychomotor_skills?.find((x) =>
                           Object.keys(x).includes("sports")
@@ -733,7 +736,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                     <AffectiveDispositionTableRow
                       isCompute={isCompute}
-                      title="Verbal Fluency"
+                      title='Verbal Fluency'
                       value={
                         additionalCreds?.psychomotor_skills?.find((x) =>
                           Object.keys(x).includes("verbalFluency")
@@ -749,33 +752,33 @@ const EndOfTerm = ({ isCompute = false }) => {
                     />
                   </tbody>
                 </Table>
-                <p className="text-center">
+                <p className='text-center'>
                   Keys: 5 = Excellent 4 = Good 3 = Fair 2 = Poor 1 = Very Poor
                 </p>
               </Col>
             </Row>
           </div>
-          <div className="results-remark">
+          <div className='results-remark'>
             <table>
               <tbody>
                 <tr>
-                  <td colSpan="6">Teacher's Comment</td>
+                  <td colSpan='6'>Teacher's Comment</td>
                 </tr>
                 <tr>
-                  <td colSpan="6">
+                  <td colSpan='6'>
                     {isCompute ||
                     user?.designation_name?.toLowerCase() === "principal" ? (
                       <>
                         <textarea
-                          className="form-control"
-                          type="text"
+                          className='form-control'
+                          type='text'
                           value={teacherComment}
                           onChange={({ target: { value } }) =>
                             setTeacherComment(value)
                           }
                         />
                         <button
-                          className="btn btn-primary"
+                          className='btn btn-primary'
                           onClick={() => {
                             setComment("teacher");
                             setOpenPrompt(true);
@@ -792,7 +795,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                 {!isCompute && (
                   <tr>
                     <td>Name:</td>
-                    <td className="text-capitalize">
+                    <td className='text-capitalize'>
                       {additionalCreds?.teacher_fullname}
                     </td>
                     <td>Sign:</td>
@@ -803,25 +806,25 @@ const EndOfTerm = ({ isCompute = false }) => {
                 )}
 
                 <tr>
-                  <td colSpan="6" />
+                  <td colSpan='6' />
                 </tr>
                 <tr>
-                  <td colSpan="6">HOS's Comment</td>
+                  <td colSpan='6'>HOS's Comment</td>
                 </tr>
                 <tr>
-                  <td colSpan="6">
+                  <td colSpan='6'>
                     {isCompute ||
                     user?.designation_name?.toLowerCase() === "principal" ? (
                       <>
                         <textarea
-                          className="form-control"
+                          className='form-control'
                           value={hosComment}
                           onChange={({ target: { value } }) =>
                             setHosComment(value)
                           }
                         />
                         <button
-                          className="btn btn-primary"
+                          className='btn btn-primary'
                           onClick={() => {
                             setComment("hos");
                             setOpenPrompt(true);
@@ -838,7 +841,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                 {!isCompute && (
                   <tr>
                     <td>Name:</td>
-                    <td className="text-capitalize">
+                    <td className='text-capitalize'>
                       {additionalCreds?.hos_fullname}
                     </td>
                     <td>Sign:</td>
@@ -852,7 +855,7 @@ const EndOfTerm = ({ isCompute = false }) => {
           </div>
           {(isCompute ||
             user?.designation_name?.toLowerCase() === "principal") && (
-            <div className="mt-3 d-flex justify-content-end">
+            <div className='mt-3 d-flex justify-content-end'>
               <ButtonGroup
                 options={[
                   {
@@ -889,14 +892,14 @@ const EndOfTerm = ({ isCompute = false }) => {
                 setSelectedComment("");
               },
             }}
-            singleButtonText="Continue"
-            promptHeader="Select Comment"
+            singleButtonText='Continue'
+            promptHeader='Select Comment'
           >
             {comments?.map((x, index) => (
-              <div key={index} className="modal-result-comment-select-options">
+              <div key={index} className='modal-result-comment-select-options'>
                 <input
-                  type="radio"
-                  name="selectedComment"
+                  type='radio'
+                  name='selectedComment'
                   onChange={({ target: { value } }) =>
                     setSelectedComment(value)
                   }
@@ -915,8 +918,8 @@ const EndOfTerm = ({ isCompute = false }) => {
               disabled: false,
               onClick: () => setOpenSubjectPrompt(false),
             }}
-            singleButtonText="OK"
-            promptHeader="Add Subject"
+            singleButtonText='OK'
+            promptHeader='Add Subject'
           >
             <AuthSelect
               advanced

@@ -25,6 +25,7 @@ import { useLocation } from "react-router-dom";
 import { parseDuration, toSentenceCase } from "./constant";
 import CreateSettings from "./createSettings";
 import GoBack from "../../../components/common/go-back";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const CreateCBT = (
   {
@@ -59,10 +60,12 @@ const CreateCBT = (
     errorHandler,
     permission,
     user,
-    subjectsByTeacher,
+    // subjectsByTeacher,
   } = useCBT();
 
   const { state } = useLocation();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const isDesktop = useMediaQuery({ query: "(max-width: 988px)" });
   const isTablet = useMediaQuery({
@@ -205,12 +208,9 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
-      // refetchInterval: false,
-      // refetchIntervalInBackground: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
 
       // enabled: false,
       enabled:
@@ -228,7 +228,7 @@ const CreateCBT = (
 
         // const filtCbt = cbt?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ data, cbt });
+        // console.log({ data, cbt });
 
         return cbt ?? {};
       },
@@ -278,8 +278,10 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 2,
-      // refetchOnMount: false,
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
       // refetchInterval: false,
@@ -293,7 +295,7 @@ const CreateCBT = (
 
         const filtAsg = asg?.filter((as) => as.subject_id === subject_id) ?? [];
 
-        console.log({ asg, data, filtAsg });
+        // console.log({ asg, data, filtAsg });
         // const asg2 =  asg?.length > 0 ? [...asg] : [];
         if (question_type === "objective") {
           return filtAsg?.map((ag, i) => {
@@ -771,21 +773,21 @@ const CreateCBT = (
     { value: "Art and Craft", title: "Art and Craft", id: "5" },
   ];
 
-  useEffect(() => {
-    if (subjectsByTeacher?.length > 0) {
-      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+  // useEffect(() => {
+  //   if (subjectsByTeacher?.length > 0) {
+  //     const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+  //       const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-        return {
-          value: subId,
-          title: sb?.name,
-        };
-      });
-      setNewSubjects(sbb2);
-    } else {
-      setNewSubjects([]);
-    }
-  }, [subjectsByTeacher]);
+  //       return {
+  //         value: subId,
+  //         title: sb?.name,
+  //       };
+  //     });
+  //     setNewSubjects(sbb2);
+  //   } else {
+  //     setNewSubjects([]);
+  //   }
+  // }, [subjectsByTeacher]);
 
   const settingsAdded = () => {
     if (
@@ -816,15 +818,9 @@ const CreateCBT = (
   }, [published]);
 
   console.log({
-    cbtSettings,
-    createQ,
     objectiveQ,
-    ab: settingsAdded(),
-    subject_id,
     // subjectsByTeacher,
-    state,
-    // subjects,
-    // newSubjects,
+    userDetails,
   });
 
   return (
@@ -848,7 +844,8 @@ const CreateCBT = (
             >
               <AuthSelect
                 sort
-                options={newSubjects}
+                options={userDetails?.teacherSubjects}
+                // options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setCreateQ((prev) => {
@@ -971,10 +968,10 @@ const CreateCBT = (
               <div className='d-flex flex-column my-5 gap-3'>
                 {objectiveQ
                   ?.sort((a, b) => {
-                    if (a.question_number < b.question_number) {
+                    if (Number(a.question_number) < Number(b.question_number)) {
                       return -1;
                     }
-                    if (a.question_number > b.question_number) {
+                    if (Number(a.question_number) > Number(b.question_number)) {
                       return 1;
                     }
                     return 0;
@@ -1013,10 +1010,10 @@ const CreateCBT = (
               <div className='d-flex flex-column my-5 gap-3'>
                 {theoryQ
                   ?.sort((a, b) => {
-                    if (a.question_number < b.question_number) {
+                    if (Number(a.question_number) < Number(b.question_number)) {
                       return -1;
                     }
-                    if (a.question_number > b.question_number) {
+                    if (Number(a.question_number) > Number(b.question_number)) {
                       return 1;
                     }
                     return 0;

@@ -32,7 +32,7 @@ const DownloadDetail = () => {
   });
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
-  console.log({ id });
+  // console.log({ id });
 
   return (
     <div>

@@ -32,21 +32,40 @@ import {
   faSquarePollVertical,
   faBookBookmark,
   faEnvelopeOpenText,
+  faChalkboardUser,
 } from "@fortawesome/free-solid-svg-icons";
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
+// const url1 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
+const url1 = "https://staging.sapsms.com/api";
+//const url2 = "https://dashboard.sapsms.com/api";
+const url2 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api"
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
     return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (
+    window.location.href.includes("https://goshenpillarsportal.schoolmateglobal.com")
+  ) {
+    return "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
+  } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
+    return url2;
+  } else {
+    return url2;
+  }
+})();
+
+export const isProductionCheck = (function () {
+  if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
+    return true; // Update with your development API URL
+  } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return "https://dashboard.sapsms.com/api";
+    return true;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return "https://staging.sapsms.com/api";
+    return true;
   } else {
-    return "https://staging.sapsms.com/api";
+    return false;
   }
 })();
 
@@ -133,6 +152,11 @@ export const dashboardSideBarLinks = {
       to: "/app/lesson-note",
       title: "Lesson Note",
       icon: faBookBookmark,
+    },
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
     },
     {
       to: "/app/students",
@@ -247,7 +271,11 @@ export const dashboardSideBarLinks = {
       title: "Lesson Note",
       icon: faBookBookmark,
     },
-
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
+    },
     {
       to: "/app/students",
       title: "Students",
@@ -341,6 +369,11 @@ export const dashboardSideBarLinks = {
       to: "/app/students",
       title: "Students",
       icon: faGraduationCap,
+    },
+    {
+      to: "/app/flip-class",
+      title: "Flip Class",
+      icon: faChalkboardUser,
     },
     {
       to: "/app/vehicles",

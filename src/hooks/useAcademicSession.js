@@ -8,6 +8,9 @@ export const useAcademicSession = () => {
     [queryKeys.GET_ACADEMIC_SESSIONS],
     apiServices.getAcademicSessions,
     {
+      retry: 1,
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
       select: (data) => {
         // console.log({ datam: data });
         return data?.data;
