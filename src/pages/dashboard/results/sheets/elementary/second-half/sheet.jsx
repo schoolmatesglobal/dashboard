@@ -590,7 +590,8 @@ const ElementarySecondHalfSheet = () => {
                       whiteSpace: "wrap",
                     }}
                   >
-                    {studentData?.present_class} {studentData?.sub_class}
+                    {additionalCreds?.class_name}
+                    {/* {studentData?.present_class} {studentData?.sub_class} */}
                   </h4>
                 </div>
                 <div className='table-data' style={{ width: "20%" }}>
@@ -1028,8 +1029,6 @@ const ElementarySecondHalfSheet = () => {
                       // if (totalScores === 0) {
                       //   return;
                       // }
-
-                     
 
                       return (
                         <div className='' key={index}>
