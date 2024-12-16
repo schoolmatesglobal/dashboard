@@ -324,12 +324,12 @@ const ElementarySecondHalfSheet = () => {
     setStatus(additionalCreds?.status);
   }, [additionalCreds?.status, studentData]);
 
-  const newStudentMidterm = studentMidterm?.length > 0 ? studentMidterm : []
+  const newStudentMidterm = studentMidterm?.length > 0 ? studentMidterm : [];
 
   console.log({
     // user,
     // maxScores,
-    
+
     // status,
     // calcClassAverage,
     // studentData,
