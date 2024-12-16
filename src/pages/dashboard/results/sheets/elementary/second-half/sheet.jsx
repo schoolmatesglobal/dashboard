@@ -324,6 +324,8 @@ const ElementarySecondHalfSheet = () => {
     setStatus(additionalCreds?.status);
   }, [additionalCreds?.status, studentData]);
 
+  const newStudentMidterm = studentMidterm?.length > 0 ? studentMidterm : []
+
   console.log({
     // user,
     // maxScores,
@@ -332,6 +334,7 @@ const ElementarySecondHalfSheet = () => {
     // calcClassAverage,
     // studentData,
     studentMidterm,
+    newStudentMidterm,
     removeZeroMidterm: removeZeroMidterm(),
     userDetails,
     additionalCreds,
@@ -1175,7 +1178,7 @@ const ElementarySecondHalfSheet = () => {
                                       )?.remark
                                     : getScoreRemark(
                                         Number(
-                                          studentMidterm?.find(
+                                          newStudentMidterm?.find(
                                             (x) => x.subject === s.subject
                                           )?.score ?? 0
                                         ) + Number(s.score)
