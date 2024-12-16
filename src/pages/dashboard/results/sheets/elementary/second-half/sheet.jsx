@@ -325,13 +325,13 @@ const ElementarySecondHalfSheet = () => {
   }, [additionalCreds?.status, studentData]);
 
   console.log({
-    studentMidterm,
     // user,
     // maxScores,
-
+    
     // status,
     // calcClassAverage,
     // studentData,
+    studentMidterm,
     removeZeroMidterm: removeZeroMidterm(),
     userDetails,
     additionalCreds,
