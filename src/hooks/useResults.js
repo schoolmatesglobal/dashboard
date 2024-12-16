@@ -85,12 +85,13 @@ export const useResults = () => {
   });
 
   const teacherSubjects =
-    user?.designation_name === "Teacher" &&
-    user?.subjects?.map((x) => ({
-      subject: x.name,
-      score: "0",
-      grade: "0",
-    }));
+    user?.designation_name === "Teacher"
+      ? user?.subjects?.map((x) => ({
+          subject: x.name,
+          score: "0",
+          grade: "0",
+        }))
+      : [];
 
   // console.log({ user });
   // console.log({ initGetStudentsByClass, subjects });
@@ -198,11 +199,11 @@ export const useResults = () => {
         select: (data) => {
           const dt2 = apiServices.formatData(data);
 
-          console.log({
-            dataSS: data,
-            user,
-            dt2,
-          });
+          // console.log({
+          //   dataSS: data,
+          //   user,
+          //   dt2,
+          // });
 
           if (dt2?.length > 0) {
             const sst2 = dt2?.find((x) => x?.id === user?.id) ?? {};
@@ -212,10 +213,10 @@ export const useResults = () => {
                 ? dt2?.find((x) => x?.id === user?.id)
                 : dt2[0];
 
-            console.log({
-              studentInfo,
-              sst2,
-            });
+            // console.log({
+            //   studentInfo,
+            //   sst2,
+            // });
 
             return studentInfo;
           }
@@ -356,7 +357,7 @@ export const useResults = () => {
             });
           };
 
-          console.log({ data, studentResult, res });
+          // console.log({ data, studentResult, res });
 
           setAdditionalCreds({
             ...additionalCreds,
@@ -575,7 +576,8 @@ export const useResults = () => {
       [queryKeys.GET_CLASS_AVERAGE, studentClassName, state?.creds?.session],
       () =>
         apiServices.getYearlyClassAverage({
-          class_name: studentClassName,
+          class_name: additionalCreds?.class_name,
+          // class_name: studentClassName,
           session: state?.creds?.session,
         }),
       {
@@ -584,7 +586,7 @@ export const useResults = () => {
         refetchOnWindowFocus: false,
         enabled:
           !is_preschool &&
-          Boolean(studentClassName) &&
+          Boolean(additionalCreds?.class_name) &&
           state?.creds?.term === "Third Term" &&
           state?.creds?.period === "Second Half",
       }
@@ -610,8 +612,45 @@ export const useResults = () => {
       refetchOnWindowFocus: false,
       enabled: initGetSubjects && !is_preschool,
       select(data) {
-        // console.log({ kdata2: data });
-        return apiServices.formatData(data);
+        const st = apiServices.formatData(data);
+
+        const subj = st[0]?.subject?.map((x) => ({
+          subject: x.name,
+          score: "0",
+          grade: "0",
+        }));
+
+        const fss =
+          // user?.designation_name === "Teacher" &&
+          teacherSubjects?.length > 0
+            ? subj?.filter((sg) => {
+                let sub = {};
+
+                teacherSubjects?.forEach((ss) => {
+                  if (ss?.subject === sg?.subject) {
+                    sub = ss;
+                  }
+                });
+                return sg.subject === sub?.subject;
+              })
+            : [];
+
+        const filteredSubj =
+          user?.teacher_type === "class teacher"
+            ? subj
+            : user?.designation_id === "1"
+            ? subj
+            : fss;
+
+        console.log({
+          kdata2: data,
+          user,
+          st,
+          teacherSubjects,
+          fss,
+          filteredSubj,
+        });
+        return st;
       },
       onSuccess(data) {
         // console.log({ kdata: data });
@@ -624,27 +663,34 @@ export const useResults = () => {
           }));
 
           const fss =
-            user?.designation_name === "Teacher" &&
-            subj?.filter((sg) => {
-              let sub = {};
-              teacherSubjects?.forEach((ss) => {
-                if (ss?.subject === sg?.subject) {
-                  sub = ss;
-                }
-              });
-              return sg.subject === sub?.subject;
-            });
+            // user?.designation_name === "Teacher" &&
+            teacherSubjects?.length > 0
+              ? subj?.filter((sg) => {
+                  let sub = {};
+
+                  teacherSubjects?.forEach((ss) => {
+                    if (ss?.subject === sg?.subject) {
+                      sub = ss;
+                    }
+                  });
+                  return sg.subject === sub?.subject;
+                })
+              : [];
 
           const filteredSubj =
-            user?.teacher_type === "class teacher" ? subj : fss;
+            user?.teacher_type === "class teacher"
+              ? subj
+              : user?.designation_id === "1"
+              ? subj
+              : fss;
 
           // console.log({ allsub: data, filteredSubj });
 
-          setFilteredSubjects(filteredSubj);
+          setFilteredSubjects(filteredSubj ?? []);
 
           setSubjects(filteredSubj ?? []);
 
-          // console.log({ dataSS: data, subj });
+          console.log({ dataSS: data, subj, fss });
         } else {
           setSubjects([]);
         }
@@ -1166,7 +1212,7 @@ export const useResults = () => {
         state?.creds?.period === "Second Half",
       select(data) {
         const kt = apiServices.formatData(data);
-        console.log({ kdata3: data, kt });
+        console.log({ kdata3: data, kt, filteredSubjects });
         return kt;
       },
       onSuccess(data) {
@@ -1211,27 +1257,27 @@ export const useResults = () => {
               studentResult.length === 0
             ) {
               return filteredSubjects;
+            } else {
+              return filteredSubjects.map((subject) => {
+                const result = studentResult.find(
+                  (r) => r.subject === subject.subject
+                );
+
+                if (result) {
+                  return {
+                    subject: result.subject,
+                    score: result.score,
+                    grade: result.grade,
+                  };
+                } else {
+                  return {
+                    subject: subject.subject,
+                    score: subject.score,
+                    grade: subject.grade,
+                  };
+                }
+              });
             }
-
-            return filteredSubjects.map((subject) => {
-              const result = studentResult.find(
-                (r) => r.subject === subject.subject
-              );
-
-              if (result) {
-                return {
-                  subject: result.subject,
-                  score: result.score,
-                  grade: result.grade,
-                };
-              } else {
-                return {
-                  subject: subject.subject,
-                  score: subject.score,
-                  grade: subject.grade,
-                };
-              }
-            });
           };
 
           // console.log({
@@ -1250,6 +1296,7 @@ export const useResults = () => {
 
           setSubjects(mergeSubjectAndResult2() ?? []);
 
+          // setStudentMidterm([]);
           setStudentMidterm(mergeSubjectAndResult2() ?? []);
           // console.log({
           //   pdata: data,
@@ -1258,6 +1305,7 @@ export const useResults = () => {
           //   studentResult,
           //   studentData,
           //   studentMidterm,
+          //   filteredSubjects,
           //   mergeSubjectAndResult3: mergeSubjectAndResult2(),
           // });
         }
@@ -1677,7 +1725,7 @@ export const useResults = () => {
   //   addResult(dataToSend);
   // };
 
-  console.log({ state, studentData, user, studentId: studentId(), className });
+  // console.log({ state, studentData, user, studentId: studentId(), className });
 
   const isLoading =
     academicDateLoading ||

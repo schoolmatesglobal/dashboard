@@ -449,7 +449,8 @@ const ElementaryFirstHalfSheet = () => {
                     >
                       Class:
                     </span>{" "}
-                    {`${studentData?.present_class} ${studentData?.sub_class}`}
+                    {additionalCreds?.class_name}
+                    {/* {`${studentData?.present_class} ${studentData?.sub_class}`} */}
                   </h4>
                 </div>
               </div>
