@@ -138,13 +138,27 @@ const ElementarySecondHalfSheet = () => {
   const [cumTotalScore, setCumTotalScore] = useState([]);
 
   const removeZeroFirstAssess = () => {
-    return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentFirstAssess?.length > 0) {
+      return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
   const removeZeroSecondAssess = () => {
-    return studentSecondAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentSecondAssess?.length > 0) {
+      return studentSecondAssess?.filter(
+        (fa) => fa.score != 0 && fa.grade != 0
+      );
+    } else {
+      return [];
+    }
   };
   const removeZeroMidterm = () => {
-    return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (studentMidterm?.length > 0) {
+      return studentMidterm?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    } else {
+      return [];
+    }
   };
 
   const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
@@ -311,15 +325,16 @@ const ElementarySecondHalfSheet = () => {
   }, [additionalCreds?.status, studentData]);
 
   console.log({
-    studentMidterm,
     // user,
     // maxScores,
-
+    
     // status,
     // calcClassAverage,
     // studentData,
+    studentMidterm,
     removeZeroMidterm: removeZeroMidterm(),
-    // additionalCreds,
+    userDetails,
+    additionalCreds,
     // studentMidterm,
 
     // studentByClass2,
@@ -575,7 +590,8 @@ const ElementarySecondHalfSheet = () => {
                       whiteSpace: "wrap",
                     }}
                   >
-                    {studentData?.present_class} {studentData?.sub_class}
+                    {additionalCreds?.class_name}
+                    {/* {studentData?.present_class} {studentData?.sub_class} */}
                   </h4>
                 </div>
                 <div className='table-data' style={{ width: "20%" }}>
@@ -1013,8 +1029,6 @@ const ElementarySecondHalfSheet = () => {
                       // if (totalScores === 0) {
                       //   return;
                       // }
-
-                      console.log({ mAssess });
 
                       return (
                         <div className='' key={index}>

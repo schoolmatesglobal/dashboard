@@ -178,7 +178,6 @@ export const useStudent = () => {
           };
         });
 
-        console.log({ std: data, format });
 
         return { ...data, data: format };
       },

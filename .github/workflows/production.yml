@@ -6,20 +6,20 @@ name: 🚀 Deploy to live
 jobs:
   web-deploy:
     name: 🎉 Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: '20'
       
     - name: 🔨 Build Project
       run: |
         npm install
-        npm run build 2>/dev/null
+        npm run build --verbose
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
