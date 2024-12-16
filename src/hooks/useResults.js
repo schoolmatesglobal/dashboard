@@ -575,7 +575,8 @@ export const useResults = () => {
       [queryKeys.GET_CLASS_AVERAGE, studentClassName, state?.creds?.session],
       () =>
         apiServices.getYearlyClassAverage({
-          class_name: studentClassName,
+          class_name: additionalCreds?.class_name,
+          // class_name: studentClassName,
           session: state?.creds?.session,
         }),
       {
@@ -584,7 +585,7 @@ export const useResults = () => {
         refetchOnWindowFocus: false,
         enabled:
           !is_preschool &&
-          Boolean(studentClassName) &&
+          Boolean(additionalCreds?.class_name) &&
           state?.creds?.term === "Third Term" &&
           state?.creds?.period === "Second Half",
       }
