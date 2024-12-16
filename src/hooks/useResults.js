@@ -260,7 +260,7 @@ export const useResults = () => {
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
-        // console.log({ pdata: data, state });
+        // console.log({ pkdata: data, state });
         return apiServices.formatData(data)?.map((obj, index) => {
           const newObj = { ...obj };
           newObj.new_id = index + 1;
@@ -300,7 +300,11 @@ export const useResults = () => {
         initGetExistingSecondHalfResult &&
         !is_preschool &&
         state?.creds?.period === "Second Half",
-      select: apiServices.formatData,
+      select(data) {
+        const tt = apiServices.formatData(data);
+        console.log({ data, tt });
+        return tt;
+      },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
       refetchOnReconnect: false,
@@ -635,12 +639,13 @@ export const useResults = () => {
               })
             : [];
 
-        const filteredSubj =
-          user?.teacher_type === "class teacher"
-            ? subj
-            : user?.designation_id === "1"
-            ? subj
-            : fss;
+        const filteredSubj = user?.designation_name === "Teacher" ? fss : subj;
+        // const filteredSubj =
+        //   user?.teacher_type === "class teacher"
+        //     ? subj
+        //     : user?.designation_id === "1"
+        //     ? subj
+        //     : fss;
 
         console.log({
           kdata2: data,
@@ -1212,7 +1217,66 @@ export const useResults = () => {
         state?.creds?.period === "Second Half",
       select(data) {
         const kt = apiServices.formatData(data);
-        console.log({ kdata3: data, kt, filteredSubjects });
+
+        const res = kt?.find(
+          (x) =>
+            x.student_id === studentId() &&
+            x.term === state?.creds?.term &&
+            state?.creds?.session === x.session
+          // x.period === "Second Half"
+        );
+
+        const studentResult = res?.results?.map((x) => ({
+          subject: x.subject,
+          score: x.score,
+          grade: x.score,
+        }));
+
+        const mergeSubjectAndResult2 = () => {
+          if (
+            !filteredSubjects ||
+            !studentResult ||
+            filteredSubjects.length === 0 ||
+            studentResult.length === 0
+          ) {
+            return filteredSubjects;
+          } else {
+            return filteredSubjects.map((subject) => {
+              const result = studentResult.find(
+                (r) => r.subject === subject.subject
+              );
+
+              if (result) {
+                return {
+                  subject: result.subject,
+                  score: result.score,
+                  grade: result.grade,
+                };
+              } else {
+                return {
+                  subject: subject.subject,
+                  score: subject.score,
+                  grade: subject.grade,
+                };
+              }
+            });
+          }
+        };
+
+        const mt =
+          user?.designation_name === "Teacher"
+            ? mergeSubjectAndResult2()
+            : studentResult;
+
+        console.log({
+          kdata3: data,
+          kt,
+          filteredSubjects,
+          mergeSubjectAndResult2: mergeSubjectAndResult2(),
+          mt,
+          studentResult,
+        });
+
         return kt;
       },
       onSuccess(data) {
@@ -1240,15 +1304,6 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          setAdditionalCreds({
-            ...additionalCreds,
-            ...res,
-            status: res?.status,
-
-            // ...res,
-          });
-
-          // console.log({ dataM: data, ids, studentResult });
           const mergeSubjectAndResult2 = () => {
             if (
               !filteredSubjects ||
@@ -1280,24 +1335,15 @@ export const useResults = () => {
             }
           };
 
-          // console.log({
-          //   dataM: data,
-          //   ids,
-          //   studentResult,
-          //   mergeSubjectAndResult2: mergeSubjectAndResult2(),
-          // });
+          const mt =
+            user?.designation_name === "Teacher"
+              ? mergeSubjectAndResult2()
+              : studentResult;
 
-          if (state?.creds?.period === "Second Half") {
-            setAdditionalCreds({
-              ...additionalCreds,
-              ...res,
-            });
-          }
-
-          setSubjects(mergeSubjectAndResult2() ?? []);
+          setSubjects(mt ?? []);
 
           // setStudentMidterm([]);
-          setStudentMidterm(mergeSubjectAndResult2() ?? []);
+          setStudentMidterm(mt ?? []);
           // console.log({
           //   pdata: data,
           //   idWithComputedResult,
@@ -1534,7 +1580,7 @@ export const useResults = () => {
   //   return res;
   // };
   const getScoreRemark = (score) => {
-    const res = grading.find(
+    const res = grading?.find(
       (x) => score >= Number(x.score_from) && score <= Number(x.score_to)
     );
 

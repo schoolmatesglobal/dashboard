@@ -93,7 +93,7 @@ const Results = () => {
 
   const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
-  // console.log({user})
+  console.log({user})
 
   const promptMapper = {
     compute: {
