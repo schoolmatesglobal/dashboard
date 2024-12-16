@@ -38,16 +38,16 @@ import {
 // export const backendAPI = process.env.REACT_APP_API_URL;
 // const url1 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
 const url1 = "https://staging.sapsms.com/api";
-const url2 = "https://dashboard.sapsms.com/api";
-// const url2 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api"
+//const url2 = "https://dashboard.sapsms.com/api";
+const url2 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api"
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return url1; // Update with your development API URL
+    return "https://staging.sapsms.com/api"; // Update with your development API URL
   } else if (
-    window.location.href.includes("https://portal.schoolmateglobal.com")
+    window.location.href.includes("https://goshenpillarsportal.schoolmateglobal.com")
   ) {
-    return url2;
+    return "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
     return url2;
   } else {
