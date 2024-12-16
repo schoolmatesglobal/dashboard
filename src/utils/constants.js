@@ -31,7 +31,6 @@ import {
   faSquarePollHorizontal,
   faSquarePollVertical,
   faBookBookmark,
-  faQrcode,
   faEnvelopeOpenText,
   faChalkboardUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -139,7 +138,6 @@ export const dashboardSideBarLinks = {
       title: "Skills",
       icon: faBalanceScale,
     },
-
     {
       to: "/app/reporting",
       title: "Reports",
@@ -179,11 +177,6 @@ export const dashboardSideBarLinks = {
       to: "/app/activities2",
       title: "Extra_Curricular",
       icon: faPersonSwimming,
-    },
-    {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
     },
     {
       to: "/app/vehicles",
@@ -236,11 +229,6 @@ export const dashboardSideBarLinks = {
       icon: faGraduationCap,
     },
     {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
-    },
-    {
       to: "/app/vehicles",
       title: "Vehicles",
       icon: faTruck,
@@ -256,11 +244,6 @@ export const dashboardSideBarLinks = {
       to: "/app/teachers",
       title: "Home",
       icon: faHome,
-    },
-    {
-      to: "/app/scan-codes",
-      title: "Scan",
-      icon: faQrcode,
     },
     {
       to: "/app/attendance",
@@ -329,11 +312,6 @@ export const dashboardSideBarLinks = {
       to: "/app/results",
       title: "Results",
       icon: faBuildingColumns,
-    },
-    {
-      to: "/app/qr-codes",
-      title: "QR Codes",
-      icon: faQrcode,
     },
     {
       to: "/app/broadsheet",
