@@ -1304,15 +1304,6 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          setAdditionalCreds({
-            ...additionalCreds,
-            ...res,
-            status: res?.status,
-
-            // ...res,
-          });
-
-          // console.log({ dataM: data, ids, studentResult });
           const mergeSubjectAndResult2 = () => {
             if (
               !filteredSubjects ||
@@ -1348,20 +1339,6 @@ export const useResults = () => {
             user?.designation_name === "Teacher"
               ? mergeSubjectAndResult2()
               : studentResult;
-
-          // console.log({
-          //   dataM: data,
-          //   ids,
-          //   studentResult,
-          //   mergeSubjectAndResult2: mergeSubjectAndResult2(),
-          // });
-
-          // if (state?.creds?.period === "Second Half") {
-          //   setAdditionalCreds({
-          //     ...additionalCreds,
-          //     ...res,
-          //   });
-          // }
 
           setSubjects(mt ?? []);
 
