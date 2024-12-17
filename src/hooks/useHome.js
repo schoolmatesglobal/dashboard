@@ -181,6 +181,7 @@ export const useHome = () => {
       },
       select: (data) => {
         const dt = data?.data;
+        // const kt = formatData(data);
         console.log({ scoreData: data, dt });
         // console.log({ datam: data });
         return dt;

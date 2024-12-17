@@ -57,6 +57,11 @@ export const useResults = () => {
     }, time);
   }
 
+  const hasOneAssess =
+    userDetails?.maxScores?.has_two_assessment === 0 ||
+    userDetails?.maxScores?.has_two_assessment === false ||
+    userDetails?.maxScores?.has_two_assessment === "false";
+
   const { state } = useLocation();
   const studentClassName = `${studentData?.present_class}`;
   // const studentClassName = `${studentData?.present_class} ${studentData?.sub_class}`;
@@ -302,7 +307,15 @@ export const useResults = () => {
         state?.creds?.period === "Second Half",
       select(data) {
         const tt = apiServices.formatData(data);
-        console.log({ data, tt });
+        console.log({
+          hasOneAssess,
+          data,
+          tt,
+          state,
+          user,
+          is_preschool,
+          userDetails,
+        });
         return tt;
       },
       refetchOnWindowFocus: false,
@@ -738,7 +751,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 1 &&
+        !hasOneAssess &&
         inputs.assessment === "first_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -856,7 +869,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 1 &&
+        !hasOneAssess &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -917,7 +930,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 1 &&
+        !hasOneAssess &&
         inputs.assessment === "second_assesment" &&
         state?.creds?.period === "First Half",
       select: apiServices.formatData,
@@ -1035,7 +1048,7 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 1 &&
+        !hasOneAssess &&
         state?.creds?.period === "Second Half",
       select: apiServices.formatData,
       onSuccess(data) {
@@ -1097,12 +1110,11 @@ export const useResults = () => {
       refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
-        !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 0 &&
-        state?.creds?.period === "First Half",
+        !is_preschool && hasOneAssess && state?.creds?.period === "First Half",
       select(data) {
-        // console.log({ kdata: data });
-        return apiServices.formatData(data);
+        const kp = apiServices.formatData(data);
+        console.log({ kdata: data, kp });
+        return kp;
       },
       onSuccess(data) {
         // console.log({ dataS: data });
@@ -1212,11 +1224,14 @@ export const useResults = () => {
       refetchOnWindowFocus: false,
       enabled:
         // initGetExistingResult &&
-        !is_preschool &&
-        userDetails?.maxScores?.has_two_assessment === 0 &&
-        state?.creds?.period === "Second Half",
+        !is_preschool && hasOneAssess && state?.creds?.period === "Second Half",
       select(data) {
         const kt = apiServices.formatData(data);
+
+        console.log({
+          kdata: data,
+          kt,
+        });
 
         const res = kt?.find(
           (x) =>
@@ -1381,7 +1396,7 @@ export const useResults = () => {
       onSuccess() {
         toast.success("Result has been computed successfully");
         if (
-          userDetails?.maxScores?.has_two_assessment === 1 &&
+          !hasOneAssess &&
           inputs.assessment === "first_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1389,7 +1404,7 @@ export const useResults = () => {
           trigger(500);
           // refetchFirstAssess2();
         } else if (
-          userDetails?.maxScores?.has_two_assessment === 1 &&
+          !hasOneAssess &&
           inputs.assessment === "second_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1420,7 +1435,7 @@ export const useResults = () => {
       {
         onSuccess() {
           if (
-            userDetails?.maxScores?.has_two_assessment === 1 &&
+            !hasOneAssess &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1429,7 +1444,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            userDetails?.maxScores?.has_two_assessment === 1 &&
+            !hasOneAssess &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1464,7 +1479,7 @@ export const useResults = () => {
         onSuccess() {
           toast.success("Result has been withheld successfully");
           if (
-            userDetails?.maxScores?.has_two_assessment === 1 &&
+            !hasOneAssess &&
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1473,7 +1488,7 @@ export const useResults = () => {
             refetchMidtermResult();
             // refetchFirstAssess2();
           } else if (
-            userDetails?.maxScores?.has_two_assessment === 1 &&
+            !hasOneAssess &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
@@ -1498,12 +1513,12 @@ export const useResults = () => {
     useMutation(apiServices.addMidTermResult, {
       onSuccess() {
         // trigger(500);
-        // if(userDetails?.maxScores?.has_two_assessment === 1){
+        // if(!hasOneAssess){
         //   refetchSecondAssess();
         //   refetchFirstAssess();
         // }
         if (
-          userDetails?.maxScores?.has_two_assessment === 1 &&
+          !hasOneAssess &&
           inputs.assessment === "first_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1511,14 +1526,14 @@ export const useResults = () => {
           trigger(500);
           toast.success(
             `${
-              userDetails?.maxScores?.has_two_assessment === 1
+              !hasOneAssess
                 ? toastValue
                 : "Mid Term"
             } Result has been computed successfully`
           );
           // refetchFirstAssess2();
         } else if (
-          userDetails?.maxScores?.has_two_assessment === 1 &&
+          !hasOneAssess &&
           inputs.assessment === "second_assesment" &&
           state?.creds?.period === "First Half"
         ) {
@@ -1526,7 +1541,7 @@ export const useResults = () => {
           trigger(500);
           toast.success(
             `${
-              userDetails?.maxScores?.has_two_assessment === 1
+              !hasOneAssess
                 ? toastValue
                 : "Mid Term"
             } Result has been computed successfully`
@@ -1638,7 +1653,7 @@ export const useResults = () => {
       term: state?.creds?.term,
       session: state?.creds?.session,
       result_type:
-        userDetails?.maxScores?.has_two_assessment === 1
+        !hasOneAssess
           ? inputs.assessment
           : "midterm",
       results: subjects.map((x) => ({

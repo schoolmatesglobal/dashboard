@@ -44,6 +44,11 @@ const ElementaryFirstHalfSheet = () => {
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
+  const hasOneAssess =
+  userDetails?.maxScores?.has_two_assessment === 0 ||
+  userDetails?.maxScores?.has_two_assessment === false ||
+  userDetails?.maxScores?.has_two_assessment === "false";
+
   // const { studentByClass2 } = useStudent();
 
   const [changeTableStyle, setChangeTableStyle] = useState(false);
@@ -51,16 +56,16 @@ const ElementaryFirstHalfSheet = () => {
   const midTermMax = () => {
     let value;
     if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
+      !hasOneAssess &&
       inputs.assessment === "first_assesment"
     ) {
       value = userDetails?.maxScores?.first_assessment;
     } else if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
+      !hasOneAssess &&
       inputs.assessment === "second_assesment"
     ) {
       value = userDetails?.maxScores?.second_assessment;
-    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+    } else if (hasOneAssess) {
       value = userDetails?.maxScores?.midterm;
     }
     return value;
@@ -68,16 +73,16 @@ const ElementaryFirstHalfSheet = () => {
   const assessmentType = () => {
     let value;
     if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
+      !hasOneAssess &&
       inputs.assessment === "first_assesment"
     ) {
       value = "First Assessment";
     } else if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
+      !hasOneAssess &&
       inputs.assessment === "second_assesment"
     ) {
       value = "Second Assessment";
-    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+    } else if (hasOneAssess) {
       value = "First Assessment";
     }
     return value;
@@ -235,7 +240,7 @@ const ElementaryFirstHalfSheet = () => {
             )}
           </div>
 
-          {userDetails?.maxScores?.has_two_assessment === 1 && (
+          {!hasOneAssess && (
             <div className='form-group mb-4' style={{ width: "300px" }}>
               <AuthSelect
                 label='Assessment'
