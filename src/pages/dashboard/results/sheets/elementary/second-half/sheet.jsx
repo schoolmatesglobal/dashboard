@@ -186,9 +186,14 @@ const ElementarySecondHalfSheet = () => {
 
   const principalCheck = "Elementary" || "Montessori";
 
-  const hasTwoAssessment = userDetails?.maxScores?.has_two_assessment === 1;
+  const hasOneAssess =
+    userDetails?.maxScores?.has_two_assessment === 0 ||
+    userDetails?.maxScores?.has_two_assessment === false ||
+    userDetails?.maxScores?.has_two_assessment === "false";
 
-  const totalScore = hasTwoAssessment
+  // const !hasOneAssess = !hasOneAssess;
+
+  const totalScore = !hasOneAssess
     ? removeZeroExam()?.reduce((accumulator, s) => {
         const firstAssessmentScore =
           Number(
@@ -785,7 +790,7 @@ const ElementarySecondHalfSheet = () => {
                         className='table-data'
                         style={{ width: "25%" }}
                       ></div>
-                      {hasTwoAssessment && (
+                      {!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -801,7 +806,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {hasTwoAssessment && (
+                      {!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -817,7 +822,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {!hasTwoAssessment && (
+                      {!!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -903,7 +908,7 @@ const ElementarySecondHalfSheet = () => {
                           Max Score Obtainable
                         </h4>
                       </div>
-                      {hasTwoAssessment && (
+                      {!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -918,7 +923,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {hasTwoAssessment && (
+                      {!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -933,7 +938,7 @@ const ElementarySecondHalfSheet = () => {
                           </h4>
                         </div>
                       )}
-                      {!hasTwoAssessment && (
+                      {!!hasOneAssess && (
                         <div
                           className='table-data'
                           style={{ flex: "1", textAlign: "center" }}
@@ -1018,7 +1023,7 @@ const ElementarySecondHalfSheet = () => {
                         (x) => x.subject === s.subject
                       )?.score;
 
-                      const totalScores = hasTwoAssessment
+                      const totalScores = !hasOneAssess
                         ? (
                             Number(fAssess ?? 0) +
                             Number(sAssess ?? 0) +
@@ -1054,8 +1059,7 @@ const ElementarySecondHalfSheet = () => {
                                   {s?.subject ?? "--"}
                                 </p>
                               </div>
-                              {userDetails?.maxScores?.has_two_assessment ===
-                                1 && (
+                              {!hasOneAssess && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1071,8 +1075,7 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {userDetails?.maxScores?.has_two_assessment ===
-                                1 && (
+                              {!hasOneAssess && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}
@@ -1088,8 +1091,7 @@ const ElementarySecondHalfSheet = () => {
                                   </p>
                                 </div>
                               )}
-                              {userDetails?.maxScores?.has_two_assessment !==
-                                1 && (
+                              {hasOneAssess && (
                                 <div
                                   className='table-data'
                                   style={{ flex: "1", textAlign: "center" }}

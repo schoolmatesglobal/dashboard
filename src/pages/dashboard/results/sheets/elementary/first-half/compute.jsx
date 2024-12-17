@@ -48,6 +48,11 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
+  const hasOneAssess =
+    userDetails?.maxScores?.has_two_assessment === 0 ||
+    userDetails?.maxScores?.has_two_assessment === false ||
+    userDetails?.maxScores?.has_two_assessment === "false";
+
   // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
@@ -72,17 +77,11 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const midTermMax = () => {
     let value;
-    if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
-      inputs.assessment === "first_assesment"
-    ) {
+    if (!hasOneAssess && inputs.assessment === "first_assesment") {
       value = userDetails?.maxScores?.first_assessment;
-    } else if (
-      userDetails?.maxScores?.has_two_assessment === 1 &&
-      inputs.assessment === "second_assesment"
-    ) {
+    } else if (!hasOneAssess && inputs.assessment === "second_assesment") {
       value = userDetails?.maxScores?.second_assessment;
-    } else if (userDetails?.maxScores?.has_two_assessment === 0) {
+    } else if (hasOneAssess) {
       value = userDetails?.maxScores?.midterm;
     }
     return value;
@@ -112,7 +111,7 @@ const ComputeElementaryFirstHalfResult = () => {
 
   const allLoading = isLoading || loading1;
 
-  const newSubjects = removeDuplicates(subjects)
+  const newSubjects = removeDuplicates(subjects);
 
   console.log({
     subjects,
@@ -212,7 +211,7 @@ const ComputeElementaryFirstHalfResult = () => {
                     <span>marks</span> {`)`}
                   </PageTitle>
                 )}
-                {userDetails?.maxScores?.has_two_assessment === 1 && (
+                {!hasOneAssess && (
                   <div className='form-group mb-4' style={{ width: "300px" }}>
                     <AuthSelect
                       label='Assessment'
