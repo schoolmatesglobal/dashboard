@@ -135,13 +135,13 @@ export const usePreSchool = () => {
       select: (data) => {
         const pps = apiServices.formatData(data);
 
-        // console.log({
-        //   psdata: data,
-        //   psd: pps,
-        //   activatePreSchool,
-        //   period,
-        //   preSchool,
-        // });
+        console.log({
+          data,
+          pps,
+          // activatePreSchool,
+          // period,
+          // preSchool,
+        });
 
         return pps;
       },
@@ -158,7 +158,14 @@ export const usePreSchool = () => {
         refetchOnMount: true,
         refetchOnWindowFocus: false,
         enabled: permission?.subject && !!id,
-        select: apiServices.formatData,
+        select(data) {
+          const pt = apiServices.formatData(data);
+
+          console.log({ data, pt });
+
+          return pt;
+        },
+        // select: apiServices.formatData,
         onError: apiServices.errorHandler,
       }
     );
@@ -256,7 +263,7 @@ export const usePreSchool = () => {
   //   ? preSchoolSubjectsByClass
   //   : [];
 
-  console.log({ period, pt: !!period.term, id, chk, chk2, ch });
+  // console.log({ period, pt: !!period.term, id, chk, chk2, ch });
 
   return {
     createPreSchool,

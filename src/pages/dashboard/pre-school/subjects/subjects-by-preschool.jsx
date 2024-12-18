@@ -57,7 +57,11 @@ const SubjectsByPreSchool = () => {
   const checkStyle = { fontWeight: "bolder", color: "red" };
 
   const chkstlye = (chk) => {
-    if (chk) return { fontWeight: "bolder", color: "red" };
+    if (chk) {
+      return { fontWeight: "bolder", color: "red", cursor: "pointer" };
+    } else {
+      return { cursor: "pointer" };
+    }
   };
 
   const onSelect = (subject, category, topic, checked) => {
@@ -119,6 +123,27 @@ const SubjectsByPreSchool = () => {
         item.topic?.some((t) => t.name === topic)
     );
   };
+
+  const checkedSubjects = () => {
+    if (preSchoolSubjectsByClassArray?.length > 0) {
+      return preSchoolSubjectsByClassArray[0]?.subjects?.filter((ps) => {
+        let stat = false;
+        preSchoolSubjects?.forEach((it) => {
+          if (
+            it.subject === ps?.name &&
+            it.category === ps?.category &&
+            it.topic?.some((t) => t.name === ps?.topic[0]?.name)
+          ) {
+            stat = true;
+          }
+        });
+        return stat;
+
+        // isChecked(ps.name, ps.category, ps.topic)
+      });
+    }
+  };
+
   const isChecked2 = (subject, category, topic) => {
     if (preSchoolSubjectsByClassArray?.length > 0) {
       return preSchoolSubjectsByClassArray?.some(
@@ -180,6 +205,12 @@ const SubjectsByPreSchool = () => {
       class: preSchool?.name,
       subjects: selectedSubjects,
     });
+    // console.log({
+    //   ...periodInputs,
+    //   class_id: preSchool?.id,
+    //   class: preSchool?.name,
+    //   subjects: selectedSubjects,
+    // });
   };
 
   const clearSelect = () => {
@@ -220,15 +251,18 @@ const SubjectsByPreSchool = () => {
 
   useEffect(() => {
     if (preSchoolSubjectsByClassArray?.length > 0) {
-      setSelectedSubjects([...preSchoolSubjectsByClassArray[0]?.subjects]);
+      setSelectedSubjects([...checkedSubjects()]);
+      // setSelectedSubjects([...preSchoolSubjectsByClassArray[0]?.subjects]);
     }
   }, [preSchoolSubjectsByClassArray]);
 
-  // console.log({
-  //   selectedSubjects,
-  //   ps: preSchoolSubjectsByClass,
-  //   preSchoolSubjectsByClassArray,
-  // });
+  console.log({
+    selectedSubjects,
+    preSchoolSubjectsByClass,
+    preSchoolSubjectsByClassArray,
+    preSchoolSubjects,
+    checkedSubjects: checkedSubjects(),
+  });
 
   const assignError = () => {
     if (selectedSubjects?.length > 0) {
@@ -309,11 +343,16 @@ const SubjectsByPreSchool = () => {
                                 style={{
                                   cursor: "pointer",
                                 }}
+                                className='d-flex justify-content-center align-items-center'
                               >
                                 <input
                                   type='checkbox'
                                   className='m-0'
                                   checked={chk}
+                                  id={`option-${item.subject}-${item.category}-${t.name}`}
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
                                   // checked={chk || chk2}
                                   onChange={() => {
                                     onSelect(
@@ -333,7 +372,8 @@ const SubjectsByPreSchool = () => {
                                   // value={}
                                 />
                               </div>
-                              <p
+                              <label
+                                htmlFor={`option-${item.subject}-${item.category}-${t.name}`}
                                 // onClick={() => {
                                 //   removeSelect(
                                 //     item.subject,
@@ -345,7 +385,7 @@ const SubjectsByPreSchool = () => {
                                 style={chkstlye(chk)}
                               >
                                 {t.name}
-                              </p>
+                              </label>
                             </div>
                           </div>
                         );

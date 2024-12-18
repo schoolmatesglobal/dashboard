@@ -1084,9 +1084,9 @@ class APIServies extends Helpers {
     return data;
   }
 
-  async getYearlyClassAverage({ class_name, session }) {
+  async getYearlyClassAverage({ student_id, class_name, session }) {
     const { data } = await axios.get(
-      `${backendAPI}/end-term-class-average/${class_name}/${session}`,
+      `${backendAPI}/end-term-class-average/${student_id}/${class_name}/${session}`,
       {
         headers: {
           "Content-Type": "application/json",

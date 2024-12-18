@@ -247,6 +247,43 @@ export const useResults = () => {
       }
     );
 
+  const chks =
+    is_preschool &&
+    // permission?.subject &&
+    state?.creds?.period !== "" &&
+    state?.creds?.session !== "" &&
+    state?.creds?.term !== "";
+
+  const chk2 = chks ?? false;
+
+  // preschool
+  const {
+    data: preSchoolSubjects,
+    isLoading: preSchoolSubjectsLoading,
+    refetch: refetchSubjects,
+  } = useQuery(
+    [
+      queryKeys.GET_ALL_PRE_SCHOOL_SUBJECTS,
+      state?.creds.period,
+      state?.creds.session,
+      state?.creds.term,
+    ],
+    () =>
+      apiServices.getPreSchoolSubjects(
+        state?.creds.period ?? "",
+        state?.creds.term ?? "",
+        state?.creds.session ?? ""
+      ),
+    {
+      enabled: chk2,
+      retry: 1,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      select: apiServices.formatData,
+      onError: apiServices.errorHandler,
+    }
+  );
+
   // student by class2
   const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS3, user?.class_assigned],
@@ -593,6 +630,7 @@ export const useResults = () => {
       [queryKeys.GET_CLASS_AVERAGE, studentClassName, state?.creds?.session],
       () =>
         apiServices.getYearlyClassAverage({
+          student_id: studentId(),
           class_name: additionalCreds?.class_name,
           // class_name: studentClassName,
           session: state?.creds?.session,
@@ -606,6 +644,12 @@ export const useResults = () => {
           Boolean(additionalCreds?.class_name) &&
           state?.creds?.term === "Third Term" &&
           state?.creds?.period === "Second Half",
+        select(data) {
+          const st = apiServices.formatData(data);
+
+          console.log({ st, data });
+          return data;
+        },
       }
     );
 
@@ -1526,9 +1570,7 @@ export const useResults = () => {
           trigger(500);
           toast.success(
             `${
-              !hasOneAssess
-                ? toastValue
-                : "Mid Term"
+              !hasOneAssess ? toastValue : "Mid Term"
             } Result has been computed successfully`
           );
           // refetchFirstAssess2();
@@ -1541,9 +1583,7 @@ export const useResults = () => {
           trigger(500);
           toast.success(
             `${
-              !hasOneAssess
-                ? toastValue
-                : "Mid Term"
+              !hasOneAssess ? toastValue : "Mid Term"
             } Result has been computed successfully`
           );
           // refetchFirstAssess2();
@@ -1652,10 +1692,7 @@ export const useResults = () => {
       period: state?.creds?.period,
       term: state?.creds?.term,
       session: state?.creds?.session,
-      result_type:
-        !hasOneAssess
-          ? inputs.assessment
-          : "midterm",
+      result_type: !hasOneAssess ? inputs.assessment : "midterm",
       results: subjects.map((x) => ({
         subject: x.subject,
         score: x.grade,
@@ -1812,6 +1849,7 @@ export const useResults = () => {
     firstAssessResultLoading2 ||
     addMidTermResultLoading ||
     subjectsByClassLoading3 ||
+    preSchoolSubjectsLoading ||
     loading1;
   // ||
   // releaseResultLoading;
@@ -1905,6 +1943,7 @@ export const useResults = () => {
     studentByClass2,
     subjectsByClass3,
     setIdWithComputedResult,
+    preSchoolSubjects,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,
