@@ -1618,6 +1618,7 @@ export const useResults = () => {
   } = useMutation(apiServices.postPreSchoolResult, {
     onSuccess() {
       trigger(500);
+      refetchSubjects()
       preSchoolCompiledResultsRefetch();
       toast.success("Result has been computed successfully");
     },

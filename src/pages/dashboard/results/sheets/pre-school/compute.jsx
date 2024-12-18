@@ -39,6 +39,7 @@ const ComputePreSchoolResult = () => {
     preSchoolCompiledResults,
     preActivities2,
     setPreActivities2,
+    preSchoolSubjects,
     // setActivatePreSchoolByClass,
     // preActivities2,
     // setPreActivities2,
@@ -107,6 +108,59 @@ const ComputePreSchoolResult = () => {
     // },
   });
 
+  const checkedEvaluationReport = () => {
+    if (
+      newResult?.evaluation_report?.length > 0 &&
+      subjectswithNoDups()?.length > 0
+    ) {
+      return newResult?.evaluation_report?.filter((er) => {
+        let stat = false;
+        subjectswithNoDups()?.forEach((it) => {
+          const topics1 = er.topic.map((obj) => obj.topic);
+          const names2 = it.topic.map((obj) => obj.name);
+
+          // return topics1.every(topic => names2.includes(topic));
+          if (
+            it.name === er.subject &&
+            topics1.every((topic) => names2.includes(topic))
+            // areArraysEqual(it.topic, er.topic)
+            // it.topic?.some((t) => t.name === er.topic[0]?.name)
+          ) {
+            // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
+            stat = true;
+          }
+        });
+        return stat;
+      });
+    }
+  };
+  const checkedCognitiveReport = () => {
+    if (
+      newResult?.cognitive_development?.length > 0 &&
+      subjectswithNoDups()?.length > 0
+    ) {
+      return newResult?.cognitive_development?.filter((er) => {
+        let stat = false;
+        subjectswithNoDups()?.forEach((it) => {
+          const topics1 = er.topic.map((obj) => obj.topic);
+          const names2 = it.topic.map((obj) => obj.name);
+
+          // return topics1.every(topic => names2.includes(topic));
+          if (
+            it.name === er.subject &&
+            topics1.every((topic) => names2.includes(topic))
+            // areArraysEqual(it.topic, er.topic)
+            // it.topic?.some((t) => t.name === er.topic[0]?.name)
+          ) {
+            // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
+            stat = true;
+          }
+        });
+        return stat;
+      });
+    }
+  };
+
   const onSubjectChange = (section, subject, topic, score) => {
     const subjectObject = {
       subject,
@@ -140,6 +194,7 @@ const ComputePreSchoolResult = () => {
       ?.topic?.find((item) => item?.topic === topic)?.score ?? "";
 
   const submit = async (data) => {
+
     await addPreSchoolResult({
       ...data,
       student_id: studentData.id,
@@ -188,8 +243,10 @@ const ComputePreSchoolResult = () => {
         times_absent: result()?.times_absent,
         teacher_comment: result()?.teacher_comment,
         hos_comment: result()?.hos_comment,
-        evaluation_report: result()?.evaluation_report || [],
-        cognitive_development: result()?.cognitive_development || [],
+        evaluation_report: checkedEvaluationReport() || [],
+        // evaluation_report: result()?.evaluation_report || [],
+        cognitive_development: checkedCognitiveReport() || [],
+        // cognitive_development: result()?.cognitive_development || [],
       });
       setHosComment(result()?.hos_comment);
       setTeacherComment(result()?.teacher_comment);
@@ -209,7 +266,15 @@ const ComputePreSchoolResult = () => {
   //   teacherComment,
   //   newResult,
   // });
-  // console.log({ preSchoolCompiledResults });
+  console.log({
+    subjectswithNoDups: subjectswithNoDups(),
+    preSchoolSubjectsByClass,
+    newResult,
+    inputs,
+    checkedEvaluationReport: checkedEvaluationReport(),
+    checkedCognitiveReport: checkedCognitiveReport(),
+    preSchoolSubjects,
+  });
 
   return (
     <div className='results-sheet'>
