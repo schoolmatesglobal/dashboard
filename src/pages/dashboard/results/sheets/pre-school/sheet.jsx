@@ -12,6 +12,7 @@ import { calculateAgeWithMonths } from "../../constant";
 import { useLocation } from "react-router-dom";
 import { Input } from "reactstrap";
 import { useActivities } from "../../../../../hooks/useActivities";
+import { usePreSchool } from "../../../../../hooks/usePreSchool";
 
 const SubjectTable = ({ subject, header = [], topics = [] }) => {
   return (
@@ -142,9 +143,12 @@ const PreSchoolResult = () => {
     academicDate,
     studentData,
     preSchoolCompiledResults,
+    preSchoolSubjects,
   } = useResults();
 
   const { preActivities } = useActivities();
+
+  // const { setPeriod, preSchoolSubjects } = usePreSchool();
 
   // const extraActivities = () => {
   //   if (preSchoolCompiledResults && preSchoolCompiledResults?.length > 0) {
@@ -190,13 +194,80 @@ const PreSchoolResult = () => {
     // setNewStudentData(studentData);
   }, [studentByClass2]);
 
-  // console.log({
-  //   // findOneStudent: findOneStudent(),
-  //   preSchoolCompiledResults,
-  //   user,
-  //   si: studentData,
-  //   studentByClass2,
-  // });
+  function areArraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+
+    const sortedArr1 = arr1
+      .slice()
+      .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+    const sortedArr2 = arr2
+      .slice()
+      .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+
+    return JSON.stringify(sortedArr1) === JSON.stringify(sortedArr2);
+  }
+
+  // const evaluation_report = result?.evaluation_report;
+
+  const checkedEvaluationReport = () => {
+    if (
+      result?.evaluation_report?.length > 0 &&
+      preSchoolSubjects?.length > 0
+    ) {
+      return result?.evaluation_report?.filter((er) => {
+        let stat = false;
+        preSchoolSubjects?.forEach((it) => {
+          const topics1 = er.topic.map((obj) => obj.topic);
+          const names2 = it.topic.map((obj) => obj.name);
+
+          // return topics1.every(topic => names2.includes(topic));
+          if (
+            it.subject === er.subject &&
+            topics1.every((topic) => names2.includes(topic))
+            // areArraysEqual(it.topic, er.topic)
+            // it.topic?.some((t) => t.name === er.topic[0]?.name)
+          ) {
+            // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
+            stat = true;
+          }
+        });
+        return stat;
+      });
+    }
+  };
+  const checkedCognitiveReport = () => {
+    if (
+      result?.cognitive_development?.length > 0 &&
+      preSchoolSubjects?.length > 0
+    ) {
+      return result?.cognitive_development?.filter((er) => {
+        let stat = false;
+        preSchoolSubjects?.forEach((it) => {
+          const topics1 = er.topic.map((obj) => obj.topic);
+          const names2 = it.topic.map((obj) => obj.name);
+
+          // return topics1.every(topic => names2.includes(topic));
+          if (
+            it.subject === er.subject &&
+            topics1.every((topic) => names2.includes(topic))
+            // areArraysEqual(it.topic, er.topic)
+            // it.topic?.some((t) => t.name === er.topic[0]?.name)
+          ) {
+            // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
+            stat = true;
+          }
+        });
+        return stat;
+      });
+    }
+  };
+
+  console.log({
+    result,
+    preSchoolSubjects,
+    checkedEvaluationReport: checkedEvaluationReport(),
+    checkedCognitiveReport: checkedCognitiveReport(),
+  });
 
   // useEffect(() => {
   //   if (preSchoolCompiledResults && preSchoolCompiledResults?.length > 0) {
@@ -470,8 +541,8 @@ const PreSchoolResult = () => {
             </div>
             <div className='reports'>
               <div>
-                {result?.evaluation_report
-                  ?.slice(0, Math.round(result?.evaluation_report?.length / 2))
+                {checkedEvaluationReport()
+                  ?.slice(0, Math.round(checkedEvaluationReport()?.length / 2))
                   ?.map((subject, key) => (
                     <SubjectTable
                       key={key}
@@ -487,8 +558,8 @@ const PreSchoolResult = () => {
                   ))}
               </div>
               <div>
-                {result?.evaluation_report
-                  ?.slice(Math.round(result?.evaluation_report?.length / 2))
+                {checkedEvaluationReport()
+                  ?.slice(Math.round(checkedEvaluationReport()?.length / 2))
                   ?.map((subject, key) => (
                     <SubjectTable
                       key={key}
@@ -518,7 +589,7 @@ const PreSchoolResult = () => {
             </div>
             <div className='reports'>
               <div>
-                {result?.cognitive_development?.map((subject, key) => (
+                {checkedCognitiveReport()?.map((subject, key) => (
                   <SubjectTable
                     key={key}
                     subject={subject.subject}

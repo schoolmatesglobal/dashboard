@@ -90,6 +90,8 @@ const PreSchoolSubjectDetail = () => {
       return;
     }
 
+    // console.log({ finalData, periodInputs });
+
     await createPreSchoolSubject({
       ...periodInputs,
       ...finalData,
@@ -109,6 +111,8 @@ const PreSchoolSubjectDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preSchoolSubject]);
 
+  console.log({ preSchoolSubject, inputs });
+
   return (
     <PageSheet>
       <PageTitle>Pre School Subject</PageTitle>
@@ -120,23 +124,23 @@ const PreSchoolSubjectDetail = () => {
 
       {showSubjects && (
         <Form onSubmit={handleSubmit(onFinalSubmit)}>
-          <Row className="mb-0 mb-sm-4">
-            <Col sm="6" className="mb-4 mb-sm-0">
+          <Row className='mb-0 mb-sm-4'>
+            <Col sm='6' className='mb-4 mb-sm-0'>
               <AuthInput
-                type="text"
-                placeholder="Enter Subject Title"
+                type='text'
+                placeholder='Enter Subject Title'
                 hasError={!!errors.name}
                 value={inputs.name}
-                name="name"
+                name='name'
                 onChange={handleChange}
               />
-              {!!errors.name && <p className="error-message">{errors.name}</p>}
+              {!!errors.name && <p className='error-message'>{errors.name}</p>}
             </Col>
-            <Col sm="6" className="mb-4 mb-sm-0">
+            <Col sm='6' className='mb-4 mb-sm-0'>
               <AuthSelect
                 noPlaceholder
                 value={inputs.category}
-                name="category"
+                name='category'
                 onChange={handleChange}
                 options={[
                   { value: "Evaluation Report", title: "Evaluation Report" },
@@ -150,11 +154,11 @@ const PreSchoolSubjectDetail = () => {
           </Row>
           <hr />
           {inputs.topics.map((input, index) => (
-            <Row key={index} className="my-5">
-              <Col className="col-6 mb-4 mb-sm-0">
+            <Row key={index} className='my-5'>
+              <Col className='col-6 mb-4 mb-sm-0'>
                 <AuthInput
-                  type="text"
-                  placeholder="Enter Topic Here..."
+                  type='text'
+                  placeholder='Enter Topic Here...'
                   value={input}
                   hasError={
                     !!errors.topics && inputs.topics.length === index + 1
@@ -169,13 +173,13 @@ const PreSchoolSubjectDetail = () => {
                   }}
                 />
               </Col>
-              <Col className="col-2 mb-4 mb-sm-0">
+              <Col className='col-2 mb-4 mb-sm-0'>
                 {inputs.topics.length > 1 && (
                   <Btn
                     outline
-                    type="button"
-                    color="danger"
-                    className="me-3"
+                    type='button'
+                    color='danger'
+                    className='me-3'
                     onClick={() => {
                       const format = inputs.topics.filter(
                         (_, k) => k !== index
@@ -189,8 +193,8 @@ const PreSchoolSubjectDetail = () => {
                 )}
                 {inputs.topics.length === index + 1 && (
                   <Btn
-                    type="button"
-                    color="primary"
+                    type='button'
+                    color='primary'
                     disabled={!input}
                     onClick={() =>
                       setFieldValue("topics", [...inputs.topics, ""])
@@ -202,7 +206,7 @@ const PreSchoolSubjectDetail = () => {
               </Col>
             </Row>
           ))}
-          <div className="mb-5 d-flex justify-content-end">
+          <div className='mb-5 d-flex justify-content-end'>
             <ButtonGroup
               options={[
                 {
@@ -231,14 +235,14 @@ const PreSchoolSubjectDetail = () => {
           disabled: loadingSessions,
           onClick: handlePeriodSubmit(onSubmit),
         }}
-        singleButtonText="Continue"
-        promptHeader="Academic Period"
+        singleButtonText='Continue'
+        promptHeader='Academic Period'
       >
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Period"
+            label='Period'
             value={periodInputs.period}
-            name="period"
+            name='period'
             hasError={!!periodErrors.period}
             onChange={handlePeriodChange}
             options={[
@@ -247,14 +251,14 @@ const PreSchoolSubjectDetail = () => {
             ]}
           />
           {!!periodErrors.period && (
-            <p className="error-message">{periodErrors.period}</p>
+            <p className='error-message'>{periodErrors.period}</p>
           )}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Term"
+            label='Term'
             value={periodInputs.term}
-            name="term"
+            name='term'
             hasError={!!periodErrors.term}
             onChange={handlePeriodChange}
             options={[
@@ -264,14 +268,14 @@ const PreSchoolSubjectDetail = () => {
             ]}
           />
           {!!periodErrors.term && (
-            <p className="error-message">{periodErrors.term}</p>
+            <p className='error-message'>{periodErrors.term}</p>
           )}
         </div>
-        <div className="form-group mb-4">
+        <div className='form-group mb-4'>
           <AuthSelect
-            label="Session"
+            label='Session'
             value={periodInputs.session}
-            name="session"
+            name='session'
             hasError={!!periodErrors.session}
             onChange={handlePeriodChange}
             options={(sessions || [])?.map((session) => ({
@@ -280,7 +284,7 @@ const PreSchoolSubjectDetail = () => {
             }))}
           />
           {!!periodErrors.session && (
-            <p className="error-message">{periodErrors.session}</p>
+            <p className='error-message'>{periodErrors.session}</p>
           )}
         </div>
       </Prompt>
