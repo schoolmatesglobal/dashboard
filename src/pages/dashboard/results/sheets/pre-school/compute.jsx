@@ -194,7 +194,6 @@ const ComputePreSchoolResult = () => {
       ?.topic?.find((item) => item?.topic === topic)?.score ?? "";
 
   const submit = async (data) => {
-
     await addPreSchoolResult({
       ...data,
       student_id: studentData.id,
@@ -243,10 +242,10 @@ const ComputePreSchoolResult = () => {
         times_absent: result()?.times_absent,
         teacher_comment: result()?.teacher_comment,
         hos_comment: result()?.hos_comment,
-        evaluation_report: checkedEvaluationReport() || [],
-        // evaluation_report: result()?.evaluation_report || [],
-        cognitive_development: checkedCognitiveReport() || [],
-        // cognitive_development: result()?.cognitive_development || [],
+        // evaluation_report: checkedEvaluationReport() || [],
+        evaluation_report: result()?.evaluation_report || [],
+        // cognitive_development: checkedCognitiveReport() || [],
+        cognitive_development: result()?.cognitive_development || [],
       });
       setHosComment(result()?.hos_comment);
       setTeacherComment(result()?.teacher_comment);
@@ -274,6 +273,8 @@ const ComputePreSchoolResult = () => {
     checkedEvaluationReport: checkedEvaluationReport(),
     checkedCognitiveReport: checkedCognitiveReport(),
     preSchoolSubjects,
+    preSchoolCompiledResults,
+    studentData,
   });
 
   return (
@@ -333,6 +334,7 @@ const ComputePreSchoolResult = () => {
             <Col sm='6' className='mb-4 mb-sm-0'>
               <AuthInput
                 label='Number of times present'
+                type='number'
                 hasError={!!errors.times_present}
                 {...getFieldProps("times_present")}
               />
@@ -349,6 +351,7 @@ const ComputePreSchoolResult = () => {
               <AuthInput
                 label='Number of times absent'
                 hasError={!!errors.times_absent}
+                type='number'
                 {...getFieldProps("times_absent")}
               />
               {!!errors.times_absent && (
