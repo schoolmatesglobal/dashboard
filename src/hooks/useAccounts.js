@@ -15,8 +15,6 @@ export const useAccounts = () => {
 
   const isEdit = !!id;
 
-  // console.log({ isEdit });
-  // const [indexStatus, setIndexStatus] = useState("fee-history");
   const { permission, apiServices, errorHandler, user } =
     useAppContext("accounts");
 

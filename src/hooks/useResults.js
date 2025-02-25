@@ -566,7 +566,7 @@ export const useResults = () => {
       select: (data) => {
         const dt = apiServices.formatData(data);
 
-        // console.log({ rdata: data, rd: dt });
+        console.log({ cpdata: data, rd: dt });
 
         return dt;
       },

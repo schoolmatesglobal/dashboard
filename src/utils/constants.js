@@ -44,15 +44,15 @@ const url2 = "https://dashboard.sapsms.com/api";
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return "https://staging.sapsms.com/api"; // Update with your development API URL
+    return url1; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return "https://dashboard.sapsms.com/api";
+    return url2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return url2;
+    return url1;
   } else {
-    return url2;
+    return url1;
   }
 })();
 

@@ -17,6 +17,7 @@ export const useActivities = () => {
     isLoading: activitiesLoading,
     data: activities,
     refetch: refetchActivities,
+    
   } = useQuery([queryKeys.GET_ACTIVITIES], apiServices.getActivities, {
     // select: apiServices.formatData,
     retry: 1,

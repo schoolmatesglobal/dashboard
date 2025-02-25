@@ -165,18 +165,18 @@ const ComputeElementarySecondHalfResult = () => {
   //   }
   // }, [studentData]);
 
-  // console.log({
-  //   // abacus,
-  //   // midtermResult,
-  //   // idWithComputedResult,
-  //   // // newSubjects,
-  //   // // subjectsByClass,
-  //   // // subjectsByClass2,
-  //   // subjects,
-  //   // userDetails,
-  //   // extraActivities,
-  //   // activities,
-  // });
+  console.log({
+    // abacus,
+    // midtermResult,
+    // idWithComputedResult,
+    // // newSubjects,
+    // // subjectsByClass,
+    // // subjectsByClass2,
+    // subjects,
+    // userDetails,
+    extraActivities,
+    activities,
+  });
   // console.log({ reports, skills, user, userDetails });
 
   return (

@@ -179,6 +179,7 @@ const ComputeElementaryFirstHalfResult = () => {
             computeMidTermResult();
           }}
         >
+        
           {allLoading && (
             <div
               style={{
