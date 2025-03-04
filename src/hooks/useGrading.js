@@ -4,6 +4,7 @@ import { useAppContext } from "./useAppContext";
 import queryKeys from "../utils/queryKeys";
 import { useParams } from "react-router-dom";
 import { useAuthDetails } from "../stores/authDetails";
+import { queryOptions } from "../utils/constants";
 
 export const useGrading = () => {
   const { apiServices, permission, errorHandler, user } = useAppContext();
@@ -23,9 +24,10 @@ export const useGrading = () => {
     refetch: refetchScores,
   } = useQuery([queryKeys.GET_SCORES], apiServices.getMaxScores, {
     // enabled: false,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+     ...queryOptions,
     enabled: activate,
     onError(err) {
       errorHandler(err);

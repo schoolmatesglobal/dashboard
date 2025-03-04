@@ -31,7 +31,7 @@ const ComputeElementaryFirstHalfResult = () => {
     studentData,
     comments,
     // createMidTermResult,
-    subjects,
+    // subjects,
     maxScores,
     setSubjects,
     setInitGetExistingResult,
@@ -44,14 +44,25 @@ const ComputeElementaryFirstHalfResult = () => {
     withholdResult,
     withholdResultLoading,
     studentByClass2,
+    getSubjectByClass: { data: subjects, isFetching: isFetchingSubjects },
+    getMidTermResult: {
+      data: midtermResults,
+      isFetching: isFetchingMidtermResults,
+    },
+    computedSubjects,
+    setComputedSubjects,
+    setIdWithComputedResult,
+    // idWithComputedResult,
   } = useResults();
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
+  // const [computedSubjects, setComputedSubjects] = useState([]);
+
   const hasOneAssess =
-    userDetails?.maxScores?.has_two_assessment === 0 ||
-    userDetails?.maxScores?.has_two_assessment === false ||
-    userDetails?.maxScores?.has_two_assessment === "false";
+     maxScores?.has_two_assessment === 0 ||
+     maxScores?.has_two_assessment === false ||
+     maxScores?.has_two_assessment === "false";
 
   // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
@@ -78,24 +89,24 @@ const ComputeElementaryFirstHalfResult = () => {
   const midTermMax = () => {
     let value;
     if (!hasOneAssess && inputs.assessment === "first_assesment") {
-      value = userDetails?.maxScores?.first_assessment;
+      value =  maxScores?.first_assessment;
     } else if (!hasOneAssess && inputs.assessment === "second_assesment") {
-      value = userDetails?.maxScores?.second_assessment;
+      value =  maxScores?.second_assessment;
     } else if (hasOneAssess) {
-      value = userDetails?.maxScores?.midterm;
+      value =  maxScores?.midterm;
     }
     return value;
   };
 
-  useEffect(() => {
-    setTeacherComment(additionalCreds?.teacher_comment);
-    // setStatus(additionalCreds?.status);
-  }, [additionalCreds]);
+  // useEffect(() => {
+  //   setTeacherComment(additionalCreds?.teacher_comment);
+  //   // setStatus(additionalCreds?.status);
+  // }, [additionalCreds]);
 
-  useEffect(() => {
-    // setTeacherComment(additionalCreds?.teacher_comment);
-    setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status, studentData]);
+  // useEffect(() => {
+  //   // setTeacherComment(additionalCreds?.teacher_comment);
+  //   setStatus(additionalCreds?.status);
+  // }, [additionalCreds?.status, studentData]);
 
   // useEffect(() => {
 
@@ -109,17 +120,74 @@ const ComputeElementaryFirstHalfResult = () => {
     }
   })();
 
-  const allLoading = isLoading || loading1;
+  const allLoading =
+    isLoading || loading1 || isFetchingSubjects || isFetchingMidtermResults;
+  // const allLoading = isLoading || loading1;
 
-  const newSubjects = removeDuplicates(subjects);
+  const newSubjects = computedSubjects;
+  // const newSubjects = removeDuplicates(subjects);
+
+  useEffect(() => {
+
+    const adjustResults = () => {
+      if (
+        midtermResults?.results2 !== undefined &&
+        midtermResults?.results2?.length > 0 &&
+        midtermResults?.results2?.length != subjects?.length
+      ) {
+        return subjects?.map((sb, i) => {
+          const rs = midtermResults?.results2?.find(
+            (rs) => rs.subject === sb.subject
+          );
+          if (rs) {
+            return {
+              id: i + 1,
+              subject: rs.subject,
+              score: rs.score,
+              grade: rs.grade,
+            };
+          } else {
+            return {
+              id: i + 1,
+              subject: sb.subject,
+              score: sb.score,
+              grade: sb.grade,
+            };
+          }
+        });
+      } else {
+        return midtermResults?.results2;
+      }
+    };
+
+    const finalSubjects =
+      midtermResults?.results2 !== undefined &&
+      midtermResults.results2.length > 0
+        ? adjustResults
+        : subjects;
+
+    setComputedSubjects(finalSubjects);
+    setTeacherComment(midtermResults?.teacher_comment);
+    setStatus(midtermResults?.status);
+    // const ids = [midtermResults?.student_id];
+    setIdWithComputedResult([midtermResults?.student_id]);
+
+  }, [allLoading, midtermResults?.results2, midtermResults, studentData]);
 
   console.log({
     subjects,
-    s2: newSubjects,
+    // newSubjects,
+    // subjects,
+    isFetchingSubjects,
+    midtermResults,
+    computedSubjects,
     status,
-    additionalCreds,
-    checkResultComputed,
-    studentData,
+    // status,
+    // additionalCreds,
+    // checkResultComputed,
+    // studentData,
+    // hasOneAssess,
+    // studentByClass2,
   });
 
   return (
@@ -148,7 +216,7 @@ const ComputeElementaryFirstHalfResult = () => {
           }`}
           doubleSubmitVariant={`${status === "released" ? "danger" : ""}`}
           doubleIsDisabled={
-            !checkResultComputed ||
+            !status ||
             allLoading ||
             releaseResultLoading ||
             withholdResultLoading
@@ -179,7 +247,6 @@ const ComputeElementaryFirstHalfResult = () => {
             computeMidTermResult();
           }}
         >
-        
           {allLoading && (
             <div
               style={{
@@ -239,8 +306,8 @@ const ComputeElementaryFirstHalfResult = () => {
 
               <div>
                 <div>
-                  {newSubjects?.length > 0 &&
-                    newSubjects?.map((x, key) => (
+                  {computedSubjects?.length > 0 &&
+                    computedSubjects?.map((x, key) => (
                       <Row key={key} className='my-5 '>
                         <Col sm='6' className='mb- mb-sm-0'>
                           <h5>
@@ -256,12 +323,12 @@ const ComputeElementaryFirstHalfResult = () => {
 
                               if (Number(value) > Number(midTermMax())) return;
 
-                              const fd = newSubjects.map((s) => ({
+                              const fd = computedSubjects.map((s) => ({
                                 ...s,
                                 grade:
                                   s.subject === x.subject ? value : s.grade,
                               }));
-                              setSubjects(fd);
+                              setComputedSubjects(fd);
                             }}
                           />
                         </Col>

@@ -128,6 +128,8 @@ import ClockOut from "../pages/dashboard/scan-codes/scan/clock-out";
 import BankDetails from "../pages/dashboard/bank/details";
 import FlipClass from "../pages/dashboard/flip-class";
 import Exercises from "../pages/dashboard/exercises";
+import GradePoint from "../pages/dashboard/grade-point";
+import GradePointDetail from "../pages/dashboard/grade-point/detail";
 // import AssignPreClass from "../pages/dashboard/staffs/assign-preclass";
 // import ExtraCurricularDetail from "../pages/dashboard/extra-curricular/detail";
 
@@ -1104,6 +1106,33 @@ const CustomRoutes = () => {
           element={
             <Guard routeName='grading'>
               <GradingDetail />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='grade-point'
+          element={
+            <Guard routeName='grade-point'>
+              <GradePoint />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='grade-point/new'
+          element={
+            <Guard routeName='grade-point'>
+              <GradePointDetail />
+            </Guard>
+          }
+        />
+        <Route
+          exact
+          path='grade-point/edit/:id'
+          element={
+            <Guard routeName='grade-point'>
+              <GradePointDetail />
             </Guard>
           }
         />

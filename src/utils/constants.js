@@ -17,6 +17,7 @@ import {
   faTruck,
   faMoneyBill,
   faMarker,
+  faChartArea,
   faCalendarDays,
   faSchoolLock,
   faTimeline,
@@ -55,6 +56,74 @@ export const backendAPI = (function () {
     return url1;
   }
 })();
+
+export const queryOptions = {
+  retry: 1,
+  refetchOnMount: true,
+  refetchOnWindowFocus: false,
+  staleTime: 24 * 60 * 60 * 1000,
+};
+
+export const userRole = (id, sentenceCase) => {
+  if (id === "1") {
+    return sentenceCase ? "Admin" : "admin";
+  } else if (id === "2") {
+    return sentenceCase ? "Account" : "account";
+  } else if (id === "3") {
+    return sentenceCase ? "Principal" : "principal";
+  } else if (id === "4") {
+    return sentenceCase ? "Teacher" : "teacher";
+  } else if (id === "6") {
+    return sentenceCase ? "Superadmin" : "superadmin";
+  } else if (id === "7") {
+    return sentenceCase ? "Student" : "student";
+  }
+};
+
+export const uniqueArray = (array, value, value2) => {
+  if (value2) {
+    return (
+      array.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              String(t[value]).toLowerCase() ===
+                String(item[value]).toLowerCase() &&
+              String(t[value2]).toLowerCase() ===
+                String(item[value2]).toLowerCase()
+          )
+      ) ?? []
+    );
+  } else {
+    return (
+      array.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              String(t[value]).toLowerCase() ===
+              String(item[value]).toLowerCase()
+          )
+      ) ?? []
+    );
+  }
+};
+
+export function toSentenceCase(str) {
+  if (!str || typeof str !== "string") {
+    return "";
+  }
+
+  // Trim any leading or trailing whitespace
+  str = str.trim();
+
+  // Split the string into words, capitalize each, and join them back together
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
 
 export const isProductionCheck = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
@@ -127,6 +196,11 @@ export const dashboardSideBarLinks = {
       to: "/app/grading",
       title: "Grading",
       icon: faMarker,
+    },
+    {
+      to: "/app/grade-point",
+      title: "Grade Point",
+      icon: faChartArea,
     },
 
     {
