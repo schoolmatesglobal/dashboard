@@ -1408,7 +1408,7 @@ const ElementarySecondHalfSheet = () => {
                           }}
                         >
                           {/* {(totalScore / removeZeroExam()?.length).toFixed(2)} */}
-                          3.5
+                          {additionalCreds?.gpa?.toFixed(2)}
                         </p>
                       </div>
                       <div className='table-data'>
@@ -1429,7 +1429,7 @@ const ElementarySecondHalfSheet = () => {
                               )
                             )?.remark
                           } */}
-                          {getGpRemark(3.5)?.remark}
+                          {getGpRemark(additionalCreds?.gpa?.toFixed(2))?.remark}
                         </p>
                       </div>
                     </div>
