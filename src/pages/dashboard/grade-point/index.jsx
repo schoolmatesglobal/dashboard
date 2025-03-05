@@ -6,7 +6,7 @@ import { useGradePoint } from "../../../hooks/useGradePoint";
 const GradePoint = () => {
   const { isLoading, deleteGrading, gradePoint } = useGradePoint();
 
-  console.log({ gradePoint });
+  // console.log({ gradePoint });
 
   return (
     <PageView
@@ -18,32 +18,32 @@ const GradePoint = () => {
       onDelete={deleteGrading}
       isLoading={isLoading}
       columns={[
+        // {
+        //   Header: "S/N",
+        //   accessor: "new_id",
+        // },
         {
-          Header: "S/N",
-          accessor: "new_id",
-        },
-        {
-          Header: "Min Mark",
+          Header: "Min Point",
           accessor: "min_mark",
         },
         {
-          Header: "Max Mark",
+          Header: "Max Point",
           accessor: "max_mark",
         },
-        {
-          Header: "Grade Point",
-          accessor: "grade_point",
-        },
-        {
-          Header: "Key Range",
-          accessor: "key_range",
-        },
+        // {
+        //   Header: "Grade Point",
+        //   accessor: "grade_point",
+        // },
+        // {
+        //   Header: "Key Range",
+        //   accessor: "key_range",
+        // },
         {
           Header: "Remark",
           accessor: "remark",
         },
       ]}
-      data={gradePoint}
+      data={gradePoint?.gp}
     />
   );
 };

@@ -1895,6 +1895,8 @@ export const useResults = () => {
     return res || { grade: "N/A", remark: "Out of range", id: null };
   };
 
+ 
+
   // console.log({ grading });
 
   const getTotalScores = () => {

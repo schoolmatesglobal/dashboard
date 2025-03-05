@@ -7,8 +7,14 @@ import { useGrading } from "../../../hooks/useGrading";
 import { useGradePoint } from "../../../hooks/useGradePoint";
 
 const GradePointDetail = () => {
-  const { isLoading, singleGrading, isEdit, updateGrading, postGradePoint } =
-    useGradePoint();
+  const {
+    isLoading,
+    singleGrading,
+    isEdit,
+    updateGrading,
+    postGradePoint,
+    gradePoint,
+  } = useGradePoint();
 
   const { errors, getFieldProps, handleSubmit, setInputs, inputs } = useForm({
     defaultValues: {
@@ -26,33 +32,55 @@ const GradePointDetail = () => {
         required: true,
       },
       grade_point: {
-        required: true,
+        required: false,
       },
       remark: {
         required: true,
       },
       key_range: {
-        required: true,
+        required: false,
       },
     },
   });
 
   const onSubmit = (data) => {
-    // if (isEdit)
-    //   return updateGrading({
-    //     id: singleGrading.id,
-    //     ...data,
-    //   });
-    console.log({ data });
-    postGradePoint(data);
+    console.log({
+      min_mark: Number(data.min_mark),
+      max_mark: Number(data.max_mark),
+      grade_point: Number(data.max_mark),
+      remark: data.remark,
+      key_range: `${data.min_mark} - ${data.max_mark}`,
+    });
+
+    if (isEdit)
+      return updateGrading({
+        id: singleGrading.id,
+        body: {
+          min_mark: Number(data.min_mark),
+          max_mark: Number(data.max_mark),
+          grade_point: Number(data.max_mark),
+          remark: data.remark,
+          key_range: `${data.min_mark} - ${data.max_mark}`,
+        },
+      });
+
+    postGradePoint({
+      min_mark: Number(data.min_mark),
+      max_mark: Number(data.max_mark),
+      grade_point: Number(data.max_mark),
+      remark: data.remark,
+      key_range: `${data.min_mark} - ${data.max_mark}`,
+    });
   };
 
   useEffect(() => {
-    if (singleGrading) {
-      setInputs({ ...inputs, ...singleGrading });
+    if (gradePoint.filteredGp) {
+      setInputs({ ...inputs, ...gradePoint.filteredGp });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [singleGrading]);
+  }, [gradePoint.filteredGp]);
+
+  // console.log({ gradePoint: gradePoint.filteredGp });
 
   return (
     <DetailView
@@ -63,7 +91,7 @@ const GradePointDetail = () => {
       <Row className='mb-0 mb-sm-4'>
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label='Min Mark'
+            label='Min Point'
             type='number'
             hasError={!!errors.min_mark}
             {...getFieldProps("min_mark")}
@@ -74,7 +102,7 @@ const GradePointDetail = () => {
         </Col>
         <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
-            label='Max Mark'
+            label='Max Point'
             type='number'
             hasError={!!errors.max_mark}
             {...getFieldProps("max_mark")}
@@ -85,7 +113,7 @@ const GradePointDetail = () => {
         </Col>
       </Row>
       <Row className='mb-0 mb-sm-4'>
-        <Col sm='6' className='mb-4 mb-sm-0'>
+        {/* <Col sm='6' className='mb-4 mb-sm-0'>
           <AuthInput
             label='Grade Point'
             type='number'
@@ -95,35 +123,15 @@ const GradePointDetail = () => {
           {!!errors.grade_point && (
             <p className='error-message'>{errors.grade_point}</p>
           )}
-        </Col>
-        <Col sm='6' className='mb-4 mb-sm-0'>
-          <AuthInput
-            label='Remark'
-            hasError={!!errors.remark}
-            {...getFieldProps("remark")}
-          />
-          {!!errors.remark && <p className='error-message'>{errors.remark}</p>}
-        </Col>
-      </Row>
-      <Row className='mb-0 mb-sm-4'>
-        <Col sm='6' className='mb-4 mb-sm-0'>
-          <AuthInput
-            label='Key Range'
-            hasError={!!errors.key_range}
-            {...getFieldProps("key_range")}
-          />
-          {!!errors.key_range && (
-            <p className='error-message'>{errors.key_range}</p>
-          )}
-        </Col>
-        {/* <Col sm='6' className='mb-4 mb-sm-0'>
-          <AuthInput
-            label='Remark'
-            hasError={!!errors.remark}
-            {...getFieldProps("remark")}
-          />
-          {!!errors.remark && <p className='error-message'>{errors.remark}</p>}
         </Col> */}
+        <Col sm='6' className='mb-4 mb-sm-0'>
+          <AuthInput
+            label='Remark'
+            hasError={!!errors.remark}
+            {...getFieldProps("remark")}
+          />
+          {!!errors.remark && <p className='error-message'>{errors.remark}</p>}
+        </Col>
       </Row>
     </DetailView>
   );

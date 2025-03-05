@@ -4,7 +4,7 @@ import { useAppContext } from "./useAppContext";
 import queryKeys from "../utils/queryKeys";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthDetails } from "../stores/authDetails";
-import { queryOptions } from "../utils/constants";
+import { queryOptions, sortArray } from "../utils/constants";
 
 export const useGradePoint = () => {
   const { apiServices, permission, errorHandler, user } = useAppContext();
@@ -24,15 +24,22 @@ export const useGradePoint = () => {
   } = useQuery(["GET_ALL_GRADE_POINT"], apiServices.getAllGpa, {
     ...queryOptions,
     select: (data) => {
-      console.log({ data });
-      return (
+      // console.log({ data });
+      const gpd =
         data?.data?.map((obj, index) => {
           return {
             ...obj,
             new_id: index + 1,
           };
-        }) ?? []
-      );
+        }) ?? [];
+      const sorted = sortArray(gpd, "max_mark", "asc", "number");
+
+      const filteredGp = gpd?.find((g) => Number(g.id) === Number(id));
+
+      return {
+        filteredGp,
+        gp: sorted,
+      };
 
       // return { ...data, options: f };
     },
@@ -94,6 +101,8 @@ export const useGradePoint = () => {
     useMutation(apiServices.updateGpa, {
       onSuccess() {
         toast.success("Grade Point has been updated");
+        refetchGradePoint();
+        navigate("/app/grade-point");
       },
       onError: apiServices.errorHandler,
     });
@@ -109,7 +118,7 @@ export const useGradePoint = () => {
   // addScoresLoading ||
   // scoresLoading;
 
-  // console.log({ scores, activate });
+  // console.log({ id, gradePoint: gradePoint.gp });
 
   return {
     permission,

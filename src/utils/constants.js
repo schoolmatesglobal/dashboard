@@ -110,6 +110,33 @@ export const uniqueArray = (array, value, value2) => {
   }
 };
 
+export const sortArray = (data, key, order = 'asc', sortType = 'string') => {
+  return [...data].sort((a, b) => {
+      let valueA = a[key];
+      let valueB = b[key];
+
+      if (sortType === 'number') {
+          // Convert numeric strings to numbers before sorting
+          valueA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+          valueB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+          if (typeof valueA === 'number' && typeof valueB === 'number') {
+              return order === 'asc' ? valueA - valueB : valueB - valueA;
+          }
+      } else {
+          // String sorting (default behavior)
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+              return order === 'asc'
+                  ? valueA.localeCompare(valueB, undefined, { numeric: true })
+                  : valueB.localeCompare(valueA, undefined, { numeric: true });
+          }
+      }
+
+      return 0; // If types are mixed, no sorting happens
+  });
+};
+
+
 export function toSentenceCase(str) {
   if (!str || typeof str !== "string") {
     return "";

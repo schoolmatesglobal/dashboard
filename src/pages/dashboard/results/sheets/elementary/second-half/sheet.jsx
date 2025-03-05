@@ -214,6 +214,26 @@ const ElementarySecondHalfSheet = () => {
 
   // const !hasOneAssess = !hasOneAssess;
 
+  const getGpRemark = (score) => {
+    const res = gradePoint?.gp?.find(
+      (x) => score >= Number(x.min_mark) && score <= Number(x.max_mark)
+    );
+
+    return (
+      res || {
+        campus: "Corona Elementary",
+        grade_point: "0",
+        id: 0,
+        key_range: "0 - 0",
+        max_mark: 0,
+        min_mark: 0,
+        new_id: 1,
+        remark: "Out of range",
+        sch_id: "SCHMATE/117209",
+      }
+    );
+  };
+
   const totalScore = !hasOneAssess
     ? removeZeroExam()?.reduce((accumulator, s) => {
         const firstAssessmentScore =
@@ -617,7 +637,7 @@ const ElementarySecondHalfSheet = () => {
                       whiteSpace: "wrap",
                     }}
                   >
-                    {studentData?.firstname} {studentData?.surname}{" "}
+                    {studentData?.surname} {studentData?.firstname}{" "}
                     {studentData?.middlename}
                   </h4>
                 </div>
@@ -1337,6 +1357,17 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
+                          Student's Grade Point
+                        </h4>
+                      </div>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            color: "green",
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
                           Student's Grade
                         </h4>
                       </div>
@@ -1376,8 +1407,20 @@ const ElementarySecondHalfSheet = () => {
                             fontWeight: "bold",
                           }}
                         >
+                          {/* {(totalScore / removeZeroExam()?.length).toFixed(2)} */}
+                          3.5
+                        </p>
+                      </div>
+                      <div className='table-data'>
+                        <p
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
                           {/* {classAverage?.["Grade"]} */}
-                          {
+                          {/* {
                             getScoreRemark(
                               roundToNearestTen(
                                 (totalScore / removeZeroExam()?.length).toFixed(
@@ -1385,7 +1428,8 @@ const ElementarySecondHalfSheet = () => {
                                 )
                               )
                             )?.remark
-                          }
+                          } */}
+                          {getGpRemark(3.5)?.remark}
                         </p>
                       </div>
                     </div>
@@ -1562,7 +1606,7 @@ const ElementarySecondHalfSheet = () => {
                 }
                 {
                   <div className='second-half-academic-rating text-center'>
-                    {gradePoint?.map((grade) => (
+                    {gradePoint?.gp?.map((grade) => (
                       <div key={grade?.id} className='table-data'>
                         <p
                           style={{
@@ -1571,9 +1615,7 @@ const ElementarySecondHalfSheet = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {grade?.grade_point} - [{grade?.min_mark} -{" "}
-                          {grade?.max_mark} - {grade?.remark}] <br /> [
-                          {grade?.key_range}]
+                          [{grade?.key_range}] - {grade?.remark}
                         </p>
                       </div>
                     ))}
