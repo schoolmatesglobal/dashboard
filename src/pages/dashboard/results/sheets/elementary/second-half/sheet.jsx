@@ -1357,7 +1357,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          Student's Grade Point
+                          Grade Point Average (G.P.A)
                         </h4>
                       </div>
                       <div className='table-data'>
