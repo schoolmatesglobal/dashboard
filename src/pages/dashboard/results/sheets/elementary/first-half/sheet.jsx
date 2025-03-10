@@ -22,12 +22,16 @@ const ElementaryFirstHalfSheet = () => {
     isLoading,
     setStudentData,
     pdfExportComponent,
+    teacherComment,
+    isStudent,
+    setTeacherComment,
     handlePrint,
     studentData,
     maxScores,
     locationState,
     getTotalScores,
     additionalCreds,
+    setAdditionalCreds,
     setInitGetExistingResult,
     inputs,
     handleChange,
@@ -35,6 +39,13 @@ const ElementaryFirstHalfSheet = () => {
     releaseResultLoading,
     withholdResult,
     withholdResultLoading,
+    setIdWithComputedResult,
+    getSubjectByClass: { data: subjects, isFetching: isFetchingSubjects },
+    getMidTermResult: {
+      data: midtermResults,
+      isFetching: isFetchingMidtermResults,
+    },
+    // getSubjectByClass: { data: subjects, isFetching: isFetchingSubjects },
     studentByClass2,
     studentByClass,
   } = useResults();
@@ -45,9 +56,9 @@ const ElementaryFirstHalfSheet = () => {
   const { userDetails, setUserDetails } = useAuthDetails();
 
   const hasOneAssess =
-  userDetails?.maxScores?.has_two_assessment === 0 ||
-  userDetails?.maxScores?.has_two_assessment === false ||
-  userDetails?.maxScores?.has_two_assessment === "false";
+    maxScores?.has_two_assessment === 0 ||
+    maxScores?.has_two_assessment === false ||
+    maxScores?.has_two_assessment === "false";
 
   // const { studentByClass2 } = useStudent();
 
@@ -55,32 +66,20 @@ const ElementaryFirstHalfSheet = () => {
 
   const midTermMax = () => {
     let value;
-    if (
-      !hasOneAssess &&
-      inputs.assessment === "first_assesment"
-    ) {
-      value = userDetails?.maxScores?.first_assessment;
-    } else if (
-      !hasOneAssess &&
-      inputs.assessment === "second_assesment"
-    ) {
-      value = userDetails?.maxScores?.second_assessment;
+    if (!hasOneAssess && inputs.assessment === "first_assesment") {
+      value = maxScores?.first_assessment;
+    } else if (!hasOneAssess && inputs.assessment === "second_assesment") {
+      value = maxScores?.second_assessment;
     } else if (hasOneAssess) {
-      value = userDetails?.maxScores?.midterm;
+      value = maxScores?.midterm;
     }
     return value;
   };
   const assessmentType = () => {
     let value;
-    if (
-      !hasOneAssess &&
-      inputs.assessment === "first_assesment"
-    ) {
+    if (!hasOneAssess && inputs.assessment === "first_assesment") {
       value = "First Assessment";
-    } else if (
-      !hasOneAssess &&
-      inputs.assessment === "second_assesment"
-    ) {
+    } else if (!hasOneAssess && inputs.assessment === "second_assesment") {
       value = "Second Assessment";
     } else if (hasOneAssess) {
       value = "First Assessment";
@@ -113,7 +112,7 @@ const ElementaryFirstHalfSheet = () => {
   }
 
   const checkResultComputed = (function () {
-    if (user?.designation_name === "Student") {
+    if (isStudent) {
       if (
         "results" in additionalCreds &&
         additionalCreds?.status === "released"
@@ -152,14 +151,22 @@ const ElementaryFirstHalfSheet = () => {
     }
   })();
 
-  const allLoading = isLoading || loading1;
+  const allLoading =
+    isLoading || loading1 || isFetchingSubjects || isFetchingMidtermResults;
+
+  // useEffect(() => {
+  //   // setTeacherComment(additionalCreds?.teacher_comment);
+  //   setStatus(additionalCreds?.status);
+  // }, [additionalCreds?.status, studentData]);
 
   useEffect(() => {
-    // setTeacherComment(additionalCreds?.teacher_comment);
+    setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
-  }, [additionalCreds?.status, studentData]);
+    setAdditionalCreds(midtermResults ?? {});
+    setIdWithComputedResult([midtermResults?.student_id]);
+  }, [allLoading, midtermResults?.results2, studentData]);
 
-  // console.log({ additionalCreds });
+  console.log({ additionalCreds, userDetails });
 
   // console.log({
   //   inputs,

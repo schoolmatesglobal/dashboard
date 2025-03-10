@@ -92,6 +92,9 @@ export const permissions = {
     grading: {
       create: true,
     },
+    gradepoint: {
+      create: true,
+    },
     // students: {
     //   create: false,
     //   read: true,
@@ -649,6 +652,9 @@ export const permissions = {
       save: true,
     },
     grading: {
+      create: true,
+    },
+    "grade-point": {
       create: true,
     },
     staffs: {

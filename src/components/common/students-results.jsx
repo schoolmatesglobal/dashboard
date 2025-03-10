@@ -7,11 +7,11 @@ const StudentsResults = ({
   isLoading,
   studentData,
   onProfileSelect,
-  // idWithComputedResult,
+  idWithComputedResult,
 }) => {
-  const { idWithComputedResult } = useResults();
+  // const { idWithComputedResult } = useResults();
 
-  console.log({ idWithComputedResult });
+  // console.log({ idWithComputedResult, studentData });
 
   return (
     <div className='students-wrapper'>

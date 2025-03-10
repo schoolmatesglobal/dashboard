@@ -8,10 +8,26 @@ import { useAppContext } from "./useAppContext";
 import { mergeAndOverrideArrays } from "../pages/dashboard/results/constant";
 import { useForm } from "react-formid";
 import { useAuthDetails } from "../stores/authDetails";
+import {
+  queryOptions,
+  toSentenceCase,
+  uniqueArray,
+  userRole,
+} from "../utils/constants";
 
 export const useResults = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("results");
+
+  const authority = userRole(user?.designation_id);
+
+  const mergedClass = user?.class_assigned ? user?.class_assigned : user.class;
+  const isAdminPrincipal =
+    (authority === "admin" ||
+      authority === "principal" ||
+      authority === "superadmin") ??
+    false;
+  const isStudent = authority === "student" ?? false;
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -40,6 +56,7 @@ export const useResults = () => {
   const [studentSecondAssess, setStudentSecondAssess] = useState([]);
   const [studentMidterm, setStudentMidterm] = useState([]);
   const [additionalCreds, setAdditionalCreds] = useState({});
+  // const [additionalCreds2, setAdditionalCreds2] = useState({});
   const [teacherComment, setTeacherComment] = useState("");
   const [performanceRemark, setPerformanceRemark] = useState("good");
   const [abacus, setAbacus] = useState("");
@@ -47,6 +64,8 @@ export const useResults = () => {
   const [extraActivities, setExtraActivities] = useState([]);
   const [preActivities2, setPreActivities2] = useState([]);
   const [activateEndOfTerm, setActivateEndOfTerm] = useState(true);
+
+  const [computedSubjects, setComputedSubjects] = useState([]);
 
   const [loading1, setLoading1] = useState(false);
 
@@ -57,10 +76,34 @@ export const useResults = () => {
     }, time);
   }
 
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
+
+  const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
+    [queryKeys.GET_MAX_SCORES],
+    apiServices.getMaxScores,
+    {
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
+      enabled: !is_preschool,
+      // enabled: !is_preschool,
+      onError(err) {
+        errorHandler(err);
+      },
+      select: (data) => {
+        const dt = data?.data;
+        // const kt = formatData(data);
+        console.log({ scoreData: data, dt });
+        return dt;
+      },
+    }
+  );
+
   const hasOneAssess =
-    userDetails?.maxScores?.has_two_assessment === 0 ||
-    userDetails?.maxScores?.has_two_assessment === false ||
-    userDetails?.maxScores?.has_two_assessment === "false";
+    maxScores?.has_two_assessment === 0 ||
+    maxScores?.has_two_assessment === false ||
+    maxScores?.has_two_assessment === "false";
 
   const { state } = useLocation();
   const studentClassName = `${studentData?.present_class}`;
@@ -71,16 +114,19 @@ export const useResults = () => {
   });
 
   const studentId = () => {
-    if (user?.designation_id === "7") {
+    if (isStudent) {
       return user?.id;
     } else {
       return studentData?.id;
     }
   };
 
-  const className = state?.creds?.class_name
-    ? state?.creds?.class_name
-    : user?.class_assigned;
+  const stdId = isStudent ? user?.id : studentData?.id;
+
+  const className = isAdminPrincipal ? state?.creds?.class_name : mergedClass;
+  // const className = state?.creds?.class_name
+  //   ? state?.creds?.class_name
+  //   : mergedClass;
 
   const { inputs, handleChange } = useForm({
     defaultValues: {
@@ -100,8 +146,6 @@ export const useResults = () => {
 
   // console.log({ user });
   // console.log({ initGetStudentsByClass, subjects });
-
-  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
   const findId = () => {
     const cs = userDetails.class_assigned?.toUpperCase();
@@ -123,9 +167,10 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       select: (data) => data?.data?.attributes,
     }
   );
@@ -137,35 +182,16 @@ export const useResults = () => {
       onError(err) {
         errorHandler(err);
       },
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       select: apiServices.formatData,
     }
   );
 
   const activate =
     user?.designation_name === "Admin" || "Teacher" ? true : false;
-
-  const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
-    [queryKeys.GET_MAX_SCORES],
-    apiServices.getMaxScores,
-    {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      enabled: activate,
-      // enabled: !is_preschool,
-      onError(err) {
-        errorHandler(err);
-      },
-      select: (data) => {
-        // console.log({ scoreData: data });
-        return data?.data?.attributes;
-        // return data?.data[0]?.attributes;
-      },
-    }
-  );
 
   const classValue = () => {
     if (user?.department !== "Admin") {
@@ -188,19 +214,17 @@ export const useResults = () => {
     useQuery(
       [
         queryKeys.GET_STUDENTS_BY_ATTENDANCE,
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned,
+        className,
         // state?.creds?.session,
       ],
       () =>
         apiServices.getStudentByClass2(
-          chk
+          className
           //   ,
           // state?.creds?.session
         ),
       {
-        enabled: initGetStudentData && !!chk,
+        enabled: initGetStudentData && !!className,
         select: (data) => {
           const dt2 = apiServices.formatData(data);
 
@@ -276,9 +300,10 @@ export const useResults = () => {
       ),
     {
       enabled: chk2,
-      retry: 1,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
     }
@@ -287,18 +312,14 @@ export const useResults = () => {
   // student by class2
   const { data: studentByClass2, isLoading: studentByClass2Loading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS3, user?.class_assigned],
-    () =>
-      apiServices.getStudentByClass2(
-        state?.creds?.class_name
-          ? state?.creds?.class_name
-          : user?.class_assigned
-      ),
+    () => apiServices.getStudentByClass2(className),
 
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      enabled: permission?.view && !!chk,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
+      enabled: permission?.view && !!className,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
       select: (data) => {
@@ -324,40 +345,49 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_STUDENT_END_OF_TERM_RESULTS,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
-      apiServices.getEndOfTermResults(
-        studentId(),
-        state?.creds?.term,
-        state?.creds?.session
-      ),
+      isStudent
+        ? apiServices.getEndOfTermResults(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          )
+        : apiServices.getStaffEndOfTermResults(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          ),
     {
       // enabled: false,
-      retry: 1,
-      enabled:
-        activateEndOfTerm &&
-        initGetExistingSecondHalfResult &&
-        !is_preschool &&
-        state?.creds?.period === "Second Half",
+      // retry: 1,
+      // refetchOnWindowFocus: false,
+      // refetchOnMount: true,
+      // refetchOnReconnect: false,
+      ...queryOptions,
+      enabled: false,
+      // enabled:
+      //   activateEndOfTerm &&
+      //   initGetExistingSecondHalfResult &&
+      //   !is_preschool &&
+      //   state?.creds?.period === "Second Half",
       select(data) {
         const tt = apiServices.formatData(data);
-        console.log({
-          hasOneAssess,
-          data,
-          tt,
-          state,
-          user,
-          is_preschool,
-          userDetails,
-        });
+        // console.log({
+        //   hasOneAssess,
+        //   data,
+        //   tt,
+        //   state,
+        //   user,
+        //   is_preschool,
+        //   userDetails,
+        // });
         return tt;
       },
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      refetchOnReconnect: false,
+
       // staleTime: 60000 * 30,
 
       onSuccess(data) {
@@ -369,7 +399,7 @@ export const useResults = () => {
           setIdWithComputedResult(ids);
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               state?.creds?.period === x.period
@@ -458,15 +488,146 @@ export const useResults = () => {
     }
   );
 
+  ///////getEndOfTermResult ///////////////
+  const getEndOfTermResult = useQuery(
+    [
+      "GET_END_OF_TERM_RESULT",
+      stdId,
+      state?.creds?.term,
+      state?.creds?.session,
+    ],
+    () =>
+      isStudent
+        ? apiServices.getEndOfTermResults(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          )
+        : apiServices.getStaffEndOfTermResults(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          ),
+    {
+      ...queryOptions,
+      enabled:
+        stdId &&
+        activateEndOfTerm &&
+        initGetExistingSecondHalfResult &&
+        state?.creds?.term &&
+        state?.creds?.session &&
+        state?.creds?.period === "Second Half",
+      select(data) {
+        if (data.data.length > 0) {
+          const uniqueRes = uniqueArray(
+            data?.data[0]?.attributes?.results,
+            "subject"
+          );
+          const get =
+            uniqueRes?.map((dt, i) => {
+              return {
+                id: i + 1,
+                subject: toSentenceCase(dt.subject),
+                score: dt.score,
+                grade: dt.score,
+              };
+            }) ?? [];
+          const newPP = data.data[0].attributes?.psychomotor_performance?.map(
+            (ps) => {
+              return {
+                ...ps,
+                score: {
+                  value: ps.score,
+                  label: ps.score,
+                },
+              };
+            }
+          );
+          const newPR = data.data[0].attributes?.pupil_report?.map((ps) => {
+            return {
+              ...ps,
+              score: {
+                value: ps.score,
+                label: ps.score,
+              },
+            };
+          });
+          console.log({ getD: data, get, newPP, newPR });
+          return {
+            ...data.data[0].attributes,
+            psychomotor_performance: newPP,
+            pupil_report: newPR,
+            results2: get,
+          };
+        } else {
+          return {
+            results2: [],
+            teacher_comment: "",
+            hos_comment: "",
+            status: "",
+            school_opened: "0",
+            times_present: "0",
+            abacus: {
+              name: null,
+            },
+            extra_curricular_activities: [],
+          };
+        }
+      },
+      onSuccess(data) {
+        setAdditionalCreds({
+          ...additionalCreds,
+          ...data,
+          school_opened: data?.school_opened ?? "0",
+          times_present: data?.times_present ?? "0",
+          times_absent: data?.times_absent ?? "0",
+        });
+      },
+    }
+  );
+
+  /////////////// getSubjectByClass  /////////////
+  const getSubjectByClass = useQuery(
+    ["GET_SUBJECTS_BY_CLASS_COMPUTE", className],
+    () => apiServices.getSubjectByCampus(),
+    // () => apiServices.getSubjectByClass(className),
+    {
+      ...queryOptions,
+      enabled: Boolean(className),
+      select: (data) => {
+        const uniqueSub = uniqueArray(
+          data?.data[0]?.attributes?.subject,
+          "name"
+        );
+        const fm =
+          uniqueSub?.map((dt) => {
+            return {
+              // ...dt,
+              id: dt.id,
+              subject: toSentenceCase(dt.name),
+              score: "0",
+              grade: "0",
+            };
+          }) ?? [];
+
+        // console.log({ mdata: data, fm });
+
+        return fm;
+      },
+      onSuccess(data) {},
+    }
+  );
+
   const { isLoading: subjectsByClassLoading3, data: subjectsByClass3 } =
     useQuery(
       [queryKeys.GET_SUBJECTS_BY_CLASS2, findId()],
       () => apiServices.getSubjectByClass2(findId()),
       {
         enabled: !!findId(),
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         select: (data) => {
           const newData = apiServices.formatData(data);
           return newData;
@@ -482,17 +643,13 @@ export const useResults = () => {
     isLoading: subjectsByClassLoading,
     // refetch: refetchSubjectsByClass,
   } = useQuery(
-    [
-      queryKeys.GET_SUBJECTS_BY_CLASS,
-      state?.creds?.class_name
-        ? state?.creds?.class_name
-        : user?.class_assigned,
-    ],
+    [queryKeys.GET_SUBJECTS_BY_CLASS, className],
     () => apiServices.getSubjectByCampus(),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: false,
       // enabled: initGetStudentsByClass && !is_preschool,
       select: apiServices.formatData,
@@ -511,24 +668,25 @@ export const useResults = () => {
     data: preSchoolSubjectsByClass,
     isLoading: preSchoolSubjectsByClassLoading,
   } = useQuery(
-    [queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS, cn],
+    [queryKeys.GET_PRE_SCHOOL_SUBJECTS_BY_CLASS, className],
     () =>
       apiServices.getPreSchoolSubjectsByClass(
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
-        cn
+        className
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         is_preschool &&
         !!state?.creds?.period &&
         !!state?.creds?.term &&
         !!state?.creds?.session &&
-        !!cn,
+        !!className,
       // select: apiServices.formatData,
       select: (data) => {
         const dt = apiServices.formatData(data);
@@ -558,15 +716,16 @@ export const useResults = () => {
         state?.creds?.session
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: is_preschool,
       // select: apiServices.formatData,
       select: (data) => {
         const dt = apiServices.formatData(data);
 
-        // console.log({ rdata: data, rd: dt });
+        // console.log({ cpdata: data, rd: dt });
 
         return dt;
       },
@@ -581,24 +740,35 @@ export const useResults = () => {
     useQuery(
       [
         queryKeys.GET_RESULT_CUMMULATIVE_SCORES,
-        studentId(),
+        stdId,
         state?.creds?.period,
         state?.creds?.term,
         state?.creds?.session,
       ],
       () =>
         apiServices.getCummulativeScores({
-          student_id: studentId(),
+          student_id: stdId,
           period: state?.creds?.period,
           term: state?.creds?.term,
           session: state?.creds?.session,
         }),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: !is_preschool && state?.creds?.period === "Second Half",
-        select: (data) => data?.data,
+        select: (data) => {
+          const kt = data?.data;
+          const uniqueRes = uniqueArray(kt, "subject")?.map((dt, i) => {
+            return {
+              ...dt,
+              subject: toSentenceCase(dt.subject),
+            };
+          });
+          console.log({ kt, cData: data, uniqueRes });
+          return uniqueRes ?? [];
+        },
       }
     );
 
@@ -606,21 +776,22 @@ export const useResults = () => {
     [
       queryKeys.GET_YEARLY_CLASS_AVERAGE,
       studentClassName,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getClassAverage({
         class_name: studentClassName,
-        student_id: studentId(),
+        student_id: stdId,
         term: state?.creds?.term,
         session: state?.creds?.session,
       }),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !is_preschool && state?.creds?.period === "Second Half",
     }
   );
@@ -630,15 +801,16 @@ export const useResults = () => {
       [queryKeys.GET_CLASS_AVERAGE, studentClassName, state?.creds?.session],
       () =>
         apiServices.getYearlyClassAverage({
-          student_id: studentId(),
+          student_id: stdId,
           class_name: additionalCreds?.class_name,
           // class_name: studentClassName,
           session: state?.creds?.session,
         }),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled:
           !is_preschool &&
           Boolean(additionalCreds?.class_name) &&
@@ -647,7 +819,7 @@ export const useResults = () => {
         select(data) {
           const st = apiServices.formatData(data);
 
-          console.log({ st, data });
+          // console.log({ st, data });
           return data;
         },
       }
@@ -658,19 +830,14 @@ export const useResults = () => {
     isLoading: subjectsByClass2Loading,
     refetch: refetchSubjectsByClass2,
   } = useQuery(
-    [
-      queryKeys.GET_SUBJECTS_BY_CLASS,
-      state?.creds?.class_name
-        ? state?.creds?.class_name
-        : user?.class_assigned,
-      "2",
-    ],
+    [queryKeys.GET_SUBJECTS_BY_CLASS, className, "2"],
     () => apiServices.getSubjectByCampus(),
     {
       // enabled: initGetExistingResult && !is_preschool,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: initGetSubjects && !is_preschool,
       select(data) {
         const st = apiServices.formatData(data);
@@ -704,14 +871,14 @@ export const useResults = () => {
         //     ? subj
         //     : fss;
 
-        console.log({
-          kdata2: data,
-          user,
-          st,
-          teacherSubjects,
-          fss,
-          filteredSubj,
-        });
+        // console.log({
+        //   kdata2: data,
+        //   user,
+        //   st,
+        //   teacherSubjects,
+        //   fss,
+        //   filteredSubj,
+        // });
         return st;
       },
       onSuccess(data) {
@@ -752,7 +919,7 @@ export const useResults = () => {
 
           setSubjects(filteredSubj ?? []);
 
-          console.log({ dataSS: data, subj, fss });
+          // console.log({ dataSS: data, subj, fss });
         } else {
           setSubjects([]);
         }
@@ -777,21 +944,22 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentId(),
+        stdId,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -812,7 +980,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -894,22 +1062,23 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_FIRST_ASSESSMENT,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getFirstAssessment(
-        studentId(),
+        stdId,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -928,7 +1097,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -957,20 +1126,21 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentId(),
+        stdId,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
-      retry: 1,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -992,7 +1162,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1074,21 +1244,22 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_SECOND_ASSESSMENT,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getSecondAssessment(
-        studentId(),
+        stdId,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
@@ -1108,7 +1279,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1135,29 +1306,37 @@ export const useResults = () => {
   } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentId(),
+      stdId,
       // studentData?.id,
       state?.creds?.term,
       state?.creds?.session,
     ],
     () =>
-      apiServices.getMidTermResult(
-        studentId(),
-        // studentData?.id,
-        state?.creds?.term,
-        state?.creds?.session
-      ),
+      isStudent
+        ? apiServices.getMidTermResult(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          )
+        : apiServices.getStaffMidTermResult(
+            stdId,
+            // studentData?.id,
+            state?.creds?.term,
+            state?.creds?.session
+          ),
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      enabled:
-        // initGetExistingResult &&
-        !is_preschool && hasOneAssess && state?.creds?.period === "First Half",
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
+      enabled: false,
+      // enabled:
+      //   // initGetExistingResult &&
+      //   !is_preschool && hasOneAssess && state?.creds?.period === "First Half",
       select(data) {
         const kp = apiServices.formatData(data);
-        console.log({ kdata: data, kp });
+        // console.log({ kdata: data, kp });
         return kp;
       },
       onSuccess(data) {
@@ -1174,7 +1353,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session &&
               x.period === "First Half"
@@ -1245,41 +1424,101 @@ export const useResults = () => {
     }
   );
 
+  ///////getMidTermResult /////////////////////////////
+  const getMidTermResult = useQuery(
+    [
+      "GET_MIDTERM",
+      stdId,
+      // studentData?.id,
+      state?.creds?.term,
+      state?.creds?.session,
+      state?.creds?.period,
+    ],
+    () =>
+      isStudent
+        ? apiServices.getMidTermResult(
+            stdId,
+            state?.creds?.term,
+            state?.creds?.session
+          )
+        : apiServices.getStaffMidTermResult(
+            stdId,
+            // studentData?.id,
+            state?.creds?.term,
+            state?.creds?.session
+          ),
+    {
+      ...queryOptions,
+      enabled:
+        // initGetExistingResult &&
+        !is_preschool,
+      // !is_preschool && hasOneAssess && state?.creds?.period === "First Half",
+      select(data) {
+        if (data.data.length > 0) {
+          const uniqueRes = uniqueArray(
+            data?.data[0]?.attributes?.results,
+            "subject"
+          );
+          const gmt =
+            uniqueRes.map((dt, i) => {
+              return {
+                id: i + 1,
+                subject: toSentenceCase(dt.subject),
+                score: dt.score,
+                grade: dt.score,
+              };
+            }) ?? [];
+          console.log({ mdata: data, uniqueRes });
+          return {
+            ...data.data[0].attributes,
+            results2: gmt,
+          };
+        } else {
+          const newR = {
+            results2: [],
+          };
+          return newR;
+        }
+      },
+      // onSuccess(data) {
+      //   if (state?.creds?.period === "Second Half") {
+      //     setStudentMidterm(data.results2);
+      //   }
+      // },
+    }
+  );
+
   // midterm assessment for end of term
 
   const { data: midtermResult2, isLoading: midtermResultLoading2 } = useQuery(
     [
       queryKeys.GET_MIDTERM,
-      studentId(),
+      stdId,
       state?.creds?.term,
       state?.creds?.session,
       "2",
     ],
     () =>
       apiServices.getMidTermResult(
-        studentId(),
+        stdId,
         state?.creds?.term,
         state?.creds?.session
       ),
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      enabled:
-        // initGetExistingResult &&
-        !is_preschool && hasOneAssess && state?.creds?.period === "Second Half",
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
+      enabled: false,
+      // enabled:
+      //   !is_preschool && hasOneAssess && state?.creds?.period === "Second Half",
       select(data) {
         const kt = apiServices.formatData(data);
 
-        console.log({
-          kdata: data,
-          kt,
-        });
-
         const res = kt?.find(
           (x) =>
-            x.student_id === studentId() &&
+            x.student_id === stdId &&
             x.term === state?.creds?.term &&
             state?.creds?.session === x.session
           // x.period === "Second Half"
@@ -1327,14 +1566,14 @@ export const useResults = () => {
             ? mergeSubjectAndResult2()
             : studentResult;
 
-        console.log({
-          kdata3: data,
-          kt,
-          filteredSubjects,
-          mergeSubjectAndResult2: mergeSubjectAndResult2(),
-          mt,
-          studentResult,
-        });
+        // console.log({
+        //   kdata3: data,
+        //   kt,
+        //   filteredSubjects,
+        //   mergeSubjectAndResult2: mergeSubjectAndResult2(),
+        //   mt,
+        //   studentResult,
+        // });
 
         return kt;
       },
@@ -1351,7 +1590,7 @@ export const useResults = () => {
 
           const res = data?.find(
             (x) =>
-              x.student_id === studentId() &&
+              x.student_id === stdId &&
               x.term === state?.creds?.term &&
               state?.creds?.session === x.session
             // x.period === "Second Half"
@@ -1403,16 +1642,6 @@ export const useResults = () => {
 
           // setStudentMidterm([]);
           setStudentMidterm(mt ?? []);
-          // console.log({
-          //   pdata: data,
-          //   idWithComputedResult,
-          //   res,
-          //   studentResult,
-          //   studentData,
-          //   studentMidterm,
-          //   filteredSubjects,
-          //   mergeSubjectAndResult3: mergeSubjectAndResult2(),
-          // });
         }
       },
     }
@@ -1422,9 +1651,10 @@ export const useResults = () => {
     [queryKeys.GET_GRADING],
     apiServices.getGrading,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !is_preschool,
       select: apiServices.formatData,
       onError(err) {
@@ -1472,7 +1702,7 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentId(),
+              student_id: stdId,
             },
           ],
         }),
@@ -1483,19 +1713,29 @@ export const useResults = () => {
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
+            getMidTermResult.refetch();
             trigger(500);
             refetchFirstAssess();
-            refetchMidtermResult();
+            // refetchMidtermResult();
+
             // refetchFirstAssess2();
           } else if (
             !hasOneAssess &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
+            getMidTermResult.refetch();
             trigger(500);
             refetchSecondAssess();
-            refetchMidtermResult();
+            // refetchMidtermResult();
+
             // refetchFirstAssess2();
+          } else if (hasOneAssess && state?.creds?.period === "First Half") {
+            getMidTermResult.refetch();
+            trigger(500);
+          } else {
+            getEndOfTermResult.refetch();
+            trigger(500);
           }
           toast.success("Result has been released successfully");
         },
@@ -1515,7 +1755,7 @@ export const useResults = () => {
           session: state?.creds?.session,
           students: [
             {
-              student_id: studentId(),
+              student_id: stdId,
             },
           ],
         }),
@@ -1527,19 +1767,29 @@ export const useResults = () => {
             inputs.assessment === "first_assesment" &&
             state?.creds?.period === "First Half"
           ) {
+            getMidTermResult.refetch();
             trigger(500);
             refetchFirstAssess();
-            refetchMidtermResult();
+            // refetchMidtermResult();
+
             // refetchFirstAssess2();
           } else if (
             !hasOneAssess &&
             inputs.assessment === "second_assesment" &&
             state?.creds?.period === "First Half"
           ) {
+            getMidTermResult.refetch();
             trigger(500);
             refetchSecondAssess();
-            refetchMidtermResult();
+            // refetchMidtermResult();
+
             // refetchFirstAssess2();
+          } else if (hasOneAssess && state?.creds?.period === "First Half") {
+            getMidTermResult.refetch();
+            trigger(500);
+          } else {
+            getEndOfTermResult.refetch();
+            trigger(500);
           }
         },
         onError(err) {
@@ -1588,7 +1838,8 @@ export const useResults = () => {
           );
           // refetchFirstAssess2();
         } else {
-          refetchMidtermResult();
+          // refetchMidtermResult();
+          getMidTermResult.refetch()
           trigger(500);
           toast.success(`Mid Term Result has been computed successfully`);
         }
@@ -1604,8 +1855,9 @@ export const useResults = () => {
   } = useMutation(apiServices.addEndOfTermResult, {
     onSuccess() {
       toast.success(`End of Term Result has been computed successfully`);
+      getEndOfTermResult.refetch();
       trigger(500);
-      endOfTermResultsRefetch();
+      // endOfTermResultsRefetch();
     },
     onError(err) {
       apiServices.errorHandler(err);
@@ -1618,7 +1870,7 @@ export const useResults = () => {
   } = useMutation(apiServices.postPreSchoolResult, {
     onSuccess() {
       trigger(500);
-      refetchSubjects()
+      refetchSubjects();
       preSchoolCompiledResultsRefetch();
       toast.success("Result has been computed successfully");
     },
@@ -1642,6 +1894,8 @@ export const useResults = () => {
 
     return res || { grade: "N/A", remark: "Out of range", id: null };
   };
+
+ 
 
   // console.log({ grading });
 
@@ -1686,7 +1940,7 @@ export const useResults = () => {
 
   const computeMidTermResult = () => {
     const dataToSend = {
-      student_id: studentId(),
+      student_id: stdId,
       student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1694,7 +1948,7 @@ export const useResults = () => {
       term: state?.creds?.term,
       session: state?.creds?.session,
       result_type: !hasOneAssess ? inputs.assessment : "midterm",
-      results: subjects.map((x) => ({
+      results: computedSubjects.map((x) => ({
         subject: x.subject,
         score: x.grade,
       })),
@@ -1717,7 +1971,7 @@ export const useResults = () => {
 
   const createEndOfTermResult = () => {
     const dataToSend = {
-      student_id: studentId(),
+      student_id: stdId,
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1727,14 +1981,42 @@ export const useResults = () => {
       school_opened: additionalCreds?.school_opened,
       times_present: additionalCreds?.times_present,
       times_absent: additionalCreds?.times_absent,
-      results: subjects?.map((x) => ({
+      results: computedSubjects?.map((x) => ({
         subject: x.subject,
         score: x.grade,
       })),
-      affective_disposition: additionalCreds?.affective_disposition ?? [],
-      psychomotor_skills: additionalCreds?.psychomotor_skills ?? [],
-      pupil_report: additionalCreds?.pupil_report ?? [],
-      psychomotor_performance: additionalCreds?.psychomotor_performance ?? [],
+      affective_disposition:
+        additionalCreds?.affective_disposition?.map((ac) => {
+          return {
+            ...ac,
+            score: ac?.score?.value,
+          };
+        }) ?? [],
+      // affective_disposition: additionalCreds?.affective_disposition ?? [],
+      psychomotor_skills:
+        additionalCreds?.psychomotor_skills?.map((ac) => {
+          return {
+            ...ac,
+            score: ac?.score?.value,
+          };
+        }) ?? [],
+      // psychomotor_skills: additionalCreds?.psychomotor_skills ?? [],
+      pupil_report:
+        additionalCreds?.pupil_report?.map((ac) => {
+          return {
+            ...ac,
+            score: ac?.score?.value,
+          };
+        }) ?? [],
+      // pupil_report: additionalCreds?.pupil_report ?? [],
+      psychomotor_performance:
+        additionalCreds?.psychomotor_performance?.map((ac) => {
+          return {
+            ...ac,
+            score: ac?.score?.value,
+          };
+        }) ?? [],
+      // psychomotor_performance: additionalCreds?.psychomotor_performance ?? [],
       teacher_comment: teacherComment,
       teacher_id: user?.id,
       hos_comment: hosComment,
@@ -1747,7 +2029,7 @@ export const useResults = () => {
     };
 
     const dataToSend2 = {
-      student_id: studentId(),
+      student_id: stdId,
       student_fullname: `${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: studentClassName,
@@ -1757,7 +2039,7 @@ export const useResults = () => {
       // school_opened: additionalCreds?.school_opened,
       // times_present: additionalCreds?.times_present,
       // times_absent: additionalCreds?.times_absent,
-      results: subjects?.map((x) => ({
+      results: computedSubjects?.map((x) => ({
         subject: x.subject,
         score: x.grade,
       })),
@@ -1798,7 +2080,7 @@ export const useResults = () => {
 
   // const createEndOfTermResult = () => {
   //   const dataToSend = {
-  //     student_id: studentId(),
+  //     student_id: stdId,
   //     student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
   //     admission_number: studentData.admission_number,
   //     class_name: studentClassName,
@@ -1861,7 +2143,7 @@ export const useResults = () => {
   //   findId: findId(),
   //   subjectsByClass3,
   // });
-  // console.log({ subjectsWithGrade, subjectsWithScoreAndGrade });
+  // console.log({ stdId, subjects, hasOneAssess });
 
   return {
     inputs,
@@ -1945,8 +2227,18 @@ export const useResults = () => {
     subjectsByClass3,
     setIdWithComputedResult,
     preSchoolSubjects,
+    mergedClass,
+    isAdminPrincipal,
+    isStudent,
     // studentByClass,
     // getStudentByClassLoading,
     // mergedSubjects,
+
+    getSubjectByClass,
+    getMidTermResult,
+    computedSubjects,
+    setComputedSubjects,
+    setStudentMidterm,
+    getEndOfTermResult,
   };
 };

@@ -17,9 +17,12 @@ import { PiWarningCircleFill } from "react-icons/pi";
 import ButtonGroup from "../../../../../../components/buttons/button-group";
 import { removeDuplicates, removeDuplicates2 } from "../../../constant";
 import { useAuthDetails } from "../../../../../../stores/authDetails";
+import { useGradePoint } from "../../../../../../hooks/useGradePoint";
 
 const ElementarySecondHalfSheet = () => {
   const { user } = useAppContext("results");
+
+  const { isLoading: gradePointLoading, gradePoint } = useGradePoint();
 
   const { activities } = useActivities();
 
@@ -39,7 +42,6 @@ const ElementarySecondHalfSheet = () => {
     studentData,
     academicDate,
     locationState,
-    additionalCreds,
     maxScores,
     cummulativeScores,
     getScoreRemark,
@@ -55,8 +57,26 @@ const ElementarySecondHalfSheet = () => {
     releaseResultLoading,
     withholdResult,
     withholdResultLoading,
+    setAdditionalCreds,
+    additionalCreds,
     studentByClass2,
     subjectsByClass,
+    getSubjectByClass: { data: subjects, isFetching: isFetchingSubjects },
+    getMidTermResult: {
+      data: midtermResults,
+      isFetching: isFetchingMidtermResults,
+    },
+    getEndOfTermResult: {
+      data: endOfTermResults,
+      isFetching: isFetchingEndOfTermResults,
+    },
+    setIdWithComputedResult,
+    setTeacherComment,
+    setHosComment,
+    setPerformanceRemark,
+    setExtraActivities,
+    setAbacus,
+    setStudentMidterm,
   } = useResults();
 
   const { principalClassName, setPrincipalClassName } = useStudent();
@@ -161,7 +181,8 @@ const ElementarySecondHalfSheet = () => {
     }
   };
 
-  const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
+  const studentResults = removeDuplicates2(additionalCreds?.results2) ?? [];
+  // const studentResults = removeDuplicates2(additionalCreds?.results) ?? [];
 
   const removeZeroExam = () => {
     return studentResults?.length > 0
@@ -187,11 +208,31 @@ const ElementarySecondHalfSheet = () => {
   const principalCheck = "Elementary" || "Montessori";
 
   const hasOneAssess =
-    userDetails?.maxScores?.has_two_assessment === 0 ||
-    userDetails?.maxScores?.has_two_assessment === false ||
-    userDetails?.maxScores?.has_two_assessment === "false";
+    maxScores?.has_two_assessment === 0 ||
+    maxScores?.has_two_assessment === false ||
+    maxScores?.has_two_assessment === "false";
 
   // const !hasOneAssess = !hasOneAssess;
+
+  const getGpRemark = (score) => {
+    const res = gradePoint?.gp?.find(
+      (x) => score >= Number(x.min_mark) && score <= Number(x.max_mark)
+    );
+
+    return (
+      res || {
+        campus: "Corona Elementary",
+        grade_point: "0",
+        id: 0,
+        key_range: "0 - 0",
+        max_mark: 0,
+        min_mark: 0,
+        new_id: 1,
+        remark: "Out of range",
+        sch_id: "SCHMATE/117209",
+      }
+    );
+  };
 
   const totalScore = !hasOneAssess
     ? removeZeroExam()?.reduce((accumulator, s) => {
@@ -233,17 +274,33 @@ const ElementarySecondHalfSheet = () => {
 
   const checkResultComputed = (function () {
     if (user?.designation_name === "Student") {
-      if ("results" in additionalCreds && status === "released") {
+      if (
+        additionalCreds &&
+        "results" in additionalCreds &&
+        status === "released"
+      ) {
         return "Released";
-      } else if ("results" in additionalCreds && status === "withheld") {
+      } else if (
+        additionalCreds &&
+        "results" in additionalCreds &&
+        status === "withheld"
+      ) {
         return "Withheld";
       } else {
         return "Not Released";
       }
     } else {
-      if ("results" in additionalCreds && status === "released") {
+      if (
+        additionalCreds &&
+        "results" in additionalCreds &&
+        status === "released"
+      ) {
         return "Released";
-      } else if ("results" in additionalCreds && status === "withheld") {
+      } else if (
+        additionalCreds &&
+        "results" in additionalCreds &&
+        status === "withheld"
+      ) {
         return "Released";
       } else {
         return "Not Released";
@@ -312,14 +369,15 @@ const ElementarySecondHalfSheet = () => {
   };
 
   const checkResultComputed2 = (function () {
-    if ("results" in additionalCreds) {
+    if (additionalCreds && "results" in additionalCreds) {
       return true;
     } else {
       return false;
     }
   })();
 
-  const allLoading = isLoading || loading1;
+  const allLoading =
+    isLoading || loading1 || isFetchingEndOfTermResults || gradePointLoading;
 
   const calcClassAverage =
     (totalScore / studentByClass2?.length) * removeZeroExam()?.length;
@@ -328,6 +386,17 @@ const ElementarySecondHalfSheet = () => {
     // setTeacherComment(additionalCreds?.teacher_comment);
     setStatus(additionalCreds?.status);
   }, [additionalCreds?.status, studentData]);
+
+  useEffect(() => {
+    setAdditionalCreds(endOfTermResults);
+    setTeacherComment(endOfTermResults?.teacher_comment);
+    setHosComment(endOfTermResults?.hos_comment);
+    setPerformanceRemark(endOfTermResults?.performance_remark);
+    setExtraActivities(endOfTermResults?.extra_curricular_activities ?? []);
+    setAbacus(endOfTermResults?.abacus?.name ?? "");
+    setStudentMidterm(midtermResults?.results2);
+    setIdWithComputedResult([endOfTermResults?.student_id]);
+  }, [endOfTermResults?.results2, midtermResults?.results2, allLoading]);
 
   const newStudentMidterm = studentMidterm?.length > 0 ? studentMidterm : [];
 
@@ -338,11 +407,15 @@ const ElementarySecondHalfSheet = () => {
     // status,
     // calcClassAverage,
     // studentData,
-    studentMidterm,
-    newStudentMidterm,
-    removeZeroMidterm: removeZeroMidterm(),
-    userDetails,
-    additionalCreds,
+    gradePoint,
+
+    // studentMidterm,
+    // newStudentMidterm,
+    // removeZeroMidterm: removeZeroMidterm(),
+    // userDetails,
+    // additionalCreds,
+    // endOfTermResults,
+    // midtermResults,
     // studentMidterm,
 
     // studentByClass2,
@@ -564,7 +637,7 @@ const ElementarySecondHalfSheet = () => {
                       whiteSpace: "wrap",
                     }}
                   >
-                    {studentData?.firstname} {studentData?.surname}{" "}
+                    {studentData?.surname} {studentData?.firstname}{" "}
                     {studentData?.middlename}
                   </h4>
                 </div>
@@ -919,7 +992,7 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {userDetails?.maxScores?.first_assessment ?? "--"}
+                            {maxScores?.first_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
@@ -934,7 +1007,7 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {userDetails?.maxScores?.second_assessment ?? "--"}
+                            {maxScores?.second_assessment ?? "--"}
                           </h4>
                         </div>
                       )}
@@ -949,7 +1022,7 @@ const ElementarySecondHalfSheet = () => {
                               lineHeight: "16px",
                             }}
                           >
-                            {userDetails?.maxScores?.midterm ?? "--"}
+                            {maxScores?.midterm ?? "--"}
                           </h4>
                         </div>
                       )}
@@ -963,7 +1036,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {userDetails?.maxScores?.exam ?? "--"}
+                          {maxScores?.exam ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -976,7 +1049,7 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          {userDetails?.maxScores?.total ?? "--"}
+                          {maxScores?.total ?? "--"}
                         </h4>
                       </div>
                       <div
@@ -1146,8 +1219,7 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {userDetails?.maxScores
-                                    ?.has_two_assessment === 1
+                                  {maxScores?.has_two_assessment === 1
                                     ? getScoreRemark(totalScores)?.grade
                                     : getScoreRemark(totalScores)?.grade}
                                 </p>
@@ -1163,8 +1235,7 @@ const ElementarySecondHalfSheet = () => {
                                     fontWeight: "bold",
                                   }}
                                 >
-                                  {userDetails?.maxScores
-                                    ?.has_two_assessment === 1
+                                  {maxScores?.has_two_assessment === 1
                                     ? getScoreRemark(
                                         Number(
                                           studentFirstAssess?.find(
@@ -1286,6 +1357,17 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
+                          Grade Point Average (G.P.A)
+                        </h4>
+                      </div>
+                      <div className='table-data'>
+                        <h4
+                          style={{
+                            color: "green",
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                          }}
+                        >
                           Student's Grade
                         </h4>
                       </div>
@@ -1325,8 +1407,20 @@ const ElementarySecondHalfSheet = () => {
                             fontWeight: "bold",
                           }}
                         >
+                          {/* {(totalScore / removeZeroExam()?.length).toFixed(2)} */}
+                          {additionalCreds?.gpa?.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className='table-data'>
+                        <p
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
                           {/* {classAverage?.["Grade"]} */}
-                          {
+                          {/* {
                             getScoreRemark(
                               roundToNearestTen(
                                 (totalScore / removeZeroExam()?.length).toFixed(
@@ -1334,7 +1428,8 @@ const ElementarySecondHalfSheet = () => {
                                 )
                               )
                             )?.remark
-                          }
+                          } */}
+                          {getGpRemark(additionalCreds?.gpa?.toFixed(2))?.remark}
                         </p>
                       </div>
                     </div>
@@ -1490,6 +1585,37 @@ const ElementarySecondHalfSheet = () => {
                         >
                           {grade?.grade} - [{grade?.score_from} -{" "}
                           {grade?.score_to}% - {grade?.remark}]
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                }
+
+                {/* Grade Point */}
+                {
+                  <div className='table-head'>
+                    <h3
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Grade Point
+                    </h3>
+                  </div>
+                }
+                {
+                  <div className='second-half-academic-rating text-center'>
+                    {gradePoint?.gp?.map((grade) => (
+                      <div key={grade?.id} className='table-data'>
+                        <p
+                          style={{
+                            fontSize: "15px",
+                            lineHeight: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          [{grade?.key_range}] - {grade?.remark}
                         </p>
                       </div>
                     ))}
@@ -2134,7 +2260,8 @@ const ElementarySecondHalfSheet = () => {
                           </div>
                           <div className='table-data'>
                             <p>
-                              {Number(skill?.score) === 5 && (
+                              {Number(skill?.score?.value || skill?.score) ===
+                                5 && (
                                 <FontAwesomeIcon
                                   icon={faCheck}
                                   color='green'
@@ -2145,7 +2272,8 @@ const ElementarySecondHalfSheet = () => {
                           </div>
                           <div className='table-data'>
                             <p>
-                              {Number(skill?.score) === 4 && (
+                              {Number(skill?.score?.value || skill?.score) ===
+                                4 && (
                                 <FontAwesomeIcon
                                   icon={faCheck}
                                   color='green'
@@ -2156,7 +2284,8 @@ const ElementarySecondHalfSheet = () => {
                           </div>
                           <div className='table-data'>
                             <p>
-                              {Number(skill?.score) === 3 && (
+                              {Number(skill?.score?.value || skill?.score) ===
+                                3 && (
                                 <FontAwesomeIcon
                                   icon={faCheck}
                                   color='green'
@@ -2167,7 +2296,8 @@ const ElementarySecondHalfSheet = () => {
                           </div>
                           <div className='table-data'>
                             <p>
-                              {Number(skill?.score) < 3 && (
+                              {Number(skill?.score?.value || skill?.score) <
+                                3 && (
                                 <FontAwesomeIcon
                                   icon={faCheck}
                                   color='green'
@@ -2266,7 +2396,8 @@ const ElementarySecondHalfSheet = () => {
                             </div>
                             <div className='table-data'>
                               <p>
-                                {Number(skill?.score) === 5 && (
+                                {Number(skill?.score?.value || skill?.score) ===
+                                  5 && (
                                   <FontAwesomeIcon
                                     icon={faCheck}
                                     color='green'
@@ -2277,7 +2408,8 @@ const ElementarySecondHalfSheet = () => {
                             </div>
                             <div className='table-data'>
                               <p>
-                                {Number(skill?.score) === 4 && (
+                                {Number(skill?.score?.value || skill?.score) ===
+                                  4 && (
                                   <FontAwesomeIcon
                                     icon={faCheck}
                                     color='green'
@@ -2288,7 +2420,8 @@ const ElementarySecondHalfSheet = () => {
                             </div>
                             <div className='table-data'>
                               <p>
-                                {Number(skill?.score) === 3 && (
+                                {Number(skill?.score?.value || skill?.score) ===
+                                  3 && (
                                   <FontAwesomeIcon
                                     icon={faCheck}
                                     color='green'
@@ -2299,7 +2432,8 @@ const ElementarySecondHalfSheet = () => {
                             </div>
                             <div className='table-data'>
                               <p>
-                                {Number(skill?.score) < 3 && (
+                                {Number(skill?.score?.value || skill?.score) <
+                                  3 && (
                                   <FontAwesomeIcon
                                     icon={faCheck}
                                     color='green'

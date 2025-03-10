@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import AuditCard from "../../../components/cards/audit-card";
 import { useAuthDetails } from "../../../stores/authDetails";
 import Button from "../../../components/buttons/button";
+import { queryOptions } from "../../../utils/constants";
 
 const Admin = () => {
   const [importStudentPrompt, setImportStudentPrompt] = useState(false);
@@ -114,34 +115,35 @@ const Admin = () => {
       onError: errorHandler,
     });
 
-  const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
-    [queryKeys.GET_MAX_SCORES],
-    apiServices.getMaxScores,
-    {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      enabled: initiateGrade,
-      // enabled: !is_preschool,
-      onError(err) {
-        errorHandler(err);
-      },
-      select: (data) => {
-        const dt = data?.data;
-        console.log({ scoreData: data, dt });
-        // console.log({ datam: data });
-        return dt;
-      },
-      onSuccess: (data) => {
-        setUserDetails({
-          ...userDetails,
-          maxScores: data,
-        });
-        setInitiateGrade(false);
-        // return data?.data[0]?.attributes;
-      },
-    }
-  );
+  // const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
+  //   [queryKeys.GET_MAX_SCORES],
+  //   apiServices.getMaxScores,
+  //   {
+  //     // retry: 1,
+  //     // refetchOnMount: true,
+  //     // refetchOnWindowFocus: false,
+  //      ...queryOptions,
+  //     enabled: initiateGrade,
+  //     // enabled: !is_preschool,
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //     select: (data) => {
+  //       const dt = data?.data;
+  //       console.log({ scoreData: data, dt });
+  //       // console.log({ datam: data });
+  //       return dt;
+  //     },
+  //     onSuccess: (data) => {
+  //       setUserDetails({
+  //         ...userDetails,
+  //         maxScores: data,
+  //       });
+  //       setInitiateGrade(false);
+  //       // return data?.data[0]?.attributes;
+  //     },
+  //   }
+  // );
 
   const { isLoading: schoolLoading } = useQuery(
     [queryKeys.GET_SCHOOL],
@@ -507,7 +509,7 @@ const Admin = () => {
     preSchoolsLoading ||
     currentAcademicPeriodLoading ||
     campusListLoading ||
-    maxScoresLoading ||
+    // maxScoresLoading ||
     loading1;
   // academicPeriodLoading;
 

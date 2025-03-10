@@ -1291,6 +1291,20 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getStaffMidTermResult(studentId, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/staff/midtermresult/${studentId}/${term}/${session}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async getClassPopulation() {
     const { data } = await axios.get(`${backendAPI}/classpopulation`, {
       headers: {
@@ -1494,6 +1508,20 @@ class APIServies extends Helpers {
   async getEndOfTermResults(student_id, term, session) {
     const { data } = await axios.get(
       `${backendAPI}/endtermresult/${student_id}/${term}/${session}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getStaffEndOfTermResults(student_id, term, session) {
+    const { data } = await axios.get(
+      `${backendAPI}/staff/endtermresult/${student_id}/${term}/${session}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -1775,7 +1803,6 @@ class APIServies extends Helpers {
 
     return data;
   }
- 
 
   async postCurrentAcademicPeriod(body) {
     const { data } = await axios.post(
@@ -3352,6 +3379,66 @@ class APIServies extends Helpers {
         Authorization: `Bearer ${super.getToken()}`,
       },
     });
+    return data;
+  }
+
+  async addGpa(body) {
+    const { data } = await axios.post(`${backendAPI}/gpa`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+
+  async getAllGpa() {
+    const { data } = await axios.get(
+      `${backendAPI}/gpa`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async getGpa(id) {
+    const { data } = await axios.get(
+      `${backendAPI}/gpa/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
+  async updateGpa({ id, body }) {
+    const { data } = await axios.patch(`${backendAPI}/gpa/${id}`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+    return data;
+  }
+  async deleteGpa(id) {
+    const { data } = await axios.delete(`${backendAPI}/gpa/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${super.getToken()}`,
+      },
+    });
+
     return data;
   }
 }

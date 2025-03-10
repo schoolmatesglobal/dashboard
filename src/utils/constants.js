@@ -17,6 +17,7 @@ import {
   faTruck,
   faMoneyBill,
   faMarker,
+  faChartArea,
   faCalendarDays,
   faSchoolLock,
   faTimeline,
@@ -44,17 +45,112 @@ const url2 = "https://dashboard.sapsms.com/api";
 
 export const backendAPI = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
-    return "https://staging.sapsms.com/api"; // Update with your development API URL
+    return url1; // Update with your development API URL
   } else if (
     window.location.href.includes("https://portal.schoolmateglobal.com")
   ) {
-    return "https://dashboard.sapsms.com/api";
+    return url2;
   } else if (window.location.href.includes("https://schoolmates.vercel.app/")) {
-    return url2;
+    return url1;
   } else {
-    return url2;
+    return url1;
   }
 })();
+
+export const queryOptions = {
+  retry: 1,
+  refetchOnMount: true,
+  refetchOnWindowFocus: false,
+  staleTime: 24 * 60 * 60 * 1000,
+};
+
+export const userRole = (id, sentenceCase) => {
+  if (id === "1") {
+    return sentenceCase ? "Admin" : "admin";
+  } else if (id === "2") {
+    return sentenceCase ? "Account" : "account";
+  } else if (id === "3") {
+    return sentenceCase ? "Principal" : "principal";
+  } else if (id === "4") {
+    return sentenceCase ? "Teacher" : "teacher";
+  } else if (id === "6") {
+    return sentenceCase ? "Superadmin" : "superadmin";
+  } else if (id === "7") {
+    return sentenceCase ? "Student" : "student";
+  }
+};
+
+export const uniqueArray = (array, value, value2) => {
+  if (value2) {
+    return (
+      array.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              String(t[value]).toLowerCase() ===
+                String(item[value]).toLowerCase() &&
+              String(t[value2]).toLowerCase() ===
+                String(item[value2]).toLowerCase()
+          )
+      ) ?? []
+    );
+  } else {
+    return (
+      array.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              String(t[value]).toLowerCase() ===
+              String(item[value]).toLowerCase()
+          )
+      ) ?? []
+    );
+  }
+};
+
+export const sortArray = (data, key, order = 'asc', sortType = 'string') => {
+  return [...data].sort((a, b) => {
+      let valueA = a[key];
+      let valueB = b[key];
+
+      if (sortType === 'number') {
+          // Convert numeric strings to numbers before sorting
+          valueA = typeof valueA === 'string' && !isNaN(Number(valueA)) ? Number(valueA) : valueA;
+          valueB = typeof valueB === 'string' && !isNaN(Number(valueB)) ? Number(valueB) : valueB;
+
+          if (typeof valueA === 'number' && typeof valueB === 'number') {
+              return order === 'asc' ? valueA - valueB : valueB - valueA;
+          }
+      } else {
+          // String sorting (default behavior)
+          if (typeof valueA === 'string' && typeof valueB === 'string') {
+              return order === 'asc'
+                  ? valueA.localeCompare(valueB, undefined, { numeric: true })
+                  : valueB.localeCompare(valueA, undefined, { numeric: true });
+          }
+      }
+
+      return 0; // If types are mixed, no sorting happens
+  });
+};
+
+
+export function toSentenceCase(str) {
+  if (!str || typeof str !== "string") {
+    return "";
+  }
+
+  // Trim any leading or trailing whitespace
+  str = str.trim();
+
+  // Split the string into words, capitalize each, and join them back together
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
 
 export const isProductionCheck = (function () {
   if (window.location.href.includes("https://staging.schoolmateglobal.com")) {
@@ -127,6 +223,11 @@ export const dashboardSideBarLinks = {
       to: "/app/grading",
       title: "Grading",
       icon: faMarker,
+    },
+    {
+      to: "/app/grade-point",
+      title: "Grade Point",
+      icon: faChartArea,
     },
 
     {

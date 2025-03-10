@@ -3,6 +3,7 @@ import { useAppContext } from "./useAppContext";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useParams } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useReporting = () => {
   const { apiServices, permission, user } = useAppContext("reporting");
@@ -23,9 +24,10 @@ export const useReporting = () => {
     isLoading: reportsLoading,
     refetch: refetchReports,
   } = useQuery([queryKeys.GET_ALL_REPORTS], apiServices.getReports, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
     select: (data) => {

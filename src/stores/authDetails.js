@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 const initialState = {
   loginStatus: null,
@@ -91,7 +91,5 @@ const authDetails = (set) => ({
 export const useAuthDetails = create(
   persist(authDetails, {
     name: "auth-details",
-    // storage: createJSONStorage(() => localStorage),
-    // partialize: (state ) => ({ isModalOpen: state.isModalOpen })
   })
 );

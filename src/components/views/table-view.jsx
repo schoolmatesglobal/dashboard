@@ -104,7 +104,7 @@ const PageView = ({
             {hasSortOptions && (
               <div className='mb-5 d-md-flex'>
                 {groupedButtonOptions.length ? (
-                  <div className={`w-100`}>
+                  <div className={`w-100 `}>
                     {useBtn2 ? (
                       <ButtonGroup2
                         className='mb-3'
