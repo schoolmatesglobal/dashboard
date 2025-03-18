@@ -27,9 +27,9 @@ const UserProvider = ({ children }) => {
   };
 
   const errorHandler = (err, message) => {
-    if (err?.response?.status === 401) {
-      setLoginPrompt(true);
-    }
+    // if (err?.response?.status === 401) {
+    //   setLoginPrompt(true);
+    // }
     apiServices.errorHandler(err, message);
   };
 

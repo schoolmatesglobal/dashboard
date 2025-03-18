@@ -218,7 +218,7 @@ const EndOfTerm = ({ isCompute = false }) => {
                 <div className='detail'>
                   <h5>Pupil's Name:</h5>
                   <h5>
-                    {studentData?.firstname} {studentData?.surname}{" "}
+                    {studentData?.surname} {studentData?.firstname}{" "}
                     {studentData?.middlename}
                   </h5>
                 </div>

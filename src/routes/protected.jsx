@@ -11,9 +11,11 @@ const Protected = ({ children }) => {
   const [canAccess, setCanAccess] = useState(null);
   const token = getToken()
 
+  const ol =Object.keys(user).length
+
   useEffect(() => {
     if (!token) {
-      if (Object.keys(user).length > 0) {
+      if (Object.keys(user).length <= 0) {
         setLoginPrompt(true);
       } else {
         setCanAccess(false);
@@ -22,6 +24,8 @@ const Protected = ({ children }) => {
       setCanAccess(true)
     }
   }, [user, token, setLoginPrompt]);
+
+  console.log({ token, user, ol });
 
   if (canAccess === null) return <div />;
 

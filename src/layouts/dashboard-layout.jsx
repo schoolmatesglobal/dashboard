@@ -45,9 +45,12 @@ const DashboardLayout = () => {
       getAcademicPeriod,
       getAcademicSessions,
       getCurrentAcademicPeriod,
+      getToken,
     },
   } = useAppContext();
   const sidebarRef = useRef(null);
+
+  const token = getToken();
 
   const navigate = useNavigate();
 
@@ -190,6 +193,8 @@ const DashboardLayout = () => {
       );
     }
   };
+
+  // console.log({ token });
 
   // console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
