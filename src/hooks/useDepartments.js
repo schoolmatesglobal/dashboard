@@ -4,6 +4,7 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-formid";
+import { queryOptions } from "../utils/constants";
 
 export const useDepartments = () => {
   const { apiServices, errorHandler, permission } =
@@ -34,9 +35,10 @@ export const useDepartments = () => {
     apiServices.getAllDepartmentList,
     {
       enabled: permission?.read,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -60,9 +62,10 @@ export const useDepartments = () => {
       //
       // enabled: !!id,
       enabled: !!id && !!inputs.department_id,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },

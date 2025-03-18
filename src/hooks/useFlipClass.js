@@ -7,6 +7,7 @@ import { useStudent } from "./useStudent";
 
 import useLocalStorage from "use-local-storage";
 import { useFile } from "./useFile";
+import { queryOptions } from "../utils/constants";
 
 export const useFlipClass = () => {
   const { apiServices, errorHandler, permission, user } =
@@ -213,9 +214,10 @@ export const useFlipClass = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,

@@ -22,6 +22,7 @@ import Theory from "./theory";
 import { useSubject } from "../../../../hooks/useSubjects";
 import { useStudentAssignments } from "../../../../hooks/useStudentAssignment";
 import ButtonGroup from "../../../../components/buttons/button-group";
+import { queryOptions } from "../../../../utils/constants";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const ViewLessonNote = ({
@@ -140,9 +141,7 @@ const ViewLessonNote = ({
         week
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -208,9 +207,7 @@ const ViewLessonNote = ({
         week
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
 
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve() && permission?.submissions,
@@ -273,9 +270,7 @@ const ViewLessonNote = ({
         week
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: activateRetrieve() && permission?.submissions,
       // enabled: false,
 

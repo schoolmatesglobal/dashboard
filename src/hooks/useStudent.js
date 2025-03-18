@@ -11,6 +11,7 @@ import { useState } from "react";
 import ProfileImage from "../components/common/profile-image";
 import Numeral from "react-numeral";
 import { useLocation } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useStudent = () => {
   // const navigate = useNavigate();
@@ -149,9 +150,10 @@ export const useStudent = () => {
     () => apiServices.getAllStudents(page),
     {
       enabled: permission?.read || false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -197,9 +199,10 @@ export const useStudent = () => {
           user?.session
         ),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         // refetchInterval: 10000,
         enabled: permission?.myStudents || false,
         // select: apiServices.formatData,
@@ -233,9 +236,10 @@ export const useStudent = () => {
     () => apiServices.getStudentByClass2(chk),
 
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.myStudents && !!chk,
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -262,9 +266,10 @@ export const useStudent = () => {
       apiServices.getAllStudentDebtors,
       {
         enabled: permission?.readDebtors || false,
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         onError(err) {
           errorHandler(err);
         },
@@ -301,9 +306,10 @@ export const useStudent = () => {
       apiServices.getAllStudentCreditors,
       {
         enabled: permission?.readCreditors || false,
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         onError(err) {
           errorHandler(err);
         },
@@ -340,9 +346,10 @@ export const useStudent = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.update || false,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError(err) {
       errorHandler(err);
     },
@@ -366,9 +373,10 @@ export const useStudent = () => {
     () => apiServices.getAdmissionNoSettings(user?.sch_id),
     {
       enabled: true,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -457,9 +465,10 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_SESSION, session],
     () => apiServices.getStudentBySession(session),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!session && permission?.sortSession,
       onError(err) {
         errorHandler(err);
@@ -487,9 +496,10 @@ export const useStudent = () => {
     [queryKeys.GET_ALL_STUDENTS_BY_ADMISSION_NUMBER, admissionNumber],
     () => apiServices.getStudentByAdmissionNumber(admissionNumber),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!admissionNumber && permission?.sortAdmissionNumber,
       onError(err) {
         errorHandler(err);
@@ -521,9 +531,10 @@ export const useStudent = () => {
       ],
       () => apiServices.getStudentByClass(classes),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: !!classes.present_class && permission?.sortStudentByClass,
         onError(err) {
           errorHandler(err);
@@ -612,9 +623,10 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT, id],
     () => apiServices.getStudent(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -627,9 +639,10 @@ export const useStudent = () => {
     [queryKeys.GET_GRADUATED_STUDENTS],
     apiServices.getAlumniList,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.alumni,
       select: (data) => {
         return apiServices.formatData(data)?.map((student, i) => {
@@ -655,9 +668,10 @@ export const useStudent = () => {
     [queryKeys.GET_STUDENT_LOGIN_DETAILS, page],
     () => apiServices.getStudentLoginDetails(page),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.studentLoginDetails,
       select: (data) => {
         const dt2 = {

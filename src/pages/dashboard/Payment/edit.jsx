@@ -14,6 +14,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAccounts } from "../../../hooks/useAccounts";
 import queryKeys from "../../../utils/queryKeys";
 import { useBank } from "../../../hooks/useBank";
+import { queryOptions } from "../../../utils/constants";
 
 const PaymentEdit = () => {
   const { permission, apiServices, errorHandler } = useAppContext();
@@ -68,9 +69,10 @@ const PaymentEdit = () => {
     () => apiServices.getPaymentById(id),
     {
       enabled: !!id,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // select: apiServices.formatData,
       select: (data) => {
         // console.log({ datap: data });

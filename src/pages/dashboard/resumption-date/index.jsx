@@ -7,6 +7,7 @@ import AuthInput from "../../../components/inputs/auth-input";
 import DetailView from "../../../components/views/detail-view";
 import { useAppContext } from "../../../hooks/useAppContext";
 import queryKeys from "../../../utils/queryKeys";
+import { queryOptions } from "../../../utils/constants";
 
 const ResumptionDate = () => {
   const { apiServices } = useAppContext();
@@ -21,9 +22,10 @@ const ResumptionDate = () => {
         return data?.data?.attributes;
       },
       onError: apiServices.errorHandler,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
     }
   );
 

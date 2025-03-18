@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { homeUrl } from "../utils/constants";
+import { homeUrl, queryOptions } from "../utils/constants";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useAuthDetails } from "../stores/authDetails";
@@ -17,9 +17,10 @@ export const useAuth = (navigateOnLogin = true) => {
     [queryKeys.GET_DESIGNATION],
     apiServices.getDesignation,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: initiateDesignationQuery,
       onSuccess(data) {
         setInitiateDesignationQuery(false);

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useParams } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useSubject = () => {
   const { apiServices, permission, user } = useAppContext("subjects");
@@ -24,9 +25,10 @@ export const useSubject = () => {
 
       // return { ...data, options: f };
     },
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError: apiServices.errorHandler,
   });
 
@@ -35,9 +37,10 @@ export const useSubject = () => {
     () => apiServices.getSubject(id),
     {
       enabled: !!id,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,
     }

@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useSubject } from "./useSubjects";
+import { queryOptions } from "../utils/constants";
 
 export const useStudentCBT = () => {
   const {
@@ -89,12 +90,13 @@ export const useStudentCBT = () => {
     refetch: refetchStudentSubjectsLoading,
     data: studentSubjects,
   } = useQuery(
-    [queryKeys.GET_SUBJECTS_BY_STUDENT],
+    ["GET_SUBJECTS_BY_STUDENT"],
     () => apiServices.getSubjectByClass(className),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view || permission?.results,
       // enabled: true,

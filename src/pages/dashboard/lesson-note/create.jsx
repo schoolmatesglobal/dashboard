@@ -30,6 +30,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import CustomFileInput2 from "../../../components/inputs/CustomFileInput2";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
+import { queryOptions } from "../../../utils/constants";
 // import WebViewer from "@pdftron/webviewer";
 // import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 // import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
@@ -206,9 +207,7 @@ const Create = ({
         session
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: activateRetrieveCreated() && permission?.view,
 
       select: (data) => {

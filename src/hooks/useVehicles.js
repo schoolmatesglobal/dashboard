@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import ProfileImage from "../components/common/profile-image";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { queryOptions } from "../utils/constants";
 
 export const useVehicles = () => {
   const [indexStatus, setIndexStatus] = useState("all");
@@ -18,9 +19,10 @@ export const useVehicles = () => {
     refetch: refetchVehicles,
   } = useQuery([queryKeys.GET_ALL_VEHICLES], apiServices.getAllVehicles, {
     enabled: permission?.read || false,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError(err) {
       errorHandler(err);
     },
@@ -32,9 +34,10 @@ export const useVehicles = () => {
     apiServices.getAllVehicleLogs,
     {
       enabled: permission?.readLogs || false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -50,9 +53,10 @@ export const useVehicles = () => {
         permission?.assignedBus ||
         ["Student"].includes(user?.designation_name) ||
         false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -75,9 +79,10 @@ export const useVehicles = () => {
         permission?.allAssignedBus ||
         ["Admin"].includes(user?.designation_name) ||
         false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -143,9 +148,10 @@ export const useVehicles = () => {
     () => apiServices.getVehicle(id),
     {
       enabled: !!id,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         apiServices.errorHandler(err);
       },

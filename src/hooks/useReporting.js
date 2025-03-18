@@ -44,9 +44,10 @@ export const useReporting = () => {
     [queryKeys.GET_ALL_REPORTS, id],
     () => apiServices.getReport(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.read && !!id,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,

@@ -3,6 +3,7 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+import { queryOptions } from "../utils/constants";
 
 export const useInvoices = () => {
   const { permission, apiServices, user } = useAppContext("accounts");
@@ -17,9 +18,10 @@ export const useInvoices = () => {
     data: invoicesList,
     refetch: getInvoiceRefetch,
   } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission?.myPayment,
     select: apiServices.formatData,
   });

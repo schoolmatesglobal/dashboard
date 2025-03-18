@@ -13,7 +13,7 @@ import {
 import Hamburger from "../components/common/hamburger";
 import ProfileImage from "../components/common/profile-image";
 import { useAppContext } from "../hooks/useAppContext";
-import { dashboardSideBarLinks } from "../utils/constants";
+import { dashboardSideBarLinks, queryOptions } from "../utils/constants";
 import { useCommunicationBook } from "../hooks/useCommunicationBook";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
@@ -71,9 +71,10 @@ const DashboardLayout = () => {
     [queryKeys.GET_COMMUNICATION_BOOK_COUNT],
     () => apiServices.getUnreadCommunicationBookCount(),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: !!id && permission?.view,
 
       select: (data) => {

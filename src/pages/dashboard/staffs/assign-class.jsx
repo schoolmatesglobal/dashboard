@@ -10,6 +10,7 @@ import { useSubject } from "../../../hooks/useSubjects";
 import CustomTable2 from "../../../components/tables/table2";
 import { useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
+import { queryOptions } from "../../../utils/constants";
 
 const AssignClass = () => {
   const {
@@ -64,9 +65,10 @@ const AssignClass = () => {
       () => apiServices.getSubjectByClass2(findId()),
       {
         enabled: !!findId(),
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         select: (data) => {
           const newData = apiServices.formatData(data);
           return newData;

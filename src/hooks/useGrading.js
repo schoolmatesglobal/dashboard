@@ -78,9 +78,10 @@ export const useGrading = () => {
     isLoading: gradingLoading,
     refetch: refetchGrading,
   } = useQuery([queryKeys.GET_GRADING], apiServices.getGrading, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     select: (data) => {
       // console.log({ data });
       return apiServices.formatData(data)?.map((obj, index) => {
@@ -109,9 +110,10 @@ export const useGrading = () => {
     [queryKeys.GET_GRADING, id],
     () => apiServices.getSingleGrading(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!id,
       select: apiServices.formatSingleData,
       onError(err) {
