@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useAuthDetails } from "../stores/authDetails";
+import { queryOptions } from "../utils/constants";
 
 export const useStudentAttendance = () => {
   const { apiServices, errorHandler, permission, user } =
@@ -25,9 +26,10 @@ export const useStudentAttendance = () => {
       () =>
         apiServices.getStudentAttendance(date.split("-").reverse().join("/")),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: retrieveAttendance && permission?.retrieve,
         onSuccess(data) {
           const ids = [];
@@ -69,9 +71,10 @@ export const useStudentAttendance = () => {
         !!userDetails?.class_assigned &&
         !!userDetails?.session &&
         (!studentAttendance || studentAttendance?.length === 0),
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },

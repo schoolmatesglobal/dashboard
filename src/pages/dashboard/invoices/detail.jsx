@@ -17,6 +17,7 @@ import { useMutation, useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
 import StudentsResults2 from "../../../components/common/students-results2";
 import { Spinner } from "reactstrap";
+import { queryOptions } from "../../../utils/constants";
 
 const InvoiceDetail = () => {
   // const { apiServices } = useAppContext();
@@ -73,9 +74,7 @@ const InvoiceDetail = () => {
         apiServices.errorHandler(err);
       },
       select: apiServices.formatData,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
     }
   );
 
@@ -173,9 +172,7 @@ const InvoiceDetail = () => {
     {
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       enabled: classLoading && !!studentData?.present_class,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       // select: apiServices.formatData,
       select: (data) => {
         const filtered = apiServices
@@ -201,9 +198,7 @@ const InvoiceDetail = () => {
     ["GET_STUDENT2", newId],
     () => apiServices.getStudent(newId),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+     ...queryOptions,
       onError(err) {
         apiServices.errorHandler(err);
       },

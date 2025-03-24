@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { queryOptions } from "../utils/constants";
 
 export const useVehicleMaintenance = () => {
   const { id } = useParams();
@@ -23,9 +24,10 @@ export const useVehicleMaintenance = () => {
     () => apiServices.getVehicle(id),
     {
       enabled: !!id,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         apiServices.errorHandler(err);
       },
@@ -38,9 +40,10 @@ export const useVehicleMaintenance = () => {
       [queryKeys.GET_ALL_VEHICLE_MAINTENANCE],
       apiServices.getAllVehicleMaintenance,
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         onError(err) {
           apiServices.errorHandler(err);
         },

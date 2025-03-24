@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useParams } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useActivities = () => {
   const { apiServices, permission, user } = useAppContext("activities");
@@ -20,9 +21,10 @@ export const useActivities = () => {
     
   } = useQuery([queryKeys.GET_ACTIVITIES], apiServices.getActivities, {
     // select: apiServices.formatData,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: activate && activateElem,
     select: (data) => {
       // console.log({ dat: data?.data });
@@ -62,9 +64,10 @@ export const useActivities = () => {
     refetch: refetchPreActivities,
   } = useQuery([queryKeys.GET_ACTIVITIES, "2"], apiServices.getPreActivities, {
     // select: apiServices.formatData,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: activate && activatePre,
     select: (data) => {
       // console.log({ dat: data?.data });

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { queryOptions } from "../utils/constants";
 
 export const useTransferFund = () => {
   const { apiServices, permission } = useAppContext("transfer");
@@ -23,9 +24,10 @@ export const useTransferFund = () => {
   } = useQuery([queryKeys.GET_FUNDS], apiServices.getFunds, {
     select: apiServices.formatData,
     onError: apiServices.errorHandler,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
   });
 
   const { mutate: deleteTransferFund, isLoading: deleteTransferLoading } =
@@ -49,9 +51,10 @@ export const useTransferFund = () => {
     [queryKeys.GET_FUNDS, id],
     () => apiServices.getFund(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!id,
       select: (data) => ({
         ...data?.data[0]?.attributes,

@@ -7,25 +7,31 @@ const Protected = ({ children }) => {
     setLoginPrompt,
     user,
     apiServices: { getToken },
+    logout,
   } = useAppContext();
   const [canAccess, setCanAccess] = useState(null);
-  const token = getToken()
+  const token = getToken();
+
+  const ol = Object.keys(user).length;
 
   useEffect(() => {
     if (!token) {
-      if (Object.keys(user).length > 0) {
-        setLoginPrompt(true);
-      } else {
-        setCanAccess(false);
-      }
+      // if (Object.keys(user).length <= 0) {
+      //   setLoginPrompt(true);
+      // } else {
+      //   setCanAccess(false);
+      // }
+      logout();
     } else {
-      setCanAccess(true)
+      setCanAccess(true);
     }
   }, [user, token, setLoginPrompt]);
 
+  console.log({ token, user, ol });
+
   if (canAccess === null) return <div />;
 
-  if (!canAccess) return <Navigate to="/auth" replace />;
+  if (!canAccess) return <Navigate to='/auth' replace />;
 
   return children;
 };

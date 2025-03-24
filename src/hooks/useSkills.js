@@ -3,6 +3,7 @@ import { useAppContext } from "./useAppContext";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useParams } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useSkills = () => {
   const { apiServices, permission } = useAppContext("skills");
@@ -23,9 +24,10 @@ export const useSkills = () => {
     isLoading: skillsLoading,
     refetch: refetchSkills,
   } = useQuery([queryKeys.GET_ALL_SKILLS], apiServices.getSkills, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission.read || false,
     onError: apiServices.errorHandler,
     select: (data) =>
@@ -36,9 +38,10 @@ export const useSkills = () => {
     [queryKeys.GET_ALL_SKILLS, id],
     () => apiServices.getSkill(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.read && !!id,
       select: apiServices.formatSingleData,
       onError: apiServices.errorHandler,

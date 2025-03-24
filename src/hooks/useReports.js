@@ -4,6 +4,7 @@ import Numeral from "react-numeral";
 import { useQuery } from "react-query";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
+import { queryOptions } from "../utils/constants";
 
 export const useReports = () => {
   const [enableIncomeQuery, setEnableIncomeQuery] = useState(false);
@@ -28,9 +29,10 @@ export const useReports = () => {
     () => apiServices.getAllIncomeReports(term, session),
     {
       enabled: enableIncomeQuery,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -63,9 +65,10 @@ export const useReports = () => {
     () => apiServices.getAllInvoiceReports(term, session),
     {
       enabled: enableInvoicesQuery,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -96,9 +99,10 @@ export const useReports = () => {
     () => apiServices.getDebtors(term, session),
     {
       enabled: enableDebtorsQuery,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -129,9 +133,10 @@ export const useReports = () => {
     () => apiServices.getCreditors(term, session),
     {
       enabled: enableCreditorsQuery,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -162,9 +167,10 @@ export const useReports = () => {
     () => apiServices.getAllExpenseReports(term, session),
     {
       enabled: enableExpensesQuery,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },

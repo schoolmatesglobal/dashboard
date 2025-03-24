@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const usePreSchool = () => {
   const { apiServices, permission, user } = useAppContext("pre-school");
@@ -23,9 +24,10 @@ export const usePreSchool = () => {
     [queryKeys.GET_ALL_PRE_SCHOOLS],
     apiServices.getPreSchools,
     {
-      retry: 1,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.read && is_preschool,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
@@ -40,9 +42,10 @@ export const usePreSchool = () => {
     [queryKeys.GET_ALL_PRE_SCHOOLS, id],
     () => apiServices.getPreSchool(id),
     {
-      retry: 1,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: ch,
       // enabled:
       //   is_preschool &&
@@ -89,9 +92,10 @@ export const usePreSchool = () => {
       ),
     {
       enabled: chk2,
-      retry: 1,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: false,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       select: apiServices.formatData,
       onError: apiServices.errorHandler,
     }
@@ -120,9 +124,10 @@ export const usePreSchool = () => {
         preSchool?.name
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled:
         is_preschool &&
         permission?.subject &&
@@ -154,9 +159,10 @@ export const usePreSchool = () => {
       [queryKeys.GET_ALL_PRE_SCHOOL_SUBJECTS, id],
       () => apiServices.getPreSchoolSubject(id),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: permission?.subject && !!id,
         select(data) {
           const pt = apiServices.formatData(data);

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useNavigate } from "react-router-dom";
+import { queryOptions } from "../utils/constants";
 
 export const useAccounts = () => {
   const [indexStatus, setIndexStatus] = useState("my-invoice");
@@ -22,9 +23,10 @@ export const useAccounts = () => {
     [queryKeys.GET_FEE_HISTORY],
     apiServices.getStudentFeeHistory,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.feeHistory,
       select: apiServices.formatData,
     }
@@ -34,9 +36,10 @@ export const useAccounts = () => {
     [queryKeys.GET_PREVIOUS_INVOICE],
     apiServices.getStudentPreviousInvoice,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.previousInvoice,
       select: apiServices.formatData,
     }
@@ -47,9 +50,10 @@ export const useAccounts = () => {
     data: invoicesList,
     refetch: getInvoiceRefetch,
   } = useQuery([queryKeys.GET_ALL_INVOICES], apiServices.getInvoices, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission?.myPayment,
     select: apiServices.formatData,
   });
@@ -58,9 +62,7 @@ export const useAccounts = () => {
     [queryKeys.GET_CHART_ACCOUNTS],
     apiServices.getChartAccount,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.myChartAccount,
       select: apiServices.formatData,
     }
@@ -71,9 +73,10 @@ export const useAccounts = () => {
     data: payment,
     refetch: refetchPayment,
   } = useQuery([queryKeys.GET_PAYMENT], apiServices.getPayment, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission?.myPayment,
     // select: apiServices.formatData,
     select: (data) => {

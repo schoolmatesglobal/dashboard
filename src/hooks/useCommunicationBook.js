@@ -8,6 +8,7 @@ import { useStudent } from "./useStudent";
 import useLocalStorage from "use-local-storage";
 import { useLocation } from "react-router-dom";
 import { useAuthDetails } from "../stores/authDetails";
+import { queryOptions } from "../utils/constants";
 
 export const useCommunicationBook = () => {
   const { userDetails, setUserDetails } = useAuthDetails();
@@ -261,9 +262,10 @@ export const useCommunicationBook = () => {
 
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!className && !!classValue(),
       // enabled: permission?.myStudents || user?.designation_name === "Principal",
       // select: apiServices.formatData,
@@ -294,9 +296,7 @@ export const useCommunicationBook = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled:
         permission?.create || permission?.created || permission?.submissions,

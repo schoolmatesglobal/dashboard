@@ -344,7 +344,7 @@ const ElementaryFirstHalfSheet = () => {
                     >
                       Name:
                     </span>{" "}
-                    {studentData?.firstname} {studentData?.surname}{" "}
+                    {studentData?.surname} {studentData?.firstname}{" "}
                     {studentData?.middlename}
                   </h4>
                 </div>

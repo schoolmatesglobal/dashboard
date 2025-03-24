@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useAuthDetails } from "../stores/authDetails";
+import { queryOptions } from "../utils/constants";
 
 export const useClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -55,9 +56,10 @@ export const useClasses = () => {
     [queryKeys.GET_SUBJECTS, id],
     () => apiServices.getSubjectByClass(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !!id,
       select: apiServices.formatData,
 
@@ -74,9 +76,10 @@ export const useClasses = () => {
     [queryKeys.GET_SUBJECTS2, id],
     () => apiServices.getSubject(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: false,
       // enabled: !!id && onGetSubjectByClass2,
       // select: apiServices.formatSingleData,
@@ -95,9 +98,10 @@ export const useClasses = () => {
     data: classDt,
     refetch: refetchClasses,
   } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled:
       activateClasses &&
       !is_preschool &&
@@ -139,9 +143,10 @@ export const useClasses = () => {
       [queryKeys.GET_SUBJECTS_BY_CLASS2, id],
       () => apiServices.getSubjectByClass2(id),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: !!id,
         // enabled: false,
         // enabled: !!id && onGetSubjectByClass2,
@@ -207,9 +212,10 @@ export const useClasses = () => {
     () => apiServices.getStudentByClass(newClass),
     {
       // enabled: false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: newClass.present_class && permission?.create,
       onError(err) {
         errorHandler(err);
@@ -242,9 +248,10 @@ export const useClasses = () => {
     // refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read && activateCampus,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError(err) {
       errorHandler(err);
     },

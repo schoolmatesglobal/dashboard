@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { Link } from "react-router-dom";
+import { queryOptions } from "../../../utils/constants";
 
 const ImportedStudents = () => {
   const { apiServices } = useAppContext("students");
@@ -11,9 +12,7 @@ const ImportedStudents = () => {
     [queryKeys.GET_IMPORTED_STUDENTS],
     apiServices.getImportedStudents,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       select: (data) =>
         apiServices.formatData(data)?.map((item) => ({
           ...item,

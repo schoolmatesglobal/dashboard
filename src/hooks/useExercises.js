@@ -6,6 +6,7 @@ import { useAppContext } from "./useAppContext";
 import { useStudent } from "./useStudent";
 
 import useLocalStorage from "use-local-storage";
+import { queryOptions } from "../utils/constants";
 
 export const useExercises = () => {
   const [activeTab, setActiveTab] = useState("1");
@@ -140,10 +141,11 @@ export const useExercises = () => {
     [queryKeys.GET_SUBJECTS_BY_TEACHER],
     apiServices.getSubjectByTeacher,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
       // enabled: permission?.read || permission?.readClass,
+      ...queryOptions,
       enabled:
         permission?.create || permission?.created || permission?.submissions,
       onError(err) {

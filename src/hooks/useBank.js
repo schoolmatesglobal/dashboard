@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { formatCurrency } from "../pages/dashboard/bank/constant";
 import dayjs from "dayjs";
+import { queryOptions } from "../utils/constants";
 
 export const useBank = () => {
   const { permission, apiServices, user } = useAppContext("bank");
@@ -33,9 +34,10 @@ export const useBank = () => {
     isLoading: bankLoading,
     refetch: refetchBank,
   } = useQuery([queryKeys.GET_BANK_LIST], apiServices.getBankList, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: permission?.read,
     onError(err) {
       apiServices.errorHandler(err);

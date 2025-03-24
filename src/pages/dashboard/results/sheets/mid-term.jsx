@@ -123,7 +123,7 @@ const MidTerm = ({ isCompute = false }) => {
                   <h5>Name:</h5>
                   <input
                     type="text"
-                    value={`${studentData?.firstname} ${studentData?.surname} ${studentData?.middlename}`}
+                    value={`${studentData?.surname} ${studentData?.firstname} ${studentData?.middlename}`}
                     disabled
                     onChange={() => null}
                   />

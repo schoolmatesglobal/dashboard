@@ -97,9 +97,10 @@ const Admin = () => {
 
   const { isLoading: academicSessionLoading, refetch: refetchAcademicSession } =
     useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: initiateSession,
       select: (data) => {
         // console.log({ datam: data });
@@ -149,9 +150,10 @@ const Admin = () => {
     [queryKeys.GET_SCHOOL],
     getSchool,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: initiateSchool,
       onSuccess(data) {
         updateUser({
@@ -172,9 +174,10 @@ const Admin = () => {
     [queryKeys.GET_TIME_TABLE],
     getTimeTable,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -192,9 +195,10 @@ const Admin = () => {
     [queryKeys.GET_ACADEMIC_CALENDER],
     getAcademicCalender,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -293,9 +297,10 @@ const Admin = () => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     getCurrentAcademicPeriod,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: initiateCPeriod,
       select: (data) => {
         console.log({ ccDt: data, ccDt2: data?.data });
@@ -339,9 +344,10 @@ const Admin = () => {
     data: classDt,
     refetch: refetchClasses,
   } = useQuery([queryKeys.GET_ALL_CLASSES], apiServices.getAllClasses, {
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     enabled: activateClasses && !is_preschool,
     // enabled: activateClasses && !is_preschool,
     onSuccess(data) {
@@ -388,9 +394,7 @@ const Admin = () => {
     [queryKeys.GET_ALL_PRE_SCHOOLS],
     apiServices.getPreSchools,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: true,
       enabled: activatePreschools && is_preschool,
       select: apiServices.formatData,

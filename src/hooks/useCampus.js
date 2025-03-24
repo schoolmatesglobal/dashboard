@@ -7,6 +7,7 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useForm } from "react-formid";
 import { useFile } from "./useFile";
+import { queryOptions } from "../utils/constants";
 
 export const useCampus = () => {
   const { id } = useParams();
@@ -72,9 +73,10 @@ export const useCampus = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read || false,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError(err) {
       errorHandler(err);
     },
@@ -95,9 +97,7 @@ export const useCampus = () => {
     [queryKeys.GET_CAMPUS, id],
     () => apiServices.getCampus(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },

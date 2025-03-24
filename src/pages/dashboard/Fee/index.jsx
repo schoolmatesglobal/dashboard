@@ -4,6 +4,7 @@ import PageView from "../../../components/views/table-view";
 import { useAppContext } from "../../../hooks/useAppContext";
 import queryKeys from "../../../utils/queryKeys";
 import { toast } from "react-toastify";
+import { queryOptions } from "../../../utils/constants";
 
 const FeeList = () => {
   const { apiServices, permission } = useAppContext();
@@ -16,9 +17,7 @@ const FeeList = () => {
     onError(err) {
       apiServices.errorHandler(err);
     },
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    ...queryOptions,
     // select: apiServices.formatData,
     select: (data) => {
       const format = apiServices.formatData(data)?.map((student, i) => {

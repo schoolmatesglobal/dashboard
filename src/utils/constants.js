@@ -467,11 +467,11 @@ export const dashboardSideBarLinks = {
       title: "CBT",
       icon: faDesktop,
     },
-    {
-      to: "/app/students",
-      title: "Students",
-      icon: faGraduationCap,
-    },
+    // {
+    //   to: "/app/students",
+    //   title: "Students",
+    //   icon: faGraduationCap,
+    // },
     {
       to: "/app/flip-class",
       title: "Flip Class",

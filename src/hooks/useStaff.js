@@ -4,7 +4,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { useMutation, useQuery } from "react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { roleMap } from "../utils/constants";
+import { queryOptions, roleMap } from "../utils/constants";
 import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useForm } from "react-formid";
@@ -85,9 +85,10 @@ export const useStaff = () => {
     ["GET_DESIGNATIONS_STAFF"],
     apiServices.getDesignation,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
         errorHandler(err);
@@ -100,9 +101,10 @@ export const useStaff = () => {
     ["GET_DESIGNATION_ROLE"],
     apiServices.getRole,
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.read || permission?.staffLoginDetails,
       onError(err) {
         errorHandler(err);
@@ -119,9 +121,10 @@ export const useStaff = () => {
     () => apiServices.getAllStaffs(page),
     {
       enabled: permission?.read || false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -157,9 +160,10 @@ export const useStaff = () => {
     () => apiServices.getStaffAttendance(page),
     {
       enabled: permission?.readAttendance || false,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -181,9 +185,10 @@ export const useStaff = () => {
     refetch: refetchCampusList,
   } = useQuery([queryKeys.GET_ALL_CAMPUSES], apiServices.getAllCampuses, {
     enabled: permission?.read || false,
-    retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
     onError(err) {
       errorHandler(err);
     },
@@ -212,9 +217,10 @@ export const useStaff = () => {
     {
       enabled: permission?.read,
       // enabled: permission?.read || activate,
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -324,9 +330,10 @@ export const useStaff = () => {
     [queryKeys.GET_STAFF, id],
     () => apiServices.getStaff(id),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       onError(err) {
         errorHandler(err);
       },
@@ -340,9 +347,10 @@ export const useStaff = () => {
       [queryKeys.GET_STAFF_LOGIN_DETAILS, page],
       () => apiServices.getStaffLoginDetails(page),
       {
-        retry: 1,
-        refetchOnMount: true,
-        refetchOnWindowFocus: false,
+        // retry: 1,
+        // refetchOnMount: true,
+        // refetchOnWindowFocus: false,
+        ...queryOptions,
         enabled: permission?.staffLoginDetails,
         select: (data) => {
           const f = apiServices.formatData(data)?.map((staff, i) => {

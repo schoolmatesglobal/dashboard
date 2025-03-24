@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useForm } from "react-formid";
+import { queryOptions } from "../utils/constants";
 
 export const useBroadSheet = () => {
   const { apiServices, errorHandler, permission, user } =
@@ -43,9 +44,10 @@ export const useBroadSheet = () => {
         state?.creds?.session
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: !is_preschool,
       select: (data) => {
         if (data) {

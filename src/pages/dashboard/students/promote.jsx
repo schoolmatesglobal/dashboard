@@ -4,7 +4,7 @@ import AuthSelect from "../../../components/inputs/auth-select";
 import { useClasses } from "../../../hooks/useClasses";
 import { useStudent } from "../../../hooks/useStudent";
 import Button from "../../../components/buttons/button";
-import { faPaperPlane,  } from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageSheet from "../../../components/common/page-sheet";
 import GoBack from "../../../components/common/go-back";
@@ -32,7 +32,7 @@ const PromoteStudent = () => {
 
   // const { classes } = useClasses();
 
-  const {  setInputs, inputs, errors, } = useForm({
+  const { setInputs, inputs, errors } = useForm({
     defaultValues: {
       // campus: "",
       promotion_class: "",
@@ -98,10 +98,10 @@ const PromoteStudent = () => {
       <PageSheet>
         <GoBack />
         {studentData?.firstname && (
-          <div className="">
+          <div className=''>
             <PageTitle>{`Promote - ${studentData?.firstname} ${studentData?.middlename} ${studentData?.surname}`}</PageTitle>
-            <div className="d-flex align-content-center gap-3">
-              <p className="mb-5">Present Class:</p>
+            <div className='d-flex align-content-center gap-3'>
+              <p className='mb-5'>Present Class:</p>
               <PageTitle>{`${studentData?.present_class} `}</PageTitle>
             </div>
           </div>
@@ -110,12 +110,12 @@ const PromoteStudent = () => {
           classData?.class_name ? classData?.class_name : "Class"
         }`}</PageTitle> */}
 
-        <div className="d-flex align-items-end justify-content-between ">
-          <div className="">
+        <div className='d-flex align-items-end justify-content-between '>
+          <div className=''>
             <AuthSelect
-              label="Promote to"
+              label='Promote to'
               value={inputs.promotion_class}
-              name="promotion_class"
+              name='promotion_class'
               // hasError={!!errors.present_class}
               onChange={(e) => {
                 setInputs({
@@ -130,17 +130,17 @@ const PromoteStudent = () => {
               }))}
             />
             {!!errors.promotion_class && (
-              <p className="error-message">{errors.promotion_class}</p>
+              <p className='error-message'>{errors.promotion_class}</p>
             )}
           </div>
-          <div className=" mb-sm-0">
+          <div className=' mb-sm-0'>
             <Button
-              type="button"
+              type='button'
               onClick={toggleModal}
               disabled={!inputs.promotion_class}
               isLoading={isLoading}
             >
-              <FontAwesomeIcon icon={faPaperPlane} className="" /> Promote
+              <FontAwesomeIcon icon={faPaperPlane} className='' /> Promote
             </Button>
           </div>
         </div>
