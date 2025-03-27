@@ -1,3 +1,8 @@
+export const colors = {
+  green: "#008000",
+  lightGreen: "#99cc99"
+}
+
 export function removeDuplicates(array) {
   const uniqueSubjects = [];
 

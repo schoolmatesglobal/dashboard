@@ -135,6 +135,34 @@ export const useCBT = () => {
     };
   });
 
+  /// GET SUBJECTS
+  const {
+    isLoading: subjectsLoading,
+    data: allSubjects,
+    refetch: refetchSubjects,
+  } = useQuery([queryKeys.GET_SUBJECTS], apiServices.getAllSubjects, {
+    // select: apiServices.formatData,
+    select: (data) => {
+      // console.log({ ssdata: data });
+      return apiServices.formatData(data)?.map((obj, index) => {
+        const newObj = { ...obj };
+        newObj.new_id = index + 1;
+        return newObj;
+      });
+
+      // return { ...data, options: f };
+    },
+    onSuccess(data) {
+      // setActivateSubT(true);
+      // setUserDetails({ ...userDetails, allSubjects: data });
+    },
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
+    onError: apiServices.errorHandler,
+  });
+
   ///// GET STUDENT BY CLASS
   const { data: studentByClass, isLoading: studentByClassLoading } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS_CBT],
@@ -184,7 +212,7 @@ export const useCBT = () => {
       select: (data) => {
         const Td = apiServices.formatData(data);
 
-        // console.log({ Td, data });
+        console.log({ Td, data });
 
         const Td2 = Td?.map((sub, index) => {
           return {
@@ -204,6 +232,8 @@ export const useCBT = () => {
   // console.log({ studentByClass2, studentByClassAndSession });
 
   return {
+    allSubjects,
+    
     activeTab,
     setActiveTab,
     createQ,

@@ -54,6 +54,7 @@ const CbtPerformances = ({}) => {
     setMarkedQ,
     studentByClass,
     studentByClassLoading,
+    allSubjects,
   } = useCBT();
 
   const { question_type, subject, subject_id, student_id, week, student } =
@@ -519,11 +520,12 @@ const CbtPerformances = ({}) => {
             >
               <AuthSelect
                 sort
-                // options={newSubjects}
-                options={userDetails?.teacherSubjects}
+                options={newSubjects}
+                // options={userDetails?.teacherSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
-                  const subId = userDetails?.allSubjects?.find(
+                  // const subId = userDetails?.allSubjects?.find(
+                  const subId = allSubjects?.find(
                     (ob) => ob.id === value
                   );
                   console.log({ subId });

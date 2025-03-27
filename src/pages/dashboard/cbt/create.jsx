@@ -26,6 +26,7 @@ import { parseDuration, toSentenceCase } from "./constant";
 import CreateSettings from "./createSettings";
 import GoBack from "../../../components/common/go-back";
 import { useAuthDetails } from "../../../stores/authDetails";
+import { queryOptions } from "../../../utils/constants";
 
 const CreateCBT = (
   {
@@ -60,7 +61,7 @@ const CreateCBT = (
     errorHandler,
     permission,
     user,
-    // subjectsByTeacher,
+    subjectsByTeacher,
   } = useCBT();
 
   const { state } = useLocation();
@@ -208,9 +209,10 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
 
       // enabled: false,
       enabled:
@@ -278,9 +280,10 @@ const CreateCBT = (
         question_type
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
@@ -773,21 +776,21 @@ const CreateCBT = (
     { value: "Art and Craft", title: "Art and Craft", id: "5" },
   ];
 
-  // useEffect(() => {
-  //   if (subjectsByTeacher?.length > 0) {
-  //     const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
-  //       const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
+  useEffect(() => {
+    if (subjectsByTeacher?.length > 0) {
+      const sbb2 = subjectsByTeacher[0]?.title?.map((sb) => {
+        const subId = subjects?.find((ob) => ob.subject === sb.name)?.id;
 
-  //       return {
-  //         value: subId,
-  //         title: sb?.name,
-  //       };
-  //     });
-  //     setNewSubjects(sbb2);
-  //   } else {
-  //     setNewSubjects([]);
-  //   }
-  // }, [subjectsByTeacher]);
+        return {
+          value: subId,
+          title: sb?.name,
+        };
+      });
+      setNewSubjects(sbb2);
+    } else {
+      setNewSubjects([]);
+    }
+  }, [subjectsByTeacher]);
 
   const settingsAdded = () => {
     if (
@@ -844,8 +847,8 @@ const CreateCBT = (
             >
               <AuthSelect
                 sort
-                options={userDetails?.teacherSubjects}
-                // options={newSubjects}
+                // options={userDetails?.teacherSubjects}
+                options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setCreateQ((prev) => {

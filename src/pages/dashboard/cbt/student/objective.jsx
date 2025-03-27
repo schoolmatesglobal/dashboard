@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { useAppContext } from "../../../../hooks/useAppContext";
 import { calculateNumberOfPages } from "../constant";
 import Button from "../../../../components/buttons/button";
+import { queryOptions } from "../../../../utils/constants";
 
 const Objective = ({
   // closeSidebar,
@@ -132,9 +133,10 @@ const Objective = ({
         createQ2?.subject_id
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: permission?.view && permission?.student_results,
       // refetchIntervalInBackground: false,
       // refetchOnWindowFocus: false,
@@ -498,7 +500,7 @@ const Objective = ({
   //   // state,
   // });
 
-  // console.log({ dayLeft, hourLeft, timeLeft, secondleft });
+  console.log({ answeredCbt });
 
   return (
     <div className='mt-5'>

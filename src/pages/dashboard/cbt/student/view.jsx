@@ -17,6 +17,7 @@ import { useAppContext } from "../../../../hooks/useAppContext";
 import PageSheet from "../../../../components/common/page-sheet";
 import { useStudentCBT } from "../../../../hooks/useStudentCBT";
 import { useSubject } from "../../../../hooks/useSubjects";
+import { queryOptions } from "../../../../utils/constants";
 
 const ViewCBT = (
   {
@@ -149,9 +150,10 @@ const ViewCBT = (
         createQ2?.question_type
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       // refetchOnReconnect: false,
