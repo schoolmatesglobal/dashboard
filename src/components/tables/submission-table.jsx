@@ -255,7 +255,7 @@ const SubmissionTable = ({
     }
   };
 
-  // console.log({ data, markedQ });
+  console.log({ data, markedQ, result });
 
   return (
     <div className='custom-table-wrapper'>

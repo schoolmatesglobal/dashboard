@@ -20,6 +20,7 @@ import PageSheet from "../../../../components/common/page-sheet";
 import GoBack from "../../../../components/common/go-back";
 import { useMediaQuery } from "react-responsive";
 import { useStudentCBT } from "../../../../hooks/useStudentCBT";
+import { queryOptions } from "../../../../utils/constants";
 
 const StudentCBTResults = (
   {
@@ -103,9 +104,10 @@ const StudentCBTResults = (
         subject_id
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {

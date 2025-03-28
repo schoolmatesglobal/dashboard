@@ -27,6 +27,7 @@ import { useMediaQuery } from "react-responsive";
 import { formatTime } from "./constant";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
 import { useAuthDetails } from "../../../../stores/authDetails";
+import { queryOptions } from "../../../../utils/constants";
 
 const CbtResults = ({}) => {
   const {
@@ -49,6 +50,7 @@ const CbtResults = ({}) => {
     setResultTab,
     studentByClass,
     studentByClassLoading,
+    allSubjects,
   } = useCBT();
 
   const { userDetails, setUserDetails, subjects } = useAuthDetails();
@@ -110,9 +112,10 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
@@ -130,7 +133,7 @@ const CbtResults = ({}) => {
 
         const calculatedData = analyzeQuestions(sorted);
 
-        // console.log({ ffk, data, sorted });
+        console.log({ ffk, data, sorted });
 
         return calculatedData ?? {};
       },
@@ -149,7 +152,7 @@ const CbtResults = ({}) => {
     }
   );
 
-  /////// FETCH ANSWERED CBT /////
+  /////// FETCH CBT RESULT /////
   const {
     isLoading: cbtSubmmittedAnswerLoading,
     refetch: refetchSubmittedCbtAnswer,
@@ -166,15 +169,16 @@ const CbtResults = ({}) => {
         subject_id
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled: activateRetrieve(),
       select: (data) => {
         const bbk = apiServices.formatData(data);
 
-        // console.log({ bbk, data });
+        console.log({ bbk, data });
 
         return bbk ?? [];
       },
@@ -215,9 +219,10 @@ const CbtResults = ({}) => {
       ),
 
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: false,
       // enabled: activateRetrieve() && permission?.submissions,
 
@@ -391,14 +396,17 @@ const CbtResults = ({}) => {
 
   console.log({
     markedQ,
+    newSubjects,
+    subjectsByTeacher,
     // cbtAnswer,
-    cbtObject,
-    subjects,
-    userDetails,
+    // cbtObject,
+    // subjects,
+    // userDetails,
     // cbtObject,
     // markedAssignmentResults,
     // dt,
     // cbtResult,
+    allSubjects,
   });
 
   return (
@@ -422,19 +430,18 @@ const CbtResults = ({}) => {
             >
               <AuthSelect
                 sort
-                // options={newSubjects}
-                options={userDetails?.teacherSubjects}
-                value={subject_id}
+                options={newSubjects}
+                // options={userDetails?.teacherSubjects}
+                value={subject}
                 onChange={({ target: { value } }) => {
-                  const subId = userDetails?.allSubjects?.find(
-                    (ob) => ob.id === value
-                  );
-                  console.log({ subId });
+                  // const subId = userDetails?.allSubjects?.find(
+                  const subId = allSubjects?.find((ob) => ob.subject === value);
+                  console.log({ subId, value });
                   setMarkedQ((prev) => {
                     return {
                       ...prev,
                       subject_id: subId?.id,
-                      subject: subId?.subject,
+                      subject: value,
                     };
                   });
                 }}

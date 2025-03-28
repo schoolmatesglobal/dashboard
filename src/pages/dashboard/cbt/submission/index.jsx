@@ -18,6 +18,7 @@ import Button from "../../../../components/buttons/button";
 import StudentsResults from "../../../../components/common/students-results";
 import CbtStudentsRow from "../../../../components/common/cbt-students-row";
 import { useAuthDetails } from "../../../../stores/authDetails";
+import { queryOptions } from "../../../../utils/constants";
 // import styles from "../../../../assets/scss/pages/dashboard/studentAssignment.module.scss";
 
 const CbtSubmission = (
@@ -155,10 +156,10 @@ const CbtSubmission = (
         subject_id
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       enabled: activateRetrieve(),
       // enabled: false,
       select: (data) => {
@@ -359,7 +360,7 @@ const CbtSubmission = (
   //   myStudents,
   //   studentByClass,
   // });
-  // console.log({ studentByClass, user, answerQ });
+  console.log({ answerQ });
 
   return (
     <div className='results-sheet'>
@@ -383,8 +384,8 @@ const CbtSubmission = (
             >
               <AuthSelect
                 sort
-                options={userDetails?.teacherSubjects}
-                // options={newSubjects}
+                // options={userDetails?.teacherSubjects}
+                options={newSubjects}
                 value={subject_id}
                 onChange={({ target: { value } }) => {
                   setAnswerQ((prev) => {

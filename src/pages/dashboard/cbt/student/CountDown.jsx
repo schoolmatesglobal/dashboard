@@ -82,7 +82,7 @@ const CountdownTimer = ({
   const days = Math.ceil(remainingTime / daySeconds);
   const daysDuration = days * daySeconds;
 
-  // console.log({ createQ2, day, hour, minute });
+  console.log({ initialTaken, submitted });
 
   return (
     <div key={key} className='flex flex-col align-items-center'>

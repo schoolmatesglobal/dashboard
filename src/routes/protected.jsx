@@ -3,28 +3,30 @@ import { Navigate } from "react-router-dom";
 import { useAppContext } from "../hooks/useAppContext";
 
 const Protected = ({ children }) => {
+  
   const {
     setLoginPrompt,
     user,
     apiServices: { getToken },
     logout,
   } = useAppContext();
+
   const [canAccess, setCanAccess] = useState(null);
+  
   const token = getToken();
 
   const ol = Object.keys(user).length;
 
   useEffect(() => {
+
     if (!token) {
-      // if (Object.keys(user).length <= 0) {
-      //   setLoginPrompt(true);
-      // } else {
-      //   setCanAccess(false);
-      // }
+     
       logout();
+
     } else {
       setCanAccess(true);
     }
+
   }, [user, token, setLoginPrompt]);
 
   console.log({ token, user, ol });
@@ -35,4 +37,5 @@ const Protected = ({ children }) => {
 
   return children;
 };
+
 export default Protected;

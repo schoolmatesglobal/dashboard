@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import queryKeys from "../../../../utils/queryKeys";
 import { useMediaQuery } from "react-responsive";
+import { queryOptions } from "../../../../utils/constants";
 
 const Theory = ({
   assignmentLoading,
@@ -67,9 +68,10 @@ const Theory = ({
         createQ2?.week
       ),
     {
-      retry: 1,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
+      // retry: 1,
+      // refetchOnMount: true,
+      // refetchOnWindowFocus: false,
+      ...queryOptions,
       // enabled: permission?.read || permission?.readClass,
       enabled: permission?.view && permission?.student_results,
       // enabled: false,
