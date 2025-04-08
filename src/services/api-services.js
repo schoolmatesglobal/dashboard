@@ -2963,6 +2963,20 @@ class APIServies extends Helpers {
     return data;
   }
 
+  async getAllCbtAnswer(period, term, session, subject_id, question_type) {
+    const { data } = await axios.get(
+      `${backendAPI}/v2/cbt/answer/${period}/${term}/${session}/${question_type}/${subject_id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${super.getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  }
+
   async getCbtAnswerByStudentId(
     student_id,
     period,

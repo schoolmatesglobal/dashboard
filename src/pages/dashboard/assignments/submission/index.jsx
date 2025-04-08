@@ -169,7 +169,7 @@ const Submission = ({
             return 0;
           });
 
-        console.log({ ffk, data, sorted });
+        // console.log({ ffk, data, sorted });
 
         return sorted;
       },
