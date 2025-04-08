@@ -13,19 +13,21 @@ import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useGrading } from "../../../hooks/useGrading";
 import { usePreSchool } from "../../../hooks/usePreSchool";
 import { useAuthDetails } from "../../../stores/authDetails";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Results = () => {
   const { permission, user } = useAppContext("results");
   const [promptStatus, setPromptStatus] = useState("compute");
   const [loginPrompt, setLoginPrompt] = useState(false);
   const { userDetails, setUserDetails } = useAuthDetails();
+  const { currentAcademicPeriod } = useAuth();
   const navigate = useNavigate();
   const { inputs, errors, handleChange, setInputs } = useForm({
     defaultValues: {
       assessment: "First Assessment",
       period: "First Half",
       term: "First Term",
-      session: userDetails?.session,
+      session: currentAcademicPeriod?.session,
       class_name: "",
     },
     validation: {
@@ -177,14 +179,14 @@ const Results = () => {
   useEffect(() => {
     setInputs({
       ...inputs,
-      session: userDetails?.session,
+      session: currentAcademicPeriod?.session,
       assessment: "First Assessment",
-      period: "First Half",
-      term: "First Term",
+      period: currentAcademicPeriod?.period,
+      term: currentAcademicPeriod?.term,
     });
   }, []);
 
-  console.log({ sessions, user, userDetails });
+  console.log({ sessions, user,  });
 
   return (
     <div>

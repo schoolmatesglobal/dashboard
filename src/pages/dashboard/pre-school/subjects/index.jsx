@@ -7,16 +7,18 @@ import { useForm } from "react-formid";
 import { useAcademicSession } from "../../../../hooks/useAcademicSession";
 import { usePreSchool } from "../../../../hooks/usePreSchool";
 import { useAuthDetails } from "../../../../stores/authDetails";
+import { useAuth } from "../../../../hooks/useAuth";
 
 const PreSchoolSubject = () => {
   const [prompt, setPrompt] = useState(false);
   const [hideTable, setHideTable] = useState(true);
   const { userDetails, setUserDetails } = useAuthDetails();
+    const { currentAcademicPeriod } = useAuth();
   const { inputs, errors, handleChange } = useForm({
     defaultValues: {
       period: "First Half",
       term: "First Term",
-      session: userDetails?.session,
+      session: currentAcademicPeriod?.session,
     },
     validation: {
       period: {

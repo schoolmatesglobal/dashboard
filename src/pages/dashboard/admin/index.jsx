@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 import AuditCard from "../../../components/cards/audit-card";
 import { useAuthDetails } from "../../../stores/authDetails";
 import Button from "../../../components/buttons/button";
-import { queryOptions } from "../../../utils/constants";
+import { queryOptions, sortByAcademicSession } from "../../../utils/constants";
 
 const Admin = () => {
   const [importStudentPrompt, setImportStudentPrompt] = useState(false);
@@ -68,18 +68,18 @@ const Admin = () => {
     permission,
   } = useAppContext();
 
-  function sortByAcademicSession(array) {
-    return array.sort((a, b) => {
-      const [startYearA, endYearA] = a.academic_session.split("/").map(Number);
-      const [startYearB, endYearB] = b.academic_session.split("/").map(Number);
+  // function sortByAcademicSession(array) {
+  //   return array.sort((a, b) => {
+  //     const [startYearA, endYearA] = a.academic_session.split("/").map(Number);
+  //     const [startYearB, endYearB] = b.academic_session.split("/").map(Number);
 
-      // Compare start years first, if equal, compare end years
-      if (startYearA === startYearB) {
-        return endYearA - endYearB;
-      }
-      return startYearA - startYearB;
-    });
-  }
+  //     // Compare start years first, if equal, compare end years
+  //     if (startYearA === startYearB) {
+  //       return endYearA - endYearB;
+  //     }
+  //     return startYearA - startYearB;
+  //   });
+  // }
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -95,26 +95,29 @@ const Admin = () => {
     // postCurrentAcademicPeriod,
   } = useAcademicPeriod();
 
-  const { isLoading: academicSessionLoading, refetch: refetchAcademicSession } =
-    useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
-      // retry: 1,
-      // refetchOnMount: true,
-      // refetchOnWindowFocus: false,
-      ...queryOptions,
-      enabled: initiateSession,
-      select: (data) => {
-        // console.log({ datam: data });
-        return data?.data;
-      },
-      onSuccess(data) {
-        setUserDetails({
-          ...userDetails,
-          sessions: sortByAcademicSession(data),
-        });
-        setInitiateSession(false);
-      },
-      onError: errorHandler,
-    });
+  const {
+    data: academicSessions,
+    isLoading: academicSessionLoading,
+    refetch: refetchAcademicSession,
+  } = useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
+    enabled: initiateSession,
+    select: (data) => {
+      console.log({ datam: data });
+      return sortByAcademicSession(data?.data);
+    },
+    onSuccess(data) {
+      setUserDetails({
+        ...userDetails,
+        sessions: data,
+      });
+      setInitiateSession(false);
+    },
+    onError: errorHandler,
+  });
 
   // const { data: maxScores, isLoading: maxScoresLoading } = useQuery(
   //   [queryKeys.GET_MAX_SCORES],
@@ -297,10 +300,10 @@ const Admin = () => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     getCurrentAcademicPeriod,
     {
-      // retry: 1,
+      retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      ...queryOptions,
+      // ...queryOptions,
       enabled: initiateCPeriod,
       select: (data) => {
         console.log({ ccDt: data, ccDt2: data?.data });
@@ -740,7 +743,7 @@ const Admin = () => {
                 name='session2'
                 hasError={!!errors.session2}
                 onChange={handleChange}
-                options={(userDetails?.sessions || [])?.map((session) => ({
+                options={(academicSessions || [])?.map((session) => ({
                   value: session?.academic_session,
                   title: session?.academic_session,
                 }))}

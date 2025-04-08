@@ -21,6 +21,7 @@ import { useSubject } from "../../../hooks/useSubjects";
 import { useMediaQuery } from "react-responsive";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useAuthDetails } from "../../../stores/authDetails";
+import { useAuth } from "../../../hooks/useAuth";
 // import Performances2 from "./performances/students";
 
 const CBTPage = () => {
@@ -76,6 +77,8 @@ const CBTPage = () => {
 
   const [newSubjects, setNewSubjects] = useState([]);
 
+  const { currentAcademicPeriod } = useAuth();
+
   const {
     objectiveQ2,
     setObjectiveQ2,
@@ -118,17 +121,17 @@ const CBTPage = () => {
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
-  console.log({ userDetails });
+  console.log({ userDetails, currentAcademicPeriod });
 
   const { inputs, errors, handleChange } = useForm({
     defaultValues: {
       assessment: "First Assessment",
-      period: "First Half",
-      term: "First Term",
+      period: currentAcademicPeriod?.period ?? "First Half",
+      term: currentAcademicPeriod?.term ?? "First Term",
       subject: "",
       subjectId: "",
       question_type: "",
-      session: userDetails?.sessions?.length > 0 && userDetails?.session,
+      session: currentAcademicPeriod?.session,
       class_name: "",
     },
     // validation: {
@@ -340,12 +343,12 @@ const CBTPage = () => {
     setCreateQ((prev) => {
       return {
         ...prev,
-        period: userDetails?.period,
-        term: userDetails?.term,
-        session: userDetails?.session,
+        period: currentAcademicPeriod?.period,
+        term: currentAcademicPeriod?.term,
+        session: currentAcademicPeriod?.session,
       };
     });
-  }, []);
+  }, [currentAcademicPeriod]);
 
   // console.log({ sessions, activeTab, inputs, createQ, ct: activateContinue() });
 

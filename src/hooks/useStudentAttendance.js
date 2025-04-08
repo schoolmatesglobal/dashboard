@@ -5,12 +5,15 @@ import queryKeys from "../utils/queryKeys";
 import { useAppContext } from "./useAppContext";
 import { useAuthDetails } from "../stores/authDetails";
 import { queryOptions } from "../utils/constants";
+import { useAuth } from "./useAuth";
 
 export const useStudentAttendance = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("attendance");
 
   const { userDetails, setUserDetails } = useAuthDetails();
+
+  const { currentAcademicPeriod } = useAuth();
 
   const [date, setDate] = useState(
     apiServices.formatDate(new Date(), "YY-MM-DD")
@@ -59,17 +62,17 @@ export const useStudentAttendance = () => {
     [
       queryKeys.GET_STUDENTS_BY_ATTENDANCE,
       userDetails?.class_assigned,
-      userDetails?.session,
+      currentAcademicPeriod?.session,
     ],
     () =>
       apiServices.getStudentByClassAndSession(
         userDetails?.class_assigned,
-        userDetails?.session
+        currentAcademicPeriod?.session
       ),
     {
       enabled:
         !!userDetails?.class_assigned &&
-        !!userDetails?.session &&
+        !!currentAcademicPeriod?.session &&
         (!studentAttendance || studentAttendance?.length === 0),
       // retry: 1,
       // refetchOnMount: true,

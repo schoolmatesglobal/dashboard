@@ -5,7 +5,7 @@ import { useStudent } from "../../../hooks/useStudent";
 import DetailView from "../../../components/views/detail-view";
 import AuthSelect from "../../../components/inputs/auth-select";
 import { useClasses } from "../../../hooks/useClasses";
-import { countryListSelect } from "../../../utils/constants";
+import { countryListSelect, queryOptions, sortByAcademicSession } from "../../../utils/constants";
 import ImagePreview from "../../../components/common/image-preview";
 import Button from "../../../components/buttons/button";
 import {
@@ -19,11 +19,24 @@ import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useCampus } from "../../../hooks/useCampus";
 import { usePreSchool } from "../../../hooks/usePreSchool";
 import { useAuthDetails } from "../../../stores/authDetails";
+import queryKeys from "../../../utils/queryKeys";
+import { useQuery } from "react-query";
+import { useAppContext } from "../../../hooks/useAppContext";
 
 const StudentDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { userDetails, setUserDetails } = useAuthDetails();
+
+  const {
+    apiServices: {
+      importStudent,
+      errorHandler,
+      errorHandler2,
+      getAcademicSessions,
+      getCurrentAcademicPeriod,
+    },
+  } = useAppContext();
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const {
@@ -54,6 +67,30 @@ const StudentDetail = () => {
     loadedGen,
     setLoadedGen,
   } = useStudent();
+
+  const {
+    data: academicSessions,
+    isLoading: academicSessionLoading,
+    refetch: refetchAcademicSession,
+  } = useQuery([queryKeys.GET_ACADEMIC_SESSIONS], getAcademicSessions, {
+    // retry: 1,
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
+    // enabled: initiateSession,
+    select: (data) => {
+      console.log({ datam: data });
+      return sortByAcademicSession(data?.data);
+    },
+    onSuccess(data) {
+      setUserDetails({
+        ...userDetails,
+        sessions: data,
+      });
+      // setInitiateSession(false);
+    },
+    onError: errorHandler,
+  });
 
   // const {
   //   campusList,
