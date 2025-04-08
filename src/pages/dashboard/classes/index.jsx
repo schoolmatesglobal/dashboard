@@ -31,7 +31,7 @@ const Classes = () => {
   };
   const navigate = useNavigate();
 
-  console.log({ userDetails });
+  console.log({ userDetails, classes });
 
   useEffect(() => {
     setOnGetSubjectByClass2(true);

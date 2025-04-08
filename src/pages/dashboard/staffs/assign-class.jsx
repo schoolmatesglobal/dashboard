@@ -11,6 +11,7 @@ import CustomTable2 from "../../../components/tables/table2";
 import { useQuery } from "react-query";
 import queryKeys from "../../../utils/queryKeys";
 import { queryOptions } from "../../../utils/constants";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const AssignClass = () => {
   const {
@@ -25,6 +26,8 @@ const AssignClass = () => {
 
   const [currentSubjects, setCurrentSubjects] = useState([]);
 
+  const { userDetails, setUserDetails } = useAuthDetails();
+
   const {
     assignClass,
     isLoading: staffIsLoading,
@@ -34,7 +37,7 @@ const AssignClass = () => {
 
   const { handleSubmit, errors, inputs, setInputs } = useForm({
     defaultValues: {
-      class_assigned: "",
+      class_assigned: staffData?.class_assigned,
       // sub_class: "",
     },
     validation: {
@@ -44,7 +47,8 @@ const AssignClass = () => {
   });
 
   const findId = () => {
-    const find = classes.find(
+    // const find = classes.find(
+    const find = userDetails?.classes.find(
       (sb) =>
         sb.class_name?.toUpperCase() === inputs.class_assigned?.toUpperCase()
     );
@@ -157,11 +161,11 @@ const AssignClass = () => {
   useEffect(() => {
     if (staffData) {
       let name;
-      setInputs({
-        ...inputs,
-        class_assigned: staffData.class_assigned,
-        // sub_class: staffData.sub_class,
-      });
+      // setInputs({
+      //   ...inputs,
+      //   class_assigned: staffData.class_assigned,
+      //   // sub_class: staffData.sub_class,
+      // });
 
       if (subjectsByClass3?.length > 0) {
         const dataIds = staffData?.subjects?.map((x) => {
@@ -186,16 +190,16 @@ const AssignClass = () => {
     subjectIsLoading ||
     subjectsByClassLoading3;
 
-  // console.log({
-  //   staffData,
-  //   currentSubjects,
-  //   checkedSubjects,
-  //   subjects,
-  //   subjectsByClass3,
-  //   //   // subjects,
-  //   //   // checkedSubjects,
-  //   // assignSubjectValue: assignSubjectValue(),
-  // });
+  console.log({
+    staffData,
+    currentSubjects,
+    checkedSubjects,
+    subjects,
+    subjectsByClass3,
+    //   // subjects,
+    // checkedSubjects,
+    // assignSubjectValue: assignSubjectValue(),
+  });
 
   return (
     <DetailView
@@ -218,7 +222,8 @@ const AssignClass = () => {
                 // sub_class: "",
               });
             }}
-            options={(classes || []).map((x) => ({
+            // options={(classes || []).map((x) => ({
+            options={(userDetails?.classes || []).map((x) => ({
               value: x?.class_name,
               title: x?.class_name,
             }))}
