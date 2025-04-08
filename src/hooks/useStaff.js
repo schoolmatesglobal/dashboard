@@ -2,7 +2,7 @@ import { useState } from "react";
 import validator from "validator";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { useMutation, useQuery } from "react-query";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { queryOptions, roleMap } from "../utils/constants";
 import queryKeys from "../utils/queryKeys";
@@ -28,52 +28,7 @@ export const useStaff = () => {
   const { apiServices, errorHandler, permission, user } =
     useAppContext("staffs");
 
-  const {
-    getFieldProps,
-    inputs,
-    setFieldValue,
-    handleSubmit,
-    errors,
-    setInputs,
-    handleChange,
-    reset: resetForm,
-  } = useForm({
-    defaultValues: {
-      designation_id: "1",
-      teacher_type: "",
-      department: "",
-      surname: "",
-      firstname: "",
-      middlename: "",
-      username: "",
-      email: "",
-      phoneno: "",
-      address: "",
-      campus: "",
-      class_assigned: "",
-    },
-    // validation: {
-    //   surname: { required: true },
-    //   firstname: { required: true },
-    //   middlename: { required: true },
-    //   username: { required: true },
-    //   // address: { required: true },
-    //   department: { required: true },
-    //   campus: { required: true },
-    //   designation_id: { required: true },
-    //   teacher_type: { required: true },
-    //   phoneno: {
-    //     // required: (val) => !!val || "Phone number is required",
-    //     // isValid: (val) =>
-    //     //   (typeof val === "string" && isValidPhoneNumber(val)) ||
-    //     //   "Phone number is invalid",
-    //   },
-    //   email: {
-    //     required: (val) => !!val || "Email address is required",
-    //     isValid: (val) => validator.isEmail(val) || "Email address is invalid",
-    //   },
-    // },
-  });
+  const navigate = useNavigate();
 
   const reset = () => {
     resetFile();
@@ -120,11 +75,11 @@ export const useStaff = () => {
     [queryKeys.GET_ALL_STAFFS, page],
     () => apiServices.getAllStaffs(page),
     {
-      enabled: permission?.read || false,
+      // enabled: permission?.read || false,
       // retry: 1,
-      // refetchOnMount: true,
       // refetchOnWindowFocus: false,
       ...queryOptions,
+      refetchOnMount: true,
       onError(err) {
         errorHandler(err);
       },
@@ -235,6 +190,22 @@ export const useStaff = () => {
     }
   );
 
+  const {
+    isLoading: singleStaffLoading,
+    data: singleStaff,
+    refetch: refetchSingleStaff,
+  } = useQuery([queryKeys.GET_STAFF, id], () => apiServices.getStaff(id), {
+    // retry: 1,
+    // refetchOnWindowFocus: false,
+    ...queryOptions,
+    refetchOnMount: true,
+    onError(err) {
+      errorHandler(err);
+    },
+    enabled: !!id,
+    select: apiServices.formatSingleData,
+  });
+
   const { mutate: addDos, isLoading: addDosLoading } = useMutation(
     apiServices.addDirectorOfStudies,
     {
@@ -277,6 +248,7 @@ export const useStaff = () => {
     {
       onSuccess() {
         toast.success("Staff has been added successfully");
+        refetchStaffList();
         reset();
       },
       onError(err) {
@@ -289,6 +261,8 @@ export const useStaff = () => {
     useMutation(apiServices.updateStaff, {
       onSuccess() {
         toast.success("Staff has been updated successfully");
+        refetchStaffList();
+        refetchSingleStaff();
       },
       onError(err) {
         errorHandler(err);
@@ -320,27 +294,12 @@ export const useStaff = () => {
     useMutation(apiServices.assignClass, {
       onSuccess() {
         toast.success("Class / subject has been assigned to staff");
+        navigate("/app/staffs");
       },
       onError(err) {
         errorHandler(err);
       },
     });
-
-  const { isLoading: singleStaffLoading, data: singleStaff } = useQuery(
-    [queryKeys.GET_STAFF, id],
-    () => apiServices.getStaff(id),
-    {
-      // retry: 1,
-      // refetchOnMount: true,
-      // refetchOnWindowFocus: false,
-      ...queryOptions,
-      onError(err) {
-        errorHandler(err);
-      },
-      enabled: !!id,
-      select: apiServices.formatSingleData,
-    }
-  );
 
   const { isLoading: staffLoginDetailsLoading, data: staffLoginDetails } =
     useQuery(
@@ -372,6 +331,53 @@ export const useStaff = () => {
       }
     );
 
+  const {
+    getFieldProps,
+    inputs,
+    setFieldValue,
+    handleSubmit,
+    errors,
+    setInputs,
+    handleChange,
+    reset: resetForm,
+  } = useForm({
+    defaultValues: {
+      designation_id: "1",
+      teacher_type: "",
+      department: "",
+      surname: "",
+      firstname: "",
+      middlename: "",
+      username: "",
+      email: "",
+      phoneno: "",
+      address: "",
+      campus: "",
+      class_assigned: singleStaff?.class_assigned,
+    },
+    // validation: {
+    //   surname: { required: true },
+    //   firstname: { required: true },
+    //   middlename: { required: true },
+    //   username: { required: true },
+    //   // address: { required: true },
+    //   department: { required: true },
+    //   campus: { required: true },
+    //   designation_id: { required: true },
+    //   teacher_type: { required: true },
+    //   phoneno: {
+    //     // required: (val) => !!val || "Phone number is required",
+    //     // isValid: (val) =>
+    //     //   (typeof val === "string" && isValidPhoneNumber(val)) ||
+    //     //   "Phone number is invalid",
+    //   },
+    //   email: {
+    //     required: (val) => !!val || "Email address is required",
+    //     isValid: (val) => validator.isEmail(val) || "Email address is invalid",
+    //   },
+    // },
+  });
+
   const handleUpdateStaff = async (data) => await updateStaff({ ...data, id });
   const handleAssignClass = async (data) => await assignClass({ ...data, id });
 
@@ -394,7 +400,7 @@ export const useStaff = () => {
     addDosLoading ||
     dosLoading;
 
-  // console.log({ dos });
+  console.log({ singleStaff });
 
   return {
     isLoading,

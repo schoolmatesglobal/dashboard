@@ -135,7 +135,12 @@ export const useClasses = () => {
     onError(err) {
       errorHandler(err);
     },
-    select: apiServices.formatData,
+    select: (data) => {
+      const dts = apiServices.formatData(data);
+
+      console.log({ STData: data, dts });
+      return dts;
+    },
   });
 
   const { isLoading: subjectsByClassLoading2, data: subjectsByClass2 } =
@@ -183,6 +188,8 @@ export const useClasses = () => {
       onSuccess() {
         toast.success("Class has been added successfully");
         reset();
+        setActivateClasses(true);
+        refetchClasses();
         navigate(-1);
       },
       onError(err) {
@@ -270,6 +277,8 @@ export const useClasses = () => {
     useMutation(apiServices.updateClass, {
       onSuccess() {
         toast.success("Class has been updated successfully");
+        setActivateClasses(true);
+        refetchClasses();
         navigate(-1);
       },
       onError(err) {
@@ -280,6 +289,7 @@ export const useClasses = () => {
   const { mutateAsync: deleteClass } = useMutation(apiServices.deleteClass, {
     onSuccess() {
       toast.success("Class has been deleted successfully");
+      setActivateClasses(true);
       refetchClasses();
     },
     onError(err) {

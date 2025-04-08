@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useClasses } from "../../../hooks/useClasses";
 import { usePreSchool } from "../../../hooks/usePreSchool";
+import { useAuthDetails } from "../../../stores/authDetails";
 
 const StaffDetail = () => {
   const {
@@ -76,6 +77,8 @@ const StaffDetail = () => {
   // } = useCampus();
 
   const navigate = useNavigate();
+
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const { isLoading: departmentsListLoading, departmentsList } =
     useDepartments();
@@ -141,7 +144,8 @@ const StaffDetail = () => {
     await addStaff({ ...data, signature: "", image, password: "12345678" });
   };
 
-  const cls = (classes || []).map((x) => ({
+  // const cls = (classes || []).map((x) => ({
+  const cls = (userDetails?.classes || []).map((x) => ({
     value: x?.class_name.toUpperCase(),
     title: x?.class_name,
   }));
@@ -151,9 +155,11 @@ const StaffDetail = () => {
     title: x?.name,
   }));
 
-  const classArray = user?.is_preschool === "true" ? cls2 : cls;
+  const is_preschool = !!user?.is_preschool && user.is_preschool !== "false";
 
-  // console.log({ user, classes, preSchools, classArray, cls, cls2 });
+  const classArray = is_preschool ? cls2 : cls;
+
+  console.log({ user, classes, preSchools, classArray, cls, cls2 });
 
   useEffect(() => {
     if (staffData) {
@@ -161,13 +167,14 @@ const StaffDetail = () => {
         ...inputs,
         ...staffData,
         designation: staffData?.designation_id,
+        class_assigned: staffData?.class_assigned,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [staffData]);
 
   // console.log({ di: inputs?.designation_id });
-  console.log({ user, inputs });
+  console.log({ user, inputs, staffData });
 
   return (
     <DetailView
