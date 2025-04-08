@@ -17,10 +17,10 @@ export const useAuth = (navigateOnLogin = true) => {
     [queryKeys.GET_DESIGNATION],
     apiServices.getDesignation,
     {
-      // retry: 1,
+      retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      ...queryOptions,
+      // ...queryOptions,
       enabled: initiateDesignationQuery,
       onSuccess(data) {
         setInitiateDesignationQuery(false);
@@ -67,6 +67,8 @@ export const useAuth = (navigateOnLogin = true) => {
       },
     }
   );
+
+  console.log({user})
 
   return {
     login,

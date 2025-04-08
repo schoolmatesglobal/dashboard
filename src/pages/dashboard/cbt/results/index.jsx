@@ -95,13 +95,81 @@ const CbtResults = ({}) => {
     }
   };
 
+  ////FETCH ALL CBT ANSWER //////
+  const {
+    isLoading: allCbtAnswerLoading,
+    refetch: refetchAllCbtAnswer,
+    data: allCbtAnswer,
+  } = useQuery(
+    [
+      queryKeys.GET_SUBMITTED_CBT_STUDENT,
+      student_id,
+      state?.creds?.period,
+      state?.creds?.term,
+      state?.creds?.session,
+      question_type,
+      subject_id,
+    ],
+    () =>
+      apiServices.getAllCbtAnswer(
+        state?.creds?.period,
+        state?.creds?.term,
+        state?.creds?.session,
+        subject_id,
+        question_type
+      ),
+    {
+      ...queryOptions,
+      enabled: activateRetrieve(),
+      select: (data) => {
+        const affk = apiServices.formatData(data);
+
+        const sorted = affk?.sort((a, b) => {
+          if (Number(a.question_number) < Number(b.question_number)) {
+            return -1;
+          }
+          if (Number(a.question_number) > Number(b.question_number)) {
+            return 1;
+          }
+          return 0;
+        });
+
+        const calculatedData = analyzeQuestions(sorted);
+
+        console.log({ affk, data, sorted });
+
+        return calculatedData ?? {};
+      },
+
+      onSuccess(data) {
+        setCbtObject(data);
+        const ids = data?.questions?.map((idx, i) => {
+          return idx?.student_id;
+        });
+        setIdWithComputedResult(ids);
+      },
+      onError(err) {
+        errorHandler(err);
+      },
+      // select: apiServices.formatData,
+    }
+  );
+
   /////// FETCH ANSWERED CBT /////
   const {
     isLoading: cbtAnswerLoading,
     refetch: refetchCbtAnswer,
     data: cbtAnswer,
   } = useQuery(
-    [queryKeys.GET_SUBMITTED_CBT_STUDENT, "2"],
+    [
+      queryKeys.GET_SUBMITTED_CBT_STUDENT,
+      student_id,
+      state?.creds?.period,
+      state?.creds?.term,
+      state?.creds?.session,
+      question_type,
+      subject_id,
+    ],
     () =>
       apiServices.getCbtAnswerByStudentId(
         student_id,
@@ -133,7 +201,7 @@ const CbtResults = ({}) => {
 
         const calculatedData = analyzeQuestions(sorted);
 
-        console.log({ ffk, data, sorted });
+        // console.log({ ffk, data, sorted });
 
         return calculatedData ?? {};
       },

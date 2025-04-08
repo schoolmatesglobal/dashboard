@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "../../components/buttons/button";
 import AuthInput from "../../components/inputs/auth-input";
 import { useForm } from "react-formid";
 // import AuthSelect from "../../components/inputs/auth-select";
 import { useAuth } from "../../hooks/useAuth";
-import { backendAPI } from "../../utils/constants";
+import { backendAPI, homeUrl } from "../../utils/constants";
+import { useAppContext } from "../../hooks/useAppContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { inputs, handleSubmit, handleChange, errors } = useForm({
@@ -19,11 +21,29 @@ const Login = () => {
     },
   });
 
+  const navigate = useNavigate();
+
+  const {
+    setLoginPrompt,
+    user,
+    apiServices: { getToken },
+    logout,
+  } = useAppContext();
+
   const { login, isLoading } = useAuth();
+
+  const token = getToken();
 
   const onSubmit = async (data) => {
     await login(data);
   };
+
+  // useEffect(() => {
+  //   if (token) {
+  //     navigate(homeUrl[user?.designation_name]);
+  //     // window.location.reload();
+  //   }
+  // }, [token]);
 
   // console.log({
   //   window,
@@ -31,6 +51,8 @@ const Login = () => {
   //   backendAPI,
   //   env: process.env.NODE_ENV,
   // });
+
+  console.log({ user, token });
 
   return (
     <div className='login-page'>

@@ -31,6 +31,25 @@ const SubjectsByPreSchool = () => {
     useState([]);
   const navigate = useNavigate();
 
+  const {
+    setPeriod,
+    preSchoolSubjects: preSchoolSubjects2,
+    isLoading,
+    preSchool,
+    postSubjectsByPreSchool,
+    preSchoolSubjectsByClass,
+    activatePreSchool,
+    setActivatePreSchool,
+    setActivatePreSchoolByClass,
+  } = usePreSchool();
+
+  const preSchoolSubjects = preSchoolSubjects2?.map((ps, i) => {
+    return {
+      ...ps,
+      topic: ps?.topic?.filter((t) => !!t.name),
+    };
+  });
+
   // console.log({check})
 
   const toggleAccordion = (id) => {
@@ -154,18 +173,6 @@ const SubjectsByPreSchool = () => {
       );
     }
   };
-
-  const {
-    setPeriod,
-    preSchoolSubjects,
-    isLoading,
-    preSchool,
-    postSubjectsByPreSchool,
-    preSchoolSubjectsByClass,
-    activatePreSchool,
-    setActivatePreSchool,
-    setActivatePreSchoolByClass,
-  } = usePreSchool();
 
   const {
     handleChange: handlePeriodChange,

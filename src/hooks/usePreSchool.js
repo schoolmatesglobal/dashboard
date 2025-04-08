@@ -134,8 +134,9 @@ export const usePreSchool = () => {
         !!preSchool?.name &&
         !!period.period &&
         !!period.session &&
-        !!period.term &&
-        activatePreSchoolByClass,
+        !!period.term,
+      // &&
+      // activatePreSchoolByClass,
       // select: apiServices.formatData,
       select: (data) => {
         const pps = apiServices.formatData(data);
@@ -221,6 +222,7 @@ export const usePreSchool = () => {
     onError: apiServices.errorHandler,
     onSuccess() {
       toast.success("Pre School Subject has been updated successfully");
+      refetchSubjectsByClass();
     },
   });
 
@@ -239,6 +241,7 @@ export const usePreSchool = () => {
     onError: apiServices.errorHandler,
     onSuccess() {
       toast.success("Pre School Subjects has been updated successfully");
+      refetchSubjectsByClass();
     },
   });
 
