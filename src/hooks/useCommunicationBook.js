@@ -9,9 +9,11 @@ import useLocalStorage from "use-local-storage";
 import { useLocation } from "react-router-dom";
 import { useAuthDetails } from "../stores/authDetails";
 import { queryOptions } from "../utils/constants";
+import { useAuth } from "./useAuth";
 
 export const useCommunicationBook = () => {
   const { userDetails, setUserDetails } = useAuthDetails();
+    const { currentAcademicPeriod } = useAuth();
 
   const { state } = useLocation();
 
@@ -449,11 +451,16 @@ export const useCommunicationBook = () => {
     className,
     setClassName,
     academicPeriod: {
-      period: userDetails?.period,
-      term: userDetails?.term,
-      session: userDetails?.session,
+      period: currentAcademicPeriod?.period,
+      term: currentAcademicPeriod?.term,
+      session: currentAcademicPeriod?.session,
       campus: userDetails?.campus,
       sch_id: userDetails?.sch_id,
+      // period: userDetails?.period,
+      // term: userDetails?.term,
+      // session: userDetails?.session,
+      // campus: userDetails?.campus,
+      // sch_id: userDetails?.sch_id,
     },
     // academicPeriodLoading,
   };

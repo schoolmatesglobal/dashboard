@@ -2,9 +2,13 @@ import React from "react";
 import { useAppContext } from "../../hooks/useAppContext";
 import defaultImage from "../../assets/images/placeholder.png";
 import { roleMap } from "../../utils/constants";
+import { useAuth } from "../../hooks/useAuth";
 
 const ProfileCard = ({ type = "super-admin" }) => {
   const { user } = useAppContext();
+  const { login, isLoading, currentAcademicPeriod } = useAuth();
+
+  console.log({ currentAcademicPeriod });
   return (
     <div className='profile-card-wrapper'>
       <div className='profile-card-image'>
@@ -37,7 +41,8 @@ const ProfileCard = ({ type = "super-admin" }) => {
           <div>
             <h3>Period:</h3>
             <p>
-              {user?.period}/{user?.term} {user?.session}
+              {currentAcademicPeriod?.period}/{currentAcademicPeriod?.term}{" "}
+              {currentAcademicPeriod?.session}
             </p>
           </div>
         </div>

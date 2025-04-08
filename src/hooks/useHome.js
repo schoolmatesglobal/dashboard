@@ -228,44 +228,44 @@ export const useHome = () => {
     }
   );
 
-  const { isLoading: academicPeriodLoading } = useQuery(
-    [queryKeys.GET_ACADEMIC_PERIOD],
-    getAcademicPeriod,
-    {
-      enabled: initiatePeriod,
-      // retry: 1,
-      // refetchOnMount: true,
-      // refetchOnWindowFocus: false,
-      ...queryOptions,
-      select: (data) => {
-        // console.log({ acDt: data, acDt2: data?.data });
+  // const { isLoading: academicPeriodLoading } = useQuery(
+  //   [queryKeys.GET_ACADEMIC_PERIOD],
+  //   getAcademicPeriod,
+  //   {
+  //     enabled: initiatePeriod,
+  //     // retry: 1,
+  //     // refetchOnMount: true,
+  //     // refetchOnWindowFocus: false,
+  //     ...queryOptions,
+  //     select: (data) => {
+  //       // console.log({ acDt: data, acDt2: data?.data });
 
-        // return data?.data;
-        return data?.data[0];
-      },
-      onSuccess(data) {
-        // console.log({ acDt3: data });
-        updateUser({
-          ...user,
-          term: data?.term,
-          session: data?.session,
-          period: data?.period,
-        });
-        setUserDetails({
-          ...userDetails,
-          term: data?.term,
-          session: data?.session,
-          period: data?.period,
-        });
-        if (data?.term) {
-          setInitiatePeriod(false);
-        }
-      },
-      onError(err) {
-        errorHandler(err);
-      },
-    }
-  );
+  //       // return data?.data;
+  //       return data?.data[0];
+  //     },
+  //     onSuccess(data) {
+  //       // console.log({ acDt3: data });
+  //       updateUser({
+  //         ...user,
+  //         term: data?.term,
+  //         session: data?.session,
+  //         period: data?.period,
+  //       });
+  //       setUserDetails({
+  //         ...userDetails,
+  //         term: data?.term,
+  //         session: data?.session,
+  //         period: data?.period,
+  //       });
+  //       if (data?.term) {
+  //         setInitiatePeriod(false);
+  //       }
+  //     },
+  //     onError(err) {
+  //       errorHandler(err);
+  //     },
+  //   }
+  // );
 
   const { isLoading: classPopulationLoading } = useQuery(
     [queryKeys.GET_CLASS_POPULATION],
@@ -564,14 +564,14 @@ export const useHome = () => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     apiServices.getCurrentAcademicPeriod,
     {
-      // retry: 1,
+      retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      ...queryOptions,
+      // ...queryOptions,
       enabled:
         initiateCPeriod && !["Superadmin"].includes(user?.designation_name),
       select: (data) => {
-        // console.log({ ccDt: data, ccDt2: data?.data });
+        console.log({ ccDt: data, ccDt2: data?.data });
 
         // return data?.data;
         return data?.data;

@@ -12,6 +12,7 @@ import { useClasses } from "../../../hooks/useClasses";
 import { useAcademicSession } from "../../../hooks/useAcademicSession";
 import { useGrading } from "../../../hooks/useGrading";
 import { useAuthDetails } from "../../../stores/authDetails";
+import { useAuth } from "../../../hooks/useAuth";
 
 const BroadSheet = () => {
   const { permission, user } = useAppContext("results");
@@ -19,12 +20,13 @@ const BroadSheet = () => {
   const [loginPrompt, setLoginPrompt] = useState(false);
   const navigate = useNavigate();
   const { userDetails, setUserDetails } = useAuthDetails();
+  const { currentAcademicPeriod } = useAuth();
   const { inputs, errors, handleChange, setInputs } = useForm({
     defaultValues: {
       assessment: "First Assessment",
-      period: "First Half",
-      term: "First Term",
-      session: userDetails?.session,
+      period: currentAcademicPeriod?.period ?? "First Half",
+      term: currentAcademicPeriod?.term ?? "First Term",
+      session: currentAcademicPeriod?.session,
       class_name: "",
     },
     validation: {
@@ -35,6 +37,8 @@ const BroadSheet = () => {
   });
 
   const { classes } = useClasses();
+
+  // const { currentAcademicPeriod } = useAuth();
 
   const showViewResult = () => {
     // permission?.view && user?.teacher_type === "class teacher"
@@ -74,8 +78,6 @@ const BroadSheet = () => {
         break;
     }
   };
-
-  
 
   // const showViewResult = () => {
   //   const isClassTeacher = user?.teacher_type === "class teacher";
@@ -189,10 +191,10 @@ const BroadSheet = () => {
   useEffect(() => {
     setInputs({
       ...inputs,
-      session: userDetails?.session,
+      session: currentAcademicPeriod?.session,
       assessment: "First Assessment",
-      period: "First Half",
-      term: "First Term",
+      period: currentAcademicPeriod?.period ?? "First Half",
+      term: currentAcademicPeriod?.term ?? "First Term",
     });
   }, []);
 

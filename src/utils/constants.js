@@ -830,3 +830,16 @@ export const colors = {
   black: "#000",
   white: "#ffffff",
 };
+
+export function sortByAcademicSession(array) {
+  return array.sort((a, b) => {
+    const [startYearA, endYearA] = a.academic_session.split("/").map(Number);
+    const [startYearB, endYearB] = b.academic_session.split("/").map(Number);
+
+    // Compare start years first, if equal, compare end years
+    if (startYearA === startYearB) {
+      return endYearA - endYearB;
+    }
+    return startYearA - startYearB;
+  });
+}
