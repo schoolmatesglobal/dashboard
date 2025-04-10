@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import queryKeys from "../utils/queryKeys";
 import { useForm } from "react-formid";
 import { queryOptions } from "../utils/constants";
+import { removeDuplicates2 } from "../pages/dashboard/results/constant";
 
 export const useBroadSheet = () => {
   const { apiServices, errorHandler, permission, user } =
@@ -100,7 +101,7 @@ export const useBroadSheet = () => {
               sn: index + 1,
               student_id: sr.student_id,
               student_fullname: sr.student_fullname,
-              results: sr.results,
+              results: removeDuplicates2(sr.results)?.filter((fa) => Number(fa.total_score) !== 0),
             };
           });
 
@@ -112,7 +113,7 @@ export const useBroadSheet = () => {
               results: sr.results,
             };
           });
-          // console.log({ data, res, res2 });
+          console.log({ data, res, res2 });
 
           return {
             results: res2,

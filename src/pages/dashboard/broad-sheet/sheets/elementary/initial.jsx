@@ -118,15 +118,15 @@ const ElementaryInitialBroadSheet = () => {
 
   const ups1 = updatedStudentsData?.length > 0 ? updatedStudentsData[0] : {};
 
-  // console.log({
-  //   // subjectsByClass3,
-  //   ups1,
-  //   broadSheetResults,
-  //   // subs,
-  //   // subs2: subs2(),
-  //   fm: fm(),
-  //   updatedStudentsData,
-  // });
+  console.log({
+    // subjectsByClass3,
+    ups1,
+    broadSheetResults,
+    subs,
+    subs2: subs2(),
+    fm: fm(),
+    updatedStudentsData,
+  });
   // console.log({ fm2, fm3, subs2: subs2(), broadSheetResults });
   // console.log({ changeTableStyle });
 

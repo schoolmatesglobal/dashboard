@@ -42,7 +42,7 @@ const ResultHeader = ({ user, studentImage, changeTableStyle }) => {
             alt='school'
             style={{
               width: "100%",
-              height: "143px",
+              height: "200px",
               marginBottom: "0px",
               objectFit: "contain",
               objectPosition: "center",
