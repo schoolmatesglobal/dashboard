@@ -1343,8 +1343,6 @@ const ElementarySecondHalfSheet = () => {
                   </div>
                 }
 
-               
-
                 {/* <div className='table-data'>
               <br />
               <br />
@@ -1508,10 +1506,9 @@ const ElementarySecondHalfSheet = () => {
                               )
                             )?.remark
                           } */}
-                          {
-                            getGpRemark(additionalCreds?.gpa?.toFixed(2))
-                              ?.remark
-                          }
+                          {getGpRemark(
+                            additionalCreds?.gpa?.toFixed(2)
+                          )?.remark?.toUpperCase()}
                         </p>
                       </div>
                     </div>
