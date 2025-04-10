@@ -1,7 +1,7 @@
 export const colors = {
   green: "#008000",
-  lightGreen: "#99cc99"
-}
+  lightGreen: "#99cc99",
+};
 
 export function removeDuplicates(array) {
   const uniqueSubjects = [];
@@ -31,7 +31,7 @@ export function removeDuplicates2(array) {
     // Check if there's already an object with the same name, category, and topic
     const isDuplicate = uniqueSubjects.some((uniqueSubject) => {
       return (
-        uniqueSubject.subject === subject.subject
+        uniqueSubject.subject?.toLowerCase() === subject.subject?.toLowerCase()
         // uniqueSubject.category === subject.category &&
         // JSON.stringify(uniqueSubject.topic) === JSON.stringify(subject.topic)
       );
