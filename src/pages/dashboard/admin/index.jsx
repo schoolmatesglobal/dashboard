@@ -300,10 +300,10 @@ const Admin = () => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     getCurrentAcademicPeriod,
     {
-      retry: 2,
+      // retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      // ...queryOptions,
+      ...queryOptions,
       enabled: initiateCPeriod,
       select: (data) => {
         console.log({ ccDt: data, ccDt2: data?.data });
@@ -500,7 +500,7 @@ const Admin = () => {
 
   const postLoading =
     isLoading ||
-    currentAcademicPeriodLoading ||
+    // currentAcademicPeriodLoading ||
     postAcademicPeriodLoading ||
     postCurrentAPLoading ||
     academicSessionLoading;
@@ -514,7 +514,7 @@ const Admin = () => {
     academicSessionLoading ||
     classListLoading ||
     preSchoolsLoading ||
-    currentAcademicPeriodLoading ||
+    // currentAcademicPeriodLoading ||
     campusListLoading ||
     // maxScoresLoading ||
     loading1;

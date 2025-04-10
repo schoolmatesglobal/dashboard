@@ -84,10 +84,10 @@ export const useAuth = (navigateOnLogin = true) => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     apiServices.getCurrentAcademicPeriod,
     {
-      retry: 2,
+      // retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      // ...queryOptions,
+      ...queryOptions,
       enabled: initiateDesignationQuery && !isAdminPrincipal,
       select: (data) => {
         console.log({ ccDt: data, ccDt2: data?.data });
@@ -117,22 +117,20 @@ export const useAuth = (navigateOnLogin = true) => {
         //   setInitiateCPeriod(false);
         // }
       },
-      onError(err) {
-        apiServices.errorHandler2(err);
-      },
+      // onError(err) {
+      //   apiServices.errorHandler2(err);
+      // },
     }
   );
 
-  console.log({ user });
+  console.log({ user, userDetails, currentAcademicPeriod });
 
   return {
     login,
     register,
     currentAcademicPeriod,
-    isLoading:
-      loginLoading ||
-      designationLoading ||
-      registerLoading ||
-      currentAcademicPeriodLoading,
+    isLoading: loginLoading || designationLoading || registerLoading,
+    // ||
+    currentAcademicPeriodLoading,
   };
 };

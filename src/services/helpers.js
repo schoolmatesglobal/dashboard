@@ -13,11 +13,7 @@ class Helpers {
     return formattedNumber;
   }
 
-  // storeToken(token) {
-  //   const d = new Date();
-  //   d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
-  //   document.cookie = `userToken=${token}; expires=${d.toUTCString()}`;
-  // }
+ 
   storeToken(token) {
     // Set Max-Age to 1 year (365 days)
     const maxAge = 365 * 24 * 60 * 60; // 1 year in seconds
@@ -67,20 +63,7 @@ class Helpers {
     });
   };
 
-  // errorHandler(error, message) {
-  //   let res = message || "An error occurred";
-  //   if (error.response) {
-  //     if (error.response.status >= 400 && error.response.status <= 499) {
-  //       res = error.response.data.message;
-  //     }
-  //   } else {
-  //     res = error.message;
-  //   }
-
-  //   // if(res === "")
-
-  //   return toast.error(res);
-  // }
+  
 
   errorHandler(error, message, blockAuthError = true) {
     const isProduction = isProductionCheck;

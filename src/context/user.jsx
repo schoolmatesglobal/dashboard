@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import APIServies from "../services/api-services";
+import { useAuthDetails } from "../stores/authDetails";
 
 export const UserContext = createContext({});
 
@@ -10,6 +11,7 @@ const UserProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [loginPrompt, setLoginPrompt] = useState(false);
   const navigate = useNavigate();
+  const { userDetails, setUserDetails } = useAuthDetails();
 
   const updateUser = (data) => {
     const userStorage = localStorage.getItem("userData");
@@ -22,6 +24,7 @@ const UserProvider = ({ children }) => {
   const logout = () => {
     apiServices.eraseToken();
     setUser({});
+    setUserDetails({})
     localStorage.clear();
     navigate("/auth");
   };

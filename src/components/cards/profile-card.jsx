@@ -41,8 +41,9 @@ const ProfileCard = ({ type = "super-admin" }) => {
           <div>
             <h3>Period:</h3>
             <p>
-              {currentAcademicPeriod?.period}/{currentAcademicPeriod?.term}{" "}
-              {currentAcademicPeriod?.session}
+              {currentAcademicPeriod?.period || user?.period}/
+              {currentAcademicPeriod?.term || user?.term}{" "}
+              {currentAcademicPeriod?.session || user?.session}
             </p>
           </div>
         </div>
