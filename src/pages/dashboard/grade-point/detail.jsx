@@ -5,6 +5,7 @@ import AuthInput from "../../../components/inputs/auth-input";
 import DetailView from "../../../components/views/detail-view";
 import { useGrading } from "../../../hooks/useGrading";
 import { useGradePoint } from "../../../hooks/useGradePoint";
+import { toast } from "react-toastify";
 
 const GradePointDetail = () => {
   const {
@@ -51,6 +52,11 @@ const GradePointDetail = () => {
       remark: data.remark,
       key_range: `${data.min_mark} - ${data.max_mark}`,
     });
+
+    if (Number(data.min_mark) > 5 || Number(data.max_mark) > 5) {
+      toast.error("points should be between 0 to 5");
+      return;
+    }
 
     if (isEdit)
       return updateGrading({
