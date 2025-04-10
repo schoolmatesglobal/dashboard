@@ -9,26 +9,42 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        // console.log("opened cache");
         return cache.addAll(urlsToCache);
       })
       .catch((err) => console.log(err))
   );
 });
 
-//Listen for requests
+// Listen for requests
 self.addEventListener("fetch", (event) => {
+  const requestUrl = event.request.url;
+
+  // Bypass API requests
+  if (requestUrl.includes("/api/") || event.request.method !== "GET") {
+    event.respondWith(
+      fetch(event.request).catch((error) => {
+        // Log the error but don’t fallback to offline.html for API requests
+        console.error("Fetch failed for API request:", error);
+        throw error; // Let the app handle the error (e.g., 401)
+      })
+    );
+    return;
+  }
+
+  // Handle static assets or HTML requests
   event.respondWith(
-    caches.match(event.request).then(() => {
-      return fetch(event.request).catch(() => caches.match("offline.html"));
+    caches.match(event.request).then((cachedResponse) => {
+      return (
+        cachedResponse ||
+        fetch(event.request).catch(() => caches.match("offline.html"))
+      );
     })
   );
 });
 
-//Activate the SW
+// Activate the SW
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [];
-  cacheWhitelist.push(CACHE_NAME);
+  const cacheWhitelist = [CACHE_NAME];
 
   event.waitUntil(
     caches.keys().then((cacheNames) =>
@@ -42,12 +58,3 @@ self.addEventListener("activate", (event) => {
     )
   );
 });
-
-// self.addEventListener("message", (event) => {
-//   if (event.data.action === "skipWaiting") {
-//     self.skipWaiting();
-//   }
-//   if (event.data.action === "clearCache") {
-//     caches.keys().then((keys) => {});
-//   }
-// });

@@ -12,9 +12,12 @@ import ProfileImage from "../components/common/profile-image";
 import Numeral from "react-numeral";
 import { useLocation } from "react-router-dom";
 import { queryOptions } from "../utils/constants";
+import { useAuth } from "./useAuth";
 
 export const useStudent = () => {
   // const navigate = useNavigate();
+
+  const { currentAcademicPeriod } = useAuth();
 
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page") ?? "1");
@@ -191,12 +194,12 @@ export const useStudent = () => {
       [
         queryKeys.GET_STUDENTS_BY_ATTENDANCE,
         user?.class_assigned,
-        user?.session,
+        currentAcademicPeriod?.session || user?.session,
       ],
       () =>
         apiServices.getStudentByClassAndSession(
           user?.class_assigned,
-          user?.session
+          currentAcademicPeriod?.session || user?.session
         ),
       {
         // retry: 1,

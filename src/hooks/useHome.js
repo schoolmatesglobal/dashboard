@@ -564,10 +564,10 @@ export const useHome = () => {
     [queryKeys.GET_CURRENT_ACADEMIC_PERIOD],
     apiServices.getCurrentAcademicPeriod,
     {
-      retry: 2,
+      // retry: 2,
       // refetchOnMount: true,
       // refetchOnWindowFocus: false,
-      // ...queryOptions,
+      ...queryOptions,
       enabled:
         initiateCPeriod && !["Superadmin"].includes(user?.designation_name),
       select: (data) => {

@@ -195,7 +195,7 @@ const DashboardLayout = () => {
     }
   };
 
-  // console.log({ token });
+  console.log({ token });
 
   // console.log({ user, filterSideBarOnPlan: filterSideBarOnPlan() });
 
