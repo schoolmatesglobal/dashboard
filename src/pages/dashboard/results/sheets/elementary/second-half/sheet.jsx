@@ -1697,7 +1697,7 @@ const ElementarySecondHalfSheet = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          [{grade?.key_range}] - {grade?.remark}
+                          [{grade?.key_range}] - {grade?.remark?.toUpperCase()}
                         </p>
                       </div>
                     ))}
