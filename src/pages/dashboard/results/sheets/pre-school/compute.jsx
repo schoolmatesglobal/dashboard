@@ -83,9 +83,9 @@ const ComputePreSchoolResult = () => {
     errors,
   } = useForm({
     defaultValues: {
-      school_opened: "",
-      times_present: "",
-      times_absent: "",
+      school_opened: "0",
+      times_present: "0",
+      times_absent: "0",
       teacher_comment: "",
       hos_comment: "",
       evaluation_report: [],

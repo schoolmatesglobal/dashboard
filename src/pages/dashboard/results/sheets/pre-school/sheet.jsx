@@ -222,10 +222,8 @@ const PreSchoolResult = () => {
 
           // return topics1.every(topic => names2.includes(topic));
           if (
-            it.subject === er.subject &&
-            topics1.every((topic) => names2.includes(topic))
-            // areArraysEqual(it.topic, er.topic)
-            // it.topic?.some((t) => t.name === er.topic[0]?.name)
+            it.subject === er.subject 
+            // && topics1.every((topic) => names2.includes(topic))
           ) {
             // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
             stat = true;
@@ -264,6 +262,7 @@ const PreSchoolResult = () => {
 
   console.log({
     result,
+    preSchoolCompiledResults,
     preSchoolSubjects,
     checkedEvaluationReport: checkedEvaluationReport(),
     checkedCognitiveReport: checkedCognitiveReport(),

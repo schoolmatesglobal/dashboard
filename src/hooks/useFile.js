@@ -36,7 +36,6 @@ export const useFile = (extras = [], removeFileTypeValidation = false) => {
       toast.error("File should not be greater than 3mb");
       return;
     }
-
     setFileName(file.name);
     setFilePreview(URL.createObjectURL(file));
     const photoData = await convertBase64(file);
