@@ -2065,8 +2065,8 @@ export const useResults = () => {
       !additionalCreds?.times_present ||
       !additionalCreds ||
       !teacherComment ||
-      !hosComment ||
-      !performanceRemark
+      !hosComment 
+      // !performanceRemark
       // extraActivities?.length === 0
       // !performanceRemark ||
       // !additionalCreds?.affective_disposition[0]?.score ||
