@@ -20,6 +20,16 @@ const ComputeElementarySecondHalfResult = () => {
   const { user } = useAppContext("results");
   const { isLoading: skillLoading, skills } = useSkills();
   const { isLoading: reportLoading, reports } = useReporting();
+  const [loading1, setLoading1] = useState(false);
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
+  // const [teacherComment, setTeacherComment] = useState("");
+
   const {
     idWithComputedResult,
     openPrompt,
@@ -69,11 +79,12 @@ const ComputeElementarySecondHalfResult = () => {
     subjectsByClass2,
     midtermResult,
     setIdWithComputedResult,
+    stdId,
   } = useResults();
 
   // const { studentByClass2 } = useStudent();
 
-  const [loading1, setLoading1] = useState(false);
+  // const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
   const [subject3, setSubject3] = useState([]);
   // const [additionalCreds, setAdditionalCreds] = useState({});
@@ -177,9 +188,18 @@ const ComputeElementarySecondHalfResult = () => {
     const adjustResults = () => {
       if (
         getEndOfTermResults?.results2 !== undefined &&
-        getEndOfTermResults?.results2?.length > 0 &&
-        getEndOfTermResults?.results2?.length != subjects?.length
+        getEndOfTermResults?.results2?.length > 0
+        // &&
+        // getEndOfTermResults?.results2?.length != subjects?.length
       ) {
+        setAdditionalCreds(getEndOfTermResults);
+        setTeacherComment(getEndOfTermResults?.teacher_comment);
+        setStatus(getEndOfTermResults?.status);
+        setAbacus(getEndOfTermResults?.abacus?.name);
+        setHosComment(getEndOfTermResults?.hos_comment);
+        setPerformanceRemark(getEndOfTermResults?.performance_remark);
+        setExtraActivities(getEndOfTermResults?.extra_curricular_activities);
+        setIdWithComputedResult([getEndOfTermResults?.student_id]);
         return subjects?.map((sb, i) => {
           const rs = getEndOfTermResults?.results2?.find(
             (rs) => rs.subject === sb.subject
@@ -201,31 +221,33 @@ const ComputeElementarySecondHalfResult = () => {
           }
         });
       } else {
-        return getEndOfTermResults?.results2;
+        setAdditionalCreds({});
+        setTeacherComment("");
+        setStatus("");
+        setAbacus("");
+        setHosComment("");
+        setPerformanceRemark("");
+        setExtraActivities([]);
+        // setIdWithComputedResult([getEndOfTermResults?.student_id]);
+        return subjects;
+        // return getEndOfTermResults?.results2;
       }
     };
 
-    const finalSubjects =
-      getEndOfTermResults?.results2 !== undefined &&
-      getEndOfTermResults.results2.length > 0
-        ? adjustResults
-        : subjects;
+    // const finalSubjects =
+    //   getEndOfTermResults?.results2 !== undefined &&
+    //   getEndOfTermResults.results2.length > 0
+    //     ? adjustResults
+    //     : subjects;
 
-    setComputedSubjects(finalSubjects);
-    setAdditionalCreds(getEndOfTermResults ?? {});
-    setStatus(getEndOfTermResults?.status);
-    setTeacherComment(getEndOfTermResults?.teacher_comment);
-    setAbacus(getEndOfTermResults?.abacus?.name ?? "");
-    setHosComment(getEndOfTermResults?.hos_comment);
-    setPerformanceRemark(getEndOfTermResults?.performance_remark);
-    setExtraActivities(getEndOfTermResults?.extra_curricular_activities ?? []);
-    setIdWithComputedResult([getEndOfTermResults?.student_id]);
+    setComputedSubjects(adjustResults);
   }, [
     allLoading,
     getEndOfTermResults?.results2,
     studentData,
     reports,
     getEndOfTermResults?.extra_curricular_activities,
+    stdId,
     // additionalCreds,
   ]);
 
@@ -243,6 +265,9 @@ const ComputeElementarySecondHalfResult = () => {
     reports,
     additionalCreds,
     getEndOfTermResults,
+    teacherComment,
+    stdId,
+    // teacher_comment,
   });
   // console.log({ reports, skills, user, userDetails });
 
@@ -269,6 +294,7 @@ const ComputeElementarySecondHalfResult = () => {
             // setTeacherComment("");
             setActivateEndOfTerm(true);
             setInitGetExistingSecondHalfResult(true);
+            trigger(1000);
           }}
           isLoading={isLoading}
           studentData={studentData}
@@ -317,11 +343,11 @@ const ComputeElementarySecondHalfResult = () => {
                   ? "Not-Released"
                   : "Not-Computed"
               })`}
-              {allLoading && (
+              {/* {allLoading && (
                 <span className='px-3 '>
                   <Spinner color='#20c200' size='md' />
                 </span>
-              )}
+              )} */}
             </p>
           }
           onFormSubmit={(e) => {
@@ -329,7 +355,29 @@ const ComputeElementarySecondHalfResult = () => {
             createEndOfTermResult();
           }}
         >
-          {
+          {allLoading && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "100px 0",
+                gap: "10px",
+                minHeight: "40vh",
+              }}
+            >
+              <Spinner />{" "}
+              <p
+                style={{
+                  fontSize: "18px",
+                  color: "var(--primary-color)",
+                }}
+              >
+                Loading...
+              </p>
+            </div>
+          )}
+          {!allLoading && (
             <>
               {user?.teacher_type === "class teacher" && (
                 <Row className='mb-0 mb-sm-4'>
@@ -518,92 +566,95 @@ const ComputeElementarySecondHalfResult = () => {
               {user?.teacher_type === "class teacher" &&
                 !user?.campus?.includes("College") && <hr className='my-5' />}
               {/* Extra curricular activities */}
-              {user?.teacher_type === "class teacher" && (
-                <PageTitle>Extra curricular activities</PageTitle>
-              )}
-              {user?.teacher_type === "class teacher" && (
-                <div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fit, minmax(200px, 1fr))", // Adjust the column width as needed
-                      // gap: "30px",
-                      width: "100%",
-                    }}
-                  >
-                    {activities?.map((attr, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          border: "1.5px solid rgba(0, 0, 0, 0.3)",
-                          padding: "2rem 3rem",
-                          display: "grid",
-                          placeItems: "center",
-                        }}
-                      >
+              {user?.teacher_type === "class teacher" &&
+                activities?.length > 0 && (
+                  <PageTitle>Extra curricular activities</PageTitle>
+                )}
+              {user?.teacher_type === "class teacher" &&
+                activities?.length > 0 && (
+                  <div>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(200px, 1fr))", // Adjust the column width as needed
+                        // gap: "30px",
+                        width: "100%",
+                      }}
+                    >
+                      {activities?.map((attr, i) => (
                         <div
-                          className='d-flex flex-column gap-4 align-items-center '
+                          key={i}
                           style={{
-                            width: "100px",
+                            border: "1.5px solid rgba(0, 0, 0, 0.3)",
+                            padding: "2rem 3rem",
+                            display: "grid",
+                            placeItems: "center",
                           }}
                         >
-                          <p
+                          <div
+                            className='d-flex flex-column gap-4 align-items-center '
                             style={{
-                              textAlign: "center",
+                              width: "100px",
                             }}
                           >
-                            {attr.name}
-                          </p>
-                          <Input
-                            type='checkbox'
-                            // className="flex-g-1"
-                            style={{
-                              width: "18px",
-                              height: "18px",
-                            }}
-                            // className="ms-3"
-                            // checked={
-                            //   extraActivities?.find((x) => x.name === attr.name)
-                            //     ?.value === "1"
-                            // }
-                            // disabled={!!inputs.has_two_assessment}
-                            checked={
-                              extraActivities?.find((x) => x.name === attr.name)
-                                ?.value === "1"
-                            }
-                            onChange={(e) => {
-                              const itemIndex = extraActivities?.findIndex(
-                                (x) => x.name === attr.name
-                              );
-                              if (itemIndex !== -1) {
-                                // Update existing item
-                                const updatedExtraActivities = [
-                                  ...extraActivities,
-                                ];
-                                updatedExtraActivities[itemIndex] = {
-                                  name: attr.name,
-                                  value: e.target.checked ? "1" : "0",
-                                };
-                                setExtraActivities(updatedExtraActivities);
-                              } else {
-                                // Add new item
-                                setExtraActivities([
-                                  ...extraActivities,
-                                  {
+                            <p
+                              style={{
+                                textAlign: "center",
+                              }}
+                            >
+                              {attr.name}
+                            </p>
+                            <Input
+                              type='checkbox'
+                              // className="flex-g-1"
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                              }}
+                              // className="ms-3"
+                              // checked={
+                              //   extraActivities?.find((x) => x.name === attr.name)
+                              //     ?.value === "1"
+                              // }
+                              // disabled={!!inputs.has_two_assessment}
+                              checked={
+                                extraActivities?.find(
+                                  (x) => x.name === attr.name
+                                )?.value === "1"
+                              }
+                              onChange={(e) => {
+                                const itemIndex = extraActivities?.findIndex(
+                                  (x) => x.name === attr.name
+                                );
+                                if (itemIndex !== -1) {
+                                  // Update existing item
+                                  const updatedExtraActivities = [
+                                    ...extraActivities,
+                                  ];
+                                  updatedExtraActivities[itemIndex] = {
                                     name: attr.name,
                                     value: e.target.checked ? "1" : "0",
-                                  },
-                                ]);
-                              }
-                            }}
-                          />
+                                  };
+                                  setExtraActivities(updatedExtraActivities);
+                                } else {
+                                  // Add new item
+                                  setExtraActivities([
+                                    ...extraActivities,
+                                    {
+                                      name: attr.name,
+                                      value: e.target.checked ? "1" : "0",
+                                    },
+                                  ]);
+                                }
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               {user?.teacher_type === "class teacher" &&
                 user?.campus?.includes("College") && <hr className='my-5' />}
               {user?.teacher_type === "class teacher" &&
@@ -680,7 +731,7 @@ const ComputeElementarySecondHalfResult = () => {
                 </div>
               )}
             </>
-          }
+          )}
         </DetailView>
       }
       <Prompt

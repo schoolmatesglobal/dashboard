@@ -77,6 +77,11 @@ const ElementarySecondHalfSheet = () => {
     setExtraActivities,
     setAbacus,
     setStudentMidterm,
+    firstAssessResult,
+    secondAssessResult,
+    stdId,
+    firstAssessResult2,
+    secondAssessResult2,
   } = useResults();
 
   const { principalClassName, setPrincipalClassName } = useStudent();
@@ -158,15 +163,17 @@ const ElementarySecondHalfSheet = () => {
   const [cumTotalScore, setCumTotalScore] = useState([]);
 
   const removeZeroFirstAssess = () => {
-    if (studentFirstAssess?.length > 0) {
-      return studentFirstAssess?.filter((fa) => fa.score != 0 && fa.grade != 0);
+    if (firstAssessResult2?.length > 0) {
+      return firstAssessResult2[0]?.results?.filter(
+        (fa) => fa.score != 0 && fa.grade != 0
+      );
     } else {
       return [];
     }
   };
   const removeZeroSecondAssess = () => {
-    if (studentSecondAssess?.length > 0) {
-      return studentSecondAssess?.filter(
+    if (secondAssessResult2?.length > 0) {
+      return secondAssessResult2[0]?.results?.filter(
         (fa) => fa.score != 0 && fa.grade != 0
       );
     } else {
@@ -408,7 +415,14 @@ const ElementarySecondHalfSheet = () => {
     // calcClassAverage,
     // studentData,
     gradePoint,
-
+    studentFirstAssess,
+    studentSecondAssess,
+    studentMidterm,
+    firstAssessResult,
+    secondAssessResult,
+    stdId,
+    firstAssessResult2,
+    secondAssessResult2,
     // studentMidterm,
     // newStudentMidterm,
     // removeZeroMidterm: removeZeroMidterm(),
@@ -971,44 +985,62 @@ const ElementarySecondHalfSheet = () => {
                           Max Score Obtainable
                         </h4>
                       </div>
-                      <div
-                        className='table-data'
-                        style={{ gridColumn: "span 2 / span 2" }}
-                      >
-                        {!hasOneAssess && (
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            FIRST ASSESSMENT
-                          </h4>
-                        )}
-                        {!hasOneAssess && (
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            SECOND ASSESSMENT
-                          </h4>
-                        )}
-                        {!!hasOneAssess && (
-                          <h4
-                            style={{
-                              color: "green",
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            ASSESSMENT
-                          </h4>
-                        )}
-                      </div>
+                      {!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 1 / span 1" }}
+                        >
+                          {!hasOneAssess && (
+                            <h4
+                              style={{
+                                color: "green",
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              FIRST <br />
+                              ASSESS.
+                            </h4>
+                          )}
+                        </div>
+                      )}
+                      {!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 1 / span 1" }}
+                        >
+                          {!hasOneAssess && (
+                            <h4
+                              style={{
+                                color: "green",
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              SECOND <br />
+                              ASSESS.
+                            </h4>
+                          )}
+                        </div>
+                      )}
+                      {!!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 2 / span 2" }}
+                        >
+                          {
+                            <h4
+                              style={{
+                                color: "green",
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              ASSESSMENT
+                            </h4>
+                          }
+                        </div>
+                      )}
                       <div
                         className='table-data'
                         style={{ gridColumn: "span 1 / span 1" }}
@@ -1034,7 +1066,8 @@ const ElementarySecondHalfSheet = () => {
                             lineHeight: "16px",
                           }}
                         >
-                          TOTAL SCORE
+                          TOTAL <br />
+                          SCORE
                         </h4>
                       </div>
                       <div
@@ -1089,41 +1122,57 @@ const ElementarySecondHalfSheet = () => {
                           Max Score Obtainable
                         </h4>
                       </div>
-                      <div
-                        className='table-data'
-                        style={{ gridColumn: "span 2 / span 2" }}
-                      >
-                        {!hasOneAssess && (
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            {maxScores?.first_assessment ?? "--"}
-                          </h4>
-                        )}
-                        {!hasOneAssess && (
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            {maxScores?.second_assessment ?? "--"}
-                          </h4>
-                        )}
-                        {!!hasOneAssess && (
-                          <h4
-                            style={{
-                              fontSize: "15px",
-                              lineHeight: "16px",
-                            }}
-                          >
-                            {maxScores?.midterm ?? "--"}
-                          </h4>
-                        )}
-                      </div>
+                      {!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 1 / span 1" }}
+                        >
+                          {
+                            <h4
+                              style={{
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              {maxScores?.first_assessment ?? "--"}
+                            </h4>
+                          }
+                        </div>
+                      )}
+                      {!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 1 / span 1" }}
+                        >
+                          {
+                            <h4
+                              style={{
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              {maxScores?.second_assessment ?? "--"}
+                            </h4>
+                          }
+                        </div>
+                      )}
+                      {!!hasOneAssess && (
+                        <div
+                          className='table-data'
+                          style={{ gridColumn: "span 2 / span 2" }}
+                        >
+                          {
+                            <h4
+                              style={{
+                                fontSize: "15px",
+                                lineHeight: "16px",
+                              }}
+                            >
+                              {maxScores?.midterm ?? "--"}
+                            </h4>
+                          }
+                        </div>
+                      )}
                       <div
                         className='table-data'
                         style={{ gridColumn: "span 1 / span 1" }}
@@ -1226,41 +1275,57 @@ const ElementarySecondHalfSheet = () => {
                               {s?.subject ?? "--"}
                             </h4>
                           </div>
-                          <div
-                            className='table-data'
-                            style={{ gridColumn: "span 2 / span 2" }}
-                          >
-                            {!hasOneAssess && (
-                              <h4
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                }}
-                              >
-                                {fAssess ?? 0}
-                              </h4>
-                            )}
-                            {!hasOneAssess && (
-                              <h4
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                }}
-                              >
-                                {sAssess ?? 0}
-                              </h4>
-                            )}
-                            {!!hasOneAssess && (
-                              <h4
-                                style={{
-                                  fontSize: "15px",
-                                  lineHeight: "16px",
-                                }}
-                              >
-                                {parseInt(mAssess, 10) ?? 0}
-                              </h4>
-                            )}
-                          </div>
+                          {!hasOneAssess && (
+                            <div
+                              className='table-data'
+                              style={{ gridColumn: "span 1 / span 1" }}
+                            >
+                              {
+                                <h4
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                  }}
+                                >
+                                  {fAssess ?? 0}
+                                </h4>
+                              }
+                            </div>
+                          )}
+                          {!hasOneAssess && (
+                            <div
+                              className='table-data'
+                              style={{ gridColumn: "span 1 / span 1" }}
+                            >
+                              {
+                                <h4
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                  }}
+                                >
+                                  {sAssess ?? 0}
+                                </h4>
+                              }
+                            </div>
+                          )}
+                          {!!hasOneAssess && (
+                            <div
+                              className='table-data'
+                              style={{ gridColumn: "span 2 / span 2" }}
+                            >
+                              {
+                                <h4
+                                  style={{
+                                    fontSize: "15px",
+                                    lineHeight: "16px",
+                                  }}
+                                >
+                                  {parseInt(mAssess, 10) ?? 0}
+                                </h4>
+                              }
+                            </div>
+                          )}
                           <div
                             className='table-data'
                             style={{ gridColumn: "span 1 / span 1" }}
@@ -1317,14 +1382,18 @@ const ElementarySecondHalfSheet = () => {
                               {maxScores?.has_two_assessment === 1
                                 ? getScoreRemark(
                                     Number(
-                                      studentFirstAssess?.find(
-                                        (x) => x.subject === s.subject
-                                      )?.score ?? 0
+                                      firstAssessResult2?.length > 0
+                                        ? firstAssessResult2[0]?.results?.find(
+                                            (x) => x.subject === s.subject
+                                          )?.score
+                                        : 0
                                     ) +
                                       Number(
-                                        studentSecondAssess?.find(
-                                          (x) => x.subject === s.subject
-                                        )?.score ?? 0
+                                        secondAssessResult2?.length > 0
+                                          ? secondAssessResult2[0]?.results?.find(
+                                              (x) => x.subject === s.subject
+                                            )?.score
+                                          : 0
                                       ) +
                                       Number(s.score)
                                   )?.remark

@@ -48,10 +48,20 @@ const ElementaryFirstHalfSheet = () => {
     // getSubjectByClass: { data: subjects, isFetching: isFetchingSubjects },
     studentByClass2,
     studentByClass,
+    firstAssessResult,
+    secondAssessResult,
+    stdId,
   } = useResults();
 
   const [loading1, setLoading1] = useState(false);
   const [status, setStatus] = useState("");
+
+  function trigger(time) {
+    setLoading1(true);
+    setTimeout(() => {
+      setLoading1(false);
+    }, time);
+  }
 
   const { userDetails, setUserDetails } = useAuthDetails();
 
@@ -160,24 +170,76 @@ const ElementaryFirstHalfSheet = () => {
   // }, [additionalCreds?.status, studentData]);
 
   useEffect(() => {
-    setTeacherComment(additionalCreds?.teacher_comment);
-    setStatus(additionalCreds?.status);
-    setAdditionalCreds(midtermResults ?? {});
-    setIdWithComputedResult([midtermResults?.student_id]);
-  }, [allLoading, midtermResults?.results2, studentData]);
+    if (
+      hasOneAssess &&
+      midtermResults?.results2 !== undefined &&
+      midtermResults?.results2?.length > 0
+    ) {
+      setAdditionalCreds(midtermResults ?? {});
+      setTeacherComment(midtermResults?.teacher_comment);
+      setStatus(midtermResults?.status);
+      setIdWithComputedResult([midtermResults?.student_id]);
+    } else {
+      setAdditionalCreds({});
+      setTeacherComment("");
+      setStatus("");
+    }
+
+    if (!hasOneAssess) {
+      if (
+        inputs.assessment === "first_assesment" &&
+        firstAssessResult !== undefined &&
+        firstAssessResult?.length > 0
+      ) {
+        setAdditionalCreds(firstAssessResult[0] ?? {});
+        setTeacherComment(firstAssessResult[0]?.teacher_comment);
+        setStatus(firstAssessResult[0]?.status);
+        setIdWithComputedResult([firstAssessResult[0]?.student_id]);
+      } else if (
+        inputs.assessment === "second_assesment" &&
+        secondAssessResult !== undefined &&
+        secondAssessResult?.length > 0
+      ) {
+        setAdditionalCreds(secondAssessResult[0] ?? {});
+        setTeacherComment(secondAssessResult[0]?.teacher_comment);
+        setStatus(secondAssessResult[0]?.status);
+        setIdWithComputedResult([secondAssessResult[0]?.student_id]);
+      }
+    } else {
+      setAdditionalCreds({});
+      setTeacherComment("");
+      setStatus("");
+    }
+
+    // setTeacherComment(additionalCreds?.teacher_comment);
+    // setStatus(additionalCreds?.status);
+    // setAdditionalCreds(midtermResults ?? {});
+    // setIdWithComputedResult([midtermResults?.student_id]);
+  }, [
+    allLoading,
+    midtermResults?.results2,
+    studentData,
+    inputs.assessment,
+    stdId,
+  ]);
 
   console.log({ additionalCreds, userDetails });
 
-  // console.log({
-  //   inputs,
-  //   studentData,
-  //   status,
-  //   studentByClass2,
-  //   // result,
-  //   cs: countSubjects(),
-  //   additionalCreds,
-  //   checkResultComputed,
-  // });
+  console.log({
+    inputs,
+    // studentData,
+    hasOneAssess,
+    status,
+    teacherComment,
+    // // studentByClass2,
+    // // result,
+    // cs: countSubjects(),
+    additionalCreds,
+    midtermResults,
+    firstAssessResult,
+    secondAssessResult,
+    stdId,
+  });
 
   return (
     <div className='results-sheet'>
@@ -188,6 +250,7 @@ const ElementaryFirstHalfSheet = () => {
           onProfileSelect={(x) => {
             setStudentData(x);
             setInitGetExistingResult(true);
+            trigger(1000);
           }}
           isLoading={isLoading}
           studentData={studentData}
@@ -256,6 +319,7 @@ const ElementaryFirstHalfSheet = () => {
                 // hasError={!!errors.assessment}
                 onChange={(e) => {
                   handleChange(e);
+                  trigger(1000);
                 }}
                 options={[
                   { value: "first_assesment", title: "First Assessment" },
