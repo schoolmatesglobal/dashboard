@@ -26,7 +26,7 @@ const ResultHeader = ({ user, studentImage, changeTableStyle }) => {
                 marginBottom: "0px",
                 border: "6px solid green",
                 objectFit: "contain",
-                objectPosition: "center",
+                objectPosition: "center"
               }}
             />
           )}

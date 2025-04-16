@@ -600,17 +600,17 @@ export const useResults = () => {
           "name"
         );
         const fm =
-          uniqueSub?.map((dt) => {
+          uniqueSub?.map((dt, i) => {
             return {
               // ...dt,
-              id: dt.id,
+              id: i + 1,
               subject: toSentenceCase(dt.name),
               score: "0",
               grade: "0",
             };
           }) ?? [];
 
-        // console.log({ mdata: data, fm });
+        console.log({ mdata: data, fm });
 
         return fm;
       },
@@ -947,6 +947,7 @@ export const useResults = () => {
       stdId,
       state?.creds?.term,
       state?.creds?.session,
+      // inputs.assessment,
     ],
     () =>
       apiServices.getFirstAssessment(
@@ -963,10 +964,17 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
+        stdId &&
         !hasOneAssess &&
         inputs.assessment === "first_assesment" &&
         state?.creds?.period === "First Half",
-      select: apiServices.formatData,
+      // &&
+      // state?.creds?.period === "First Half",
+      select: (data) => {
+        const fmm = apiServices.formatData(data);
+        console.log({ fdata: data, fmm });
+        return fmm;
+      },
       onSuccess(data) {
         // setInitGetFirstAssess(false)
         setInitGetSubjects(false);
@@ -992,9 +1000,6 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          // console.log({ dataF: data, ids, studentResult });
-
-          // setStudentMidResult(studentResult);
           setStudentTwoAssess(studentResult);
 
           const mergeSubjectAndResult2 = () => {
@@ -1028,15 +1033,12 @@ export const useResults = () => {
             });
           };
 
-          if (state?.creds?.period === "First Half") {
-            setAdditionalCreds({
-              ...additionalCreds,
-              ...res,
-            });
-          }
+          setAdditionalCreds({
+            ...additionalCreds,
+            ...res,
+          });
 
           setSubjects(mergeSubjectAndResult2() ?? []);
-          // setInitGetFirstAssess(false);
         } else {
           setStudentTwoAssess([]);
           setInitGetSubjects(true);
@@ -1082,9 +1084,14 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
+        stdId &&
         !hasOneAssess &&
         state?.creds?.period === "Second Half",
-      select: apiServices.formatData,
+      select: (data) => {
+        const fmm = apiServices.formatData(data);
+        console.log({ fdata: data, fmm });
+        return fmm;
+      },
       onSuccess(data) {
         // setInitGetFirstAssess(false)
         // setInitGetSubjects(false);
@@ -1144,17 +1151,17 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
+        stdId &&
         !hasOneAssess &&
         inputs.assessment === "second_assesment" &&
         state?.creds?.period === "First Half",
-      select: apiServices.formatData,
+      select: (data) => {
+        const fmm = apiServices.formatData(data);
+        console.log({ fdata: data, fmm });
+        return fmm;
+      },
       onSuccess(data) {
-        // setInitGetSubjects(false);
-        // setInitGetExistingResult(false);
-
-        // console.log({ dataS: data });
-        // console.log({ sres: data });
-
+    
         if (data.length > 0) {
           const ids = data?.map((x) => x.student_id);
 
@@ -1174,7 +1181,6 @@ export const useResults = () => {
             grade: x.score,
           }));
 
-          // console.log({ dataS: data, ids, studentResult });
 
           setStudentTwoAssess(studentResult);
 
@@ -1209,7 +1215,6 @@ export const useResults = () => {
             });
           };
 
-          // console.log({ res2: res, studentResult });
 
           if (state?.creds?.period === "First Half") {
             setAdditionalCreds({
@@ -1263,38 +1268,43 @@ export const useResults = () => {
       enabled:
         // initGetExistingResult &&
         !is_preschool &&
+        stdId &&
         !hasOneAssess &&
         state?.creds?.period === "Second Half",
-      select: apiServices.formatData,
+      select: (data) => {
+        const fmm2 = apiServices.formatData(data);
+        console.log({ fdata2: data, fmm2 });
+        return fmm2;
+      },
       onSuccess(data) {
-        setInitGetSubjects(false);
-        setInitGetExistingResult(false);
+        // setInitGetSubjects(false);
+        // setInitGetExistingResult(false);
 
         // console.log({ dataS: data });
 
-        if (data.length > 0) {
-          const ids = data?.map((x) => x.student_id);
+        // if (data.length > 0) {
+        //   const ids = data?.map((x) => x.student_id);
 
-          setIdWithComputedResult(ids);
+        //   setIdWithComputedResult(ids);
 
-          const res = data?.find(
-            (x) =>
-              x.student_id === stdId &&
-              x.term === state?.creds?.term &&
-              state?.creds?.session === x.session &&
-              x.period === "First Half"
-          );
+        //   const res = data?.find(
+        //     (x) =>
+        //       x.student_id === stdId &&
+        //       x.term === state?.creds?.term &&
+        //       state?.creds?.session === x.session &&
+        //       x.period === "First Half"
+        //   );
 
-          const studentResult = res?.results?.map((x) => ({
-            subject: x.subject,
-            score: x.score,
-            grade: x.score,
-          }));
+        //   const studentResult = res?.results?.map((x) => ({
+        //     subject: x.subject,
+        //     score: x.score,
+        //     grade: x.score,
+        //   }));
 
-          // console.log({ dataS: data, ids, studentResult });
+        //   // console.log({ dataS: data, ids, studentResult });
 
-          setStudentSecondAssess(studentResult);
-        }
+        //   setStudentSecondAssess(studentResult);
+        // }
       },
     }
   );
@@ -1839,7 +1849,7 @@ export const useResults = () => {
           // refetchFirstAssess2();
         } else {
           // refetchMidtermResult();
-          getMidTermResult.refetch()
+          getMidTermResult.refetch();
           trigger(500);
           toast.success(`Mid Term Result has been computed successfully`);
         }
@@ -1894,8 +1904,6 @@ export const useResults = () => {
 
     return res || { grade: "N/A", remark: "Out of range", id: null };
   };
-
- 
 
   // console.log({ grading });
 
@@ -2052,27 +2060,30 @@ export const useResults = () => {
       // performance_remark: performanceRemark,
     };
 
+    if (
+      !additionalCreds?.school_opened ||
+      !additionalCreds?.times_present ||
+      !additionalCreds ||
+      !teacherComment ||
+      !hosComment ||
+      !performanceRemark
+      // extraActivities?.length === 0
+      // !performanceRemark ||
+      // !additionalCreds?.affective_disposition[0]?.score ||
+      // !additionalCreds?.affective_disposition[1]?.score ||
+      // !additionalCreds?.affective_disposition[2]?.score ||
+      // !additionalCreds?.psychomotor_skills[0]?.score ||
+      // !additionalCreds?.psychomotor_skills[1]?.score ||
+      // !additionalCreds?.psychomotor_skills[2]?.score
+    ) {
+      toast.error(`Please fill all empty fields`);
+      return;
+    }
+
     // console.log({ dataToSend, dataToSend2, studentData });
 
     if (user?.teacher_type === "class teacher") {
-      if (
-        !additionalCreds ||
-        !teacherComment ||
-        !hosComment
-        // extraActivities?.length === 0
-        // !performanceRemark ||
-        // !additionalCreds?.affective_disposition[0]?.score ||
-        // !additionalCreds?.affective_disposition[1]?.score ||
-        // !additionalCreds?.affective_disposition[2]?.score ||
-        // !additionalCreds?.psychomotor_skills[0]?.score ||
-        // !additionalCreds?.psychomotor_skills[1]?.score ||
-        // !additionalCreds?.psychomotor_skills[2]?.score
-      ) {
-        toast.error(`Please fill all empty fields`);
-        return;
-      } else {
-        addEndOfTermResult(dataToSend);
-      }
+      addEndOfTermResult(dataToSend);
     } else {
       addEndOfTermResult(dataToSend2);
     }
@@ -2126,6 +2137,7 @@ export const useResults = () => {
     loadingYearlyClassAverage ||
     firstAssessResultLoading ||
     secondAssessResultLoading ||
+    secondAssessResultLoading2 ||
     subjectsByClass2Loading ||
     midtermResultLoading ||
     addEndOfTermResultLoading ||
@@ -2143,7 +2155,7 @@ export const useResults = () => {
   //   findId: findId(),
   //   subjectsByClass3,
   // });
-  // console.log({ stdId, subjects, hasOneAssess });
+  // console.log({ stdId });
 
   return {
     inputs,
@@ -2240,5 +2252,9 @@ export const useResults = () => {
     setComputedSubjects,
     setStudentMidterm,
     getEndOfTermResult,
+    stdId,
+
+    firstAssessResult2,
+    secondAssessResult2,
   };
 };

@@ -32,9 +32,15 @@ export const useGradePoint = () => {
             new_id: index + 1,
           };
         }) ?? [];
+
       const sorted = sortArray(gpd, "max_mark", "asc", "number");
 
       const filteredGp = gpd?.find((g) => Number(g.id) === Number(id));
+
+      console.log({
+        gpData: data,
+        gpd,
+      });
 
       return {
         filteredGp,

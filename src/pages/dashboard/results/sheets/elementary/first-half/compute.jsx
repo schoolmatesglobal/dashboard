@@ -53,6 +53,10 @@ const ComputeElementaryFirstHalfResult = () => {
     setComputedSubjects,
     setIdWithComputedResult,
     // idWithComputedResult,
+    studentTwoAssess,
+    firstAssessResult,
+    secondAssessResult,
+    stdId,
   } = useResults();
 
   const { userDetails, setUserDetails } = useAuthDetails();
@@ -60,9 +64,9 @@ const ComputeElementaryFirstHalfResult = () => {
   // const [computedSubjects, setComputedSubjects] = useState([]);
 
   const hasOneAssess =
-     maxScores?.has_two_assessment === 0 ||
-     maxScores?.has_two_assessment === false ||
-     maxScores?.has_two_assessment === "false";
+    maxScores?.has_two_assessment === 0 ||
+    maxScores?.has_two_assessment === false ||
+    maxScores?.has_two_assessment === "false";
 
   // const { studentByClass2 } = useStudent();
   const [loading1, setLoading1] = useState(false);
@@ -89,11 +93,11 @@ const ComputeElementaryFirstHalfResult = () => {
   const midTermMax = () => {
     let value;
     if (!hasOneAssess && inputs.assessment === "first_assesment") {
-      value =  maxScores?.first_assessment;
+      value = maxScores?.first_assessment;
     } else if (!hasOneAssess && inputs.assessment === "second_assesment") {
-      value =  maxScores?.second_assessment;
+      value = maxScores?.second_assessment;
     } else if (hasOneAssess) {
-      value =  maxScores?.midterm;
+      value = maxScores?.midterm;
     }
     return value;
   };
@@ -128,13 +132,16 @@ const ComputeElementaryFirstHalfResult = () => {
   // const newSubjects = removeDuplicates(subjects);
 
   useEffect(() => {
-
     const adjustResults = () => {
       if (
         midtermResults?.results2 !== undefined &&
-        midtermResults?.results2?.length > 0 &&
-        midtermResults?.results2?.length != subjects?.length
+        midtermResults?.results2?.length > 0
+        // &&
+        // midtermResults?.results2?.length === subjects?.length
       ) {
+        setTeacherComment(midtermResults?.teacher_comment);
+        setStatus(midtermResults?.status);
+        setIdWithComputedResult([midtermResults?.student_id]);
         return subjects?.map((sb, i) => {
           const rs = midtermResults?.results2?.find(
             (rs) => rs.subject === sb.subject
@@ -156,23 +163,131 @@ const ComputeElementaryFirstHalfResult = () => {
           }
         });
       } else {
-        return midtermResults?.results2;
+        setTeacherComment("");
+        setStatus("");
+        return subjects;
       }
     };
 
-    const finalSubjects =
-      midtermResults?.results2 !== undefined &&
-      midtermResults.results2.length > 0
-        ? adjustResults
-        : subjects;
+    const adjustResults2 = () => {
+      if (
+        inputs.assessment === "first_assesment" &&
+        firstAssessResult !== undefined &&
+        firstAssessResult?.length > 0
+        // &&
+        // firstAssessResult?.results?.length === subjects?.length
+      ) {
+        setTeacherComment(firstAssessResult[0]?.teacher_comment);
+        setStatus(firstAssessResult[0]?.status);
+        setIdWithComputedResult([firstAssessResult[0]?.student_id]);
+        return subjects?.map((sb, i) => {
+          const rs = firstAssessResult[0]?.results?.find(
+            (rs) => rs.subject === sb.subject
+          );
+          if (rs) {
+            return {
+              id: i + 1,
+              subject: rs.subject,
+              score: rs.score,
+              grade: rs.score,
+            };
+          } else {
+            return {
+              id: i + 1,
+              subject: sb.subject,
+              score: sb.score,
+              grade: sb.score,
+            };
+          }
+        });
+      } else {
+        setTeacherComment("");
+        setStatus("");
+        return subjects;
+      }
+    };
+    const adjustResults2B = () => {
+      if (
+        inputs.assessment === "second_assesment" &&
+        secondAssessResult !== undefined &&
+        secondAssessResult?.length > 0
+        // &&
+        // secondAssessResult?.results?.length === subjects?.length
+      ) {
+        setTeacherComment(secondAssessResult[0]?.teacher_comment);
+        setStatus(secondAssessResult[0]?.status);
+        setIdWithComputedResult([secondAssessResult[0]?.student_id]);
+        return subjects?.map((sb, i) => {
+          const rs = secondAssessResult[0]?.results?.find(
+            (rs) => rs.subject === sb.subject
+          );
+          if (rs) {
+            return {
+              id: i + 1,
+              subject: rs.subject,
+              score: rs.score,
+              grade: rs.score,
+            };
+          } else {
+            return {
+              id: i + 1,
+              subject: sb.subject,
+              score: sb.score,
+              grade: sb.score,
+            };
+          }
+        });
+      } else {
+        setTeacherComment("");
+        setStatus("");
 
-    setComputedSubjects(finalSubjects);
-    setTeacherComment(midtermResults?.teacher_comment);
-    setStatus(midtermResults?.status);
+        return subjects;
+      }
+    };
+
+    // const finalSubjects = adjustResults ?? [];
+
+    // const finalSubjects2 = adjustResults2 ?? [];
+
+    // const finalSubjects2B = adjustResults2B ?? [];
+
+    const finalSubjects3 =
+      inputs.assessment === "first_assesment"
+        ? adjustResults2
+        : adjustResults2B;
+
+    // const ct =
+    //   inputs.assessment === "first_assesment"
+    //     ? firstAssessResult?.teacher_comment
+    //     : secondAssessResult?.teacher_comment;
+    // const st =
+    //   inputs.assessment === "first_assesment"
+    //     ? firstAssessResult?.status
+    //     : secondAssessResult?.status;
+    // const si =
+    //   inputs.assessment === "first_assesment"
+    //     ? firstAssessResult?.student_id
+    //     : secondAssessResult?.student_id;
+
+    // const cs = hasOneAssess ? finalSubjects : finalSubjects3;
+
+    setComputedSubjects(hasOneAssess ? adjustResults : finalSubjects3);
+    // setTeacherComment(hasOneAssess ? midtermResults?.teacher_comment : ct);
+    // setStatus(hasOneAssess ? midtermResults?.status : st);
     // const ids = [midtermResults?.student_id];
-    setIdWithComputedResult([midtermResults?.student_id]);
-
-  }, [allLoading, midtermResults?.results2, midtermResults, studentData]);
+    // setIdWithComputedResult([hasOneAssess ? midtermResults?.student_id : si]);
+  }, [
+    allLoading,
+    midtermResults?.results2,
+    midtermResults,
+    additionalCreds,
+    additionalCreds?.results,
+    firstAssessResult,
+    secondAssessResult,
+    studentData?.id,
+    inputs.assessment,
+    stdId,
+  ]);
 
   console.log({
     subjects,
@@ -183,7 +298,11 @@ const ComputeElementaryFirstHalfResult = () => {
     computedSubjects,
     status,
     // status,
-    // additionalCreds,
+    additionalCreds,
+    studentData,
+    studentTwoAssess,
+    firstAssessResult,
+    secondAssessResult,
     // checkResultComputed,
     // studentData,
     // hasOneAssess,
@@ -199,6 +318,7 @@ const ComputeElementaryFirstHalfResult = () => {
           onProfileSelect={(x) => {
             setStudentData(x);
             setInitGetExistingResult(true);
+            trigger(1000);
           }}
           isLoading={allLoading}
           studentData={studentData}
@@ -288,6 +408,7 @@ const ComputeElementaryFirstHalfResult = () => {
                       // hasError={!!errors.assessment}
                       onChange={(e) => {
                         handleChange(e);
+                        trigger(1000);
                       }}
                       options={[
                         { value: "first_assesment", title: "First Assessment" },
