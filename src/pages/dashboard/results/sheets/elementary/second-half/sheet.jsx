@@ -414,20 +414,20 @@ const ElementarySecondHalfSheet = () => {
     // status,
     // calcClassAverage,
     // studentData,
-    gradePoint,
-    studentFirstAssess,
-    studentSecondAssess,
+    // gradePoint,
+    // studentFirstAssess,
+    // studentSecondAssess,
     studentMidterm,
     firstAssessResult,
     secondAssessResult,
-    stdId,
-    firstAssessResult2,
-    secondAssessResult2,
+    // stdId,
+    // firstAssessResult2,
+    // secondAssessResult2,
     // studentMidterm,
     // newStudentMidterm,
     // removeZeroMidterm: removeZeroMidterm(),
     // userDetails,
-    // additionalCreds,
+    additionalCreds,
     // endOfTermResults,
     // midtermResults,
     // studentMidterm,
@@ -1740,7 +1740,7 @@ const ElementarySecondHalfSheet = () => {
                 }
 
                 {/* Grade Point */}
-                {
+                {!!gradePoint?.gp?.length &&
                   <div className='table-head'>
                     <h3
                       style={{

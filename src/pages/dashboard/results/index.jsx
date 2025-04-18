@@ -164,7 +164,7 @@ const Results = () => {
     return arr;
   };
 
-  const cls = (classes || []).map((x) => ({
+  const cls = (userDetails?.classes || []).map((x) => ({
     value: x?.class_name.toUpperCase(),
     title: x?.class_name,
   }));
@@ -186,7 +186,7 @@ const Results = () => {
     });
   }, []);
 
-  console.log({ sessions, user,  });
+  console.log({ sessions, user, classArray, cls2, cls, userDetails });
 
   return (
     <div>

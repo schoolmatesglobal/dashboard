@@ -63,6 +63,8 @@ const ResumptionDate = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  console.log({ data });
+
   return (
     <DetailView
       isLoading={isLoading}
