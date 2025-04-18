@@ -160,6 +160,8 @@ export const useResults = () => {
     }
   };
 
+ 
+
   const { data: academicDate, isLoading: academicDateLoading } = useQuery(
     [queryKeys.GET_ACADEMIC_DATE],
     apiServices.getResumptionDate,
@@ -2256,5 +2258,6 @@ export const useResults = () => {
 
     firstAssessResult2,
     secondAssessResult2,
+    apiServices,
   };
 };
