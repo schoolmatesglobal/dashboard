@@ -74,14 +74,7 @@ export const useBroadSheet = () => {
             });
           });
 
-          // res.push({
-          //   student_id: 111111,
-          //   student_fullname: "AAAAAA",
-          //   results: [],
-          // });
-          // const sortRes2 =  res.forEach((sheet) => {
-          //   sheet.student_fullname = sheet.student_fullname.replace(/\s+/g, ' ').trim();
-          // });
+         
           res.sort((a, b) => {
             const nameA = a.student_fullname.toUpperCase();
             const nameB = b.student_fullname.toUpperCase();
