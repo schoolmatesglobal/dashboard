@@ -262,6 +262,7 @@ const PreSchoolResult = () => {
 
   console.log({
     result,
+    studentData,
     // preSchoolCompiledResults,
     // preSchoolSubjects,
     // checkedEvaluationReport: checkedEvaluationReport(),

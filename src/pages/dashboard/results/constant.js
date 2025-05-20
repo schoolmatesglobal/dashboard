@@ -107,29 +107,58 @@ export function calculateAge(dateOfBirth) {
   }
 }
 
+// export function calculateAgeWithMonths(dateOfBirth) {
+//   const dob = new Date(dateOfBirth);
+//   const currentDate = new Date();
+
+//   if (isNaN(dob)) {
+//     return "Invalid date of birth";
+//   }
+
+//   const yearsDiff = currentDate.getFullYear() - dob.getFullYear();
+//   const monthsDiff = currentDate.getMonth() - dob.getMonth();
+//   const daysDiff = currentDate.getDate() - dob.getDate();
+
+//   if (monthsDiff < 0 || (monthsDiff === 0 && daysDiff < 0)) {
+//     if (yearsDiff === 1) {
+//       return `${yearsDiff} year ${12 + monthsDiff} month(s)`;
+//     } else {
+//       return `${yearsDiff} year(s) ${12 + monthsDiff} month(s)`;
+//     }
+//   } else {
+//     if (yearsDiff === 1) {
+//       return `${yearsDiff} year ${monthsDiff} month(s)`;
+//     } else {
+//       return `${yearsDiff} year(s) ${monthsDiff} month(s)`;
+//     }
+//   }
+// }
+
 export function calculateAgeWithMonths(dateOfBirth) {
   const dob = new Date(dateOfBirth);
   const currentDate = new Date();
 
-  if (isNaN(dob)) {
+  if (isNaN(dob.getTime())) {
     return "Invalid date of birth";
   }
 
-  const yearsDiff = currentDate.getFullYear() - dob.getFullYear();
-  const monthsDiff = currentDate.getMonth() - dob.getMonth();
-  const daysDiff = currentDate.getDate() - dob.getDate();
+  let years = currentDate.getFullYear() - dob.getFullYear();
+  let months = currentDate.getMonth() - dob.getMonth();
+  let days = currentDate.getDate() - dob.getDate();
 
-  if (monthsDiff < 0 || (monthsDiff === 0 && daysDiff < 0)) {
-    if (yearsDiff === 1) {
-      return `${yearsDiff} year ${12 + monthsDiff} month(s)`;
-    } else {
-      return `${yearsDiff} year(s) ${12 + monthsDiff} month(s)`;
-    }
-  } else {
-    if (yearsDiff === 1) {
-      return `${yearsDiff} year ${monthsDiff} month(s)`;
-    } else {
-      return `${yearsDiff} year(s) ${monthsDiff} month(s)`;
-    }
+  // If days are negative, subtract one month
+  if (days < 0) {
+    months -= 1;
   }
+
+  // If months are negative, subtract one year and adjust months
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+
+  const yearLabel = years === 1 ? "year" : "years";
+  const monthLabel = months === 1 ? "month" : "months";
+
+  return `${years} ${yearLabel} ${months} ${monthLabel}`;
 }
