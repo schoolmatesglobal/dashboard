@@ -237,7 +237,6 @@ export const useStudent = () => {
   } = useQuery(
     [queryKeys.GET_ALL_STUDENTS_BY_CLASS2, chk],
     () => apiServices.getStudentByClass2(chk),
-
     {
       // retry: 1,
       // refetchOnMount: true,

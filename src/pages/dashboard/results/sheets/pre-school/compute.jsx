@@ -56,7 +56,7 @@ const ComputePreSchoolResult = () => {
       return removeDuplicates([...preSchoolSubjectsByClass?.[0]?.subjects]);
     }
   };
-  
+
   // const result =
   //   preSchoolCompiledResults?.find(
   //     ({ student_id }) => student_id === studentData.id
@@ -120,14 +120,10 @@ const ComputePreSchoolResult = () => {
           const topics1 = er.topic.map((obj) => obj.topic);
           const names2 = it.topic.map((obj) => obj.name);
 
-          // return topics1.every(topic => names2.includes(topic));
           if (
             it.name === er.subject &&
             topics1.every((topic) => names2.includes(topic))
-            // areArraysEqual(it.topic, er.topic)
-            // it.topic?.some((t) => t.name === er.topic[0]?.name)
           ) {
-            // console.log({ areArraysEqual: areArraysEqual(er.topic, it.topic) });
             stat = true;
           }
         });
@@ -197,7 +193,7 @@ const ComputePreSchoolResult = () => {
   const submit = async (data) => {
     await addPreSchoolResult({
       ...data,
-      student_id: studentData.id,
+      student_id: String(studentData.id),
       student_fullname: `${studentData?.surname} ${studentData?.firstname}  ${studentData?.middlename}`,
       admission_number: studentData.admission_number,
       class_name: `${studentData?.present_class} ${studentData?.sub_class}`,
@@ -257,7 +253,7 @@ const ComputePreSchoolResult = () => {
 
   let cogSubject = null;
 
-  // console.log({ result: result(), studentByClass2 });
+  console.log({ inputs });
 
   // console.log({
   //   subjectswithNoDups: subjectswithNoDups(),
@@ -266,6 +262,7 @@ const ComputePreSchoolResult = () => {
   //   teacherComment,
   //   newResult,
   // });
+
   console.log({
     subjectswithNoDups: subjectswithNoDups(),
     preSchoolSubjectsByClass,
