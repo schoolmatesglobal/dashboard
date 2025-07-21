@@ -38,8 +38,14 @@ import {
 
 // export const backendAPI = process.env.REACT_APP_API_URL;
 // const url1 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
-const url1 = "https://staging.sapsms.com/api";
-const url2 = "https://dashboard.sapsms.com/api";
+
+const url1 = "https://be-staging.schoolmateglobal.com/api";
+const url2 = "https://backend.schoolmateglobal.com/api";
+
+// const url1 = "https://staging.sapsms.com/api";
+// const url2 = "https://dashboard.sapsms.com/api";
+
+
 // const url2 = "https://staging.sapsms.com/api";
 // const url2 = "https://goshenpillarsportal.schoolmateglobal.com/esc/api";
 

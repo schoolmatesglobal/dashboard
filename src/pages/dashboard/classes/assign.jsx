@@ -54,7 +54,6 @@ const AssignElementaryClass = () => {
     toggleModal();
 
     assignSubjectsToClass({
-      // class_id: subjectData2?.id,
       class_id: id,
       subjects: assignSubjectValue(),
     });

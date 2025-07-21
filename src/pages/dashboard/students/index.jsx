@@ -173,7 +173,8 @@ const Student = () => {
     // loadedGen,
     // getAdmissionNoSettings,
     studentLoginDetailsStudents,
-    students
+    students,
+    studentByClass2
   });
 
   return (
