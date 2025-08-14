@@ -267,6 +267,7 @@ export const useStaff = () => {
       onError(err) {
         errorHandler(err);
       },
+      
     });
 
   const { mutateAsync: deleteStaff, isLoading: deleteStaffLoading } =

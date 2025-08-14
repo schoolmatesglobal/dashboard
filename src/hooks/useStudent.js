@@ -79,7 +79,6 @@ export const useStudent = () => {
       home_address: "",
       phone_number: "",
       email_address: "",
-      // file: null,
       campus: "",
     },
     validation: {

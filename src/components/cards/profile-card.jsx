@@ -108,7 +108,7 @@ const ProfileCard = ({ type = "super-admin" }) => {
           </div>
           <div>
             <h3>School Population:</h3>
-            <p>{user?.school_population}</p>
+            <p>{user?.school_population?.total_school_population}</p>
           </div>
           <div>
             <h3>Department:</h3>
